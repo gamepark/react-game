@@ -1,3 +1,4 @@
+export * from './useActions'
 export * from './useEfficientDragLayer'
 export * from './useFailures'
 export * from './useFullscreen'
