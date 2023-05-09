@@ -9,8 +9,6 @@ import {
   EjectPlayerButton,
   EjectPlayerDialog,
   EjectPlayerPopButton,
-  FullscreenButton,
-  FullscreenPopButton,
   gameContext,
   GameMode,
   GamePageState,
@@ -36,6 +34,7 @@ import { useSelector } from 'react-redux'
 import { ResultDialog } from '../../dialogs'
 import { TimeStatsButton } from '../TimeStatsButton'
 import { ResultButton, ResultPopButton } from '../Result'
+import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
 
 export function Menu() {
   const { t } = useTranslation()

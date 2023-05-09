@@ -1,4 +1,5 @@
 export * from './useEfficientDragLayer'
+export * from './useFullscreen'
 export * from './useGame'
 export * from './useKeyDown'
 export * from './useLegalMoves'
