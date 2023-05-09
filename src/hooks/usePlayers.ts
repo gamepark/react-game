@@ -1,6 +1,7 @@
-import { GamePageState, Player, useNow, usePlayerId } from '@gamepark/react-client'
+import { GamePageState, Player, usePlayerId } from '@gamepark/react-client'
 import produce from 'immer'
 import { useSelector } from 'react-redux'
+import { useNow } from './useNow'
 
 type Options = {
   withTimeUpdate?: boolean
