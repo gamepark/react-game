@@ -13,7 +13,6 @@ import {
   GameMode,
   GamePageState,
   GamePointIcon,
-  GiveUpButton,
   isContrastTheme,
   LogoIcon,
   menuBaseCss,
@@ -35,6 +34,7 @@ import { ResultDialog } from '../../dialogs'
 import { TimeStatsButton } from '../TimeStatsButton'
 import { ResultButton, ResultPopButton } from '../Result'
 import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
+import { GiveUpButton } from '../GiveUpButton'
 
 export function Menu() {
   const { t } = useTranslation()
