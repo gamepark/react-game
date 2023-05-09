@@ -27,7 +27,6 @@ import {
   ResultButton,
   ResultPopButton,
   SoundButton,
-  TimeStatsButton,
   UndoButton,
   UndoPopButton
 } from '@gamepark/react-client'
@@ -37,6 +36,7 @@ import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { ResultDialog } from '../../dialogs'
+import { TimeStatsButton } from '../TimeStatsButton'
 
 export function Menu() {
   const { t } = useTranslation()
