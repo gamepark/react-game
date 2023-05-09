@@ -1,2 +1,3 @@
-export * from './Dialog'
 export * from './RulesDialog'
+export * from './Dialog'
+export * from './ResultDialog'

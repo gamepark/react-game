@@ -25,7 +25,6 @@ import {
   PLATFORM_URI,
   RestartTutorialButton,
   ResultButton,
-  ResultDialog,
   ResultPopButton,
   SoundButton,
   TimeStatsButton,
@@ -37,6 +36,7 @@ import fscreen from 'fscreen'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { ResultDialog } from '../../dialogs'
 
 export function Menu() {
   const { t } = useTranslation()
