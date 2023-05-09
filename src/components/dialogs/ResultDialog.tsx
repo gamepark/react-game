@@ -3,7 +3,7 @@ import { css } from '@emotion/react'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Avatar, gameContext, GameMode, GamePageState, GamePoints, NavButton, PLATFORM_URI, RematchSection, usePlayerId, usePlayers } from '@gamepark/react-client'
+import { gameContext, GameMode, GamePageState, GamePoints, NavButton, PLATFORM_URI, RematchSection, usePlayerId, usePlayers } from '@gamepark/react-client'
 import { getFallbackPlayerName, isCompetitive } from '@gamepark/rules-api'
 import { Fragment, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux'
 import { Dialog, dialogDefaultCss, DialogProps } from './Dialog'
 import { useGame } from '../../hooks'
 import Medal from '../menus/Result/Medal'
+import { Avatar } from '../Avatar'
 
 type Props = DialogProps & {
   openDialog: () => void

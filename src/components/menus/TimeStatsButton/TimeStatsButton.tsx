@@ -3,12 +3,13 @@ import { css } from '@emotion/react'
 import { faClock } from '@fortawesome/free-solid-svg-icons'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Avatar, gameContext, menuButtonCss, menuDialogCss, usePlayers } from '@gamepark/react-client'
+import { gameContext, menuButtonCss, menuDialogCss, usePlayers } from '@gamepark/react-client'
 import { getFallbackPlayerName } from '@gamepark/rules-api'
 import moment from 'moment'
 import { Fragment, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dialog } from '../../dialogs'
+import { Avatar } from '../../Avatar'
 
 export const TimeStatsButton = () => {
   const { t } = useTranslation()
