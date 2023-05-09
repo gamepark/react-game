@@ -20,6 +20,7 @@
     "@fortawesome/react-fontawesome": "^0.1.18",
     "@gamepark/react-client": "^5.23.2",
     "@gamepark/rules-api": "^5.23.2",
+    "fscreen": "^1.2.0",
     "i18next": "^22.4.15",
     "lodash.mapvalues": "^4.6.0",
     "lodash.pickby": "^4.6.0",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "@emotion/react": "^11.10.5",
+    "@types/fscreen": "^1.0.1",
     "@types/lodash.mapvalues": "^4.6.7",
     "@types/lodash.pickby": "^4.6.7",
     "@types/node": "^18.16.0",
