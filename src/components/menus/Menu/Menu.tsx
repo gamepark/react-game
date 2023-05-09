@@ -6,9 +6,6 @@ import {
   addStylesheetUrl,
   Chat,
   ContrastThemeButton,
-  EjectPlayerButton,
-  EjectPlayerDialog,
-  EjectPlayerPopButton,
   gameContext,
   GameMode,
   GamePageState,
@@ -35,6 +32,7 @@ import { TimeStatsButton } from '../TimeStatsButton'
 import { ResultButton, ResultPopButton } from '../Result'
 import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
 import { GiveUpButton } from '../GiveUpButton'
+import { EjectPlayerButton, EjectPlayerDialog, EjectPlayerPopButton } from '../EjectPlayer'
 
 export function Menu() {
   const { t } = useTranslation()
