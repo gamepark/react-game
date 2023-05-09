@@ -2,12 +2,13 @@
 import { css } from '@emotion/react'
 import { faExpand } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { menuButtonCss, menuDialogCss } from '@gamepark/react-client'
+import { menuButtonCss } from '@gamepark/react-client'
 import fscreen from 'fscreen'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dialog, DialogProps } from '../../dialogs'
 import { useFullscreen } from '../../../hooks'
+import { menuDialogCss } from '../menuCss'
 
 export function FullscreenDialog(props: Omit<DialogProps, 'open'>) {
   const { t } = useTranslation()

@@ -2,12 +2,13 @@
 import { css } from '@emotion/react'
 import { faFlag } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GameMode, GamePageState, menuButtonCss, menuDialogCss } from '@gamepark/react-client'
+import { GameMode, GamePageState, menuButtonCss } from '@gamepark/react-client'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import useGiveUp from '../../../hooks/useGiveUp'
 import { Dialog } from '../../dialogs'
+import { menuDialogCss } from '../menuCss'
 
 export function GiveUpButton() {
   const { t } = useTranslation()

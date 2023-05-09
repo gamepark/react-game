@@ -2,7 +2,7 @@
 import { css } from '@emotion/react'
 import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ejectPlayerAction, gameContext, GamePageState, menuButtonCss, menuDialogCss } from '@gamepark/react-client'
+import { ejectPlayerAction, gameContext, GamePageState, menuButtonCss } from '@gamepark/react-client'
 import { getFallbackPlayerName } from '@gamepark/rules-api'
 import moment from 'moment'
 import { useContext, useEffect } from 'react'
@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import useOpponentWithMaxTime from '../../../hooks/useOpponentWithMaxTime'
 import { Dialog, DialogProps } from '../../dialogs'
+import { menuDialogCss } from '../menuCss'
 
 export function EjectPlayerDialog({ close, ...props }: DialogProps & { close: () => void }) {
   const { t } = useTranslation()
