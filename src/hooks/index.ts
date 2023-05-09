@@ -1,4 +1,7 @@
 export * from './useEfficientDragLayer'
+export * from './useGame'
 export * from './useKeyDown'
+export * from './useLegalMoves'
 export * from './usePlay'
+export * from './useRules'
 export * from './useWebP'
