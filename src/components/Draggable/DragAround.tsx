@@ -2,7 +2,7 @@
 import { css, Interpolation, Theme } from '@emotion/react'
 import { forwardRef, HTMLAttributes, useMemo } from 'react'
 import { DragLayerMonitor, XYCoord } from 'react-dnd'
-import { useEfficientDragLayer } from '../../hooks/useEfficientDragLayer'
+import { useEfficientDragLayer } from '../../hooks'
 
 export type DragAroundProps = {
   dragging: boolean
