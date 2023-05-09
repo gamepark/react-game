@@ -1,5 +1,7 @@
 export * from './Board'
 export * from './Card'
+export * from './DropAreas'
+export * from './GameTable'
 export * from './Items'
 export * from './MaterialComponent'
 export * from './MaterialComponentType'

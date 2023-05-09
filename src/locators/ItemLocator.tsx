@@ -10,13 +10,12 @@ import {
   MaterialRulesMove,
   XYCoordinates
 } from '@gamepark/rules-api'
-import { getPropForItem, MaterialDescription } from '../components'
+import { getPropForItem, MaterialDescription, SimpleDropArea } from '../components'
 import { DragLayerMonitor } from 'react-dnd'
 import { ReactNode } from 'react'
 import { css, Interpolation, Theme } from '@emotion/react'
 import equal from 'fast-deep-equal'
 import { ComponentSize, getPositionTransforms } from '../css'
-import { SimpleDropArea } from '../components/material/DropAreas'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   material: Record<M, MaterialDescription>
