@@ -24,8 +24,6 @@ import {
   NavButton,
   PLATFORM_URI,
   RestartTutorialButton,
-  ResultButton,
-  ResultPopButton,
   SoundButton,
   UndoButton,
   UndoPopButton
@@ -37,6 +35,7 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { ResultDialog } from '../../dialogs'
 import { TimeStatsButton } from '../TimeStatsButton'
+import { ResultButton, ResultPopButton } from '../Result'
 
 export function Menu() {
   const { t } = useTranslation()
