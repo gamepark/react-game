@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { faRankingStar } from '@fortawesome/free-solid-svg-icons/faRankingStar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { menuButtonCss } from '@gamepark/react-client'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
+import { menuButtonCss } from '../menuCss'
 
-export function ResultButton(props: HTMLAttributes<HTMLButtonElement>) {
+export const ResultButton = (props: HTMLAttributes<HTMLButtonElement>) => {
   const { t } = useTranslation()
 
   return (

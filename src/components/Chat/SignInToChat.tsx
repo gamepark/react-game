@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { buttonCss, PLATFORM_URI } from '@gamepark/react-client'
+import { PLATFORM_URI } from '@gamepark/react-client'
 import { useTranslation } from 'react-i18next'
+import { buttonResetCss } from '../../css'
 
 export const SignInToChat = () => {
   const { t } = useTranslation()
@@ -10,7 +11,7 @@ export const SignInToChat = () => {
   return (
     <div css={style}>
       <p css={textCss}>{t('sign-in-to-chat')}</p>
-      <button css={[buttonCss, signInButtonCss]}
+      <button css={[buttonResetCss, signInButtonCss]}
               onClick={() => window.location.href = `${PLATFORM_URI}/${locale}/auth/sign-in?callbackUrl=${encodeURIComponent(window.location.href)}`}>
         {t('Sign in')}
       </button>

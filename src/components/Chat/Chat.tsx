@@ -3,7 +3,7 @@ import { css } from '@emotion/react'
 import { faComments } from '@fortawesome/free-regular-svg-icons'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { floatingButtonCss, hide, menuBaseCss, useChatMessages, useMe } from '@gamepark/react-client'
+import { useChatMessages, useMe } from '@gamepark/react-client'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import InfiniteScroll from 'react-infinite-scroller'
@@ -12,6 +12,7 @@ import { backdrop, displayBackdrop } from '../menus'
 import { ChatMessage } from './ChatMessage'
 import { ChatTextInput } from './ChatTextInput'
 import { SignInToChat } from './SignInToChat'
+import { floatingButtonCss, hide, menuBaseCss } from '../menus/menuCss'
 
 export const Chat = ({ gameId }: { gameId: string }) => {
   const { t } = useTranslation()

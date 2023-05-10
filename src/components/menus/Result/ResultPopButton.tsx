@@ -2,12 +2,13 @@
 import { css, keyframes } from '@emotion/react'
 import { faRankingStar } from '@fortawesome/free-solid-svg-icons/faRankingStar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GamePageState, MenuPopButton } from '@gamepark/react-client'
+import { GamePageState } from '@gamepark/react-client'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { MenuPopButton } from '../Menu/MenuPopButton'
 
-export function ResultPopButton(props: HTMLAttributes<HTMLButtonElement>) {
+export const ResultPopButton = (props: HTMLAttributes<HTMLButtonElement>) => {
   const { t } = useTranslation()
   const gameOver = useSelector((state: GamePageState) => state.gameOver)
 

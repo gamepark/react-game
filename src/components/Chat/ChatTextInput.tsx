@@ -2,9 +2,10 @@
 import { css } from '@emotion/react'
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { buttonCss, useSendMessage } from '@gamepark/react-client'
+import { useSendMessage } from '@gamepark/react-client'
 import { FormEvent, RefObject, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { buttonResetCss } from '../../css'
 
 type Props = {
   channel: string
@@ -23,7 +24,7 @@ export const ChatTextInput = ({ channel, inputRef }: Props) => {
   return (
     <form css={messageBar} onSubmit={onSubmit}>
       <input ref={inputRef} type="text" placeholder={t('Type a message')!} css={textInputCss} value={text} onChange={event => setText(event.target.value)}/>
-      <button aria-label={t('Send')!} title={t('Send')!} css={[buttonCss, sendButtonStyle]}><FontAwesomeIcon icon={faPaperPlane}/></button>
+      <button aria-label={t('Send')!} title={t('Send')!} css={[buttonResetCss, sendButtonStyle]}><FontAwesomeIcon icon={faPaperPlane}/></button>
     </form>
   )
 }

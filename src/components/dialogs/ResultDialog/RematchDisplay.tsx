@@ -1,9 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { useMutation } from '@apollo/client'
 import { css } from '@emotion/react'
-import { ACCEPT_REMATCH, menuButtonCss, NavButton, PLATFORM_URI, REFUSE_REMATCH, RematchData, useMe } from '@gamepark/react-client'
+import { ACCEPT_REMATCH, PLATFORM_URI, REFUSE_REMATCH, RematchData, useMe } from '@gamepark/react-client'
 import { useChannel, useEvent } from '@harelpls/use-pusher'
 import { useTranslation } from 'react-i18next'
+import { menuButtonCss } from '../../menus/menuCss'
+import { NavButton } from '../../menus/Menu/NavButton'
 
 type Props = {
   rematch: RematchData

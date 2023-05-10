@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { menuButtonCss } from '@gamepark/react-client'
 import { useTranslation } from 'react-i18next'
 import { ContrastTheme } from '../../../hooks'
+import { menuButtonCss } from '../menuCss'
 
-export function ContrastThemeButton({ theme }: { theme: ContrastTheme }) {
+export const ContrastThemeButton = ({ theme }: { theme: ContrastTheme }) => {
   const { t } = useTranslation()
   return (
     <button css={menuButtonCss} onClick={theme.toggleContrast}>

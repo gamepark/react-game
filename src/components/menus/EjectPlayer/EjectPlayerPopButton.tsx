@@ -2,14 +2,14 @@
 import { css } from '@emotion/react'
 import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { MenuPopButton } from '@gamepark/react-client'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import useOpponentWithMaxTime from '../../../hooks/useOpponentWithMaxTime'
 import { useUndo } from '../../../hooks'
+import { MenuPopButton } from '../Menu/MenuPopButton'
 
-export function EjectPlayerPopButton(props: HTMLAttributes<HTMLButtonElement>) {
-  const {t} = useTranslation()
+export const EjectPlayerPopButton = (props: HTMLAttributes<HTMLButtonElement>) => {
+  const { t } = useTranslation()
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   const [, canUndo] = useUndo()
   const canUndoLastMove = canUndo()

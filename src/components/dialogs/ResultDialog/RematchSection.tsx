@@ -2,10 +2,11 @@
 import { css } from '@emotion/react'
 import { faRepeat } from '@fortawesome/free-solid-svg-icons/faRepeat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { menuButtonCss, useRematch } from '@gamepark/react-client'
+import { useRematch } from '@gamepark/react-client'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RematchDisplay } from './RematchDisplay'
+import { menuButtonCss } from '../../menus/menuCss'
 
 type Props = {
   openDialog: () => void

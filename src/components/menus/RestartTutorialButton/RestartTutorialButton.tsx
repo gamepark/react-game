@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { gameContext, menuButtonCss } from '@gamepark/react-client'
+import { gameContext } from '@gamepark/react-client'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
+import { menuButtonCss } from '../menuCss'
 
 export const RestartTutorialButton = () => {
   const { t } = useTranslation()

@@ -2,9 +2,9 @@
 import { css } from '@emotion/react'
 import { faUndoAlt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { MenuPopButton } from '@gamepark/react-client'
 import { useTranslation } from 'react-i18next'
 import { useUndo } from '../../../hooks'
+import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const UndoPopButton = () => {
   const { t } = useTranslation()

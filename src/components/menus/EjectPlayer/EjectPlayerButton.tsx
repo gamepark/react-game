@@ -2,12 +2,12 @@
 import { css } from '@emotion/react'
 import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { menuButtonCss } from '@gamepark/react-client'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import useOpponentWithMaxTime from '../../../hooks/useOpponentWithMaxTime'
+import { menuButtonCss } from '../menuCss'
 
-export function EjectPlayerButton(props: HTMLAttributes<HTMLButtonElement>) {
+export const EjectPlayerButton = (props: HTMLAttributes<HTMLButtonElement>) => {
   const { t } = useTranslation()
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   return (

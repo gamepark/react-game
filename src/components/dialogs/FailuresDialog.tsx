@@ -5,10 +5,10 @@ import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { Dialog, DialogProps } from './Dialog'
 import { useFailures } from '../../hooks'
-import { Failure, menuButtonCss } from '@gamepark/react-client'
-import { menuDialogCss } from '../menus/menuCss'
+import { Failure } from '@gamepark/react-client'
+import { menuButtonCss, menuDialogCss } from '../menus/menuCss'
 
-export function FailuresDialog(props: Omit<DialogProps, 'open'>) {
+export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
   const { t } = useTranslation()
   const [failures, clearFailures] = useFailures()
   const [displayedFailure, setDisplayedFailure] = useState('')

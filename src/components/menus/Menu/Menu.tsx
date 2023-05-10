@@ -2,19 +2,7 @@
 import { css, useTheme } from '@emotion/react'
 import { faChessPawn, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  addStylesheetUrl,
-  gameContext,
-  GameMode,
-  GamePageState,
-  GamePointIcon,
-  LogoIcon,
-  menuBaseCss,
-  menuFloatingButtonCss,
-  menuFontSize,
-  NavButton,
-  PLATFORM_URI
-} from '@gamepark/react-client'
+import { gameContext, GameMode, GamePageState, GamePointIcon, PLATFORM_URI } from '@gamepark/react-client'
 import { GameSpeed } from '@gamepark/rules-api'
 import fscreen from 'fscreen'
 import { useContext, useEffect, useState } from 'react'
@@ -32,8 +20,11 @@ import { UndoButton, UndoPopButton } from '../UndoButton'
 import { Chat } from '../../Chat'
 import { isContrastTheme } from '../../../hooks'
 import { ContrastThemeButton } from '../ContrastThemeButton'
+import { addStylesheetUrl, menuBaseCss, menuFloatingButtonCss, menuFontSize } from '../menuCss'
+import { NavButton } from './NavButton'
+import { LogoIcon } from './LogoIcon'
 
-export function Menu() {
+export const Menu = () => {
   const { t } = useTranslation()
   const [isOpen, setOpen] = useState(false)
   const game = useContext(gameContext)?.game ?? ''

@@ -5,9 +5,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFullscreen } from '../../../hooks'
-import { MenuPopButton } from '@gamepark/react-client'
+import { MenuPopButton } from '../Menu/MenuPopButton'
 
-export function FullscreenPopButton() {
+export const FullscreenPopButton = () => {
   const { t } = useTranslation()
   const [pop, setPop] = useState(true)
 

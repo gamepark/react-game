@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { faCompress, faExpand } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { menuButtonCss } from '@gamepark/react-client'
 import { useTranslation } from 'react-i18next'
 import { useFullscreen } from '../../../hooks'
+import { menuButtonCss } from '../menuCss'
 
-export function FullscreenButton() {
+export const FullscreenButton = () => {
   const { t } = useTranslation()
   const { fullscreen, toggleFullscreen } = useFullscreen()
 
