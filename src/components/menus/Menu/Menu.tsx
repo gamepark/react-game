@@ -4,12 +4,10 @@ import { faChessPawn, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   addStylesheetUrl,
-  ContrastThemeButton,
   gameContext,
   GameMode,
   GamePageState,
   GamePointIcon,
-  isContrastTheme,
   LogoIcon,
   menuBaseCss,
   menuFloatingButtonCss,
@@ -32,6 +30,8 @@ import { RestartTutorialButton } from '../RestartTutorialButton'
 import { SoundButton } from '../SoundButton'
 import { UndoButton, UndoPopButton } from '../UndoButton'
 import { Chat } from '../../Chat'
+import { isContrastTheme } from '../../../hooks'
+import { ContrastThemeButton } from '../ContrastThemeButton'
 
 export function Menu() {
   const { t } = useTranslation()
