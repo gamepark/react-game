@@ -77,6 +77,11 @@
   dependencies:
     tslib "^1.10.0"
 
+"@datadog/browser-core@4.42.0":
+  version "4.42.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-core/-/browser-core-4.42.0.tgz#102d5838eae7aa46aa74081043eac5ea084c5fd2"
+  integrity sha512-/yrShMoq0XEpyFQLbYq+gxwVF71nlZq1QbCYMlKQwIE9MppsBMaJDbNklGaZTBA4y0MhAh7PH9cjCYf7jtZJmQ==
+
 "@datadog/browser-logs@^3.6.11":
   version "3.11.0"
   resolved "https://registry.yarnpkg.com/@datadog/browser-logs/-/browser-logs-3.11.0.tgz#687372316b78dee9760bfe9d44006bc4ecb2c5a7"
@@ -84,6 +89,13 @@
   dependencies:
     "@datadog/browser-core" "3.11.0"
     tslib "^1.10.0"
+
+"@datadog/browser-logs@^4.42.0":
+  version "4.42.0"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-logs/-/browser-logs-4.42.0.tgz#93d0d20eb19a8075e9e7c51cde82ef5e77b54b46"
+  integrity sha512-umMEWzHqo9fpIjXWyv2VEjeY5bYQ6YCV/QZAtCI6xQiyGg9F6QQPxLEL8tnHcXp7I7LFu0E5OsIBVwNz/l2Png==
+  dependencies:
+    "@datadog/browser-core" "4.42.0"
 
 "@emotion/babel-plugin@^11.11.0":
   version "11.11.0"
@@ -433,6 +445,11 @@
   version "0.16.3"
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.3.tgz#cef09e3ec9af1d63d2a6cc5b383a737e24e6dcf5"
   integrity sha512-5cJ8CB4yAx7BH1oMvdU0Jh9lrEXyPkar6F9G/ERswkCuvP4KQZfZkSjcMbAICCpQTN4OuZn8tz0HiKv9TGZgrQ==
+
+"@types/stylis@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/stylis/-/stylis-4.0.2.tgz#311c62d68a23dfb01462d54b04549484a4c5cb2a"
+  integrity sha512-wtckGuk1eXUlUz0Qb1eXHG37Z7HWT2GfMdqRf8F/ifddTwadSS9Jwsqi4qtXk7cP7MtoyGVIHPElFCLc6HItbg==
 
 "@wry/context@^0.7.0":
   version "0.7.2"
@@ -1369,7 +1386,7 @@ sshpk@^1.7.0:
     safer-buffer "^2.0.2"
     tweetnacl "~0.14.0"
 
-stylis@4.2.0:
+stylis@4.2.0, stylis@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/stylis/-/stylis-4.2.0.tgz#79daee0208964c8fe695a42fcffcac633a211a51"
   integrity sha512-Orov6g6BB1sDfYgzWfTHDOxamtX1bE/zo104Dh9e6fqJ3PooipYyfJ0pUmrZO2wAvO8YbEyeFrkV91XTsGMSrw==

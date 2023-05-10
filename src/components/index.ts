@@ -1,6 +1,7 @@
 export * from './buttons'
 export * from './dialogs'
 export * from './Draggable'
+export * from './GameProvider'
 export * from './Hand'
 export * from './Header'
 export * from './ImagesLoader'
