@@ -3,7 +3,7 @@ import createCache, { StylisPlugin } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
 import { Robot, RulesCreator } from '@gamepark/rules-api'
 import { PropsWithChildren, ReactElement, useMemo } from 'react'
-import {DECLARATION, Element, Middleware, prefixer} from 'stylis'
+import { DECLARATION, Element, Middleware, prefixer } from 'stylis'
 import { datadogLogs, StatusType } from '@datadog/browser-logs'
 import { ApolloProvider } from '@apollo/client'
 import { useWebP } from '../../hooks'
@@ -57,7 +57,7 @@ export function GameProvider<Game, GameView = Game, Move = string, MoveView = Mo
   )
 }
 
-function webPReplace(element: Element, _index: number, _children: Array<Element | string>, _callback: Middleware) {
+const webPReplace = (element: Element, _index: number, _children: Array<Element | string>, _callback: Middleware) => {
   if (element.type === DECLARATION) {
     element.value = element.value.replace(/url\((.*)(?:\.png|\.jpg)("|'?)\)/g, 'url($1.webp$2)')
   }
@@ -78,7 +78,7 @@ if (process.env.NODE_ENV === 'production') {
   console.warn = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.warn(buildMessage(message, optionalParams), { origin: 'console' })
 }
 
-function isGameViewProviderProps<Game, View, Move, MoveView, PlayerId>(props: GameProviderProps<Game, Move, PlayerId>)
-  : props is GameViewProviderProps<Game, View, Move, MoveView, PlayerId> {
-  return !!(props as GameViewProviderProps<Game, View, Move, MoveView, PlayerId>).RulesView
-}
+const isGameViewProviderProps = <Game, View, Move, MoveView, PlayerId>(
+  props: GameProviderProps<Game, Move, PlayerId>
+): props is GameViewProviderProps<Game, View, Move, MoveView, PlayerId> =>
+  !!(props as GameViewProviderProps<Game, View, Move, MoveView, PlayerId>).RulesView

@@ -3,7 +3,7 @@ import { GameSpeed } from '@gamepark/rules-api'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-export function usePlayerTime<PlayerId>(playerId: PlayerId) {
+export const usePlayerTime = <PlayerId>(playerId: PlayerId) => {
   const [result, setResult] = useState<number>()
   const { options, player, clientTimeDelta } = useSelector((state: GamePageState) => ({
     options: state.options,

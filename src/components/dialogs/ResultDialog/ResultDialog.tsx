@@ -10,11 +10,11 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Dialog, dialogDefaultCss, DialogProps } from '../Dialog'
 import { useGame, usePlayerId, usePlayers } from '../../../hooks'
-import Medal from '../../menus/Result/Medal'
 import { Avatar } from '../../Avatar'
 import { RematchSection } from './RematchSection'
 import { NavButton } from '../../menus/Menu/NavButton'
 import { GamePoints } from '../../GamePoints'
+import { Medal } from '../../menus'
 
 type Props = DialogProps & {
   openDialog: () => void

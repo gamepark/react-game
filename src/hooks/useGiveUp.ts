@@ -2,7 +2,7 @@ import { GameMode, GamePageState, giveUpAction } from '@gamepark/react-client'
 import { useDispatch, useSelector } from 'react-redux'
 import { usePlayerId } from './usePlayerId'
 
-export default function useGiveUp(): [() => void, boolean] {
+export const useGiveUp = (): [() => void, boolean] => {
   const dispatch = useDispatch()
   const giveUp = () => dispatch(giveUpAction)
   const playerId = usePlayerId()

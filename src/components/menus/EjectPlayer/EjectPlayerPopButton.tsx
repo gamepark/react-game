@@ -4,8 +4,7 @@ import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
-import useOpponentWithMaxTime from '../../../hooks/useOpponentWithMaxTime'
-import { useUndo } from '../../../hooks'
+import { useOpponentWithMaxTime, useUndo } from '../../../hooks'
 import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const EjectPlayerPopButton = (props: HTMLAttributes<HTMLButtonElement>) => {

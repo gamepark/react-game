@@ -2,7 +2,7 @@ import { useRules } from './useRules'
 import { useMemo } from 'react'
 import { usePlayerId } from './usePlayerId'
 
-export function useLegalMoves<Move = any, ReturnMove = Move>(predicate?: (move: Move) => boolean): ReturnMove[] {
+export const useLegalMoves = <Move = any, ReturnMove = Move>(predicate?: (move: Move) => boolean): ReturnMove[] => {
   const rules = useRules<any, Move, any>()
   const playerId = usePlayerId()
   return useMemo(() => {

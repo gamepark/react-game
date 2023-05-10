@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux'
 /**
  * Returns true if I wait an opponent with negative time
  */
-export default function useOpponentWithMaxTime(time?: number) {
+export const useOpponentWithMaxTime = (time?: number) => {
   const options = useSelector((state: GamePageState) => state.options)
   const playerId = useSelector((state: GamePageState) => state.playerId)
   const players = useSelector((state: GamePageState) => state.players)
@@ -32,4 +32,3 @@ export default function useOpponentWithMaxTime(time?: number) {
   }, [options, player, opponent, clientTimeDelta])
   return result
 }
-

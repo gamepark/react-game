@@ -46,7 +46,7 @@ const blinkOnRunningTimeout = (playing: boolean, timeLeft: number) => playing &&
 const oneDay = dayjs.duration(1, 'day')
 const oneHour = dayjs.duration(1, 'hour')
 
-function humanizeTimer(duration: number) {
+const humanizeTimer = (duration: number) => {
   if (duration >= oneDay.asMilliseconds()) {
     return dayjs.duration(duration).humanize()
   } else if (duration >= oneHour.asMilliseconds()) {

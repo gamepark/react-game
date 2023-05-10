@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import {css, keyframes} from '@emotion/react'
+import { css, keyframes } from '@emotion/react'
 import { Message, Player } from '@gamepark/react-client'
-import {useChannel, useEvent} from '@harelpls/use-pusher'
-import {MouseEvent, useEffect, useState} from 'react'
+import { useChannel, useEvent } from '@harelpls/use-pusher'
+import { MouseEvent, useEffect, useState } from 'react'
 import { SpeechBubble, SpeechBubbleProps } from './SpeechBubble'
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
   player: Player
 } & SpeechBubbleProps
 
-export default function ChatSpeechBubble({gameId, player, ...props}: Props) {
+export const ChatSpeechBubble = ({ gameId, player, ...props }: Props) => {
   const channel = useChannel(`game=${gameId}`)
   const [message, setMessage] = useState('')
   useEvent<Message>(channel, 'message', message => {

@@ -19,9 +19,9 @@ export type DraggableProps<DragObject = any, DropResult = any> = Omit<DragAround
   drop?: (dropResult: DropResult) => void
 }
 
-export function Draggable<DragObject, DropResult>(
+export const Draggable = <DragObject, DropResult>(
   { children, type, item, options, previewOptions, draggingChange, end, canDrag, isDragging, drop, css, ...props }: DraggableProps<DragObject, DropResult>
-) {
+) => {
   const [{ draggable, dragging }, ref, preview] = useDrag({
     type, item, options, previewOptions, end: endWithDrop(end, drop), canDrag, isDragging,
     collect: monitor => ({ draggable: monitor.canDrag(), dragging: monitor.isDragging() })
@@ -41,21 +41,22 @@ export function Draggable<DragObject, DropResult>(
   )
 }
 
-export function endWithDrop<DragObject, DropResult>(end: DragSourceHookSpec<DragObject, DropResult, any>['end'], drop?: (dropResult: DropResult) => void): DragSourceHookSpec<DragObject, DropResult, any>['end'] {
-  return (draggedItem: DragObject, monitor: DragSourceMonitor) => {
-    if (end) {
-      end(draggedItem, monitor)
-    }
-    if (drop && monitor.didDrop()) {
-      const dropResult = monitor.getDropResult<DropResult>()
-      if (dropResult) {
-        drop(omitDropEffect(dropResult))
-      }
+export const endWithDrop = <DragObject, DropResult>(
+  end: DragSourceHookSpec<DragObject, DropResult, any>['end'],
+  drop?: (dropResult: DropResult) => void
+): DragSourceHookSpec<DragObject, DropResult, any>['end'] => (draggedItem: DragObject, monitor: DragSourceMonitor) => {
+  if (end) {
+    end(draggedItem, monitor)
+  }
+  if (drop && monitor.didDrop()) {
+    const dropResult = monitor.getDropResult<DropResult>()
+    if (dropResult) {
+      drop(omitDropEffect(dropResult))
     }
   }
 }
 
-function omitDropEffect<DropResult extends DragSourceOptions>(dropResult: DropResult): DropResult {
+const omitDropEffect = <DropResult extends DragSourceOptions>(dropResult: DropResult): DropResult => {
   const { dropEffect, ...result } = dropResult
   return result as DropResult
 }

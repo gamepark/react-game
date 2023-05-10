@@ -11,7 +11,7 @@ export type DialogProps = {
   rootId?: string
 } & HTMLAttributes<HTMLDivElement>
 
-export function Dialog({ children, open, backdropCss, onBackdropClick, transitionDelay = 0.3, rootId = 'root', ...props }: DialogProps) {
+export const Dialog = ({ children, open, backdropCss, onBackdropClick, transitionDelay = 0.3, rootId = 'root', ...props }: DialogProps) => {
   const [display, setDisplay] = useState(open)
 
   useEffect(() => {

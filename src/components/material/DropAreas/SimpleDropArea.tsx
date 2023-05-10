@@ -108,9 +108,9 @@ const dropHighlight = css`
   background-color: rgba(0, 255, 0, 0.5);
 `
 
-function getMoveItemTypes<P extends number = number, M extends number = number, L extends number = number>(
+const getMoveItemTypes = <P extends number = number, M extends number = number, L extends number = number>(
   move: MaterialRulesMove<P, M, L>, rules: MaterialRules<P, M, L>
-): number[] {
+): number[] => {
   switch (move.kind) {
     case MoveKind.MaterialMove:
       return move.type === MaterialMoveType.Move ? [move.itemsType] : []
@@ -121,9 +121,9 @@ function getMoveItemTypes<P extends number = number, M extends number = number, 
   }
 }
 
-function isMoveThisItemHere<P extends number = number, M extends number = number, L extends number = number>(
+const isMoveThisItemHere = <P extends number = number, M extends number = number, L extends number = number>(
   move: MaterialRulesMove<P, M, L>, index: number, type: M, location: Location<P, L>, rules: MaterialRules<P, M, L>
-): boolean {
+): boolean => {
   switch (move.kind) {
     case MoveKind.MaterialMove:
       return move.type === MaterialMoveType.Move && move.itemsType === type && move.itemIndex === index && !!move.item.location && isInsideLocation(move.item.location, location)

@@ -6,9 +6,9 @@ import { GameMode, GamePageState } from '@gamepark/react-client'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import useGiveUp from '../../../hooks/useGiveUp'
 import { Dialog } from '../../dialogs'
 import { menuButtonCss, menuDialogCss } from '../menuCss'
+import { useGiveUp } from '../../../hooks'
 
 export const GiveUpButton = () => {
   const { t } = useTranslation()

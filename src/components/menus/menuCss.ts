@@ -92,7 +92,7 @@ export const hide = css`
   transform: scale(0);
 `
 
-export function addStylesheetUrl(url: string) {
+export const addStylesheetUrl = (url: string) => {
   const link = document.createElement('link')
   link.rel = 'stylesheet'
   link.href = url

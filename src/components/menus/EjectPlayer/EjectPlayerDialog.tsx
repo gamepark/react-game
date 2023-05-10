@@ -8,9 +8,9 @@ import moment from 'moment'
 import { useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
-import useOpponentWithMaxTime from '../../../hooks/useOpponentWithMaxTime'
 import { Dialog, DialogProps } from '../../dialogs'
 import { menuButtonCss, menuDialogCss } from '../menuCss'
+import { useOpponentWithMaxTime } from '../../../hooks'
 
 export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: () => void }) => {
   const { t } = useTranslation()

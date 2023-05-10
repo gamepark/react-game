@@ -7,7 +7,7 @@ export type PlayOptions = {
   local?: boolean
 }
 
-export function usePlay<M>() {
+export const usePlay = <M>() => {
   const dispatch = useDispatch<(action: MovePlayed<M>) => MovePlayed<M>>()
   return (move: M, options?: PlayOptions) => {
     dispatch({ type: ActionType.MOVE_PLAYED, move, ...options })

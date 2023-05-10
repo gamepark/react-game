@@ -8,7 +8,7 @@ type Props = {
   onImagesLoad?: () => void
 }
 
-export function ImagesLoader({ images, onImagesLoad }: Props) {
+export const ImagesLoader = ({ images, onImagesLoad }: Props) => {
   const webp = useWebP()
   const loadCount = useRef(0)
   const onLoad = useCallback(() => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import webPCheck from 'supports-webp'
 
-export function useWebP(): boolean | undefined {
+export const useWebP = (): boolean | undefined => {
   const [webP, setWebP] = useState<boolean>()
 
   useEffect(() => {

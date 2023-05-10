@@ -2,7 +2,7 @@ import {shallowEqual} from '@react-dnd/shallowequal'
 import {useCallback, useRef} from 'react'
 import {DragLayerMonitor, useDragLayer} from 'react-dnd'
 
-export function useEfficientDragLayer<CollectedProps>(collect: (monitor: DragLayerMonitor) => CollectedProps): CollectedProps {
+export const useEfficientDragLayer = <CollectedProps>(collect: (monitor: DragLayerMonitor) => CollectedProps): CollectedProps => {
   const requestID = useRef<number>()
   const collectCallback = useCallback(monitor => requestID.current === undefined ? {data: collect(monitor)} : undefined, [collect])
   const collected = useDragLayer(collectCallback)

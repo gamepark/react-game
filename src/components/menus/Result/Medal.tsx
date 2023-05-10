@@ -3,7 +3,7 @@ import { MedalGold } from './MedalGold'
 import { MedalSilver } from './MedalSilver'
 import { MedalBronze } from './MedalBronze'
 
-const Medal: FC<SVGProps<SVGSVGElement> & { rank: number }> = ({ rank, ...props }) => {
+export const Medal: FC<SVGProps<SVGSVGElement> & { rank: number }> = ({ rank, ...props }) => {
   switch (rank) {
     case 1:
       return <MedalGold {...props}/>
@@ -13,5 +13,3 @@ const Medal: FC<SVGProps<SVGSVGElement> & { rank: number }> = ({ rank, ...props 
       return <MedalBronze {...props}/>
   }
 }
-
-export default Medal

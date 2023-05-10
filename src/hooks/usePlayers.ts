@@ -8,7 +8,7 @@ type Options = {
   withTimeUpdate?: boolean
 }
 
-export function usePlayers<PlayerId = any>({ withTimeUpdate }: Options = { withTimeUpdate: false }): Player<PlayerId>[] {
+export const usePlayers = <PlayerId = any>({ withTimeUpdate }: Options = { withTimeUpdate: false }): Player<PlayerId>[] => {
   const now = useNow({ standby: !withTimeUpdate })
   const players = useSelector((state: GamePageState<any, any, PlayerId>) => state.players)
 
@@ -19,7 +19,7 @@ export function usePlayers<PlayerId = any>({ withTimeUpdate }: Options = { withT
   }
 }
 
-export function usePlayer<PlayerId = any>(playerId?: PlayerId, { withTimeUpdate }: Options = { withTimeUpdate: false }): Player<PlayerId> | undefined {
+export const usePlayer = <PlayerId = any>(playerId?: PlayerId, { withTimeUpdate }: Options = { withTimeUpdate: false }): Player<PlayerId> | undefined => {
   const defaultPlayerId = usePlayerId()
   playerId = playerId ?? defaultPlayerId
   let players = useSelector((state: GamePageState<any, any, PlayerId>) => state.players)
@@ -31,7 +31,7 @@ export function usePlayer<PlayerId = any>(playerId?: PlayerId, { withTimeUpdate 
   return players.find(player => player.id === playerId)
 }
 
-function updatePlayersTime<PlayerId>(players: Player<PlayerId>[], now: number) {
+const updatePlayersTime = <PlayerId>(players: Player<PlayerId>[], now: number) => {
   const activePlayers: Player<PlayerId>[] = players.filter(player => player.time!.playing)
   if (activePlayers.length) {
     const durationSinceLastChange: number = players.reduce((minDuration, player) => Math.min(now - Date.parse(player.time!.lastChange), minDuration), Infinity)

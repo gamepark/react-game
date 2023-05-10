@@ -10,7 +10,7 @@ export type MovePredicate<Move> = (move: Move) => boolean
 export type CanUndo<Move> = (movePredicate?: MovePredicate<Move>) => boolean
 export type UndoFunction<Move> = ((arg?: string | MovePredicate<Move> | UndoOptions, options?: UndoOptions) => void)
 
-export function useUndo<Move = any, PlayerId = any, Game = any>(): [UndoFunction<Move>, CanUndo<Move>] {
+export const useUndo = <Move = any, PlayerId = any, Game = any>(): [UndoFunction<Move>, CanUndo<Move>] => {
   const actions = useSelector<GamePageState<Game, Move, PlayerId>, DisplayedAction<Move, PlayerId>[] | undefined>(state => state.actions)
   const setup = useSelector<GamePageState<Game, Move, PlayerId>, Game | undefined>(state => state.setup)
   const playerId = useSelector<GamePageState<Game, Move, PlayerId>, PlayerId | undefined>(state => state.playerId)

@@ -84,7 +84,7 @@ const rematchButton = css`
   padding: 0.4em 0.6em;
 `
 
-function getGameLocation(rematch: RematchData) {
+const getGameLocation = (rematch: RematchData) => {
   const url = new URL(window.location.href)
   url.searchParams.set('game', rematch.id)
   return url.toString()

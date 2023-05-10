@@ -16,9 +16,9 @@ export type ItemProps<DragObject, DropResult> = {
   drag?: DraggableProps<DragObject, DropResult>
 } & Omit<HandItemProps, 'angle'>
 
-export function Hand<DragObject, DropResult>(
+export const Hand = <DragObject, DropResult>(
   { children, maxAngle = 15, gapMaxAngle = 3, clockwise = true, getItemProps, ...props }: HandProps<DragObject, DropResult>
-) {
+) => {
   const items = Children.toArray(children).filter(child => !!child)
   const itemsProps = items.map((_, index) => getItemProps?.(index) ?? {})
   const totalItems = itemsProps.filter(itemProps => !itemProps?.ignore).length
@@ -50,6 +50,4 @@ export function Hand<DragObject, DropResult>(
   return <Fragment>{handItems}</Fragment>
 }
 
-function hasKey(child: ReactNode): child is ReactNode & Attributes {
-  return (child as Attributes).key != undefined
-}
+const hasKey = (child: ReactNode): child is ReactNode & Attributes => (child as Attributes).key != undefined

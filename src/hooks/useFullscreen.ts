@@ -6,7 +6,7 @@ import {useEffect, useState} from 'react'
 
 const noSleep = new NoSleep()
 
-export function useFullscreen() {
+export const useFullscreen = () => {
   const [fullscreen, setFullscreen] = useState(!fscreen.fullscreenEnabled)
 
   const toggleFullscreen = () => fullscreen ? fscreen.exitFullscreen() : fscreen.requestFullscreen(document.getElementById('root')!)

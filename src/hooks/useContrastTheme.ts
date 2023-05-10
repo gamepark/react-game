@@ -8,7 +8,7 @@ export interface ContrastTheme {
 
 const THEME_STORAGE = 'light-theme'
 
-export function useContrastTheme(defaultLight = false): ContrastTheme {
+export const useContrastTheme = (defaultLight = false): ContrastTheme => {
   const [light, setLight] = useState(() => getStoredTheme() ?? defaultLight)
   const toggleContrast = useCallback(() => setLight(light => {
     localStorage.setItem(THEME_STORAGE, JSON.stringify(!light))
@@ -17,7 +17,7 @@ export function useContrastTheme(defaultLight = false): ContrastTheme {
   return { light, toggleContrast }
 }
 
-function getStoredTheme() {
+const getStoredTheme = () => {
   const item = localStorage.getItem(THEME_STORAGE)
   if (!item) return
   const theme = JSON.parse(item)
@@ -25,6 +25,4 @@ function getStoredTheme() {
   return theme
 }
 
-export function isContrastTheme(theme: Theme): theme is ContrastTheme {
-  return typeof (theme as ContrastTheme).toggleContrast === 'function'
-}
+export const isContrastTheme = (theme: Theme): theme is ContrastTheme => typeof (theme as ContrastTheme).toggleContrast === 'function'

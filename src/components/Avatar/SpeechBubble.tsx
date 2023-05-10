@@ -46,7 +46,7 @@ const speechBubbleCss = css`
   }
 `
 
-function getDirectionStyle(direction: SpeechBubbleDirection) {
+const getDirectionStyle = (direction: SpeechBubbleDirection) => {
   switch (direction) {
     case SpeechBubbleDirection.TOP_LEFT:
       return [topBubble, leftBubble, rotateArrow]

@@ -113,7 +113,7 @@ const blueBackground = css`
 const oneDay = moment.duration('1', 'day')
 const oneHour = moment.duration('1', 'hour')
 
-function humanize(duration?: number) {
+const humanize = (duration?: number) => {
   if (duration === undefined) return '-'
   if (duration >= oneDay.asMilliseconds()) {
     return moment.duration(duration).humanize()

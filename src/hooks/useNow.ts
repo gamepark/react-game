@@ -7,7 +7,7 @@ type Options = {
   standby?: boolean
 }
 
-export function useNow({ updateRate = 1000, standby = false }: Options = { updateRate: 1000, standby: false }): number {
+export const useNow = ({ updateRate = 1000, standby = false }: Options = { updateRate: 1000, standby: false }): number => {
   const [now, setNow] = useState((new Date()).getTime())
   const clientTimeDelta = useSelector((state: GamePageState) => state.clientTimeDelta || 0)
 
