@@ -26,6 +26,8 @@
     "fscreen": "^1.2.0",
     "graphql": "^15.3.0",
     "i18next": "^22.4.15",
+    "i18next-icu": "^2.3.0",
+    "intl-messageformat": "^10.3.5",
     "lodash.findlast": "^4.6.0",
     "lodash.findlastindex": "^4.6.0",
     "lodash.mapvalues": "^4.6.0",
