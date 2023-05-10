@@ -24,6 +24,7 @@
     "@gamepark/rules-api": "^5.23.2",
     "dayjs": "^1.11.7",
     "fscreen": "^1.2.0",
+    "graphql": "^15.3.0",
     "i18next": "^22.4.15",
     "lodash.findlast": "^4.6.0",
     "lodash.findlastindex": "^4.6.0",
