@@ -17,7 +17,6 @@ import {
   menuFontSize,
   NavButton,
   PLATFORM_URI,
-  SoundButton,
   UndoButton,
   UndoPopButton
 } from '@gamepark/react-client'
@@ -33,6 +32,7 @@ import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
 import { GiveUpButton } from '../GiveUpButton'
 import { EjectPlayerButton, EjectPlayerDialog, EjectPlayerPopButton } from '../EjectPlayer'
 import { RestartTutorialButton } from '../RestartTutorialButton'
+import { SoundButton } from '../SoundButton'
 
 export function Menu() {
   const { t } = useTranslation()
