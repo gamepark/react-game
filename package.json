@@ -23,6 +23,8 @@
     "dayjs": "^1.11.7",
     "fscreen": "^1.2.0",
     "i18next": "^22.4.15",
+    "lodash.findlast": "^4.6.0",
+    "lodash.findlastindex": "^4.6.0",
     "lodash.mapvalues": "^4.6.0",
     "lodash.pickby": "^4.6.0",
     "nosleep": "^2.0.0",
@@ -37,6 +39,8 @@
   "devDependencies": {
     "@emotion/react": "^11.10.5",
     "@types/fscreen": "^1.0.1",
+    "@types/lodash.findlast": "^4.6.7",
+    "@types/lodash.findlastindex": "^4.6.7",
     "@types/lodash.mapvalues": "^4.6.7",
     "@types/lodash.pickby": "^4.6.7",
     "@types/node": "^18.16.0",

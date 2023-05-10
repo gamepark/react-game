@@ -16,9 +16,7 @@ import {
   menuFloatingButtonCss,
   menuFontSize,
   NavButton,
-  PLATFORM_URI,
-  UndoButton,
-  UndoPopButton
+  PLATFORM_URI
 } from '@gamepark/react-client'
 import { GameSpeed } from '@gamepark/rules-api'
 import fscreen from 'fscreen'
@@ -33,6 +31,7 @@ import { GiveUpButton } from '../GiveUpButton'
 import { EjectPlayerButton, EjectPlayerDialog, EjectPlayerPopButton } from '../EjectPlayer'
 import { RestartTutorialButton } from '../RestartTutorialButton'
 import { SoundButton } from '../SoundButton'
+import { UndoButton, UndoPopButton } from '../UndoButton'
 
 export function Menu() {
   const { t } = useTranslation()

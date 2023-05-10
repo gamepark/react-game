@@ -335,6 +335,20 @@
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
 
+"@types/lodash.findlast@^4.6.7":
+  version "4.6.7"
+  resolved "https://registry.yarnpkg.com/@types/lodash.findlast/-/lodash.findlast-4.6.7.tgz#52db83af7f7b67d27db42c3c7a3c05e4fda6b2ed"
+  integrity sha512-QP9cSvp2creZZlRHdfz/S1v70ctGShDiK/NdJGQZwhD+IOWmjBO8ldIVEi8La6GTgfyC2ZtIMX3USOvBFYorNg==
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.findlastindex@^4.6.7":
+  version "4.6.7"
+  resolved "https://registry.yarnpkg.com/@types/lodash.findlastindex/-/lodash.findlastindex-4.6.7.tgz#d3758cbfb24d8eef9fc5d80702ef3b39ead89961"
+  integrity sha512-B1f1tlVFXAN4xTv9yytcY7G/eNHZjQ5xjHZdl+GhBLY+groZ/RRqHGBITTbaxxw3hZOpzVlbM/Ox5FI+LlHNmg==
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash.mapvalues@^4.6.7":
   version "4.6.7"
   resolved "https://registry.yarnpkg.com/@types/lodash.mapvalues/-/lodash.mapvalues-4.6.7.tgz#a1459b4353c769696b6735f19246753fd25ffc3a"
@@ -993,6 +1007,16 @@ lines-and-columns@^1.1.6:
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
+
+lodash.findlast@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.findlast/-/lodash.findlast-4.6.0.tgz#ea8bb78cf2e7e7804fc8aeb7d1953e07fe31fbc8"
+  integrity sha512-+OGwb1FVKjhc2aIEQ9vKqNDW1a0/HaCLr0iCIK10jfVif3dBE0nhQD0jOZNZLh7zOlmFUTrk+vt85eXoH4vKuA==
+
+lodash.findlastindex@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.findlastindex/-/lodash.findlastindex-4.6.0.tgz#b8375ac0f02e9b926375cdf8dc3ea814abf9c6ac"
+  integrity sha512-wghZXum6rpsr8XsE0U3PZNaLtj1Q8m8Vn/hAgHtlDlzh49ZXNpcZmVbyTFRRjkKhzPAZ4CSFyxctNIk1BLmRBg==
 
 lodash.mapvalues@^4.6.0:
   version "4.6.0"
