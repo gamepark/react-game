@@ -17,7 +17,6 @@ import {
   menuFontSize,
   NavButton,
   PLATFORM_URI,
-  RestartTutorialButton,
   SoundButton,
   UndoButton,
   UndoPopButton
@@ -33,6 +32,7 @@ import { ResultButton, ResultPopButton } from '../Result'
 import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
 import { GiveUpButton } from '../GiveUpButton'
 import { EjectPlayerButton, EjectPlayerDialog, EjectPlayerPopButton } from '../EjectPlayer'
+import { RestartTutorialButton } from '../RestartTutorialButton'
 
 export function Menu() {
   const { t } = useTranslation()
