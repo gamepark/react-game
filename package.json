@@ -15,6 +15,7 @@
     "prepublishOnly": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
+    "@apollo/client": "^3.5.0",
     "@datadog/browser-logs": "^4.42.0",
     "@fortawesome/fontawesome-svg-core": "^6.1.0",
     "@fortawesome/free-solid-svg-icons": "^6.1.0",
