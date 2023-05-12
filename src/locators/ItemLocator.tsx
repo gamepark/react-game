@@ -193,4 +193,5 @@ export type PlaceItemContext<Player extends number = number, MaterialType extend
 export type LocationRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
   location: Location<P, L>
   legalMoves: MaterialRulesMove<P, M, L>[]
+  close: () => void
 }

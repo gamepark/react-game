@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux'
-import { ActionType, MovePlayed } from '@gamepark/react-client'
+import { ActionType } from '@gamepark/react-client'
 
 export type PlayOptions = {
   delayed?: boolean
@@ -8,7 +8,7 @@ export type PlayOptions = {
 }
 
 export const usePlay = <M>() => {
-  const dispatch = useDispatch<(action: MovePlayed<M>) => MovePlayed<M>>()
+  const dispatch = useDispatch()
   return (move: M, options?: PlayOptions) => {
     dispatch({ type: ActionType.MOVE_PLAYED, move, ...options })
   }

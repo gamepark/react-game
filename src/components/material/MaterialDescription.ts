@@ -15,6 +15,7 @@ export type CommonMaterialDescription = {
 export type MaterialRulesProps = {
   item: Partial<MaterialItem>
   legalMoves: MaterialMove[]
+  close: () => void
 }
 
 export type MaterialLocationsFunction<ItemId = number> = (itemId?: ItemId, legalMoves?: MaterialRulesMove[]) => ReactNode | undefined

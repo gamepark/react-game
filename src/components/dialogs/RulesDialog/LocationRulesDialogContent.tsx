@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
-import { LocationRulesDisplay, MaterialRulesMove } from '@gamepark/rules-api'
+import { closeRulesDisplay, LocationRulesDisplay, MaterialRulesMove } from '@gamepark/rules-api'
 import { css } from '@emotion/react'
 import Scrollbars from 'react-custom-scrollbars-2'
 import { ItemLocator } from '../../../locators'
 import { MaterialDescription } from '../../material'
+import { usePlay } from '../../../hooks'
 
 export type LocationRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   rulesDisplay: LocationRulesDisplay<Player, LocationType>
@@ -15,11 +16,16 @@ export type LocationRulesDialogContentProps<Player extends number = number, Mate
 export const LocationRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
   { rulesDisplay, locator, legalMoves }: LocationRulesDialogContentProps<P, M, L>
 ) => {
+  const play = usePlay()
   return <div css={flex}>
     {/* TODO: image of the location? */}
     <Scrollbars autoHeight css={scrollableContainer}>
       <div css={rules}>
-        {locator.getLocationRules && locator.getLocationRules({ location: rulesDisplay.location, legalMoves })}
+        {locator.getLocationRules && locator.getLocationRules({
+          location: rulesDisplay.location,
+          legalMoves,
+          close: () => play(closeRulesDisplay, { local: true })
+        })}
       </div>
     </Scrollbars>
   </div>

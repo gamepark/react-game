@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
-import { MaterialRulesDisplay, MaterialRulesMove } from '@gamepark/rules-api'
+import { closeRulesDisplay, MaterialRulesDisplay, MaterialRulesMove } from '@gamepark/rules-api'
 import { css } from '@emotion/react'
 import Scrollbars from 'react-custom-scrollbars-2'
 import { getPropForItem, MaterialComponent, MaterialComponentType, MaterialDescription } from '../../material'
 import { fontSizeCss, transformCss } from '../../../css'
+import { usePlay } from '../../../hooks'
 
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   rulesDisplay: MaterialRulesDisplay
@@ -14,6 +15,7 @@ export type MaterialRulesDialogContentProps<Player extends number = number, Mate
 export const MaterialRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
   { rulesDisplay, material, legalMoves }: MaterialRulesDialogContentProps<P, M, L>
 ) => {
+  const play = usePlay()
   const description = material[rulesDisplay.itemType]
   const item = rulesDisplay.item
   const height = getPropForItem(description.props.height, item.id)
@@ -25,7 +27,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
     ]}/>
     <Scrollbars autoHeight css={scrollableContainer}>
       <div css={rules}>
-        {description.rules({ item, legalMoves })}
+        {description.rules({ item, legalMoves, close: () => play(closeRulesDisplay, { local: true }) })}
       </div>
     </Scrollbars>
   </div>

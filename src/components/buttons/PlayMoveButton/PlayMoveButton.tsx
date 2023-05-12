@@ -5,9 +5,13 @@ import { PlayOptions, usePlay } from '../../../hooks'
 
 export type PlayMoveButtonProps = {
   move: any
+  onPlay?: () => void
 } & PlayOptions & HTMLAttributes<HTMLButtonElement>
 
-export const PlayMoveButton: FC<PlayMoveButtonProps> = ({ move, delayed, skipAnimation, local, ...props }) => {
+export const PlayMoveButton: FC<PlayMoveButtonProps> = ({ move, delayed, skipAnimation, local, onPlay, ...props }) => {
   const play = usePlay()
-  return <button css={[lightBlueButtonCss]} onClick={() => play(move, { delayed, skipAnimation, local })} {...props}/>
+  return <button css={[lightBlueButtonCss]} onClick={() => {
+    play(move, { delayed, skipAnimation, local })
+    if (onPlay) onPlay()
+  }} {...props}/>
 }
