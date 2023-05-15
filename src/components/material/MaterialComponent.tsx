@@ -29,7 +29,7 @@ export const MaterialComponent: FC<MaterialComponentProps> = ({ description, ite
         onClick(event)
       }
     }
-  }, [])
+  }, [onClick])
 
   const bind = useLongPress(() => onLongPress && onLongPress(), {
     cancelOnMovement: true,

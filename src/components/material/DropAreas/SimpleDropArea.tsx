@@ -58,7 +58,7 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
         onClick(event)
       }
     }
-  }, [])
+  }, [onClick])
 
   const bind = useLongPress(() => onLongPress && onLongPress(), {
     cancelOnMovement: true,

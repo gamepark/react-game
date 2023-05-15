@@ -23,7 +23,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   return <div css={flex}>
     <MaterialComponent description={description} itemId={item.id} css={[
       noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-      description.type === MaterialComponentType.Card && !item.id && transformCss('rotateY(180deg)')
+      description.type === MaterialComponentType.Card && item.id === undefined && transformCss('rotateY(180deg)')
     ]}/>
     <Scrollbars autoHeight css={scrollableContainer}>
       <div css={rules}>
