@@ -1,4 +1,4 @@
-import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
+import { Coordinates, MaterialItem } from '@gamepark/rules-api'
 import { LineLocator } from './LineLocator'
 import { PlaceItemContext } from './ItemLocator'
 
@@ -17,7 +17,7 @@ export abstract class DeckLocator<P extends number = number, M extends number = 
     return index - count + this.limit
   }
 
-  getDelta(_location: Location<P, L>, _context: PlaceItemContext<P, M, L>): Coordinates {
-    return { x: 0, y: 0, z: 0.05 }
+  getDelta(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): Partial<Coordinates> {
+    return { z: 0.05 }
   }
 }
