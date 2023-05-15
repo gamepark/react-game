@@ -147,7 +147,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   getMaterial(game: MaterialGame<P, M, L>, type: M) {
-    return new Material<P, M, L>(game.items[type] ?? [], type)
+    return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
   createLocationsOnItem<ParentItemId extends number | undefined>(parent: ParentItemId, legalMoves: MaterialRulesMove<P, M, L>[], rules: MaterialRules<P, M, L>): ReactNode {

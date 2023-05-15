@@ -113,7 +113,7 @@ const getMoveItemTypes = <P extends number = number, M extends number = number, 
 ): number[] => {
   switch (move.kind) {
     case MoveKind.MaterialMove:
-      return move.type === MaterialMoveType.Move ? [move.itemsType] : []
+      return move.type === MaterialMoveType.Move ? [move.itemType] : []
     case MoveKind.CustomMove:
       return rules.play(move).flatMap(move => getMoveItemTypes(move, rules))
     default:
@@ -126,7 +126,7 @@ const isMoveThisItemHere = <P extends number = number, M extends number = number
 ): boolean => {
   switch (move.kind) {
     case MoveKind.MaterialMove:
-      return move.type === MaterialMoveType.Move && move.itemsType === type && move.itemIndex === index && !!move.item.location && isInsideLocation(move.item.location, location)
+      return move.type === MaterialMoveType.Move && move.itemType === type && move.itemIndex === index && !!move.item.location && isInsideLocation(move.item.location, location)
     case MoveKind.CustomMove:
       return rules.play(move).some(move => isMoveThisItemHere(move, index, type, location, rules))
     default:
