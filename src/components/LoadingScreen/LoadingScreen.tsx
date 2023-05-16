@@ -96,6 +96,8 @@ const loadingScreenStyle = css`
   transition: opacity ${fadeOutDuration}ms;
   background-size: cover;
   background-position: center;
+  pointer-events: none;
+  background-image: url(${process.env.PUBLIC_URL + '/cover-1920.jpg'});
 
   &:before {
     content: '';
@@ -105,6 +107,7 @@ const loadingScreenStyle = css`
     top: 0;
     width: 100%;
     height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
   }
 
   > * {

@@ -50,4 +50,5 @@ const titleStyle = css`
 const defaultButtonsCss = css`
   ${buttonCss('#ffffff', '#eeeeee', '#dddddd')};
   padding: 0 0.5em;
+  font-weight: bold;
 `
