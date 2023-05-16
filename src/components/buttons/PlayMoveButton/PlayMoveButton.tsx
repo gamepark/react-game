@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { FC, HTMLAttributes } from 'react'
-import { lightBlueButtonCss } from '../../../css'
+import { FC, HTMLAttributes, useCallback } from 'react'
 import { PlayOptions, usePlay } from '../../../hooks'
+import { ThemeButton } from '../ThemeButton'
 
 export type PlayMoveButtonProps = {
   move: any
@@ -10,8 +10,9 @@ export type PlayMoveButtonProps = {
 
 export const PlayMoveButton: FC<PlayMoveButtonProps> = ({ move, delayed, skipAnimation, local, onPlay, ...props }) => {
   const play = usePlay()
-  return <button css={[lightBlueButtonCss]} onClick={() => {
+  const onClick = useCallback(() => {
     play(move, { delayed, skipAnimation, local })
     if (onPlay) onPlay()
-  }} {...props}/>
+  }, [move, delayed, skipAnimation, local, onPlay])
+  return <ThemeButton onClick={onClick} {...props}/>
 }

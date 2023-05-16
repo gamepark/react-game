@@ -1,11 +1,18 @@
 /** @jsxImportSource @emotion/react */
-import { css, keyframes } from '@emotion/react'
-import { FC, HTMLAttributes } from 'react'
+import { css, Interpolation, keyframes, Theme, ThemeProvider } from '@emotion/react'
+import { HTMLAttributes } from 'react'
+import { buttonCss } from '../../css'
 
-export const Header: FC<HTMLAttributes<HTMLDivElement>> = ({ children, ...props }) => (
-  <div css={headerStyle} {...props}>
-    <h1 css={titleStyle}>{children}</h1>
-  </div>
+export type HeaderProps = {
+  buttonsCss?: Interpolation<Theme>
+} & HTMLAttributes<HTMLDivElement>
+
+export const Header = ({ buttonsCss = defaultButtonsCss, children, ...props }: HeaderProps) => (
+  <ThemeProvider theme={theme => ({ ...theme, buttons: buttonsCss })}>
+    <div css={headerStyle} {...props}>
+      <h1 css={titleStyle}>{children}</h1>
+    </div>
+  </ThemeProvider>
 )
 
 const headerPadding = 10 // em
@@ -38,4 +45,9 @@ const titleStyle = css`
   margin: 0.2em 0;
   font-size: ${fontSize}em;
   animation: 8s ${scrollLongTextKeyframe} infinite linear;
+`
+
+const defaultButtonsCss = css`
+  ${buttonCss('#ffffff', '#eeeeee', '#dddddd')};
+  padding: 0 0.5em;
 `

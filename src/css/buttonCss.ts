@@ -1,4 +1,4 @@
-import {css} from '@emotion/react'
+import { css } from '@emotion/react'
 
 export const buttonResetCss = css`
   border: none;
@@ -45,5 +45,3 @@ export const linkButtonCss = css`
     background: none;
   }
 `
-
-export const lightBlueButtonCss = buttonCss('#002448', '#c2ebf1', '#ade4ec')

@@ -3,12 +3,13 @@ import { FC, useEffect, useState } from 'react'
 import { Dialog, DialogProps } from '../index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
-import { css } from '@emotion/react'
+import { css, ThemeProvider } from '@emotion/react'
 import { isMoveThisItem, isMoveToLocation, MaterialGame, MaterialRules, MaterialRulesMove, RulesDisplayType } from '@gamepark/rules-api'
 import { MaterialRulesDialogContent } from './MaterialRulesDialogContent'
 import { LocationRulesDialogContent } from './LocationRulesDialogContent'
 import { MaterialDescription } from '../../material'
 import { ItemLocator } from '../../../locators'
+import { buttonCss } from '../../../css'
 
 export type RulesDialogProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   close: () => void
@@ -29,14 +30,16 @@ export const RulesDialog: FC<RulesDialogProps> = <P extends number = number, M e
   return (
     <Dialog css={rulesDialogCss} onBackdropClick={close} {...props}>
       <FontAwesomeIcon icon={faXmark} css={dialogCloseIcon} onClick={close}/>
-      {rules && rulesDisplay?.type === RulesDisplayType.Material &&
-        <MaterialRulesDialogContent rulesDisplay={rulesDisplay} material={material}
-                                    legalMoves={legalMoves.filter(move => isMoveThisItem(move, rulesDisplay.itemIndex, rulesDisplay.itemType, rules))}/>
-      }
-      {rules && rulesDisplay?.type === RulesDisplayType.Location &&
-        <LocationRulesDialogContent rulesDisplay={rulesDisplay} material={material} locator={locators[rulesDisplay.location.type]}
-                                    legalMoves={legalMoves.filter(move => isMoveToLocation(move, rulesDisplay.location, rules))}/>
-      }
+      <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
+        {rules && rulesDisplay?.type === RulesDisplayType.Material &&
+          <MaterialRulesDialogContent rulesDisplay={rulesDisplay} material={material}
+                                      legalMoves={legalMoves.filter(move => isMoveThisItem(move, rulesDisplay.itemIndex, rulesDisplay.itemType, rules))}/>
+        }
+        {rules && rulesDisplay?.type === RulesDisplayType.Location &&
+          <LocationRulesDialogContent rulesDisplay={rulesDisplay} material={material} locator={locators[rulesDisplay.location.type]}
+                                      legalMoves={legalMoves.filter(move => isMoveToLocation(move, rulesDisplay.location, rules))}/>
+        }
+      </ThemeProvider>
     </Dialog>
   )
 }
