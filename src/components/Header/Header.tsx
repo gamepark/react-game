@@ -48,7 +48,7 @@ const titleStyle = css`
 `
 
 const defaultButtonsCss = css`
-  ${buttonCss('#ffffff', '#eeeeee', '#dddddd')};
+  ${buttonCss('#ffffff', '#555555', '#888888')};
   padding: 0 0.5em;
   font-weight: bold;
 `
