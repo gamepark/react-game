@@ -142,7 +142,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   /**
    * Elevation in em to give to the item when it is being dragged. Defaults to 10em
    */
-  getDragElevation(_monitor: DragLayerMonitor, _item: MaterialItem<P, L>, _context: PlaceItemContext<M>) {
+  getDragElevation(_monitor: DragLayerMonitor, _item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>) {
     return 10
   }
 
@@ -169,6 +169,12 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   getLocationRules?(props: LocationRulesProps<P, M, L>): ReactNode
+
+  getRelativePlayerIndex({ game: { players }, player: me }: PlaceItemContext<P, M, L>, player: P): number {
+    const absoluteIndex = players.indexOf(player)
+    if (me === undefined || players[0] === me) return absoluteIndex
+    return (absoluteIndex + players.indexOf(me)) % players.length
+  }
 }
 
 export interface ItemLocatorCreator<P extends number = number, M extends number = number, L extends number = number> {
