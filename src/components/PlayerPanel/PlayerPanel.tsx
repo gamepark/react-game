@@ -34,6 +34,7 @@ const panelPlayerStyle = (color: string, active?: boolean) => css`
   color: black;
   border: 0.5em solid ${color};
   border-radius: 3em 1.5em 1.5em 1.5em;
+  box-shadow: 0 0 0.5em black, 0 0 0.5em black;
 `
 
 const avatarStyle = css`
