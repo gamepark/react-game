@@ -43,7 +43,7 @@ export const GameTable: FC<GameTableProps> = (
   const [scale, setScale] = useState(zoomMin / zoomMax)
 
   return (
-    <TransformWrapper minScale={zoomMin / zoomMax} maxScale={1} initialScale={zoomMin / zoomMax} centerOnInit={true}
+    <TransformWrapper minScale={zoomMin / zoomMax} maxScale={1} initialScale={zoomMin / zoomMax} centerOnInit={true} wheel={{ step: 0.05 }}
                       onTransformed={(_, { scale }) => setScale(scale)}>
       <TransformComponent wrapperStyle={{
         position: 'absolute',

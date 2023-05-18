@@ -3,16 +3,24 @@ import produce from 'immer'
 import { useSelector } from 'react-redux'
 import { useNow } from './useNow'
 import { usePlayerId } from './usePlayerId'
+import { useMemo } from 'react'
 
 type Options = {
+  sortFromMe?: boolean
   withTimeUpdate?: boolean
 }
 
-export const usePlayers = <PlayerId = any>({ withTimeUpdate }: Options = { withTimeUpdate: false }): Player<PlayerId>[] => {
-  const now = useNow({ standby: !withTimeUpdate })
-  const players = useSelector((state: GamePageState<any, any, PlayerId>) => state.players)
+export const usePlayers = <PlayerId = any>(options?: Options): Player<PlayerId>[] => {
+  const now = useNow({ standby: !options?.withTimeUpdate })
+  const playerId = usePlayerId<PlayerId>()
+  const rawPlayers = useSelector((state: GamePageState<any, any, PlayerId>) => state.players)
+  const players = useMemo(() => {
+    const index = rawPlayers.findIndex(player => player.id === playerId)
+    if (index < 1) return rawPlayers
+    return rawPlayers.slice(index).concat(rawPlayers.slice(0, index))
+  }, [playerId, rawPlayers])
 
-  if (withTimeUpdate && players.every(player => player.time)) {
+  if (options?.withTimeUpdate && players.every(player => player.time)) {
     return produce(players, draft => updatePlayersTime(draft, now))
   } else {
     return players

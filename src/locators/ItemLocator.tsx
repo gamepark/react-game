@@ -173,7 +173,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   getRelativePlayerIndex({ game: { players }, player: me }: PlaceItemContext<P, M, L>, player: P): number {
     const absoluteIndex = players.indexOf(player)
     if (me === undefined || players[0] === me) return absoluteIndex
-    return (absoluteIndex + players.indexOf(me)) % players.length
+    return (absoluteIndex + players.indexOf(me) + 1) % players.length
   }
 }
 
