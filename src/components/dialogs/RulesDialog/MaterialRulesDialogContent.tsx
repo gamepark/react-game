@@ -17,6 +17,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
 ) => {
   const play = usePlay()
   const description = material[rulesDisplay.itemType]
+  const RulesContent = description.rules
   const item = rulesDisplay.item
   const height = getPropForItem(description.props.height, item.id)
   const width = height * getPropForItem(description.props.ratio, item.id)
@@ -27,7 +28,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
     ]}/>
     <Scrollbars autoHeight css={scrollableContainer}>
       <div css={rules}>
-        {description.rules({ item, legalMoves, close: () => play(closeRulesDisplay, { local: true }) })}
+        <RulesContent item={item} legalMoves={legalMoves} close={() => play(closeRulesDisplay, { local: true })}/>
       </div>
     </Scrollbars>
   </div>
