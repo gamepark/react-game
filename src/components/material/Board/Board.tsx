@@ -13,7 +13,8 @@ export const Board: FC<BoardProps & HTMLAttributes<HTMLDivElement>> = ({ image, 
   <div css={[sizeCss({ height, ratio }), backgroundCss(image)]} {...props}/>
 )
 
-export type BoardMaterialDescription<ItemId extends number = number> = CommonMaterialDescription & {
+export type BoardMaterialDescription<ItemId extends number = number, P extends number = number, M extends number = number, L extends number = number>
+  = CommonMaterialDescription<P, M, L> & {
   type: typeof MaterialComponentType.Board
   props: ItemCustomization<BoardProps, ItemId>,
   getLocations?: MaterialLocationsFunction<ItemId>

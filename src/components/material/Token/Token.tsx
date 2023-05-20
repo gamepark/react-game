@@ -16,7 +16,8 @@ export const Token: FC<TokenProps & HTMLAttributes<HTMLDivElement>> = ({ image, 
   </div>
 )
 
-export type TokenMaterialDescription<ItemId extends number = number> = CommonMaterialDescription & {
+export type TokenMaterialDescription<ItemId extends number = number, P extends number = number, M extends number = number, L extends number = number>
+  = CommonMaterialDescription<P, M, L> & {
   type: typeof MaterialComponentType.Token
   props: ItemCustomization<TokenProps, ItemId>
 }

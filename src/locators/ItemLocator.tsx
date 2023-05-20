@@ -44,7 +44,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   getTransforms(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
-    return this.getParentTransforms(item.location, context.game).concat(...this.getChildTransforms(item, context))
+    return this.getParentTransforms(item.location, context).concat(...this.getChildTransforms(item, context))
   }
 
   getChildTransforms(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
@@ -108,7 +108,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return false
   }
 
-  getParentTransforms(location: Location<P, L>, game: MaterialGame<P, M, L>): string[] {
+  getParentTransforms(location: Location<P, L>, {game, player}: PlaceItemContext<P, M, L>): string[] {
     if (!this.parentItemType) return []
     const parentMaterial = this.material[this.parentItemType]
     const parentItem = game.items[this.parentItemType]?.find(item => equal(item.id, location.parent))
@@ -117,7 +117,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
       return parentLocator.getTransforms(parentItem, { game, type: this.parentItemType, index: 0, legalMoves: [] })
     } else {
       const parentItemId = this.getParentItemId(location)
-      const staticItem = parentMaterial.items?.find(item => equal(item.id, parentItemId))
+      const staticItem = parentMaterial.items && parentMaterial.items(game, player).find(item => equal(item.id, parentItemId))
       if (!staticItem) return []
       return getPositionTransforms(staticItem.position, staticItem.rotation)
     }

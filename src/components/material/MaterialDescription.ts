@@ -2,19 +2,20 @@ import { BoardMaterialDescription } from './Board'
 import { CardMaterialDescription } from './Card'
 import { StaticMaterialItem } from './Items'
 import { ReactNode } from 'react'
-import { MaterialItem, MaterialMove, MaterialRulesMove } from '@gamepark/rules-api'
+import { MaterialGame, MaterialItem, MaterialMove, MaterialRulesMove } from '@gamepark/rules-api'
 import { TokenMaterialDescription } from './Token'
 
-export type MaterialDescription = BoardMaterialDescription | CardMaterialDescription | TokenMaterialDescription
+export type MaterialDescription<P extends number = number, M extends number = number, L extends number = number>
+  = BoardMaterialDescription<P, M, L> | CardMaterialDescription<P, M, L> | TokenMaterialDescription<P, M, L>
 
-export type CommonMaterialDescription = {
-  rules: (props: MaterialRulesProps) => ReactNode
-  items?: StaticMaterialItem[]
+export type CommonMaterialDescription<P extends number = number, M extends number = number, L extends number = number> = {
+  rules: (props: MaterialRulesProps<P, M, L>) => ReactNode
+  items?: (game: MaterialGame<P, M, L>, player?: P) => StaticMaterialItem[]
 }
 
-export type MaterialRulesProps = {
-  item: Partial<MaterialItem>
-  legalMoves: MaterialMove[]
+export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
+  item: Partial<MaterialItem<P, L>>
+  legalMoves: MaterialMove<P, M, L>[]
   close: () => void
 }
 

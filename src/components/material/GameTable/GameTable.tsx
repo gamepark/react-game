@@ -113,7 +113,7 @@ const GameTableContent = ({ material, locators, scale = 1 }: GameTableContentPro
       const type = parseInt(stringType)
       const innerLocators = pickBy(locatorsMap, locator => locator.parentItemType === type)
       const innerLocations = Object.keys(innerLocators).map(type => parseInt(type))
-      return description.items.map((item, index) => {
+      return description.items(game, player).map((item, index) => {
         const legalMovesTo = innerLocations.length > 0 ? legalMoves.filter(move => isMoveOnLocation(move, innerLocations, rules!, item.id)) : undefined
         return <MaterialComponent key={`${stringType}_${index}`} description={description} itemId={item.id}
                                   locators={innerLocators} legalMovesTo={legalMovesTo} rules={rules!}
