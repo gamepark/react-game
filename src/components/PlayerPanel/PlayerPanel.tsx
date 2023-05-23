@@ -3,11 +3,11 @@ import { HTMLAttributes, useContext } from 'react'
 import { usePlayer, useRules } from '../../hooks'
 import { useTranslation } from 'react-i18next'
 import { GamePoints } from '../GamePoints'
-import { gameContext } from '../../../../workshop/packages/react-client'
-import { getFallbackPlayerName } from '../../../../workshop/packages/rules-api'
 import { Avatar, SpeechBubbleDirection } from '../Avatar'
 import { PlayerTimer } from '../PlayerTimer'
 import { css } from '@emotion/react'
+import { gameContext } from '@gamepark/react-client'
+import { getFallbackPlayerName } from '@gamepark/rules-api'
 
 export type PlayerPanelProps<PlayerId = any> = {
   playerId: PlayerId

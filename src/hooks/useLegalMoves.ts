@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 import { usePlayerId } from './usePlayerId'
 
 export const useLegalMoves = <Move = any, ReturnMove = Move>(predicate?: (move: Move) => boolean): ReturnMove[] => {
-  const rules = useRules<any, Move, any>()
+  const rules = useRules()
   const playerId = usePlayerId()
   return useMemo(() => {
     if (rules === undefined || playerId === undefined) return []

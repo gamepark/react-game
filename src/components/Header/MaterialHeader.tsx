@@ -2,13 +2,13 @@
 import { Header, HeaderProps } from './Header'
 import { useTranslation } from 'react-i18next'
 import { useGame } from '../../hooks'
-import { MaterialGame } from '../../../../workshop/packages/rules-api'
-import { ReactJSXElement } from '@emotion/react/types/jsx-namespace'
+import { ComponentType } from 'react'
+import { MaterialGame } from '@gamepark/rules-api'
 
 export type MaterialHeaderProps<RulesStep extends number = number> = {
   loading?: boolean
-  rulesStepsHeaders: Record<RulesStep, () => ReactJSXElement>
-  GameOver: () => ReactJSXElement
+  rulesStepsHeaders: Record<RulesStep, ComponentType>
+  GameOver: ComponentType
 } & HeaderProps
 
 export const MaterialHeader = <RulesStep extends number = number>(

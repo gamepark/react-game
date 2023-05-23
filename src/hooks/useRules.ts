@@ -3,7 +3,7 @@ import { useContext, useMemo } from 'react'
 import { Rules } from '@gamepark/rules-api'
 import { gameContext } from '@gamepark/react-client'
 
-export const useRules = <T extends Rules<Game, Move, PlayerId>, Game = any, Move = any, PlayerId = any>(): T | undefined => {
+export function useRules<T extends Rules>(): T | undefined {
   const context = useContext(gameContext)
   const Rules = context.RulesView || context.Rules
   const game = useGame()
