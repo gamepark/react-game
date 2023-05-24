@@ -32,7 +32,8 @@ export const MaterialComponent: FC<MaterialComponentProps> = ({ description, ite
   }, [onClick])
 
   const bind = useLongPress(() => onLongPress && onLongPress(), {
-    cancelOnMovement: true,
+    cancelOnMovement: 5,
+    threshold: 600,
     onStart: () => clicked.current = false,
     onCancel: (_, { reason }) => {
       if (reason === LongPressCallbackReason.CancelledByRelease) {

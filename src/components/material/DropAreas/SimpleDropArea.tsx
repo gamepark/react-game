@@ -61,7 +61,8 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
   }, [onClick])
 
   const bind = useLongPress(() => onLongPress && onLongPress(), {
-    cancelOnMovement: true,
+    cancelOnMovement: 5,
+    threshold: longClickThreshold,
     onStart: () => {
       if (onLongPress) {
         setClicking(true)
@@ -100,8 +101,10 @@ const clickingKeyframes = keyframes`
   }
 `
 
+const longClickThreshold = 600
+
 const clickingAnimation = css`
-  animation: ${clickingKeyframes} 0.4s ease-in-out;
+  animation: ${clickingKeyframes} ${longClickThreshold}ms ease-in-out;
 `
 
 const dropHighlight = css`
