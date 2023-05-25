@@ -128,7 +128,7 @@ const GameTableContent = ({ material, locators, scale = 1 }: GameTableContentPro
       return items.map((item, itemIndex) => {
         const locator = locatorsMap[item.location.type]
         return [...Array(item.quantity ?? 1)].map((_, index) => {
-          const context: PlaceItemContext = { game, type, index, legalMoves, player }
+          const context: PlaceItemContext = { game, type, index, itemIndex, legalMoves, player }
           if (locator.hide(item, context)) return null
           const itemMoves = legalMoves.filter(move => isMoveThisItem(move, itemIndex, type, rules!))
           return <DraggableMaterial key={`${stringType}_${itemIndex}_${index}`} description={description} type={type} item={item} index={itemIndex}

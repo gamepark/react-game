@@ -108,13 +108,14 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return false
   }
 
-  getParentTransforms(location: Location<P, L>, {game, player}: PlaceItemContext<P, M, L>): string[] {
+  getParentTransforms(location: Location<P, L>, { game, player }: PlaceItemContext<P, M, L>): string[] {
     if (!this.parentItemType) return []
     const parentMaterial = this.material[this.parentItemType]
-    const parentItem = game.items[this.parentItemType]?.find(item => equal(item.id, location.parent))
-    if (parentItem) {
+    const parentItemIndex = game.items[this.parentItemType]?.findIndex(item => equal(item.id, location.parent))
+    if (parentItemIndex !== undefined && parentItemIndex !== -1) {
+      const parentItem = game.items[this.parentItemType]![parentItemIndex]
       const parentLocator: ItemLocator<P, M, L> = new this.locators[parentItem.location.type](this.material, this.locators, this.player)
-      return parentLocator.getTransforms(parentItem, { game, type: this.parentItemType, index: 0, legalMoves: [] })
+      return parentLocator.getTransforms(parentItem, { game, type: this.parentItemType, index: 0, itemIndex: parentItemIndex, legalMoves: [] })
     } else {
       const parentItemId = this.getParentItemId(location)
       const staticItem = parentMaterial.items && parentMaterial.items(game, player).find(item => equal(item.id, parentItemId))
@@ -192,6 +193,7 @@ export type PlaceItemContext<Player extends number = number, MaterialType extend
   game: MaterialGame<Player, MaterialType, LocationType>
   type: MaterialType
   index: number
+  itemIndex: number
   legalMoves: MaterialRulesMove<Player, MaterialType, LocationType>[]
   player?: Player
 }
