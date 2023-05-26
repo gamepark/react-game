@@ -5,13 +5,18 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { gameContext } from '@gamepark/react-client'
 import { getFallbackPlayerName } from '@gamepark/rules-api'
-import moment from 'moment'
 import { Fragment, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dialog } from '../../dialogs'
 import { Avatar } from '../../Avatar'
 import { usePlayers } from '../../../hooks'
 import { menuButtonCss, menuDialogCss } from '../menuCss'
+import dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(duration)
+dayjs.extend(utc)
 
 export const TimeStatsButton = () => {
   const { t } = useTranslation()
@@ -110,16 +115,16 @@ const blueBackground = css`
   background-color: #b3e9f0;
 `
 
-const oneDay = moment.duration('1', 'day')
-const oneHour = moment.duration('1', 'hour')
+const oneDay = dayjs.duration(1, 'day')
+const oneHour = dayjs.duration(1, 'hour')
 
 const humanize = (duration?: number) => {
   if (duration === undefined) return '-'
   if (duration >= oneDay.asMilliseconds()) {
-    return moment.duration(duration).humanize()
+    return dayjs.duration(duration).humanize()
   } else if (duration >= oneHour.asMilliseconds()) {
-    return moment.utc(duration).format('HH:mm:ss')
+    return dayjs.utc(duration).format('HH:mm:ss')
   } else {
-    return moment.utc(duration).format('mm:ss')
+    return dayjs.utc(duration).format('mm:ss')
   }
 }

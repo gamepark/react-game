@@ -4,13 +4,16 @@ import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ejectPlayerAction, gameContext, GamePageState } from '@gamepark/react-client'
 import { getFallbackPlayerName } from '@gamepark/rules-api'
-import moment from 'moment'
+import dayjs from 'dayjs'
 import { useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { Dialog, DialogProps } from '../../dialogs'
 import { menuButtonCss, menuDialogCss } from '../menuCss'
 import { useOpponentWithMaxTime } from '../../../hooks'
+import duration from 'dayjs/plugin/duration'
+
+dayjs.extend(duration)
 
 export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: () => void }) => {
   const { t } = useTranslation()
@@ -30,7 +33,7 @@ export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: ()
     <Dialog onBackdropClick={close} css={menuDialogCss} {...props}>
       <h2>{t('eject.dialog.p1', { player: opponentName })}</h2>
       {!opponentThatCanBeEjected ?
-        <p>{t('eject.dialog.p2', { duration: moment.duration(maxExceedTime).humanize() })}</p> :
+        <p>{t('eject.dialog.p2', { duration: dayjs.duration(maxExceedTime).humanize() })}</p> :
         <p>{t('eject.dialog.p3')}</p>
       }
       <div css={buttonLineCss}>
