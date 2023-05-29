@@ -1,21 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import {
-  Coordinates,
-  isMoveToLocation,
-  Location,
-  Material,
-  MaterialGame,
-  MaterialItem,
-  MaterialRules,
-  MaterialRulesMove,
-  XYCoordinates
-} from '@gamepark/rules-api'
+import { Coordinates, Location, Material, MaterialGame, MaterialItem, MaterialRules, MaterialRulesMove, XYCoordinates } from '@gamepark/rules-api'
 import { getPropForItem, MaterialDescription, SimpleDropArea } from '../components'
-import { DragLayerMonitor } from 'react-dnd'
 import { ReactNode } from 'react'
 import { css, Interpolation, Theme } from '@emotion/react'
 import equal from 'fast-deep-equal'
 import { ComponentSize, getPositionTransforms } from '../css'
+import { isMoveToLocation } from '../components/material/utils'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   material: Record<M, MaterialDescription>
@@ -143,9 +133,10 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   /**
    * Elevation in em to give to the item when it is being dragged. Defaults to 10em
    */
-  getDragElevation(_monitor: DragLayerMonitor, _item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>) {
+
+  /*getDragElevation(_monitor: DragLayerMonitor, _item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>) {
     return 10
-  }
+  }*/
 
   getMaterial(game: MaterialGame<P, M, L>, type: M) {
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
@@ -153,7 +144,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 
   createLocationsOnItem<ParentItemId extends number | undefined>(parent: ParentItemId, legalMoves: MaterialRulesMove<P, M, L>[], rules: MaterialRules<P, M, L>): ReactNode {
     const locations = this.getParentItemLocations?.(parent) ?? []
-    return locations.map(location => this.createLocation(location, rules, legalMoves.filter(move => isMoveToLocation(move, location, rules))))
+    return locations.map(location => this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location)))))
   }
 
   getParentItemLocations?<ParentItemId extends number | undefined>(_parent: ParentItemId): Location<P, L>[]

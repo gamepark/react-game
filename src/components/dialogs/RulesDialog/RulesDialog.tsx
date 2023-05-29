@@ -4,12 +4,13 @@ import { Dialog, DialogProps } from '../index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { css, ThemeProvider } from '@emotion/react'
-import { isMoveThisItem, isMoveToLocation, MaterialGame, MaterialRules, MaterialRulesMove, RulesDisplayType } from '@gamepark/rules-api'
+import { MaterialGame, MaterialRules, MaterialRulesMove, RulesDisplayType } from '@gamepark/rules-api'
 import { MaterialRulesDialogContent } from './MaterialRulesDialogContent'
 import { LocationRulesDialogContent } from './LocationRulesDialogContent'
 import { MaterialDescription } from '../../material'
 import { ItemLocator } from '../../../locators'
 import { buttonCss } from '../../../css'
+import { isMoveItem, isMoveToLocation } from '../../material/utils'
 
 export type RulesDialogProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   close: () => void
@@ -33,11 +34,11 @@ export const RulesDialog: FC<RulesDialogProps> = <P extends number = number, M e
       <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
         {rules && rulesDisplay?.type === RulesDisplayType.Material &&
           <MaterialRulesDialogContent rulesDisplay={rulesDisplay} material={material}
-                                      legalMoves={legalMoves.filter(move => isMoveThisItem(move, rulesDisplay.itemIndex, rulesDisplay.itemType, rules))}/>
+                                      legalMoves={legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveItem(move, rulesDisplay.itemType, rulesDisplay.itemIndex)))}/>
         }
         {rules && rulesDisplay?.type === RulesDisplayType.Location &&
           <LocationRulesDialogContent rulesDisplay={rulesDisplay} material={material} locator={locators[rulesDisplay.location.type]}
-                                      legalMoves={legalMoves.filter(move => isMoveToLocation(move, rulesDisplay.location, rules))}/>
+                                      legalMoves={legalMoves.filter(move => rules?.isMoveTrigger(move, move => isMoveToLocation(move, rulesDisplay.location)))}/>
         }
       </ThemeProvider>
     </Dialog>

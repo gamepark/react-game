@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { FC, HTMLAttributes } from 'react'
+import { FC, forwardRef, HTMLAttributes } from 'react'
 import { borderRadiusCss, ComponentSize, sizeCss } from '../../../css'
 import { MaterialComponentType } from '../MaterialComponentType'
 import { ItemCustomization } from '../Items'
@@ -12,11 +12,12 @@ export type CardProps = {
   borderRadius?: number
 } & ComponentSize
 
-export const Card: FC<CardProps & HTMLAttributes<HTMLDivElement>> = ({ height, ratio, front, back, borderRadius = height / 15, ...props }) => (
-  <div css={[cardCss, sizeCss({ height, ratio }), borderRadiusCss(borderRadius)]} {...props}>
-    <CardFace {...front}/>
-    {back && <CardFace {...back} css={flip}/>}
-  </div>
+export const Card = forwardRef<HTMLDivElement, CardProps & HTMLAttributes<HTMLDivElement>>(
+  ({ height, ratio, front, back, borderRadius = height / 15, ...props }, ref) =>
+    <div ref={ref} css={[cardCss, sizeCss({ height, ratio }), borderRadiusCss(borderRadius)]} {...props}>
+      <CardFace {...front}/>
+      {back && <CardFace {...back} css={flip}/>}
+    </div>
 )
 
 export type CardFaceProps = {

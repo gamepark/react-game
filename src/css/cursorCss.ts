@@ -7,3 +7,7 @@ export const pointerCursorCss = css`
 export const grabCursor = css`
   cursor: grab;
 `
+
+export const grabbingCursor = css`
+  cursor: grabbing;
+`

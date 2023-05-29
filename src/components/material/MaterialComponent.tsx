@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { MaterialDescription } from './MaterialDescription'
-import { FC, HTMLAttributes, MouseEvent, useCallback, useRef } from 'react'
+import { forwardRef, HTMLAttributes, MouseEvent, useCallback, useRef } from 'react'
 import { MaterialComponentType } from './MaterialComponentType'
 import { Board } from './Board'
 import { Card } from './Card'
@@ -10,7 +10,7 @@ import { MaterialRules, MaterialRulesMove } from '@gamepark/rules-api'
 import { LongPressCallbackReason, useLongPress } from 'use-long-press'
 import { ItemLocator } from '../../locators'
 
-type MaterialComponentProps<ItemId extends number = number, P extends number = number, M extends number = number, L extends number = number> = {
+export type MaterialComponentProps<ItemId extends number = number, P extends number = number, M extends number = number, L extends number = number> = {
   description: MaterialDescription
   itemId?: ItemId
   locators?: Partial<Record<L, ItemLocator<P, M, L>>>
@@ -19,7 +19,9 @@ type MaterialComponentProps<ItemId extends number = number, P extends number = n
   onLongPress?: () => void
 } & HTMLAttributes<HTMLElement>
 
-export const MaterialComponent: FC<MaterialComponentProps> = ({ description, itemId, locators, legalMovesTo, rules, onClick, onLongPress, ...props }) => {
+export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
+  { description, itemId, locators, legalMovesTo, rules, onClick, onLongPress, ...props }, ref
+) => {
   const itemProps = getPropForItem(description.props, itemId)
 
   const clicked = useRef(false)
@@ -45,17 +47,17 @@ export const MaterialComponent: FC<MaterialComponentProps> = ({ description, ite
 
   switch (description.type) {
     case MaterialComponentType.Board:
-      return <Board {...itemProps} onClick={onShortClick} {...bind()} {...props}>
+      return <Board ref={ref} {...itemProps} onClick={onShortClick} {...bind()} {...props}>
         {description.getLocations ? description.getLocations(itemId, legalMovesTo) : locators && rules && createLocations(rules, locators, itemId, legalMovesTo)}
       </Board>
     case MaterialComponentType.Card:
-      return <Card {...itemProps} onClick={onShortClick} {...bind()} {...props}/>
+      return <Card ref={ref} {...itemProps} onClick={onShortClick} {...bind()} {...props}/>
     case MaterialComponentType.Token:
-      return <Token {...itemProps} onClick={onShortClick} {...bind()} {...props}/>
+      return <Token ref={ref} {...itemProps} onClick={onShortClick} {...bind()} {...props}/>
     default:
       return null
   }
-}
+})
 
 export const getPropForItem = <Id extends number = number>(prop: any, itemId?: Id): any => {
   if (typeof prop === 'object') {

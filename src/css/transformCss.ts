@@ -1,8 +1,8 @@
 import {css} from '@emotion/react'
 import {Coordinates} from '@gamepark/rules-api'
 
-export const transformCss = (...transformations: string[]) => css`
-  transform: ${transformations.join(' ')};
+export const transformCss = (...transformations: (string | undefined)[]) => css`
+  transform: ${transformations.filter(t => !!t).join(' ')};
 `
 
 export const getPositionTransforms = (position: Coordinates, rotation?: Partial<Coordinates>) => {

@@ -1,7 +1,6 @@
 export * from './useActions'
 export * from './useAnimations'
 export * from './useContrastTheme'
-export * from './useEfficientDragLayer'
 export * from './useFailures'
 export * from './useFullscreen'
 export * from './useGame'
