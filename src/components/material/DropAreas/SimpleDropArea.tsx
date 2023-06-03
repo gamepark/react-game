@@ -1,37 +1,39 @@
 /** @jsxImportSource @emotion/react */
-import { HTMLAttributes, MouseEvent, useCallback, useRef, useState } from 'react'
+import { HTMLAttributes, MouseEvent, useState } from 'react'
 import { displayLocationRules, Location, MaterialMoveType, MaterialRules, MaterialRulesMove, MoveKind } from '@gamepark/rules-api'
 import { css, keyframes } from '@emotion/react'
-import { LongPressCallbackReason, useLongPress } from 'use-long-press'
+import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { ItemLocator } from '../../../locators'
 import { usePlay } from '../../../hooks'
 import { shineEffect } from '../../../css'
 import { useDroppable } from '@dnd-kit/core'
 import { isMoveItemToLocation } from '../utils'
 import { DragMaterialItem } from '../DraggableMaterial'
+import { combineEventListeners } from '../../../utilities'
 
 export type SimpleDropAreaProps<P extends number = number, M extends number = number, L extends number = number> = {
   locator: ItemLocator<P, M, L>
   location: Location<P, L>
   legalMoves: MaterialRulesMove<P, M, L>[]
   rules: MaterialRules<P, M, L>
-  onLongPress?: () => void
+  onShortClick?: () => void
+  onLongClick?: () => void
 } & HTMLAttributes<HTMLDivElement>
 
 export const SimpleDropArea = <P extends number = number, M extends number = number, L extends number = number>(
-  { locator, location, legalMoves, rules, onClick, onLongPress, ...props }: SimpleDropAreaProps<P, M, L>
+  { locator, location, legalMoves, rules, onShortClick, onLongClick, ...props }: SimpleDropAreaProps<P, M, L>
 ) => {
 
   const play = usePlay<MaterialRulesMove<P, M, L>>()
 
-  if (!onLongPress && legalMoves.length === 1) {
-    onLongPress = () => play(legalMoves[0])
+  if (!onLongClick && legalMoves.length === 1) {
+    onLongClick = () => play(legalMoves[0])
   }
 
-  if (!onClick && locator.getLocationRules) {
-    onClick = () => play(displayLocationRules(location), { local: true })
-    if (!onLongPress) {
-      onLongPress = () => play(displayLocationRules(location), { local: true })
+  if (!onShortClick && locator.getLocationRules) {
+    onShortClick = () => play(displayLocationRules(location), { local: true })
+    if (!onLongClick) {
+      onLongClick = () => play(displayLocationRules(location), { local: true })
     }
   }
 
@@ -49,43 +51,35 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
     )
   ).length === 1
 
-  const clicked = useRef(false)
   const [clicking, setClicking] = useState(false)
-  const onShortClick = useCallback((event: MouseEvent<HTMLDivElement>) => {
-    if (clicked.current) {
-      if (onClick) {
-        event.stopPropagation()
-        onClick(event)
-      }
-    }
-  }, [onClick])
 
-  const bind = useLongPress(() => onLongPress && onLongPress(), {
+  const listeners = useLongPress(() => onLongClick && onLongClick(), {
+    detect: LongPressEventType.Pointer,
     cancelOnMovement: 5,
-    threshold: longClickThreshold,
-    onStart: () => {
-      if (onLongPress) {
-        setClicking(true)
+    threshold: 600,
+    onStart: event => {
+      setClicking(true)
+      if (onShortClick || onLongClick) {
+        event.stopPropagation()
       }
-      clicked.current = false
     },
     onFinish: () => setClicking(false),
     onCancel: (_, { reason }) => {
       setClicking(false)
-      if (reason === LongPressCallbackReason.CancelledByRelease) {
-        clicked.current = true
+      if (onShortClick && reason === LongPressCallbackReason.CancelledByRelease) {
+        setTimeout(() => onShortClick && onShortClick())
       }
     },
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
-  })
+  })()
 
-  return <div ref={setNodeRef} onClick={onShortClick} {...bind()}
+  return <div ref={setNodeRef}
               css={[
-                !draggedItem && (onClick || onLongPress) && hoverHighlight, clicking && clickingAnimation,
+                !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
                 (canDrop || (!draggedItem && legalMoves.length > 0)) && shineEffect,
                 canDrop && isOver && dropHighlight
               ]}
-              {...props}/>
+              {...props} {...combineEventListeners(listeners, props)}/>
 }
 
 const hoverHighlight = css`

@@ -7,6 +7,7 @@ import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { css } from '@emotion/react'
 import { gameContext } from '../../../../workshop/packages/react-client'
+import { combineEventListeners } from '../../utilities'
 
 export type DraggableMaterialProps<P extends number = number, M extends number = number, L extends number = number> = {
   id: string
@@ -55,7 +56,7 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ id, data, disabl
                          disabled ? pointerCursorCss : isDragging ? grabbingCursor : [shineEffect, grabCursor],
                          transformCss(preTransform, draggingTranslate, postTransform)
                        ]}
-                       {...listeners} {...attributes} {...props}/>
+                       {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}/>
   )
 }
 

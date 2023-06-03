@@ -1,14 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { MaterialDescription } from './MaterialDescription'
-import { forwardRef, HTMLAttributes, MouseEvent, useCallback, useRef } from 'react'
+import { forwardRef, HTMLAttributes, MouseEvent } from 'react'
 import { MaterialComponentType } from './MaterialComponentType'
 import { Board } from './Board'
 import { Card } from './Card'
 import { Token } from './Token'
 import mapValues from 'lodash.mapvalues'
 import { MaterialRules, MaterialRulesMove } from '@gamepark/rules-api'
-import { LongPressCallbackReason, useLongPress } from 'use-long-press'
+import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { ItemLocator } from '../../locators'
+import { combineEventListeners } from '../../utilities'
 
 export type MaterialComponentProps<ItemId extends number = number, P extends number = number, M extends number = number, L extends number = number> = {
   description: MaterialDescription
@@ -16,44 +17,36 @@ export type MaterialComponentProps<ItemId extends number = number, P extends num
   locators?: Partial<Record<L, ItemLocator<P, M, L>>>
   legalMovesTo?: MaterialRulesMove<P, M, L>[]
   rules?: MaterialRules<P, M, L>
-  onLongPress?: () => void
+  onShortClick?: () => void
+  onLongClick?: () => void
 } & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
-  { description, itemId, locators, legalMovesTo, rules, onClick, onLongPress, ...props }, ref
+  { description, itemId, locators, legalMovesTo, rules, onShortClick, onLongClick = onShortClick, ...props }, ref
 ) => {
   const itemProps = getPropForItem(description.props, itemId)
 
-  const clicked = useRef(false)
-  const onShortClick = useCallback((event: MouseEvent<HTMLElement>) => {
-    if (clicked.current) {
-      if (onClick) {
-        onClick(event)
-      }
-    }
-  }, [onClick])
-
-  const bind = useLongPress(() => onLongPress && onLongPress(), {
+  const listeners = useLongPress(() => onLongClick && onLongClick(), {
+    detect: LongPressEventType.Pointer,
     cancelOnMovement: 5,
     threshold: 600,
-    onStart: () => clicked.current = false,
     onCancel: (_, { reason }) => {
       if (reason === LongPressCallbackReason.CancelledByRelease) {
-        clicked.current = true
+        setTimeout(() => onShortClick && onShortClick())
       }
     },
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
-  })
+  })()
 
   switch (description.type) {
     case MaterialComponentType.Board:
-      return <Board ref={ref} {...itemProps} onClick={onShortClick} {...bind()} {...props}>
+      return <Board ref={ref} {...itemProps} {...props} {...combineEventListeners(listeners, props)}>
         {description.getLocations ? description.getLocations(itemId, legalMovesTo) : locators && rules && createLocations(rules, locators, itemId, legalMovesTo)}
       </Board>
     case MaterialComponentType.Card:
-      return <Card ref={ref} {...itemProps} onClick={onShortClick} {...bind()} {...props}/>
+      return <Card ref={ref} {...itemProps} {...props} {...combineEventListeners(listeners, props)}/>
     case MaterialComponentType.Token:
-      return <Token ref={ref} {...itemProps} onClick={onShortClick} {...bind()} {...props}/>
+      return <Token ref={ref} {...itemProps} {...props} {...combineEventListeners(listeners, props)}/>
     default:
       return null
   }

@@ -120,7 +120,7 @@ const GameTableContent = ({ material, locators }: GameTableContentProps) => {
         return <MaterialComponent key={`${stringType}_${index}`} description={description} itemId={item.id}
                                   locators={innerLocators} legalMovesTo={legalMovesTo} rules={rules}
                                   css={[pointerCursorCss, transformCss(`translate(-50%, -50%)`, ...getPositionTransforms(item.position, item.rotation))]}
-                                  onClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
+                                  onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
       })
     })}
     {game && Object.entries(game.items).map(([stringType, items]) => {
@@ -142,8 +142,8 @@ const GameTableContent = ({ material, locators }: GameTableContentProps) => {
                                     rules={rules}
                                     description={description}
                                     css={locator.itemExtraCss(item, context)}
-                                    onClick={() => play(displayMaterialRules(type, itemIndex, item), { local: true })}
-                                    onLongPress={() => itemMoves.length === 1 && play(itemMoves[0])}/>
+                                    onShortClick={() => play(displayMaterialRules(type, itemIndex, item), { local: true })}
+                                    onLongClick={itemMoves.length === 1 ? () => play(itemMoves[0]) : undefined}/>
         })
       })
     })}
