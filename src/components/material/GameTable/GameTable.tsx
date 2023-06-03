@@ -67,8 +67,8 @@ export const GameTable: FC<GameTableProps> = (
           position: 'absolute',
           margin: `${margin.top}em ${margin.right}em ${margin.bottom}em ${margin.left}em`,
           transformStyle: 'preserve-3d',
-          height: `calc(100vh - ${margin.top + margin.bottom}em)`,
-          width: `calc(100vw - ${margin.left + margin.right}em)`,
+          height: `calc(100% - ${margin.top + margin.bottom}em)`,
+          width: `calc(100% - ${margin.left + margin.right}em)`,
           overflow: 'visible'
         }}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(zoomMax), perspective && perspectiveCss(perspective)]}>
