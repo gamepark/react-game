@@ -6,8 +6,8 @@ export function isMoveToLocation<P extends number, M extends number, L extends n
 ): boolean {
   return move.kind === MoveKind.MaterialMove
     && move.type === MaterialMoveType.Move
-    && move.item.location !== undefined
-    && isLocationSubset(move.item.location, location)
+    && move.position.location !== undefined
+    && isLocationSubset(move.position.location, location)
 }
 
 
