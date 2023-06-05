@@ -3,7 +3,7 @@ import { MaterialDescription } from '../MaterialDescription'
 import { ItemLocatorCreator, PlaceItemContext } from '../../../locators'
 import { HTMLAttributes, useMemo } from 'react'
 import { useGame, useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
-import { closeRulesDisplay, displayMaterialRules, MaterialGame, MaterialRules, MaterialRulesMove } from '@gamepark/rules-api'
+import { closeRulesDisplay, displayMaterialRules, MaterialGame, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import mapValues from 'lodash.mapvalues'
 import pickBy from 'lodash.pickby'
 import { isMoveItem, isMoveOnItem } from '../utils'
@@ -12,18 +12,16 @@ import { getPositionTransforms, pointerCursorCss, transformCss } from '../../../
 import { DraggableMaterial } from '../DraggableMaterial'
 import { RulesDialog } from '../../dialogs'
 
-
 type GameMaterialDisplayProps<P extends number = number, M extends number = number, L extends number = number> = {
   material: Record<M, MaterialDescription>
   locators: Record<L, ItemLocatorCreator<P, M, L>>
 } & HTMLAttributes<HTMLDivElement>
 
-
-const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayProps) => {
+export const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayProps) => {
   const game = useGame<MaterialGame>()
   const player = usePlayerId()
   const rules = useRules<MaterialRules>()
-  const legalMoves = useLegalMoves<MaterialRulesMove>()
+  const legalMoves = useLegalMoves<MaterialMove>()
   const play = usePlay()
   const locatorsMap = useMemo(() => mapValues(locators, locator => new locator(material, locators, player)), [])
 
@@ -71,8 +69,4 @@ const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayProps) =
     <RulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}
                  game={game} legalMoves={legalMoves} rules={rules} material={material} locators={locatorsMap}/>
   </>
-}
-
-export {
-  GameMaterialDisplay
 }

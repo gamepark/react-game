@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { Coordinates, Location, Material, MaterialGame, MaterialItem, MaterialRules, MaterialRulesMove, XYCoordinates } from '@gamepark/rules-api'
+import { Coordinates, Location, Material, MaterialGame, MaterialItem, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import { getPropForItem, MaterialDescription, SimpleDropArea } from '../components'
 import { ReactNode } from 'react'
 import { css, Interpolation, Theme } from '@emotion/react'
@@ -142,21 +142,21 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
-  createLocationsOnItem<ParentItemId extends number | undefined>(parent: ParentItemId, legalMoves: MaterialRulesMove<P, M, L>[], rules: MaterialRules<P, M, L>): ReactNode {
+  createLocationsOnItem<ParentItemId extends number | undefined>(parent: ParentItemId, legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>): ReactNode {
     const locations = this.getParentItemLocations?.(parent) ?? []
     return locations.map(location => this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location)))))
   }
 
   getParentItemLocations?<ParentItemId extends number | undefined>(_parent: ParentItemId): Location<P, L>[]
 
-  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialRulesMove<P, M, L>[]): ReactNode {
+  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[]): ReactNode {
     const position = this.getPositionOnParent?.(location) ?? { x: 0, y: 0 }
     return <SimpleDropArea key={JSON.stringify(location)} legalMoves={legalMoves} locator={this}
                            css={[childLocationCss(position), this.getLocationCss(location, rules, legalMoves)]}
                            rules={rules} location={location}/>
   }
 
-  getLocationCss(_location: Location<P, L>, _rules: MaterialRules<P, M, L>, _legalMoves: MaterialRulesMove<P, M, L>[]): Interpolation<Theme> {
+  getLocationCss(_location: Location<P, L>, _rules: MaterialRules<P, M, L>, _legalMoves: MaterialMove<P, M, L>[]): Interpolation<Theme> {
     return
   }
 
@@ -185,12 +185,12 @@ export type PlaceItemContext<Player extends number = number, MaterialType extend
   type: MaterialType
   index: number
   itemIndex: number
-  legalMoves: MaterialRulesMove<Player, MaterialType, LocationType>[]
+  legalMoves: MaterialMove<Player, MaterialType, LocationType>[]
   player?: Player
 }
 
 export type LocationRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
   location: Location<P, L>
-  legalMoves: MaterialRulesMove<P, M, L>[]
+  legalMoves: MaterialMove<P, M, L>[]
   close: () => void
 }

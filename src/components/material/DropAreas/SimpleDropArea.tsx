@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { HTMLAttributes, MouseEvent, useState } from 'react'
-import { displayLocationRules, Location, MaterialMoveType, MaterialRules, MaterialRulesMove, MoveKind } from '@gamepark/rules-api'
+import { displayLocationRules, ItemMoveType, Location, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { ItemLocator } from '../../../locators'
@@ -14,7 +14,7 @@ import { combineEventListeners } from '../../../utilities'
 export type SimpleDropAreaProps<P extends number = number, M extends number = number, L extends number = number> = {
   locator: ItemLocator<P, M, L>
   location: Location<P, L>
-  legalMoves: MaterialRulesMove<P, M, L>[]
+  legalMoves: MaterialMove<P, M, L>[]
   rules: MaterialRules<P, M, L>
   onShortClick?: () => void
   onLongClick?: () => void
@@ -24,7 +24,7 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
   { locator, location, legalMoves, rules, onShortClick, onLongClick, ...props }: SimpleDropAreaProps<P, M, L>
 ) => {
 
-  const play = usePlay<MaterialRulesMove<P, M, L>>()
+  const play = usePlay<MaterialMove<P, M, L>>()
 
   if (!onLongClick && legalMoves.length === 1) {
     onLongClick = () => play(legalMoves[0])
@@ -108,11 +108,11 @@ const dropHighlight = css`
 `
 
 const getMoveItemTypes = <P extends number = number, M extends number = number, L extends number = number>(
-  move: MaterialRulesMove<P, M, L>, rules: MaterialRules<P, M, L>
+  move: MaterialMove<P, M, L>, rules: MaterialRules<P, M, L>
 ): number[] => {
   switch (move.kind) {
-    case MoveKind.MaterialMove:
-      return move.type === MaterialMoveType.Move ? [move.itemType] : []
+    case MoveKind.ItemMove:
+      return move.type === ItemMoveType.Move ? [move.itemType] : []
     case MoveKind.CustomMove:
       return rules.play(move).flatMap(move => getMoveItemTypes(move, rules))
     default:

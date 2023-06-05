@@ -6,7 +6,7 @@ import { Board } from './Board'
 import { Card } from './Card'
 import { Token } from './Token'
 import mapValues from 'lodash.mapvalues'
-import { MaterialRules, MaterialRulesMove } from '@gamepark/rules-api'
+import { MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { ItemLocator } from '../../locators'
 import { combineEventListeners } from '../../utilities'
@@ -15,7 +15,7 @@ export type MaterialComponentProps<ItemId extends number = number, P extends num
   description: MaterialDescription
   itemId?: ItemId
   locators?: Partial<Record<L, ItemLocator<P, M, L>>>
-  legalMovesTo?: MaterialRulesMove<P, M, L>[]
+  legalMovesTo?: MaterialMove<P, M, L>[]
   rules?: MaterialRules<P, M, L>
   onShortClick?: () => void
   onLongClick?: () => void
@@ -70,7 +70,7 @@ const isIdRecord = <Id extends number = number>(prop: Object): prop is Record<Id
   return !isNaN(parseInt(Object.keys(prop)[0]))
 }
 
-const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, itemId: number | undefined, moves: MaterialRulesMove<number, number, number>[] = []) => {
+const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, itemId: number | undefined, moves: MaterialMove<number, number, number>[] = []) => {
   return <>
     {Object.entries(locators).map(([_locationTypeString, locator]) =>
       locator && locator.createLocationsOnItem(itemId, moves, rules)

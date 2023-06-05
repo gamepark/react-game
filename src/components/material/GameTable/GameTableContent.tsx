@@ -20,7 +20,7 @@ export type GameTableContentProps<MaterialType extends number = number, Location
   margin?: { left: number, top: number, right: number, bottom: number }
 }
 
-const GameTableContent: FC<GameTableContentProps> = (props) => {
+export const GameTableContent: FC<GameTableContentProps> = (props) => {
   const { material, locators, perspective, xMin, xMax, yMin, yMax, zoomMax = 1, margin = { left: 0, right: 0, top: 7, bottom: 0 } } = props
 
   const { centerView } = useControls()
@@ -47,6 +47,7 @@ const GameTableContent: FC<GameTableContentProps> = (props) => {
     </TransformComponent>
   )
 }
+
 const tableCss = (xMin: number, xMax: number, yMin: number, yMax: number) => css`
   transform-style: preserve-3d;
   width: ${xMax - xMin}em;
@@ -59,7 +60,3 @@ const tableCss = (xMin: number, xMax: number, yMin: number, yMax: number) => css
     transform-style: preserve-3d;
   }
 `
-
-export {
-  GameTableContent
-}

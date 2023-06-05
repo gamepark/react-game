@@ -1,10 +1,10 @@
-import { MaterialMoveType, MaterialRulesMove, MoveKind } from '@gamepark/rules-api'
+import { ItemMoveType, MaterialMove, MoveKind } from '@gamepark/rules-api'
 
 export function isMoveItem<P extends number = number, M extends number = number, L extends number = number>(
-  move: MaterialRulesMove<P, M, L>, itemType: M, itemIndex: number
+  move: MaterialMove<P, M, L>, itemType: M, itemIndex: number
 ): boolean {
-  return move.kind === MoveKind.MaterialMove
+  return move.kind === MoveKind.ItemMove
     && move.itemType === itemType
-    && (move.type === MaterialMoveType.Move || move.type === MaterialMoveType.Delete)
+    && (move.type === ItemMoveType.Move || move.type === ItemMoveType.Delete)
     && move.itemIndex === itemIndex
 }

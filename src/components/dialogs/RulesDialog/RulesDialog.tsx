@@ -4,7 +4,7 @@ import { Dialog, DialogProps } from '../index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { css, ThemeProvider } from '@emotion/react'
-import { MaterialGame, MaterialRules, MaterialRulesMove, RulesDisplayType } from '@gamepark/rules-api'
+import { MaterialGame, MaterialMove, MaterialRules, RulesDisplayType } from '@gamepark/rules-api'
 import { MaterialRulesDialogContent } from './MaterialRulesDialogContent'
 import { LocationRulesDialogContent } from './LocationRulesDialogContent'
 import { MaterialDescription } from '../../material'
@@ -15,7 +15,7 @@ import { isMoveItem, isMoveToLocation } from '../../material/utils'
 export type RulesDialogProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   close: () => void
   game?: MaterialGame<Player, MaterialType, LocationType>
-  legalMoves?: MaterialRulesMove<Player, MaterialType, LocationType>[]
+  legalMoves?: MaterialMove<Player, MaterialType, LocationType>[]
   rules?: MaterialRules<Player, MaterialType, LocationType>
   material: Record<MaterialType, MaterialDescription>
   locators: Record<LocationType, ItemLocator<Player, MaterialType, LocationType>>

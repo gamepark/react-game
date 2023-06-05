@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { closeRulesDisplay, MaterialRulesDisplay, MaterialRulesMove } from '@gamepark/rules-api'
+import { closeRulesDisplay, MaterialMove, MaterialRulesDisplay } from '@gamepark/rules-api'
 import { css } from '@emotion/react'
 import Scrollbars from 'react-custom-scrollbars-2'
 import { getPropForItem, MaterialComponent, MaterialComponentType, MaterialDescription } from '../../material'
@@ -9,7 +9,7 @@ import { usePlay } from '../../../hooks'
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   rulesDisplay: MaterialRulesDisplay
   material: Record<MaterialType, MaterialDescription>
-  legalMoves: MaterialRulesMove<Player, MaterialType, LocationType>[]
+  legalMoves: MaterialMove<Player, MaterialType, LocationType>[]
 }
 
 export const MaterialRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(

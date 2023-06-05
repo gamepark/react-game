@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { closeRulesDisplay, LocationRulesDisplay, MaterialRulesMove } from '@gamepark/rules-api'
+import { closeRulesDisplay, LocationRulesDisplay, MaterialMove } from '@gamepark/rules-api'
 import { css } from '@emotion/react'
 import Scrollbars from 'react-custom-scrollbars-2'
 import { ItemLocator } from '../../../locators'
@@ -10,7 +10,7 @@ export type LocationRulesDialogContentProps<Player extends number = number, Mate
   rulesDisplay: LocationRulesDisplay<Player, LocationType>
   material: Record<MaterialType, MaterialDescription>
   locator: ItemLocator<Player, MaterialType, LocationType>
-  legalMoves: MaterialRulesMove<Player, MaterialType, LocationType>[]
+  legalMoves: MaterialMove<Player, MaterialType, LocationType>[]
 }
 
 export const LocationRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
