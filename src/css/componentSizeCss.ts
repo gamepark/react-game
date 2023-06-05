@@ -1,4 +1,4 @@
-import {css} from '@emotion/react'
+import { css } from '@emotion/react'
 
 export const sizeCss = (size: ComponentSize) => css`
   width: ${(size.height * size.ratio)}em;
@@ -12,7 +12,6 @@ export const borderRadiusCss = (radius: number) => css`
 export const shadowCss = (image: string) => image?.endsWith('.jpg') ? css`
   box-shadow: 0 0 0.1em black, 0 0 0.1em black;
 ` : css`
-  filter: drop-shadow(0 0 0.1em black) drop-shadow(0 0 0.1em black);
 `
 
 export const fontSizeCss = (size: number) => css`
