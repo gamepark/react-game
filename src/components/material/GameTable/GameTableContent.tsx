@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import { css } from '@emotion/react'
-import { TransformComponent } from 'react-zoom-pan-pinch'
+import { TransformComponent, useControls } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
 import { MaterialDescription } from '../MaterialDescription'
@@ -22,7 +22,16 @@ export type GameTableContentProps<MaterialType extends number = number, Location
 
 const GameTableContent: FC<GameTableContentProps> = (props) => {
   const { material, locators, perspective, xMin, xMax, yMin, yMax, zoomMax = 1, margin = { left: 0, right: 0, top: 7, bottom: 0 } } = props
-  
+
+  const { centerView } = useControls()
+  useEffect(() => {
+    const handler = () => centerView()
+    window.addEventListener('resize', handler)
+    return () => {
+      window.removeEventListener('resize', handler)
+    }
+  }, [])
+
   return (
     <TransformComponent wrapperStyle={{
       position: 'absolute',
