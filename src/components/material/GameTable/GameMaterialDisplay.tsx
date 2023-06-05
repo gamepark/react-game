@@ -42,7 +42,7 @@ export const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayP
                                   onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
       })
     })}
-    {game && Object.entries(game.items).map(([stringType, items]) => {
+    {rules && game && Object.entries(game.items).map(([stringType, items]) => {
       if (!items) return null
       const type = parseInt(stringType)
       const description = material[type] as MaterialDescription
@@ -62,7 +62,9 @@ export const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayP
                                     description={description}
                                     css={locator.itemExtraCss(item, context)}
                                     onShortClick={() => play(displayMaterialRules(type, itemIndex, item), { local: true })}
-                                    onLongClick={itemMoves.length === 1 ? () => play(itemMoves[0]) : undefined}/>
+                                    onLongClick={itemMoves.length === 1 ?
+                                      () => play(itemMoves[0], { delayed: rules.isUnpredictableMove(itemMoves[0], player) })
+                                      : undefined}/>
         })
       })
     })}

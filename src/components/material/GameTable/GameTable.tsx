@@ -4,7 +4,7 @@ import { Location, MaterialRules } from '@gamepark/rules-api'
 import { TransformWrapper } from 'react-zoom-pan-pinch'
 import { MaterialDescription } from '../MaterialDescription'
 import { ItemLocatorCreator } from '../../../locators'
-import { useLegalMoves, usePlay, useRules } from '../../../hooks'
+import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { isMoveItemToLocation } from '../utils'
@@ -37,6 +37,7 @@ export const GameTable: FC<GameTableProps> = (props) => {
   const [dragging, setDragging] = useState(false)
 
   const play = usePlay()
+  const playerId = usePlayerId()
   const rules = useRules<MaterialRules>()!
   const legalMoves = useLegalMoves()
   const onDragEnd = useCallback((event: DragEndEvent) => {
@@ -45,7 +46,7 @@ export const GameTable: FC<GameTableProps> = (props) => {
       const { type, index } = event.active.data.current
       const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveItemToLocation(move, type, index, event.over?.data.current as Location)))
       if (moves.length === 1) {
-        play(moves[0], { delayed: rules.isUnpredictableMove(moves[0]) })
+        play(moves[0], { delayed: rules.isUnpredictableMove(moves[0], playerId) })
       }
     }
   }, [play, rules, legalMoves])

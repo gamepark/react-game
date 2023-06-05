@@ -4,7 +4,7 @@ import { displayLocationRules, ItemMoveType, Location, MaterialMove, MaterialRul
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { ItemLocator } from '../../../locators'
-import { usePlay } from '../../../hooks'
+import { usePlay, usePlayerId } from '../../../hooks'
 import { shineEffect } from '../../../css'
 import { useDroppable } from '@dnd-kit/core'
 import { isMoveItemToLocation } from '../utils'
@@ -25,9 +25,10 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
 ) => {
 
   const play = usePlay<MaterialMove<P, M, L>>()
+  const player = usePlayerId()
 
   if (!onLongClick && legalMoves.length === 1) {
-    onLongClick = () => play(legalMoves[0])
+    onLongClick = () => play(legalMoves[0], { delayed: rules.isUnpredictableMove(legalMoves[0], player) })
   }
 
   if (!onShortClick && locator.getLocationRules) {
