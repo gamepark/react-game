@@ -14,7 +14,7 @@ export type PlayerPanelProps<PlayerId = any> = {
   color?: string
 } & HTMLAttributes<HTMLDivElement>
 
-export const PlayerPanel = <PlayerId extends any>({ playerId, color = '#28B8CE', ...props }: PlayerPanelProps<PlayerId>) => {
+export const PlayerPanel = <PlayerId extends any>({ playerId, color = '#28B8CE', children, ...props }: PlayerPanelProps<PlayerId>) => {
   const { t } = useTranslation()
   const playerInfo = usePlayer(playerId)
   const optionsSpec = useContext(gameContext).optionsSpec
@@ -25,6 +25,7 @@ export const PlayerPanel = <PlayerId extends any>({ playerId, color = '#28B8CE',
       <h2 css={nameStyle}>{playerInfo?.name ?? getFallbackPlayerName(playerId, t, optionsSpec)}</h2>
       {!rules?.isOver() && <PlayerTimer playerId={playerId} css={timerStyle}/>}
       <GamePoints playerId={playerId} css={gamePointCss}/>
+      {children}
     </div>
   )
 }
