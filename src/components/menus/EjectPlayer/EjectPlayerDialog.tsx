@@ -12,8 +12,10 @@ import { Dialog, DialogProps } from '../../dialogs'
 import { menuButtonCss, menuDialogCss } from '../menuCss'
 import { useOpponentWithMaxTime } from '../../../hooks'
 import duration from 'dayjs/plugin/duration'
+import relativeTime from 'dayjs/plugin/relativeTime'
 
 dayjs.extend(duration)
+dayjs.extend(relativeTime)
 
 export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: () => void }) => {
   const { t } = useTranslation()
