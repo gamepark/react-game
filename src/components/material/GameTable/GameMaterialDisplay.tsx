@@ -6,7 +6,7 @@ import { useGame, useLegalMoves, usePlay, usePlayerId, useRules } from '../../..
 import { closeRulesDisplay, displayMaterialRules, MaterialGame, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import mapValues from 'lodash.mapvalues'
 import pickBy from 'lodash.pickby'
-import { isMoveItem, isMoveOnItem } from '../utils'
+import { isMoveThisItem, isMoveOnItem } from '../utils'
 import { MaterialComponent } from '../MaterialComponent'
 import { getPositionTransforms, pointerCursorCss, transformCss } from '../../../css'
 import { DraggableMaterial } from '../DraggableMaterial'
@@ -51,7 +51,7 @@ export const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayP
         return [...Array(item.quantity ?? 1)].map((_, index) => {
           const context: PlaceItemContext = { game, type, index, itemIndex, legalMoves, player }
           if (locator.hide(item, context)) return null
-          const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveItem(move, type, itemIndex)))
+          const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItem(move, type, itemIndex)))
           return <DraggableMaterial key={`${type}_${itemIndex}_${index}`}
                                     id={`${type}_${itemIndex}_${index}`}
                                     data={{ item, type, index: itemIndex }}

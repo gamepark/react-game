@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { FC, useContext, useEffect, useState } from 'react'
-import { MaterialItem } from '@gamepark/rules-api'
+import { DeleteItem, isDeleteItem, isMoveItem, MaterialItem, MoveItem } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
 import { grabbingCursor, grabCursor, pointerCursorCss, shineEffect, transformCss } from '../../css'
 import { useDraggable } from '@dnd-kit/core'
@@ -8,6 +8,7 @@ import { CSS } from '@dnd-kit/utilities'
 import { css } from '@emotion/react'
 import { gameContext } from '../../../../workshop/packages/react-client'
 import { combineEventListeners } from '../../utilities'
+import { useAnimation } from '../../hooks'
 
 export type DraggableMaterialProps<P extends number = number, M extends number = number, L extends number = number> = {
   id: string
@@ -36,6 +37,11 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ id, data, disabl
   const scale = useContext(gameContext).scale ?? 1
   const draggingTranslate = CSS.Translate.toString(transform && { ...transform, x: transform.x / scale, y: transform.y / scale })
 
+  const animation = useAnimation<MoveItem | DeleteItem>(animation =>
+    (isMoveItem(animation.move, data.type) || isDeleteItem(animation.move, data.type))
+    && animation.move.itemIndex === data.index
+  )
+
   // We need to delay a little the default transition removal when dragging starts, otherwise dnd-kit suffers from transform side effect
   // because we opted out from ignoring transform in the configuration (using: "draggable: { measure: getClientRect }")
   const [isAlreadyDragging, setIsAlreadyDragging] = useState(false)
@@ -51,7 +57,7 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ id, data, disabl
   return (
     <MaterialComponent ref={setNodeRef} itemId={data.item.id}
                        css={[
-                         !isAlreadyDragging && defaultTransition,
+                         !(isAlreadyDragging && draggingTranslate) && transformTransition(animation?.duration),
                          !disabled && noTouchAction,
                          disabled ? pointerCursorCss : isDragging ? grabbingCursor : [shineEffect, grabCursor],
                          transformCss(preTransform, draggingTranslate, postTransform)
@@ -64,6 +70,6 @@ const noTouchAction = css`
   touch-action: none;
 `
 
-const defaultTransition = css`
-  transition: transform 0.2s ease-in-out
+const transformTransition = (duration: number = 0.2) => css`
+  transition: transform ${duration}s ease-in-out
 `

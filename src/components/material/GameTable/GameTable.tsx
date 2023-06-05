@@ -7,7 +7,7 @@ import { ItemLocatorCreator } from '../../../locators'
 import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
-import { isMoveItemToLocation } from '../utils'
+import { isMoveThisItemToLocation } from '../utils'
 import { gameContext } from '@gamepark/react-client'
 import { GameTableContent } from './GameTableContent'
 
@@ -44,7 +44,7 @@ export const GameTable: FC<GameTableProps> = (props) => {
     setDragging(false)
     if (event.active.data.current && event.over?.data.current) {
       const { type, index } = event.active.data.current
-      const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveItemToLocation(move, type, index, event.over?.data.current as Location)))
+      const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItemToLocation(move, type, index, event.over?.data.current as Location)))
       if (moves.length === 1) {
         play(moves[0], { delayed: rules.isUnpredictableMove(moves[0], playerId) })
       }

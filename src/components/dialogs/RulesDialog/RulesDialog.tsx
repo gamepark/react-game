@@ -10,7 +10,7 @@ import { LocationRulesDialogContent } from './LocationRulesDialogContent'
 import { MaterialDescription } from '../../material'
 import { ItemLocator } from '../../../locators'
 import { buttonCss } from '../../../css'
-import { isMoveItem, isMoveToLocation } from '../../material/utils'
+import { isMoveThisItem, isMoveToLocation } from '../../material/utils'
 
 export type RulesDialogProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   close: () => void
@@ -34,7 +34,7 @@ export const RulesDialog: FC<RulesDialogProps> = <P extends number = number, M e
       <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
         {rules && rulesDisplay?.type === RulesDisplayType.Material &&
           <MaterialRulesDialogContent rulesDisplay={rulesDisplay} material={material}
-                                      legalMoves={legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveItem(move, rulesDisplay.itemType, rulesDisplay.itemIndex)))}/>
+                                      legalMoves={legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItem(move, rulesDisplay.itemType, rulesDisplay.itemIndex)))}/>
         }
         {rules && rulesDisplay?.type === RulesDisplayType.Location &&
           <LocationRulesDialogContent rulesDisplay={rulesDisplay} material={material} locator={locators[rulesDisplay.location.type]}
