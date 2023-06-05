@@ -13,9 +13,9 @@ import { MaterialComponent } from '../MaterialComponent'
 import { DraggableMaterial } from '../DraggableMaterial'
 import { RulesDialog } from '../../dialogs'
 import { DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
-import { gameContext } from '../../../../../workshop/packages/react-client'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { isMoveItem, isMoveItemToLocation, isMoveOnItem } from '../utils'
+import { gameContext } from '@gamepark/react-client'
 
 export type GameTableProps<MaterialType extends number = number, LocationType extends number = number> = {
   material: Record<MaterialType, MaterialDescription>
