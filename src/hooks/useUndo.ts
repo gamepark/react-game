@@ -36,11 +36,13 @@ export const useUndo = <Move = any, PlayerId = any, Game = any>(): [UndoFunction
     if (!setup || !actions) return false
     const index = findLastIndex(actions, action => action.playerId === playerId && !action.cancelled && (!movePredicate || movePredicate(action.move)))
     if (index === -1) return false
+    const action = actions[index]
+    if (action.pending) return false
     const consecutiveActions = actions.slice(index + 1).filter(action => !action.cancelled)
     const rules = new RulesView(JSON.parse(JSON.stringify(setup)))
     if (!hasUndo(rules)) return false
     replayActions(rules, actions.filter(action => !action.delayed && !action.cancelled))
-    return rules.canUndo(actions[index], consecutiveActions)
+    return rules.canUndo(action, consecutiveActions)
   }, [setup, actions, playerId, RulesView])
 
   return [undo, canUndo]
