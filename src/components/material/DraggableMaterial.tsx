@@ -1,14 +1,14 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useContext, useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { DeleteItem, isDeleteItem, isMoveItem, MaterialItem, MoveItem } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
 import { grabbingCursor, grabCursor, pointerCursorCss, shineEffect, transformCss } from '../../css'
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { css } from '@emotion/react'
-import { gameContext } from '../GameProvider'
 import { combineEventListeners } from '../../utilities'
 import { useAnimation } from '../../hooks'
+import { useScale } from '../../hooks/useScale'
 
 export type DraggableMaterialProps<P extends number = number, M extends number = number, L extends number = number> = {
   id: string
@@ -40,7 +40,7 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ id, data, disabl
 
   const { attributes, listeners, transform, isDragging, setNodeRef } = useDraggable({ id, data, disabled })
 
-  const scale = useContext(gameContext).scale ?? 1
+  const scale = useScale()
   const draggingTranslate = CSS.Translate.toString(transform && { ...transform, x: transform.x / scale, y: transform.y / scale })
 
   const animation = useAnimation<MoveItem | DeleteItem>(animation =>

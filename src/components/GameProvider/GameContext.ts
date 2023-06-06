@@ -9,7 +9,6 @@ export type GameContext<Game = any, GameView = any, Move = any, MoveView = any, 
   optionsSpec?: any
   tutorial?: TutorialDescription<Game, Move, PlayerId>,
   hasSounds?: boolean
-  scale?: number
 }
 
 class MissingRules {

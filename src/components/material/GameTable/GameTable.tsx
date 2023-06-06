@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useCallback, useContext, useState } from 'react'
+import { FC, useCallback, useState } from 'react'
 import { Location, MaterialRules } from '@gamepark/rules-api'
 import { TransformWrapper } from 'react-zoom-pan-pinch'
 import { MaterialDescription } from '../MaterialDescription'
@@ -8,7 +8,6 @@ import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { isMoveThisItemToLocation } from '../utils'
-import { gameContext } from '../../GameProvider'
 import { GameTableContent } from './GameTableContent'
 
 export type GameTableProps<MaterialType extends number = number, LocationType extends number = number> = {
@@ -29,10 +28,6 @@ const doubleClick = { disabled: true }
 
 export const GameTable: FC<GameTableProps> = (props) => {
   const { zoomMin = 1, zoomMax = 1 } = props
-  const context = useContext(gameContext)
-  if (!context.scale) {
-    context.scale = zoomMin / zoomMax
-  }
 
   const [dragging, setDragging] = useState(false)
 
@@ -55,7 +50,7 @@ export const GameTable: FC<GameTableProps> = (props) => {
     <DndContext measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }} modifiers={[snapCenterToCursor]}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
       <TransformWrapper minScale={zoomMin / zoomMax} maxScale={1} initialScale={zoomMin / zoomMax} centerOnInit={true} wheel={wheel}
-                        onTransformed={(_, { scale }) => context.scale = scale} panning={{ disabled: dragging }} disablePadding doubleClick={doubleClick}>
+                        panning={{ disabled: dragging }} disablePadding doubleClick={doubleClick}>
         <GameTableContent {...props} />
       </TransformWrapper>
     </DndContext>
