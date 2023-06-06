@@ -1,33 +1,33 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useEffect, useState } from 'react'
+import { FC, useContext, useEffect, useState } from 'react'
 import { Dialog, DialogProps } from '../index'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { css, ThemeProvider } from '@emotion/react'
-import { MaterialGame, MaterialMove, MaterialRules, RulesDisplayType } from '@gamepark/rules-api'
+import { MaterialMove, MaterialRules, RulesDisplayType } from '@gamepark/rules-api'
 import { MaterialRulesDialogContent } from './MaterialRulesDialogContent'
 import { LocationRulesDialogContent } from './LocationRulesDialogContent'
-import { MaterialDescription } from '../../material'
-import { ItemLocator } from '../../../locators'
 import { buttonCss } from '../../../css'
 import { isMoveThisItem, isMoveToLocation } from '../../material/utils'
+import { gameContext } from '../../GameProvider'
+import { useLegalMoves, useRules } from '../../../hooks'
 
-export type RulesDialogProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
+export type RulesDialogProps = {
   close: () => void
-  game?: MaterialGame<Player, MaterialType, LocationType>
-  legalMoves?: MaterialMove<Player, MaterialType, LocationType>[]
-  rules?: MaterialRules<Player, MaterialType, LocationType>
-  material: Record<MaterialType, MaterialDescription>
-  locators: Record<LocationType, ItemLocator<Player, MaterialType, LocationType>>
 } & DialogProps
 
-export const RulesDialog: FC<RulesDialogProps> = <P extends number = number, M extends number = number, L extends number = number>(
-  { close, game, legalMoves = [], material, locators, rules, ...props }: RulesDialogProps<P, M, L>
-) => {
-  const [rulesDisplay, setRulesDisplay] = useState(game?.rulesDisplay)
+export const RulesDialog: FC<RulesDialogProps> = ({ close, ...props }: RulesDialogProps) => {
+  const { material, locators } = useContext(gameContext)
+  const rules = useRules<MaterialRules>()
+  const legalMoves = useLegalMoves<MaterialMove>()
+  const [rulesDisplay, setRulesDisplay] = useState(rules?.game.rulesDisplay)
   useEffect(() => {
-    if (game?.rulesDisplay) setRulesDisplay(game.rulesDisplay)
-  }, [game?.rulesDisplay])
+    if (rules?.game.rulesDisplay) setRulesDisplay(game.rulesDisplay)
+  }, [rules?.game.rulesDisplay])
+
+  if (!material || !locators || !rules) return null
+  const game = rules.game
+
   return (
     <Dialog css={rulesDialogCss} onBackdropClick={close} {...props}>
       <FontAwesomeIcon icon={faXmark} css={dialogCloseIcon} onClick={close}/>

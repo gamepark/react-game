@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { MaterialDescription } from './MaterialDescription'
-import { forwardRef, HTMLAttributes, MouseEvent } from 'react'
+import { forwardRef, HTMLAttributes, MouseEvent, useContext } from 'react'
 import { MaterialComponentType } from './MaterialComponentType'
 import { Board } from './Board'
 import { Card } from './Card'
@@ -11,22 +10,24 @@ import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-l
 import { ItemLocator } from '../../locators'
 import { combineEventListeners } from '../../utilities'
 import pickBy from 'lodash.pickby'
+import { useMaterialDescription, useRules } from '../../hooks'
+import { gameContext } from '../GameProvider'
 
 export type MaterialComponentProps<ItemId extends number = number, P extends number = number, M extends number = number, L extends number = number> = {
   type: M
-  description: MaterialDescription
   itemId?: ItemId
-  locators?: Record<L, ItemLocator<P, M, L>>
+  withLocations?: boolean
   legalMovesTo?: MaterialMove<P, M, L>[]
-  rules?: MaterialRules<P, M, L>
   onShortClick?: () => void
   onLongClick?: () => void
 } & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
-  { type, description, itemId, locators, legalMovesTo, rules, onShortClick, onLongClick = onShortClick, ...props }, ref
+  { type, itemId, withLocations, legalMovesTo, onShortClick, onLongClick = onShortClick, ...props }, ref
 ) => {
-  const itemProps = getPropForItem(description.props, itemId)
+  const description = useMaterialDescription(type)
+  const locators = useContext(gameContext).locators
+  const rules = useRules<MaterialRules>()
 
   const innerLocators = pickBy(locators, locator => locator?.parentItemType === type)
 
@@ -42,10 +43,16 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
 
+  if (!description || !locators || !rules) return null
+
+  const itemProps = getPropForItem(description.props, itemId)
+
   switch (description.type) {
     case MaterialComponentType.Board:
       return <Board ref={ref} {...itemProps} {...props} {...combineEventListeners(listeners, props)}>
-        {description.getLocations ? description.getLocations(itemId, legalMovesTo) : rules && createLocations(rules, innerLocators, itemId, legalMovesTo)}
+        {withLocations && (
+          description.getLocations ? description.getLocations(itemId, legalMovesTo) : createLocations(rules, innerLocators, itemId, legalMovesTo)
+        )}
       </Board>
     case MaterialComponentType.Card:
       return <Card ref={ref} {...itemProps} {...props} {...combineEventListeners(listeners, props)}/>

@@ -139,9 +139,8 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 
   createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[]): ReactNode {
     const position = this.getPositionOnParent?.(location) ?? { x: 0, y: 0 }
-    return <SimpleDropArea key={JSON.stringify(location)} legalMoves={legalMoves} locator={this}
-                           css={[childLocationCss(position), this.getLocationCss(location, rules, legalMoves)]}
-                           rules={rules} location={location}/>
+    return <SimpleDropArea key={JSON.stringify(location)} location={location} legalMoves={legalMoves}
+                           css={[childLocationCss(position), this.getLocationCss(location, rules, legalMoves)]}/>
   }
 
   getLocationCss(_location: Location<P, L>, _rules: MaterialRules<P, M, L>, _legalMoves: MaterialMove<P, M, L>[]): Interpolation<Theme> {

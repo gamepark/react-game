@@ -1,5 +1,4 @@
 /** @jsxImportSource @emotion/react */
-import { MaterialDescription } from '../MaterialDescription'
 import { PlaceItemContext } from '../../../locators'
 import { useContext, useState } from 'react'
 import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
@@ -40,8 +39,8 @@ export const GameMaterialDisplay = () => {
       const innerLocations = Object.keys(innerLocators).map(type => parseInt(type))
       return description.items(game, player).map((item, index) => {
         const legalMovesTo = innerLocations.length > 0 ? legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveOnItem(move, item.id, innerLocations))) : undefined
-        return <MaterialComponent key={`${stringType}_${index}`} type={type} description={description} itemId={item.id}
-                                  locators={locators} legalMovesTo={legalMovesTo} rules={rules}
+        return <MaterialComponent key={`${stringType}_${index}`} type={type} itemId={item.id} withLocations
+                                  legalMovesTo={legalMovesTo}
                                   css={[pointerCursorCss, transformCss(`translate(-50%, -50%)`, ...getPositionTransforms(item.position, item.rotation))]}
                                   onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
       })
@@ -49,7 +48,6 @@ export const GameMaterialDisplay = () => {
     {rules && game && Object.entries(game.items).map(([stringType, items]) => {
       if (!items) return null
       const type = parseInt(stringType)
-      const description = material[type] as MaterialDescription
       return items.map((item, itemIndex) => {
         const locator = locators[item.location.type]
         return [...Array(item.quantity ?? 1)].map((_, index) => {
@@ -60,15 +58,12 @@ export const GameMaterialDisplay = () => {
             isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, item.location)
           )
           return <DraggableMaterial key={`${type}_${itemIndex}_${index}`}
-                                    type={type}
+                                    type={type} withLocations
                                     id={`${type}_${itemIndex}_${index}`}
                                     data={{ item, type, index: itemIndex }}
                                     disabled={!itemMoves.length}
                                     preTransform="translate(-50%, -50%)"
                                     postTransform={locator.place(item, context)}
-                                    rules={rules}
-                                    description={description}
-                                    locators={locators}
                                     css={draggingToSameLocation && noPointerEvents}
                                     onShortClick={() => play(displayMaterialRules(type, itemIndex, item), { local: true })}
                                     onLongClick={itemMoves.length === 1 ?
@@ -77,8 +72,7 @@ export const GameMaterialDisplay = () => {
         })
       })
     })}
-    <RulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}
-                 game={game} legalMoves={legalMoves} rules={rules} material={material} locators={locators}/>
+    <RulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
   </>
 }
 
