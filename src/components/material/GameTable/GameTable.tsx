@@ -2,17 +2,13 @@
 import { FC, useCallback, useState } from 'react'
 import { Location, MaterialRules } from '@gamepark/rules-api'
 import { TransformWrapper } from 'react-zoom-pan-pinch'
-import { MaterialDescription } from '../MaterialDescription'
-import { ItemLocator } from '../../../locators'
 import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { isMoveThisItemToLocation } from '../utils'
 import { GameTableContent } from './GameTableContent'
 
-export type GameTableProps<MaterialType extends number = number, LocationType extends number = number> = {
-  material: Record<MaterialType, MaterialDescription>
-  locators: Record<LocationType, ItemLocator>
+export type GameTableProps = {
   xMin: number
   xMax: number
   yMin: number

@@ -4,12 +4,8 @@ import { css } from '@emotion/react'
 import { TransformComponent, useControls } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
-import { MaterialDescription } from '../MaterialDescription'
-import { ItemLocator } from '../../../locators'
 
-export type GameTableContentProps<MaterialType extends number = number, LocationType extends number = number> = {
-  material: Record<MaterialType, MaterialDescription>
-  locators: Record<LocationType, ItemLocator>
+export type GameTableContentProps = {
   xMin: number
   xMax: number
   yMin: number
@@ -21,7 +17,7 @@ export type GameTableContentProps<MaterialType extends number = number, Location
 }
 
 export const GameTableContent: FC<GameTableContentProps> = (props) => {
-  const { material, locators, perspective, xMin, xMax, yMin, yMax, zoomMax = 1, margin = { left: 0, right: 0, top: 7, bottom: 0 } } = props
+  const { perspective, xMin, xMax, yMin, yMax, zoomMax = 1, margin = { left: 0, right: 0, top: 7, bottom: 0 } } = props
 
   const { centerView } = useControls()
   useEffect(() => {
@@ -42,7 +38,7 @@ export const GameTableContent: FC<GameTableContentProps> = (props) => {
       overflow: 'visible'
     }}>
       <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(zoomMax), perspective && perspectiveCss(perspective)]}>
-        <GameMaterialDisplay locators={locators} material={material}/>
+        <GameMaterialDisplay/>
       </div>
     </TransformComponent>
   )

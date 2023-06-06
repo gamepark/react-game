@@ -7,18 +7,16 @@ import { datadogLogs, StatusType } from '@datadog/browser-logs'
 import { ApolloProvider } from '@apollo/client'
 import { useWebP } from '../../hooks'
 import { getApolloClient, LocalGameProvider, LocalGameProviderProps, RemoteGameProvider } from '@gamepark/react-client'
-import { gameContext } from './GameContext'
+import { GameContext, gameContext } from './GameContext'
 
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
 
 export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveView = Move, PlayerId = number>
-  = LocalGameProviderProps<Game, GameView, Move, MoveView, PlayerId> & {
-  hasSounds?: boolean
-}
+  = LocalGameProviderProps<Game, GameView, Move, MoveView, PlayerId> & GameContext<Game, Move, PlayerId>
 
 export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId = number>(
-  { hasSounds, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
+  { material, locators, hasSounds, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
   const { game, Rules, RulesView, optionsSpec, tutorial } = props
   const webP = useWebP()
@@ -26,7 +24,7 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
     key: 'css', stylisPlugins: (webP ? [webPReplace, prefixer] : [prefixer]) as Array<StylisPlugin>
   }), [webP])
   return (
-    <gameContext.Provider value={{ game, Rules: RulesView ?? Rules, optionsSpec, tutorial, hasSounds }}>
+    <gameContext.Provider value={{ game, Rules: RulesView ?? Rules, material, locators, optionsSpec, tutorial, hasSounds }}>
       <CacheProvider value={emotionCache}>
         <ApolloProvider client={getApolloClient()}>
           {gameId ?

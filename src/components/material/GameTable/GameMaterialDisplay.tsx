@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { MaterialDescription } from '../MaterialDescription'
-import { ItemLocator, PlaceItemContext } from '../../../locators'
-import { HTMLAttributes, useState } from 'react'
-import { useGame, useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
-import { closeRulesDisplay, displayMaterialRules, MaterialGame, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { PlaceItemContext } from '../../../locators'
+import { useContext, useState } from 'react'
+import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
+import { closeRulesDisplay, displayMaterialRules, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import pickBy from 'lodash.pickby'
 import { isMoveOnItem, isMoveThisItem, isMoveThisItemToLocation } from '../utils'
 import { MaterialComponent } from '../MaterialComponent'
@@ -12,14 +12,12 @@ import { DraggableItemData, DraggableMaterial, isDraggableItemData } from '../Dr
 import { RulesDialog } from '../../dialogs'
 import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
+import { gameContext } from '../../GameProvider'
 
-type GameMaterialDisplayProps<P extends number = number, M extends number = number, L extends number = number> = {
-  material: Record<M, MaterialDescription>
-  locators: Record<L, ItemLocator<P, M, L>>
-} & HTMLAttributes<HTMLDivElement>
-
-export const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayProps) => {
-  const game = useGame<MaterialGame>()
+export const GameMaterialDisplay = () => {
+  const context = useContext(gameContext)
+  const material = context.material ?? {}
+  const locators = context.locators ?? {}
   const player = usePlayerId()
   const rules = useRules<MaterialRules>()
   const legalMoves = useLegalMoves<MaterialMove>()
@@ -31,7 +29,8 @@ export const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayP
     onDragEnd: () => setDraggedItem(undefined)
   })
 
-  if (!game || !rules) return <></>
+  if (!rules) return <></>
+  const game = rules?.game
 
   return <>
     {Object.entries(material).map(([stringType, description]) => {
