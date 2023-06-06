@@ -25,7 +25,7 @@ export const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayP
   const rules = useRules<MaterialRules>()
   const legalMoves = useLegalMoves<MaterialMove>()
   const play = usePlay()
-  const locatorsMap = useMemo(() => mapValues(locators, locator => new locator(material, locators, player)), [])
+  const locatorsMap = useMemo(() => mapValues(locators, locator => new locator(material, locators)), [])
 
   const [draggedItem, setDraggedItem] = useState<DraggableItemData>()
   useDndMonitor({

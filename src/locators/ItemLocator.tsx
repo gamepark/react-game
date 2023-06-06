@@ -10,15 +10,13 @@ import { isMoveToLocation } from '../components/material/utils'
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   material: Record<M, MaterialDescription>
   locators: Record<L, ItemLocatorCreator<P, M, L>>
-  player?: P
   parentItemType?: M
   rotationUnit = 'deg'
   limit?: number
 
-  constructor(material: Record<M, MaterialDescription>, locators: Record<L, ItemLocatorCreator<P, M, L>>, player?: P) {
+  constructor(material: Record<M, MaterialDescription>, locators: Record<L, ItemLocatorCreator<P, M, L>>) {
     this.material = material
     this.locators = locators
-    this.player = player
   }
 
   hide(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): boolean {
@@ -100,7 +98,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     const parentItemIndex = game.items[this.parentItemType]?.findIndex(item => equal(item.id, location.parent))
     if (parentItemIndex !== undefined && parentItemIndex !== -1) {
       const parentItem = game.items[this.parentItemType]![parentItemIndex]
-      const parentLocator: ItemLocator<P, M, L> = new this.locators[parentItem.location.type](this.material, this.locators, this.player)
+      const parentLocator: ItemLocator<P, M, L> = new this.locators[parentItem.location.type](this.material, this.locators)
       return parentLocator.getTransforms(parentItem, { game, type: this.parentItemType, index: 0, itemIndex: parentItemIndex })
     } else {
       const parentItemId = this.getParentItemId(location)
@@ -166,7 +164,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 }
 
 export interface ItemLocatorCreator<P extends number = number, M extends number = number, L extends number = number> {
-  new(material: Record<M, MaterialDescription>, locators: Record<L, ItemLocatorCreator<P, M, L>>, player?: P): ItemLocator<P, M, L>
+  new(material: Record<M, MaterialDescription>, locators: Record<L, ItemLocatorCreator<P, M, L>>): ItemLocator<P, M, L>
 }
 
 const childLocationCss = ({ x, y }: XYCoordinates) => css`
