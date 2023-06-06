@@ -4,8 +4,7 @@ import { Rules } from '@gamepark/rules-api'
 import { gameContext } from '../components'
 
 export function useRules<T extends Rules>(): T | undefined {
-  const context = useContext(gameContext)
-  const Rules = context.RulesView || context.Rules
+  const Rules = useContext(gameContext).Rules
   const game = useGame()
   return useMemo(() => {
     if (!game) return

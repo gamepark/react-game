@@ -16,8 +16,8 @@ export const useUndo = <Move = any, PlayerId = any, Game = any>(): [UndoFunction
   const setup = useSelector<GamePageState<Game, Move, PlayerId>, Game | undefined>(state => state.setup)
   const playerId = useSelector<GamePageState<Game, Move, PlayerId>, PlayerId | undefined>(state => state.playerId)
   const dispatch = useDispatch()
-  const RulesView = useContext(gameContext)?.RulesView
-  if (!RulesView) throw new Error('Cannot useUndo outside a GameProvider')
+  const Rules = useContext(gameContext)?.Rules
+  if (!Rules) throw new Error('Cannot useUndo outside a GameProvider')
 
   const undo: UndoFunction<Move> = useCallback((arg?: string | MovePredicate<Move> | UndoOptions, options?: UndoOptions) => {
     if (typeof arg === 'string') {
@@ -40,11 +40,11 @@ export const useUndo = <Move = any, PlayerId = any, Game = any>(): [UndoFunction
     const action = actions[index]
     if (action.pending) return false
     const consecutiveActions = actions.slice(index + 1).filter(action => !action.cancelled)
-    const rules = new RulesView(JSON.parse(JSON.stringify(setup)))
+    const rules = new Rules(JSON.parse(JSON.stringify(setup)))
     if (!hasUndo(rules)) return false
     replayActions(rules, actions.filter(action => !action.delayed && !action.cancelled))
     return rules.canUndo(action, consecutiveActions)
-  }, [setup, actions, playerId, RulesView])
+  }, [setup, actions, playerId, Rules])
 
   return [undo, canUndo]
 }

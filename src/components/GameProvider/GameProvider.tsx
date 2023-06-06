@@ -1,55 +1,36 @@
 /** @jsxImportSource @emotion/react */
 import createCache, { StylisPlugin } from '@emotion/cache'
 import { CacheProvider } from '@emotion/react'
-import { Robot, RulesCreator } from '@gamepark/rules-api'
-import { PropsWithChildren, ReactElement, useMemo } from 'react'
+import { PropsWithChildren, useMemo } from 'react'
 import { DECLARATION, Element, Middleware, prefixer } from 'stylis'
 import { datadogLogs, StatusType } from '@datadog/browser-logs'
 import { ApolloProvider } from '@apollo/client'
 import { useWebP } from '../../hooks'
-import { Animations, GameAI, getApolloClient, LocalGameProvider, RemoteGameProvider, TutorialDescription } from '@gamepark/react-client'
+import { getApolloClient, LocalGameProvider, LocalGameProviderProps, RemoteGameProvider } from '@gamepark/react-client'
 import { gameContext } from './GameContext'
 
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
 
-export type GameProviderProps<Game, Move = string, PlayerId = number> = {
-  game: string
-  Rules: RulesCreator<Game, Move, PlayerId>
-  optionsSpec?: any
-  dummy?: Robot<Game, Move, PlayerId>
-  animations?: Animations
-  tutorial?: TutorialDescription<Game, Move, PlayerId>,
-  ai?: GameAI<Game, Move, PlayerId>
+export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveView = Move, PlayerId = number>
+  = LocalGameProviderProps<Game, GameView, Move, MoveView, PlayerId> & {
   hasSounds?: boolean
 }
 
-export type GameViewProviderProps<Game = any, GameView = Game, Move = string, MoveView = Move, PlayerId = number>
-  = GameProviderProps<Game, Move, PlayerId> & {
-  RulesView: RulesCreator<GameView, MoveView, PlayerId>
-}
-
-export function GameProvider<Game, Move = string, PlayerId = number>(props: PropsWithChildren<GameProviderProps<Game, Move, PlayerId>>): ReactElement
-
-export function GameProvider<Game, View = Game, Move = string, MoveView = Move, PlayerId = number>(props: PropsWithChildren<GameViewProviderProps<Game, View, Move, MoveView, PlayerId>>): ReactElement
-
-export function GameProvider<Game, GameView = Game, Move = string, MoveView = Move, PlayerId = number>(
-  {
-    children, ...props
-  }: PropsWithChildren<GameProviderProps<Game, Move, PlayerId> | GameViewProviderProps<Game, GameView, Move, MoveView, PlayerId>>
-) {
-  const RulesView = (isGameViewProviderProps(props) ? props.RulesView : props.Rules) as RulesCreator<GameView, MoveView, PlayerId>
-  const gameViewProps = { ...props, RulesView }
+export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId = number>(
+  { hasSounds, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
+) => {
+  const { game, Rules, RulesView, optionsSpec, tutorial } = props
   const webP = useWebP()
   const emotionCache = useMemo(() => createCache({
     key: 'css', stylisPlugins: (webP ? [webPReplace, prefixer] : [prefixer]) as Array<StylisPlugin>
   }), [webP])
   return (
-    <gameContext.Provider value={gameViewProps}>
+    <gameContext.Provider value={{ game, Rules: RulesView ?? Rules, optionsSpec, tutorial, hasSounds }}>
       <CacheProvider value={emotionCache}>
         <ApolloProvider client={getApolloClient()}>
           {gameId ?
-            <RemoteGameProvider Rules={RulesView} gameId={gameId} animations={props.animations}>{children}</RemoteGameProvider> :
+            <RemoteGameProvider Rules={RulesView ?? Rules} gameId={gameId} animations={props.animations}>{children}</RemoteGameProvider> :
             <LocalGameProvider {...props}>{children}</LocalGameProvider>
           }
         </ApolloProvider>
@@ -78,8 +59,3 @@ if (process.env.NODE_ENV === 'production') {
   console.info = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.info(buildMessage(message, optionalParams), { origin: 'console' })
   console.warn = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.warn(buildMessage(message, optionalParams), { origin: 'console' })
 }
-
-const isGameViewProviderProps = <Game, View, Move, MoveView, PlayerId>(
-  props: GameProviderProps<Game, Move, PlayerId>
-): props is GameViewProviderProps<Game, View, Move, MoveView, PlayerId> =>
-  !!(props as GameViewProviderProps<Game, View, Move, MoveView, PlayerId>).RulesView
