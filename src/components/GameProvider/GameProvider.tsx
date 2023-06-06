@@ -49,7 +49,7 @@ export function GameProvider<Game, GameView = Game, Move = string, MoveView = Mo
         <ApolloProvider client={getApolloClient()}>
           {gameId ?
             <RemoteGameProvider Rules={RulesView} gameId={gameId} animations={props.animations}>{children}</RemoteGameProvider> :
-            <LocalGameProvider>{children}</LocalGameProvider>
+            <LocalGameProvider {...props}>{children}</LocalGameProvider>
           }
         </ApolloProvider>
       </CacheProvider>
