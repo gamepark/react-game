@@ -8,16 +8,9 @@ import { ComponentSize, getPositionTransforms } from '../css'
 import { isMoveToLocation } from '../components/material/utils'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
-  material: Record<M, MaterialDescription>
-  locators: Record<L, ItemLocatorCreator<P, M, L>>
   parentItemType?: M
   rotationUnit = 'deg'
   limit?: number
-
-  constructor(material: Record<M, MaterialDescription>, locators: Record<L, ItemLocatorCreator<P, M, L>>) {
-    this.material = material
-    this.locators = locators
-  }
 
   hide(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): boolean {
     return this.limit ? this.getItemIndex(item, context) >= this.limit : false
@@ -37,7 +30,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 
   getTranslate3d(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string {
     let { x, y, z } = this.getPosition(item, context)
-    const parentMaterial = this.parentItemType ? this.material[this.parentItemType] : undefined
+    const parentMaterial = this.parentItemType ? context.material[this.parentItemType] : undefined
     if (parentMaterial) {
       const positionOnParent = this.getPositionOnParent?.(item.location)
       if (positionOnParent) {
@@ -92,14 +85,15 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return false
   }
 
-  getParentTransforms(location: Location<P, L>, { game, player }: PlaceItemContext<P, M, L>): string[] {
+  getParentTransforms(location: Location<P, L>, context: PlaceItemContext<P, M, L>): string[] {
     if (!this.parentItemType) return []
-    const parentMaterial = this.material[this.parentItemType]
+    const { game, player, material, locators } = context
+    const parentMaterial = material[this.parentItemType]
     const parentItemIndex = game.items[this.parentItemType]?.findIndex(item => equal(item.id, location.parent))
     if (parentItemIndex !== undefined && parentItemIndex !== -1) {
       const parentItem = game.items[this.parentItemType]![parentItemIndex]
-      const parentLocator: ItemLocator<P, M, L> = new this.locators[parentItem.location.type](this.material, this.locators)
-      return parentLocator.getTransforms(parentItem, { game, type: this.parentItemType, index: 0, itemIndex: parentItemIndex })
+      const parentLocator: ItemLocator<P, M, L> = locators[parentItem.location.type]
+      return parentLocator.getTransforms(parentItem, { ...context, type: this.parentItemType, index: 0, itemIndex: parentItemIndex })
     } else {
       const parentItemId = this.getParentItemId(location)
       const staticItem = parentMaterial.items && parentMaterial.items(game, player).find(item => equal(item.id, parentItemId))
@@ -163,10 +157,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 }
 
-export interface ItemLocatorCreator<P extends number = number, M extends number = number, L extends number = number> {
-  new(material: Record<M, MaterialDescription>, locators: Record<L, ItemLocatorCreator<P, M, L>>): ItemLocator<P, M, L>
-}
-
 const childLocationCss = ({ x, y }: XYCoordinates) => css`
   position: absolute;
   left: ${x}%;
@@ -176,6 +166,8 @@ const childLocationCss = ({ x, y }: XYCoordinates) => css`
 
 export type PlaceItemContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   game: MaterialGame<Player, MaterialType, LocationType>
+  material: Record<MaterialType, MaterialDescription>
+  locators: Record<LocationType, ItemLocator<Player, MaterialType, LocationType>>
   type: MaterialType
   index: number
   itemIndex: number

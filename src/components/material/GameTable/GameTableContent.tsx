@@ -5,11 +5,11 @@ import { TransformComponent, useControls } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
 import { MaterialDescription } from '../MaterialDescription'
-import { ItemLocatorCreator } from '../../../locators'
+import { ItemLocator } from '../../../locators'
 
 export type GameTableContentProps<MaterialType extends number = number, LocationType extends number = number> = {
   material: Record<MaterialType, MaterialDescription>
-  locators: Record<LocationType, ItemLocatorCreator>
+  locators: Record<LocationType, ItemLocator>
   xMin: number
   xMax: number
   yMin: number
