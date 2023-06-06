@@ -48,7 +48,7 @@ export function GameProvider<Game, GameView = Game, Move = string, MoveView = Mo
       <CacheProvider value={emotionCache}>
         <ApolloProvider client={getApolloClient()}>
           {gameId ?
-            <RemoteGameProvider gameId={gameId}>{children}</RemoteGameProvider> :
+            <RemoteGameProvider Rules={RulesView} gameId={gameId} animations={props.animations}>{children}</RemoteGameProvider> :
             <LocalGameProvider>{children}</LocalGameProvider>
           }
         </ApolloProvider>
