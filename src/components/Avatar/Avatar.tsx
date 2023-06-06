@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import Avataaar from '@gamepark/avataaars'
-import { gameContext, useMe, useTutorial } from '@gamepark/react-client'
+import { useMe, useTutorial } from '@gamepark/react-client'
+import { gameContext } from '../GameProvider'
 import { HTMLAttributes, useContext } from 'react'
 import { ChatSpeechBubble } from './ChatSpeechBubble'
 import { SpeechBubble, SpeechBubbleProps } from './SpeechBubble'

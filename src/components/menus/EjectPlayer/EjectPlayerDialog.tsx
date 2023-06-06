@@ -2,7 +2,7 @@
 import { css } from '@emotion/react'
 import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ejectPlayerAction, gameContext, GamePageState } from '@gamepark/react-client'
+import { ejectPlayerAction, GamePageState } from '@gamepark/react-client'
 import { getFallbackPlayerName } from '@gamepark/rules-api'
 import dayjs from 'dayjs'
 import { useContext, useEffect } from 'react'
@@ -13,6 +13,7 @@ import { menuButtonCss, menuDialogCss } from '../menuCss'
 import { useOpponentWithMaxTime } from '../../../hooks'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { gameContext } from '../../GameProvider'
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)

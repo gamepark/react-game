@@ -1,10 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { gameContext, useSoundControls } from '@gamepark/react-client'
+import { useSoundControls } from '@gamepark/react-client'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { menuButtonCss } from '../menuCss'
+import { gameContext } from '../../GameProvider'
 
 export const SoundButton = () => {
   const { t } = useTranslation()

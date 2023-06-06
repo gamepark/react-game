@@ -7,7 +7,8 @@ import { DECLARATION, Element, Middleware, prefixer } from 'stylis'
 import { datadogLogs, StatusType } from '@datadog/browser-logs'
 import { ApolloProvider } from '@apollo/client'
 import { useWebP } from '../../hooks'
-import { Animations, GameAI, gameContext, getApolloClient, LocalGameProvider, RemoteGameProvider, TutorialDescription } from '@gamepark/react-client'
+import { Animations, GameAI, getApolloClient, LocalGameProvider, RemoteGameProvider, TutorialDescription } from '@gamepark/react-client'
+import { gameContext } from './GameContext'
 
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')

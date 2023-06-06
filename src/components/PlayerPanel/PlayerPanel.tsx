@@ -6,7 +6,7 @@ import { GamePoints } from '../GamePoints'
 import { Avatar, SpeechBubbleDirection } from '../Avatar'
 import { PlayerTimer } from '../PlayerTimer'
 import { css } from '@emotion/react'
-import { gameContext } from '@gamepark/react-client'
+import { gameContext } from '../GameProvider'
 import { getFallbackPlayerName } from '@gamepark/rules-api'
 
 export type PlayerPanelProps<PlayerId = any> = {

@@ -8,7 +8,7 @@ import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { isMoveThisItemToLocation } from '../utils'
-import { gameContext } from '@gamepark/react-client'
+import { gameContext } from '../../GameProvider'
 import { GameTableContent } from './GameTableContent'
 
 export type GameTableProps<MaterialType extends number = number, LocationType extends number = number> = {

@@ -2,7 +2,7 @@
 import { css, useTheme } from '@emotion/react'
 import { faChessPawn, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { gameContext, GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
+import { GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
 import { GameSpeed } from '@gamepark/rules-api'
 import fscreen from 'fscreen'
 import { useContext, useEffect, useState } from 'react'
@@ -24,6 +24,7 @@ import { addStylesheetUrl, menuBaseCss, menuFloatingButtonCss, menuFontSize } fr
 import { NavButton } from './NavButton'
 import { LogoIcon } from './LogoIcon'
 import { GamePointIcon } from '../../GamePoints'
+import { gameContext } from '../../GameProvider'
 
 export const Menu = () => {
   const { t } = useTranslation()

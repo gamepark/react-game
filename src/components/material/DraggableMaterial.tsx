@@ -6,7 +6,7 @@ import { grabbingCursor, grabCursor, pointerCursorCss, shineEffect, transformCss
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { css } from '@emotion/react'
-import { gameContext } from '../../../../workshop/packages/react-client'
+import { gameContext } from '../GameProvider'
 import { combineEventListeners } from '../../utilities'
 import { useAnimation } from '../../hooks'
 

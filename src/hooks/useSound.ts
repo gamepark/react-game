@@ -1,6 +1,7 @@
-import { gameContext, GamePageState } from '@gamepark/react-client'
+import { GamePageState } from '@gamepark/react-client'
 import { useContext, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { gameContext } from '../components'
 
 // Deprecated? Probably only used in It's a Wonderful World
 export const useSound = (src: string): HTMLAudioElement => {

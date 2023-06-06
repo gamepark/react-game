@@ -1,9 +1,10 @@
-import { DisplayedAction, gameContext, GamePageState, moveUndone } from '@gamepark/react-client'
+import { DisplayedAction, GamePageState, moveUndone } from '@gamepark/react-client'
 import { hasUndo, replayActions } from '@gamepark/rules-api'
 import { useCallback, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import findLast from 'lodash.findlast'
 import findLastIndex from 'lodash.findlastindex'
+import { gameContext } from '../components'
 
 export type UndoOptions = { delayed?: boolean }
 export type MovePredicate<Move> = (move: Move) => boolean

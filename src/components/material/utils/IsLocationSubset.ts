@@ -1,4 +1,4 @@
-import { Location } from '../../../../../workshop/packages/rules-api'
+import { Location } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
 
 export const isLocationSubset = (testLocation: Location, parentLocation: Location) => {
