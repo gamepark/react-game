@@ -18,10 +18,16 @@ export type DraggableMaterialProps<P extends number = number, M extends number =
   postTransform?: string
 } & MaterialComponentProps<number, P, M, L>
 
-type DraggableItemData<P extends number = number, M extends number = number, L extends number = number> = {
+export type DraggableItemData<P extends number = number, M extends number = number, L extends number = number> = {
   item: MaterialItem<P, L>
   type: M
   index: number
+}
+
+export function isDraggableItemData<P extends number = number, M extends number = number, L extends number = number>(
+  data?: Record<string, any>
+): data is DraggableItemData<P, M, L> {
+  return typeof data?.item === 'object' && typeof data?.type === 'number' && typeof data?.index === 'number'
 }
 
 export type DragMaterialItem<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {

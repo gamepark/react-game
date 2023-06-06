@@ -29,10 +29,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return this.getTransforms(item, context).join(' ')
   }
 
-  itemExtraCss(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): Interpolation<Theme> {
-    return
-  }
-
   getTransforms(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
     return this.getParentTransforms(item.location, context).concat(...this.getChildTransforms(item, context))
   }
@@ -105,7 +101,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     if (parentItemIndex !== undefined && parentItemIndex !== -1) {
       const parentItem = game.items[this.parentItemType]![parentItemIndex]
       const parentLocator: ItemLocator<P, M, L> = new this.locators[parentItem.location.type](this.material, this.locators, this.player)
-      return parentLocator.getTransforms(parentItem, { game, type: this.parentItemType, index: 0, itemIndex: parentItemIndex, legalMoves: [] })
+      return parentLocator.getTransforms(parentItem, { game, type: this.parentItemType, index: 0, itemIndex: parentItemIndex })
     } else {
       const parentItemId = this.getParentItemId(location)
       const staticItem = parentMaterial.items && parentMaterial.items(game, player).find(item => equal(item.id, parentItemId))
@@ -185,7 +181,6 @@ export type PlaceItemContext<Player extends number = number, MaterialType extend
   type: MaterialType
   index: number
   itemIndex: number
-  legalMoves: MaterialMove<Player, MaterialType, LocationType>[]
   player?: Player
 }
 
