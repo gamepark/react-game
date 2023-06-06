@@ -41,8 +41,8 @@ export const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayP
       const innerLocations = Object.keys(innerLocators).map(type => parseInt(type))
       return description.items(game, player).map((item, index) => {
         const legalMovesTo = innerLocations.length > 0 ? legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveOnItem(move, item.id, innerLocations))) : undefined
-        return <MaterialComponent key={`${stringType}_${index}`} description={description} itemId={item.id}
-                                  locators={innerLocators} legalMovesTo={legalMovesTo} rules={rules}
+        return <MaterialComponent key={`${stringType}_${index}`} type={type} description={description} itemId={item.id}
+                                  locators={locators} legalMovesTo={legalMovesTo} rules={rules}
                                   css={[pointerCursorCss, transformCss(`translate(-50%, -50%)`, ...getPositionTransforms(item.position, item.rotation))]}
                                   onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
       })
@@ -61,6 +61,7 @@ export const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayP
             isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, item.location)
           )
           return <DraggableMaterial key={`${type}_${itemIndex}_${index}`}
+                                    type={type}
                                     id={`${type}_${itemIndex}_${index}`}
                                     data={{ item, type, index: itemIndex }}
                                     disabled={!itemMoves.length}
@@ -68,6 +69,7 @@ export const GameMaterialDisplay = ({ material, locators }: GameMaterialDisplayP
                                     postTransform={locator.place(item, context)}
                                     rules={rules}
                                     description={description}
+                                    locators={locators}
                                     css={draggingToSameLocation && noPointerEvents}
                                     onShortClick={() => play(displayMaterialRules(type, itemIndex, item), { local: true })}
                                     onLongClick={itemMoves.length === 1 ?

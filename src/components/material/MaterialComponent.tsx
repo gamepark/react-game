@@ -10,11 +10,13 @@ import { MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { ItemLocator } from '../../locators'
 import { combineEventListeners } from '../../utilities'
+import pickBy from 'lodash.pickby'
 
 export type MaterialComponentProps<ItemId extends number = number, P extends number = number, M extends number = number, L extends number = number> = {
+  type: M
   description: MaterialDescription
   itemId?: ItemId
-  locators?: Partial<Record<L, ItemLocator<P, M, L>>>
+  locators?: Record<L, ItemLocator<P, M, L>>
   legalMovesTo?: MaterialMove<P, M, L>[]
   rules?: MaterialRules<P, M, L>
   onShortClick?: () => void
@@ -22,9 +24,11 @@ export type MaterialComponentProps<ItemId extends number = number, P extends num
 } & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
-  { description, itemId, locators, legalMovesTo, rules, onShortClick, onLongClick = onShortClick, ...props }, ref
+  { type, description, itemId, locators, legalMovesTo, rules, onShortClick, onLongClick = onShortClick, ...props }, ref
 ) => {
   const itemProps = getPropForItem(description.props, itemId)
+
+  const innerLocators = pickBy(locators, locator => locator?.parentItemType === type)
 
   const listeners = useLongPress(() => onLongClick && onLongClick(), {
     detect: LongPressEventType.Pointer,
@@ -41,7 +45,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
   switch (description.type) {
     case MaterialComponentType.Board:
       return <Board ref={ref} {...itemProps} {...props} {...combineEventListeners(listeners, props)}>
-        {description.getLocations ? description.getLocations(itemId, legalMovesTo) : locators && rules && createLocations(rules, locators, itemId, legalMovesTo)}
+        {description.getLocations ? description.getLocations(itemId, legalMovesTo) : rules && createLocations(rules, innerLocators, itemId, legalMovesTo)}
       </Board>
     case MaterialComponentType.Card:
       return <Card ref={ref} {...itemProps} {...props} {...combineEventListeners(listeners, props)}/>
