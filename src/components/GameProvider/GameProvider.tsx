@@ -18,17 +18,17 @@ export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveVi
 export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId = number>(
   { material, locators, hasSounds, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
-  const { game, Rules, RulesView, optionsSpec, tutorial } = props
+  const { game, Rules, RulesView, optionsSpec, animations, tutorial } = props
   const webP = useWebP()
   const emotionCache = useMemo(() => createCache({
     key: 'css', stylisPlugins: (webP ? [webPReplace, prefixer] : [prefixer]) as Array<StylisPlugin>
   }), [webP])
   return (
-    <gameContext.Provider value={{ game, Rules: RulesView ?? Rules, material, locators, optionsSpec, tutorial, hasSounds }}>
+    <gameContext.Provider value={{ game, Rules: RulesView ?? Rules, material, locators, optionsSpec, animations, tutorial, hasSounds }}>
       <CacheProvider value={emotionCache}>
         <ApolloProvider client={getApolloClient()}>
           {gameId ?
-            <RemoteGameProvider Rules={RulesView ?? Rules} gameId={gameId} animations={props.animations}>{children}</RemoteGameProvider> :
+            <RemoteGameProvider Rules={RulesView ?? Rules as any} gameId={gameId} animations={props.animations}>{children}</RemoteGameProvider> :
             <LocalGameProvider {...props}>{children}</LocalGameProvider>
           }
         </ApolloProvider>

@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
-import { Coordinates, Location, Material, MaterialGame, MaterialItem, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
-import { getPropForItem, MaterialDescription, SimpleDropArea } from '../components'
+import { Coordinates, ItemMove, Location, Material, MaterialGame, MaterialItem, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
+import { getPropForItem, ItemAnimationContext, MaterialDescription, SimpleDropArea } from '../components'
 import { ReactNode } from 'react'
 import { css, Interpolation, Theme } from '@emotion/react'
 import equal from 'fast-deep-equal'
 import { ComponentSize } from '../css'
 import { isMoveToLocation } from '../components/material/utils'
+import { Animation } from '../../../workshop/packages/react-client'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
@@ -17,7 +18,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   place(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string {
-    return this.getTransforms(item, context).join(' ')
+    return ['translate(-50%, -50%)', ...this.getTransforms(item, context)].join(' ')
   }
 
   getTransforms(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
@@ -148,6 +149,10 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     const absoluteIndex = players.indexOf(player)
     if (me === undefined || players[0] === me) return absoluteIndex
     return (absoluteIndex - players.indexOf(me) + players.length) % players.length
+  }
+
+  isItemToAnimate(_item: MaterialItem<P, L>, _animation: Animation<ItemMove<P, M, L>>, _context: ItemAnimationContext<P, M, L>): boolean {
+    return true
   }
 }
 

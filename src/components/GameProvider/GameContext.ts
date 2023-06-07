@@ -1,4 +1,4 @@
-import { TutorialDescription } from '@gamepark/react-client'
+import { Animations, TutorialDescription } from '@gamepark/react-client'
 import { RulesCreator } from '@gamepark/rules-api'
 import React from 'react'
 import { MaterialDescription } from '../material'
@@ -10,8 +10,15 @@ export type GameContext<Game = any, Move = any, PlayerId = any, MaterialType ext
   material?: Record<MaterialType, MaterialDescription>
   locators?: Record<LocationType, ItemLocator>
   optionsSpec?: any
+  animations?: Animations<Game, Move, PlayerId>
   tutorial?: TutorialDescription<Game, Move, PlayerId>
   hasSounds?: boolean
+}
+
+export type MaterialGameContext<Game = any, Move = any, PlayerId = any, MaterialType extends number = number, LocationType extends number = number>
+  = GameContext<Game, Move, PlayerId, MaterialType, LocationType> & {
+  material: Record<MaterialType, MaterialDescription>
+  locators: Record<LocationType, ItemLocator>
 }
 
 class MissingRules {

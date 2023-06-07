@@ -43,7 +43,7 @@ export const GameMaterialDisplay = () => {
         const context: PlaceItemContext = { game, type, index, player, material, locators }
         return <MaterialComponent key={`${stringType}_${index}`} type={type} itemId={item.id} withLocations
                                   legalMovesTo={legalMovesTo}
-                                  css={[pointerCursorCss, transformCss(`translate(-50%, -50%)`, locator.place(item, context))]}
+                                  css={[pointerCursorCss, transformCss(locator.place(item, context))]}
                                   onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
       })
     })}
@@ -60,11 +60,8 @@ export const GameMaterialDisplay = () => {
             isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, item.location)
           )
           return <DraggableMaterial key={`${type}_${itemIndex}_${index}`}
-                                    type={type} withLocations
-                                    id={`${type}_${itemIndex}_${index}`}
-                                    data={{ item, type, index: itemIndex }}
+                                    type={type} item={item} itemIndex={itemIndex} index={index} withLocations
                                     disabled={!itemMoves.length}
-                                    preTransform="translate(-50%, -50%)"
                                     postTransform={locator.place(item, context)}
                                     css={draggingToSameLocation && noPointerEvents}
                                     onShortClick={() => play(displayMaterialRules(type, itemIndex, item), { local: true })}
