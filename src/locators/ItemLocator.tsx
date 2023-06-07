@@ -118,14 +118,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return context.game.items[context.type]!.reduce((sum, item) => this.isSameLocation(item.location, location) ? sum + (item.quantity ?? 1) : sum, 0)
   }
 
-  /**
-   * Elevation in em to give to the item when it is being dragged. Defaults to 10em
-   */
-
-  /*getDragElevation(_monitor: DragLayerMonitor, _item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>) {
-    return 10
-  }*/
-
   getMaterial(game: MaterialGame<P, M, L>, type: M) {
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
