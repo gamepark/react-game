@@ -98,8 +98,8 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
       const parentItemId = this.getParentItemId(location)
       const staticItem = parentMaterial.items && parentMaterial.items(game, player).find(item => equal(item.id, parentItemId))
       if (!staticItem) return []
-      const locator = new this.locators[staticItem.location.type](this.material, this.locators, this.player)
-      return locator.getTransforms(staticItem, { game, type: this.parentItemType, index: 0, itemIndex: parentItemIndex, legalMoves: [] })
+      const locator: ItemLocator<P, M, L> = locators[staticItem.location.type]
+      return locator.getTransforms(staticItem, { ...context, type: this.parentItemType, index: 0, itemIndex: 0 })
     }
   }
 
@@ -160,7 +160,7 @@ const childLocationCss = ({ x, y }: XYCoordinates) => css`
 
 export type PlaceItemContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   game: MaterialGame<Player, MaterialType, LocationType>
-  material: Record<MaterialType, MaterialDescription>
+  material: Record<MaterialType, MaterialDescription<Player, MaterialType, LocationType>>
   locators: Record<LocationType, ItemLocator<Player, MaterialType, LocationType>>
   type: MaterialType
   index: number

@@ -13,7 +13,7 @@ export const Board = forwardRef<HTMLDivElement, BoardProps & HTMLAttributes<HTML
   <div ref={ref} css={[sizeCss({ height, ratio }), backgroundCss(image)]} {...props}/>
 )
 
-export type BoardMaterialDescription<ItemId extends number = number, P extends number = number, M extends number = number, L extends number = number>
+export type BoardMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId extends number = number>
   = CommonMaterialDescription<P, M, L> & {
   type: typeof MaterialComponentType.Board
   props: ItemCustomization<BoardProps, ItemId>,
