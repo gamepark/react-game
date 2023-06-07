@@ -93,13 +93,13 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     if (parentItemIndex !== undefined && parentItemIndex !== -1) {
       const parentItem = game.items[this.parentItemType]![parentItemIndex]
       const parentLocator: ItemLocator<P, M, L> = locators[parentItem.location.type]
-      return parentLocator.getTransforms(parentItem, { ...context, type: this.parentItemType, index: 0, itemIndex: parentItemIndex })
+      return parentLocator.getTransforms(parentItem, { ...context, type: this.parentItemType, index: 0 })
     } else {
       const parentItemId = this.getParentItemId(location)
       const staticItem = parentMaterial.items && parentMaterial.items(game, player).find(item => equal(item.id, parentItemId))
       if (!staticItem) return []
       const locator: ItemLocator<P, M, L> = locators[staticItem.location.type]
-      return locator.getTransforms(staticItem, { ...context, type: this.parentItemType, index: 0, itemIndex: 0 })
+      return locator.getTransforms(staticItem, { ...context, type: this.parentItemType, index: 0 })
     }
   }
 
@@ -164,7 +164,6 @@ export type PlaceItemContext<Player extends number = number, MaterialType extend
   locators: Record<LocationType, ItemLocator<Player, MaterialType, LocationType>>
   type: MaterialType
   index: number
-  itemIndex: number
   player?: Player
 }
 

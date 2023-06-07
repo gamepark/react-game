@@ -40,7 +40,7 @@ export const GameMaterialDisplay = () => {
       return description.items(game, player).map((item, index) => {
         const legalMovesTo = innerLocations.length > 0 ? legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveOnItem(move, item.id, innerLocations))) : undefined
         const locator = locators[item.location.type]
-        const context: PlaceItemContext = { game, type, index, itemIndex: index, player, material, locators }
+        const context: PlaceItemContext = { game, type, index, player, material, locators }
         return <MaterialComponent key={`${stringType}_${index}`} type={type} itemId={item.id} withLocations
                                   legalMovesTo={legalMovesTo}
                                   css={[pointerCursorCss, transformCss(`translate(-50%, -50%)`, locator.place(item, context))]}
@@ -53,7 +53,7 @@ export const GameMaterialDisplay = () => {
       return items.map((item, itemIndex) => {
         const locator = locators[item.location.type]
         return [...Array(item.quantity ?? 1)].map((_, index) => {
-          const context: PlaceItemContext = { game, type, index, itemIndex, player, material, locators }
+          const context: PlaceItemContext = { game, type, index, player, material, locators }
           if (locator.hide(item, context)) return null
           const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItem(move, type, itemIndex)))
           const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
