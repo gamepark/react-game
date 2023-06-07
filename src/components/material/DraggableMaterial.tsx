@@ -66,7 +66,7 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ id, data, disabl
                          !(isAlreadyDragging && draggingTranslate) && transformTransition(animation?.duration),
                          !disabled && noTouchAction,
                          disabled ? pointerCursorCss : isDragging ? grabbingCursor : [shineEffect, grabCursor],
-                         transformCss(preTransform, draggingTranslate, postTransform)
+                         transformCss(preTransform, draggingTranslate, draggingTranslate && 'translateZ(20em)', postTransform)
                        ]}
                        {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}/>
   )
