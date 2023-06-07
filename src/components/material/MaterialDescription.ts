@@ -1,6 +1,5 @@
 import { BoardMaterialDescription } from './Board'
 import { CardMaterialDescription } from './Card'
-import { StaticMaterialItem } from './Items'
 import { ReactNode } from 'react'
 import { ItemMove, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { TokenMaterialDescription } from './Token'
@@ -10,7 +9,7 @@ export type MaterialDescription<P extends number = number, M extends number = nu
 
 export type CommonMaterialDescription<P extends number = number, M extends number = number, L extends number = number> = {
   rules: (props: MaterialRulesProps<P, M, L>) => ReactNode
-  items?: (game: MaterialGame<P, M, L>, player?: P) => StaticMaterialItem[]
+  items?: (game: MaterialGame<P, M, L>, player?: P) => MaterialItem<P, L>[]
 }
 
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {

@@ -4,7 +4,7 @@ import { getPropForItem, MaterialDescription, SimpleDropArea } from '../componen
 import { ReactNode } from 'react'
 import { css, Interpolation, Theme } from '@emotion/react'
 import equal from 'fast-deep-equal'
-import { ComponentSize, getPositionTransforms } from '../css'
+import { ComponentSize } from '../css'
 import { isMoveToLocation } from '../components/material/utils'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
@@ -98,7 +98,8 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
       const parentItemId = this.getParentItemId(location)
       const staticItem = parentMaterial.items && parentMaterial.items(game, player).find(item => equal(item.id, parentItemId))
       if (!staticItem) return []
-      return getPositionTransforms(staticItem.position, staticItem.rotation)
+      const locator = new this.locators[staticItem.location.type](this.material, this.locators, this.player)
+      return locator.getTransforms(staticItem, { game, type: this.parentItemType, index: 0, itemIndex: parentItemIndex, legalMoves: [] })
     }
   }
 
@@ -115,7 +116,9 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   countItems(location: Location<P, L>, context: PlaceItemContext<P, M, L>): number {
-    return context.game.items[context.type]!.reduce((sum, item) => this.isSameLocation(item.location, location) ? sum + (item.quantity ?? 1) : sum, 0)
+    const items = context.game.items[context.type]
+    if (!items) return 0
+    return items.reduce((sum, item) => this.isSameLocation(item.location, location) ? sum + (item.quantity ?? 1) : sum, 0)
   }
 
   getMaterial(game: MaterialGame<P, M, L>, type: M) {

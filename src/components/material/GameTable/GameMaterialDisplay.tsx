@@ -6,7 +6,7 @@ import { closeRulesDisplay, displayMaterialRules, MaterialMove, MaterialRules } 
 import pickBy from 'lodash.pickby'
 import { isMoveOnItem, isMoveThisItem, isMoveThisItemToLocation } from '../utils'
 import { MaterialComponent } from '../MaterialComponent'
-import { getPositionTransforms, pointerCursorCss, transformCss } from '../../../css'
+import { pointerCursorCss, transformCss } from '../../../css'
 import { DraggableItemData, DraggableMaterial, isDraggableItemData } from '../DraggableMaterial'
 import { RulesDialog } from '../../dialogs'
 import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
@@ -39,9 +39,11 @@ export const GameMaterialDisplay = () => {
       const innerLocations = Object.keys(innerLocators).map(type => parseInt(type))
       return description.items(game, player).map((item, index) => {
         const legalMovesTo = innerLocations.length > 0 ? legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveOnItem(move, item.id, innerLocations))) : undefined
+        const locator = locators[item.location.type]
+        const context: PlaceItemContext = { game, type, index, itemIndex: index, player, material, locators }
         return <MaterialComponent key={`${stringType}_${index}`} type={type} itemId={item.id} withLocations
                                   legalMovesTo={legalMovesTo}
-                                  css={[pointerCursorCss, transformCss(`translate(-50%, -50%)`, ...getPositionTransforms(item.position, item.rotation))]}
+                                  css={[pointerCursorCss, transformCss(`translate(-50%, -50%)`, locator.place(item, context))]}
                                   onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
       })
     })}

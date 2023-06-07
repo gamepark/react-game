@@ -83,7 +83,7 @@ const isIdRecord = <Id extends number = number>(prop: Object): prop is Record<Id
 
 const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, itemId: number | undefined, moves: MaterialMove<number, number, number>[] = []) => {
   return <>
-    {Object.entries(locators).map(([_locationTypeString, locator]) =>
+    {Object.entries(locators).map(([, locator]) =>
       locator && locator.createLocationsOnItem(itemId, moves, rules)
     )}
   </>
