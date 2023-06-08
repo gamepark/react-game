@@ -56,7 +56,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   }
 
   protected getMoveItemAnimation(
-    _item: MaterialItem<P, L>, animation: Animation<MoveItem<P, M, L>>, { rules, ...context }: ItemAnimationContext<P, M, L>
+    item: MaterialItem<P, L>, animation: Animation<MoveItem<P, M, L>>, { rules, ...context }: ItemAnimationContext<P, M, L>
   ): Interpolation<Theme> {
     const type = animation.move.itemType
     const gameCopy = JSON.parse(JSON.stringify(rules.game))
@@ -65,12 +65,19 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const futureItem = mutator.items[futureIndex]
     const indexAfter = 0 // TODO: we need to now when we merge with an existing item where the item will go in terms of index (quantity)
     const targetLocator = context.locators[futureItem.location.type]
-    const animationKeyframes = keyframes`
+    const destination = targetLocator.place(futureItem, { ...context, game: gameCopy, type, index: indexAfter })
+    const animationKeyframes = this.getAnimationKeyframes(destination, item, animation, { rules, ...context })
+    return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
+  }
+
+  protected getAnimationKeyframes(
+    destination: string, _item: MaterialItem<P, L>, _animation: Animation<ItemMove<P, M, L>>, _context: ItemAnimationContext<P, M, L>
+  ) {
+    return keyframes`
       to {
-        transform: ${targetLocator.place(futureItem, { ...context, game: gameCopy, type, index: indexAfter })};
+        transform: ${destination};
       }
     `
-    return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
   }
 
   protected getDeleteItemAnimation(
