@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { FC, useContext, useEffect, useRef, useState } from 'react'
-import { DeleteItem, DisplayedItem, isDeleteItem, isMoveItem, MaterialGame, MaterialItem, MoveItem } from '@gamepark/rules-api'
+import { DeleteItem, DisplayedItem, isDeleteItem, isMoveItem, MaterialItem, MaterialRules, MoveItem } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
 import { grabbingCursor, grabCursor, pointerCursorCss, shineEffect, transformCss } from '../../css'
 import { useDraggable } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
-import { useAnimation, useGame, useMaterialAnimations, usePlayerId } from '../../hooks'
+import { useAnimation, useMaterialAnimations, usePlayerId, useRules } from '../../hooks'
 import { useScale } from '../../hooks/useScale'
 import { gameContext, MaterialGameContext } from '../GameProvider'
 import { ItemAnimationContext } from './MaterialAnimations'
@@ -38,14 +38,14 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, inde
 
   const materialAnimations = useMaterialAnimations(type)
   const context = useContext(gameContext) as MaterialGameContext
-  const game = useGame<MaterialGame>()!
+  const rules = useRules<MaterialRules>()!
   const player = usePlayerId()
   const animation = useAnimation<MoveItem | DeleteItem>(animation =>
     (isMoveItem(animation.move, type) || isDeleteItem(animation.move, type))
     && animation.move.itemIndex === index
   )
   const locator = context.locators[item.location.type]
-  const animationContext: ItemAnimationContext = { ...context, game, player }
+  const animationContext: ItemAnimationContext = { ...context, rules, player }
   const animationCss = !!animation
     && locator.isItemToAnimate(displayedItem, animation, animationContext)
     && materialAnimations?.getItemAnimation(item, animation, animationContext)

@@ -1,5 +1,16 @@
 import { Animation, AnimationContext, Animations } from '@gamepark/react-client'
-import { CreateItem, DeleteItem, ItemMove, ItemMoveType, MaterialGame, MaterialItem, MaterialMove, MoveItem, RulesCreator } from '@gamepark/rules-api'
+import {
+  CreateItem,
+  DeleteItem,
+  ItemMove,
+  ItemMoveType,
+  MaterialGame,
+  MaterialItem,
+  MaterialMove,
+  MaterialMutator,
+  MaterialRules,
+  MoveItem
+} from '@gamepark/rules-api'
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { ItemLocator } from '../../locators'
 import { MaterialDescription } from './MaterialDescription'
@@ -45,17 +56,18 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   }
 
   protected getMoveItemAnimation(
-    item: MaterialItem<P, L>, animation: Animation<MoveItem<P, M, L>>, { Rules, game, ...context }: ItemAnimationContext<P, M, L>
+    _item: MaterialItem<P, L>, animation: Animation<MoveItem<P, M, L>>, { rules, ...context }: ItemAnimationContext<P, M, L>
   ): Interpolation<Theme> {
     const type = animation.move.itemType
-    const rules = new Rules(JSON.parse(JSON.stringify(game)))
-    rules.play(JSON.parse(JSON.stringify(animation.move)))
-    const indexAfter = 0 // TODO: we need to now when we merge with an existing item where the item will go in terms of index
-    const targetPosition = { ...item, ...animation.move.position }
-    const targetLocator = context.locators[targetPosition.location.type]
+    const gameCopy = JSON.parse(JSON.stringify(rules.game))
+    const mutator = new MaterialMutator<P, M, L>(type, gameCopy.items[type] ?? [], rules.getLocationsStrategies()[type])
+    const futureIndex = mutator.move(animation.move)
+    const futureItem = mutator.items[futureIndex]
+    const indexAfter = 0 // TODO: we need to now when we merge with an existing item where the item will go in terms of index (quantity)
+    const targetLocator = context.locators[futureItem.location.type]
     const animationKeyframes = keyframes`
       to {
-        transform: ${targetLocator.place(targetPosition, { ...context, game: rules.game, type, index: indexAfter })};
+        transform: ${targetLocator.place(futureItem, { ...context, game: gameCopy, type, index: indexAfter })};
       }
     `
     return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
@@ -70,9 +82,8 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
 }
 
 export type ItemAnimationContext<P extends number = number, M extends number = number, L extends number = number> = {
-  Rules: RulesCreator,
   material: Record<M, MaterialDescription<P, M, L>>
   locators: Record<L, ItemLocator<P, M, L>>
-  game: MaterialGame<P, M, L>
+  rules: MaterialRules<P, M, L>
   player?: P
 }
