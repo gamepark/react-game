@@ -1,6 +1,6 @@
 import { ItemLocator, PlaceItemContext } from './ItemLocator'
 import { Coordinates, DisplayedItem, isDeleteItem, isMoveItem, ItemMove, MaterialItem } from '@gamepark/rules-api'
-import { Animation } from '../../../workshop/packages/react-client'
+import { Animation } from '@gamepark/react-client'
 import { ItemAnimationContext } from '../components'
 
 export abstract class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {

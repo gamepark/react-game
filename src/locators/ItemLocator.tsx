@@ -17,7 +17,7 @@ import { css, Interpolation, Theme } from '@emotion/react'
 import equal from 'fast-deep-equal'
 import { ComponentSize } from '../css'
 import { isMoveToLocation } from '../components/material/utils'
-import { Animation } from '../../../workshop/packages/react-client'
+import { Animation } from '@gamepark/react-client'
 import { getStocks, isMoveToStock } from '../components/material/utils/IsMoveToStock'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
