@@ -1,6 +1,7 @@
 import { ItemLocator, PlaceItemContext } from './ItemLocator'
 import { Coordinates, DisplayedItem, isDeleteItem, isMoveItem, ItemMove, MaterialItem } from '@gamepark/rules-api'
 import { Animation } from '../../../workshop/packages/react-client'
+import { ItemAnimationContext } from '../components'
 
 export abstract class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
   limit = 20
@@ -47,8 +48,14 @@ export abstract class PileLocator<P extends number = number, M extends number = 
     return 0
   }
 
-  isItemToAnimate({ displayIndex }: DisplayedItem<M>, animation: Animation<ItemMove<P, M, L>>): boolean {
+  isItemToAnimate({ type, index, displayIndex }: DisplayedItem<M>, animation: Animation<ItemMove<P, M, L>>, context: ItemAnimationContext<P, M, L>): boolean {
     if (isMoveItem(animation.move) || isDeleteItem(animation.move)) {
+      if (context.game.droppedItem?.type === type && context.game.droppedItem.index === index) {
+        const droppedIndex = context.game.droppedItem.displayIndex
+        if (droppedIndex < this.limit - (animation.move.quantity ?? 1)) {
+          return displayIndex === droppedIndex || displayIndex > this.limit - (animation.move.quantity ?? 1)
+        }
+      }
       return displayIndex >= this.limit - (animation.move.quantity ?? 1)
     }
     return false
