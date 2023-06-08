@@ -9,6 +9,8 @@ import { useDroppable } from '@dnd-kit/core'
 import { isMoveThisItemToLocation } from '../utils'
 import { DragMaterialItem } from '../DraggableMaterial'
 import { combineEventListeners } from '../../../utilities'
+import { isMoveToStock } from '../utils/IsMoveToStock'
+import { useStocks } from '../../../hooks/useStocks'
 
 export type SimpleDropAreaProps<P extends number = number, M extends number = number, L extends number = number> = {
   location: Location<P, L>
@@ -21,7 +23,8 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
   { location, legalMoves, onShortClick, onLongClick, ...props }: SimpleDropAreaProps<P, M, L>
 ) => {
   const locator = useItemLocator(location.type)
-  const rules = useRules<MaterialRules>()
+  const stocks = useStocks<P, M, L>(location.type)
+  const rules = useRules<MaterialRules<P, M, L>>()
   const play = usePlay<MaterialMove<P, M, L>>()
   const player = usePlayerId()
 
@@ -46,7 +49,7 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
 
   const canDrop = draggedItem !== undefined && legalMoves.filter(move =>
     rules?.isMoveTrigger(move, move =>
-      isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, location)
+      (isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, location) || (!!stocks && isMoveToStock<P, M, L>(stocks, move, location)))
     )
   ).length === 1
 

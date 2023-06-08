@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { PlaceItemContext } from '../../../locators'
+import { BaseContext, PlaceItemContext } from '../../../locators'
 import { useContext, useState } from 'react'
 import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { closeRulesDisplay, displayMaterialRules, MaterialMove, MaterialRules } from '@gamepark/rules-api'
@@ -30,6 +30,7 @@ export const GameMaterialDisplay = () => {
 
   if (!rules) return <></>
   const game = rules?.game
+  const commonContext: BaseContext = { game, player, material, locators }
 
   return <>
     {Object.entries(material).map(([stringType, description]) => {
@@ -37,14 +38,16 @@ export const GameMaterialDisplay = () => {
       const type = parseInt(stringType)
       const innerLocators = pickBy(locators, locator => locator.parentItemType === type)
       const innerLocations = Object.keys(innerLocators).map(type => parseInt(type))
-      return description.items(game, player).map((item, index) => {
+      return description.items(game, player).map((item) => {
         const legalMovesTo = innerLocations.length > 0 ? legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveOnItem(move, item.id, innerLocations))) : undefined
         const locator = locators[item.location.type]
-        const context: PlaceItemContext = { game, type, index, player, material, locators }
-        return <MaterialComponent key={`${stringType}_${index}`} type={type} itemId={item.id} withLocations
-                                  legalMovesTo={legalMovesTo}
-                                  css={[pointerCursorCss, transformCss(locator.place(item, context))]}
-                                  onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
+        return [...Array(item.quantity ?? 1)].map((_, index) => {
+          const context: PlaceItemContext = { ...commonContext, type, index }
+          return <MaterialComponent key={`${stringType}_${index}`} type={type} itemId={item.id} withLocations
+                                    legalMovesTo={legalMovesTo}
+                                    css={[pointerCursorCss, transformCss(locator.place(item, context))]}
+                                    onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
+        })
       })
     })}
     {rules && game && Object.entries(game.items).map(([stringType, items]) => {
@@ -53,7 +56,7 @@ export const GameMaterialDisplay = () => {
       return items.map((item, itemIndex) => {
         const locator = locators[item.location.type]
         return [...Array(item.quantity ?? 1)].map((_, index) => {
-          const context: PlaceItemContext = { game, type, index, player, material, locators }
+          const context: PlaceItemContext = { ...commonContext, type, index }
           if (locator.hide(item, context)) return null
           const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItem(move, type, itemIndex)))
           const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
@@ -71,6 +74,9 @@ export const GameMaterialDisplay = () => {
         })
       })
     })}
+    {Object.entries(locators).map(([, locator]) =>
+      locator && locator.createLocations && locator.createLocations(legalMoves, rules, commonContext)
+    )}
     <RulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
   </>
 }

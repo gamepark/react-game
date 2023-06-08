@@ -7,6 +7,7 @@ import equal from 'fast-deep-equal'
 import { ComponentSize } from '../css'
 import { isMoveToLocation } from '../components/material/utils'
 import { Animation } from '../../../workshop/packages/react-client'
+import { getStocks, isMoveToStock } from '../components/material/utils/IsMoveToStock'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
@@ -131,7 +132,17 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return locations.map(location => this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location)))))
   }
 
+  createLocations?(legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: BaseContext<P, M, L>): ReactNode {
+    const locations = this.getLocations?.() ?? []
+    const stocks = getStocks(context.material)
+    return locations.map(location => {
+      return this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location) || isMoveToStock(stocks, move, location))))
+    })
+  }
+
   getParentItemLocations?<ParentItemId extends number | undefined>(_parent: ParentItemId): Location<P, L>[]
+
+  getLocations?(): Location<P, L>[]
 
   createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[]): ReactNode {
     const position = this.getPositionOnParent?.(location) ?? { x: 0, y: 0 }
@@ -163,14 +174,17 @@ const childLocationCss = ({ x, y }: XYCoordinates) => css`
   transform: translate(-50%, -50%);
 `
 
-export type PlaceItemContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
+export type BaseContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   game: MaterialGame<Player, MaterialType, LocationType>
   material: Record<MaterialType, MaterialDescription<Player, MaterialType, LocationType>>
   locators: Record<LocationType, ItemLocator<Player, MaterialType, LocationType>>
-  type: MaterialType
-  index: number
   player?: Player
 }
+
+export type PlaceItemContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
+  type: MaterialType
+  index: number
+} & BaseContext<Player, MaterialType, LocationType>
 
 export type LocationRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
   location: Location<P, L>
