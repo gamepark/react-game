@@ -63,7 +63,8 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const mutator = new MaterialMutator<P, M, L>(type, gameCopy.items[type] ?? [], rules.getLocationsStrategies()[type])
     const futureIndex = mutator.move(animation.move)
     const futureItem = mutator.items[futureIndex]
-    const indexAfter = 0 // TODO: we need to now when we merge with an existing item where the item will go in terms of index (quantity)
+    // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
+    const indexAfter = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const targetLocator = context.locators[futureItem.location.type]
     const destination = targetLocator.place(futureItem, { ...context, game: gameCopy, type, index: indexAfter })
     const animationKeyframes = this.getAnimationKeyframes(destination, item, animation, { rules, ...context })
