@@ -3,7 +3,7 @@ import { HTMLAttributes, MouseEvent, useState } from 'react'
 import { displayLocationRules, ItemMoveType, Location, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { useItemLocator, usePlay, usePlayerId, useRules } from '../../../hooks'
+import { useAnimations, useItemLocator, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { shineEffect } from '../../../css'
 import { useDroppable } from '@dnd-kit/core'
 import { isMoveThisItemToLocation } from '../utils'
@@ -52,6 +52,8 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
     )
   ).length === 1
 
+  const animations = useAnimations<MaterialMove>()
+
   const [clicking, setClicking] = useState(false)
 
   const listeners = useLongPress(() => onLongClick && onLongClick(), {
@@ -77,7 +79,7 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
   return <div ref={setNodeRef}
               css={[
                 !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
-                (canDrop || (!draggedItem && legalMoves.length > 0)) && shineEffect,
+                (canDrop || (!draggedItem && legalMoves.length > 0 && !animations.length)) && shineEffect,
                 canDrop && isOver && dropHighlight
               ]}
               {...props} {...combineEventListeners(listeners, props)}/>
