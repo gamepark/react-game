@@ -7,6 +7,7 @@ import { DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { isMoveThisItemToLocation } from '../utils'
 import { GameTableContent } from './GameTableContent'
+import { useStocks } from '../../../hooks/useStocks'
 
 export type GameTableProps = {
   xMin: number
@@ -31,11 +32,12 @@ export const GameTable: FC<GameTableProps> = (props) => {
   const playerId = usePlayerId()
   const rules = useRules<MaterialRules>()!
   const legalMoves = useLegalMoves()
+  const stocks = useStocks()
   const onDragEnd = useCallback((event: DragEndEvent) => {
     setDragging(false)
     if (event.active.data.current && event.over?.data.current) {
       const { type, index } = event.active.data.current
-      const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItemToLocation(move, type, index, event.over?.data.current as Location)))
+      const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItemToLocation(move, type, index, event.over?.data.current as Location, stocks)))
       if (moves.length === 1) {
         play(moves[0], { delayed: rules.isUnpredictableMove(moves[0], playerId) })
       }

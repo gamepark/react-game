@@ -23,7 +23,7 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
   { location, legalMoves, onShortClick, onLongClick, ...props }: SimpleDropAreaProps<P, M, L>
 ) => {
   const locator = useItemLocator(location.type)
-  const stocks = useStocks<P, M, L>(location.type)
+  const stocks = useStocks()
   const rules = useRules<MaterialRules<P, M, L>>()
   const play = usePlay<MaterialMove<P, M, L>>()
   const player = usePlayerId()
@@ -49,7 +49,7 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
 
   const canDrop = draggedItem !== undefined && legalMoves.filter(move =>
     rules?.isMoveTrigger(move, move =>
-      (isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, location) || (!!stocks && isMoveToStock<P, M, L>(stocks, move, location)))
+      isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, location, stocks)
     )
   ).length === 1
 
