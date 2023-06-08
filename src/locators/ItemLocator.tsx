@@ -2,6 +2,8 @@
 import {
   Coordinates,
   DisplayedItem,
+  isDeleteItem,
+  isMoveItem,
   ItemMove,
   Location,
   Material,
@@ -173,8 +175,25 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return (absoluteIndex - players.indexOf(me) + players.length) % players.length
   }
 
-  isItemToAnimate(_item: DisplayedItem<M>, _animation: Animation<ItemMove<P, M, L>>, _context: ItemAnimationContext<P, M, L>): boolean {
-    return true
+  isItemToAnimate(
+    { type, index, displayIndex }: DisplayedItem<M>,
+    animation: Animation<ItemMove<P, M, L>>,
+    { rules: { game } }: ItemAnimationContext<P, M, L>
+  ): boolean {
+    if (isMoveItem(animation.move) || isDeleteItem(animation.move)) {
+      let quantity = game.items[type]![index].quantity ?? 1
+      if (quantity === 1) return true
+      if (this.limit) quantity = Math.min(quantity, this.limit)
+      if (game.droppedItem?.type === type && game.droppedItem.index === index) {
+        const droppedIndex = game.droppedItem.displayIndex
+        if (displayIndex === droppedIndex) return true
+        if (droppedIndex < quantity - (animation.move.quantity ?? 1)) {
+          return displayIndex > quantity - (animation.move.quantity ?? 1)
+        }
+      }
+      return displayIndex >= quantity - (animation.move.quantity ?? 1)
+    }
+    return false
   }
 }
 
