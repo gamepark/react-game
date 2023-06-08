@@ -20,10 +20,10 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
 
   override getPreDuration(move: ItemMove<P, M, L>, context: AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>): number {
     switch (move.type) {
-      case ItemMoveType.Create:
-        return this.moveDuration(move, context)
+      /*case ItemMoveType.Create:
+        return this.moveDuration(move, context)*/
       case ItemMoveType.Move:
-      case ItemMoveType.Delete:
+      /*case ItemMoveType.Delete:*/
         if (context.state.droppedItem?.type === move.itemType && context.state.droppedItem?.index === move.itemIndex) {
           return 0.2
         }
@@ -51,7 +51,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   protected getCreateItemAnimation(
     _item: MaterialItem<P, L>, _animation: Animation<CreateItem<P, M, L>>, _context: ItemAnimationContext<P, M, L>
   ): Interpolation<Theme> {
-    // TODO: move from stock of fade in by default
+    // TODO: move from stock or fade in by default
     return
   }
 
@@ -84,7 +84,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   protected getDeleteItemAnimation(
     _item: MaterialItem<P, L>, _animation: Animation<DeleteItem<M>>, _context: ItemAnimationContext<P, M, L>
   ): Interpolation<Theme> {
-    // TODO: move to stock of fade out by default
+    // TODO: move to stock or fade out by default
     return
   }
 }
