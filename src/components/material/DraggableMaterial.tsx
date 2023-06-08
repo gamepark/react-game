@@ -6,7 +6,7 @@ import { grabbingCursor, grabCursor, pointerCursorCss, shineEffect, transformCss
 import { useDraggable } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
-import { useAnimation, useGame, useMaterialAnimations } from '../../hooks'
+import { useAnimation, useGame, useMaterialAnimations, usePlayerId } from '../../hooks'
 import { useScale } from '../../hooks/useScale'
 import { gameContext, MaterialGameContext } from '../GameProvider'
 import { ItemAnimationContext } from './MaterialAnimations'
@@ -39,12 +39,13 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, inde
   const materialAnimations = useMaterialAnimations(type)
   const context = useContext(gameContext) as MaterialGameContext
   const game = useGame<MaterialGame>()!
+  const player = usePlayerId()
   const animation = useAnimation<MoveItem | DeleteItem>(animation =>
     (isMoveItem(animation.move, type) || isDeleteItem(animation.move, type))
     && animation.move.itemIndex === index
   )
   const locator = context.locators[item.location.type]
-  const animationContext: ItemAnimationContext = { ...context, game }
+  const animationContext: ItemAnimationContext = { ...context, game, player }
   const animationCss = !!animation
     && locator.isItemToAnimate(displayedItem, animation, animationContext)
     && materialAnimations?.getItemAnimation(item, animation, animationContext)
