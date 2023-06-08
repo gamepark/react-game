@@ -6,12 +6,11 @@ import { grabbingCursor, grabCursor, pointerCursorCss, shineEffect, transformCss
 import { useDraggable } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
-import { useAnimations, useMaterialAnimations, usePlayerId, useRules } from '../../hooks'
+import { useAnimation, useAnimations, useMaterialAnimations, usePlayerId, useRules } from '../../hooks'
 import { useScale } from '../../hooks/useScale'
 import { gameContext, MaterialGameContext } from '../GameProvider'
 import { ItemAnimationContext } from './MaterialAnimations'
 import merge from 'lodash.merge'
-import { Animation } from '../../../../workshop/packages/react-client'
 
 export type DraggableMaterialProps<P extends number = number, M extends number = number, L extends number = number> = {
   item: MaterialItem<P, L>
@@ -42,11 +41,11 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, inde
   const context = useContext(gameContext) as MaterialGameContext
   const rules = useRules<MaterialRules>()!
   const player = usePlayerId()
-  const animations = useAnimations<MaterialMove>()
-  const animation = animations.find(animation =>
+  const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
+  const animation = useAnimation<MoveItem | DeleteItem>(animation =>
     (isMoveItem(animation.move, type) || isDeleteItem(animation.move, type))
     && animation.move.itemIndex === index
-  ) as Animation<MoveItem | DeleteItem> | undefined
+  )
   const locator = context.locators[item.location.type]
   const animationContext: ItemAnimationContext = { ...context, rules, player }
   const isItemToAnimate = !!animation && locator.isItemToAnimate(displayedItem, animation, animationContext)

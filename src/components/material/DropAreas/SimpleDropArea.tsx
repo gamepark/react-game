@@ -52,7 +52,7 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
     )
   ).length === 1
 
-  const animations = useAnimations<MaterialMove>()
+  const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
 
   const [clicking, setClicking] = useState(false)
 
