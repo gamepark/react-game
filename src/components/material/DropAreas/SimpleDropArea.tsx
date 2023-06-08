@@ -7,7 +7,7 @@ import { useItemLocator, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { shineEffect } from '../../../css'
 import { useDroppable } from '@dnd-kit/core'
 import { isMoveThisItemToLocation } from '../utils'
-import { DragMaterialItem } from '../DraggableMaterial'
+import { isDraggedItem } from '../DraggableMaterial'
 import { combineEventListeners } from '../../../utilities'
 import { useStocks } from '../../../hooks/useStocks'
 
@@ -44,7 +44,7 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
     data: location
   })
 
-  const draggedItem = active?.data.current as DragMaterialItem | undefined
+  const draggedItem = isDraggedItem(active?.data.current) ? active?.data.current : undefined
 
   const canDrop = draggedItem !== undefined && legalMoves.filter(move =>
     rules?.isMoveTrigger(move, move =>
@@ -119,4 +119,8 @@ const getMoveItemTypes = <P extends number = number, M extends number = number, 
     default:
       return []
   }
+}
+
+export function isDropLocation<P extends number = number, L extends number = number>(data?: Record<string, any>): data is Location<P, L> {
+  return typeof data?.type === 'number'
 }

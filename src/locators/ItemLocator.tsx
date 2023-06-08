@@ -1,5 +1,16 @@
 /** @jsxImportSource @emotion/react */
-import { Coordinates, ItemMove, Location, Material, MaterialGame, MaterialItem, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
+import {
+  Coordinates,
+  DisplayedItem,
+  ItemMove,
+  Location,
+  Material,
+  MaterialGame,
+  MaterialItem,
+  MaterialMove,
+  MaterialRules,
+  XYCoordinates
+} from '@gamepark/rules-api'
 import { getPropForItem, ItemAnimationContext, MaterialDescription, SimpleDropArea } from '../components'
 import { ReactNode } from 'react'
 import { css, Interpolation, Theme } from '@emotion/react'
@@ -162,7 +173,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return (absoluteIndex - players.indexOf(me) + players.length) % players.length
   }
 
-  isItemToAnimate(_item: MaterialItem<P, L>, _animation: Animation<ItemMove<P, M, L>>, _context: ItemAnimationContext<P, M, L>): boolean {
+  isItemToAnimate(_item: DisplayedItem<M>, _animation: Animation<ItemMove<P, M, L>>, _context: ItemAnimationContext<P, M, L>): boolean {
     return true
   }
 }

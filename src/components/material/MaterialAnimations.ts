@@ -9,9 +9,13 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
 
   override getPreDuration(move: ItemMove<P, M, L>, context: AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>): number {
     switch (move.type) {
-      case ItemMoveType.Move:
       case ItemMoveType.Create:
+        return this.moveDuration(move, context)
+      case ItemMoveType.Move:
       case ItemMoveType.Delete:
+        if (context.state.droppedItem?.type === move.itemType && context.state.droppedItem?.index === move.itemIndex) {
+          return 0.2
+        }
         return this.moveDuration(move, context)
       default:
         return 0
@@ -71,5 +75,4 @@ export type ItemAnimationContext<P extends number = number, M extends number = n
   locators: Record<L, ItemLocator<P, M, L>>
   game: MaterialGame<P, M, L>
   player?: P
-  index: number
 }

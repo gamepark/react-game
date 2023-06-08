@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useContext, useEffect, useState } from 'react'
-import { DeleteItem, isDeleteItem, isMoveItem, MaterialGame, MaterialItem, MoveItem } from '@gamepark/rules-api'
+import { FC, useContext, useEffect, useRef, useState } from 'react'
+import { DeleteItem, DisplayedItem, isDeleteItem, isMoveItem, MaterialGame, MaterialItem, MoveItem } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
 import { grabbingCursor, grabCursor, pointerCursorCss, shineEffect, transformCss } from '../../css'
 import { useDraggable } from '@dnd-kit/core'
-import { CSS } from '@dnd-kit/utilities'
 import { css } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
 import { useAnimation, useGame, useMaterialAnimations } from '../../hooks'
@@ -14,74 +13,57 @@ import { ItemAnimationContext } from './MaterialAnimations'
 
 export type DraggableMaterialProps<P extends number = number, M extends number = number, L extends number = number> = {
   item: MaterialItem<P, L>
-  itemIndex: number
   index: number
+  displayIndex: number
   disabled?: boolean
   preTransform?: string
   postTransform?: string
 } & MaterialComponentProps<number, P, M, L>
 
-export type DraggableItemData<P extends number = number, M extends number = number, L extends number = number> = {
-  item: MaterialItem<P, L>
-  type: M
-  index: number
-}
+export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, index, displayIndex, disabled, preTransform, postTransform, ...props }) => {
 
-export function isDraggableItemData<P extends number = number, M extends number = number, L extends number = number>(
-  data?: Record<string, any>
-): data is DraggableItemData<P, M, L> {
-  return typeof data?.item === 'object' && typeof data?.type === 'number' && typeof data?.index === 'number'
-}
-
-export type DragMaterialItem<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
-  item: MaterialItem<Player, LocationType>
-  type: MaterialType
-  index: number
-}
-
-export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, itemIndex, index, disabled, preTransform, postTransform, ...props }) => {
-
-  const { attributes, listeners, transform, isDragging, setNodeRef } = useDraggable({
-    id: `${type}_${itemIndex}_${index}`,
-    data: { item, type, index: itemIndex },
+  const displayedItem: DisplayedItem = { type, index, displayIndex }
+  const { attributes, listeners, transform, setNodeRef } = useDraggable({
+    id: `${type}_${index}_${displayIndex}`,
+    data: displayedItem,
     disabled
   })
 
   const scale = useScale()
-  const draggingTranslate = CSS.Translate.toString(transform && { ...transform, x: transform.x / scale, y: transform.y / scale })
+  const transformRef = useRef<string>()
+  if (transform) {
+    const { x, y } = transform
+    transformRef.current = `translate3d(${Math.round(x / scale)}px, ${y ? Math.round(y / scale) : 0}px, 20em)`
+  }
 
   const materialAnimations = useMaterialAnimations(type)
   const context = useContext(gameContext) as MaterialGameContext
   const game = useGame<MaterialGame>()!
   const animation = useAnimation<MoveItem | DeleteItem>(animation =>
     (isMoveItem(animation.move, type) || isDeleteItem(animation.move, type))
-    && animation.move.itemIndex === itemIndex
+    && animation.move.itemIndex === index
   )
   const locator = context.locators[item.location.type]
-  const animationContext: ItemAnimationContext = { ...context, index, game }
+  const animationContext: ItemAnimationContext = { ...context, game }
   const animationCss = !!animation
-    && locator.isItemToAnimate(item, animation, animationContext)
+    && locator.isItemToAnimate(displayedItem, animation, animationContext)
     && materialAnimations?.getItemAnimation(item, animation, animationContext)
 
   // We need to delay a little the default transition removal when dragging starts, otherwise dnd-kit suffers from transform side effect
   // because we opted out from ignoring transform in the configuration (using: "draggable: { measure: getClientRect }")
-  const [isAlreadyDragging, setIsAlreadyDragging] = useState(false)
+  const [applyTransform, setApplyTransform] = useState(false)
   useEffect(() => {
-    if (isDragging) {
-      const timeout = setTimeout(() => setIsAlreadyDragging(true))
-      return () => clearTimeout(timeout)
-    } else {
-      setIsAlreadyDragging(false)
-    }
-  }, [isDragging])
+    const timeout = setTimeout(() => setApplyTransform(transform !== null))
+    return () => clearTimeout(timeout)
+  }, [transform !== null])
 
   return (
     <MaterialComponent ref={setNodeRef} type={type} itemId={item.id}
                        css={[
-                         !(isAlreadyDragging && draggingTranslate) && transformTransition(animation?.duration),
+                         !applyTransform && transformTransition(animation?.duration),
                          !disabled && noTouchAction,
-                         disabled || animation ? pointerCursorCss : isDragging ? grabbingCursor : [shineEffect, grabCursor],
-                         transformCss(preTransform, draggingTranslate, draggingTranslate && 'translateZ(20em)', postTransform),
+                         disabled || animation ? pointerCursorCss : transform ? grabbingCursor : [shineEffect, grabCursor],
+                         transformCss(preTransform, applyTransform && transformRef.current, postTransform),
                          animationCss
                        ]}
                        {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}/>
@@ -95,3 +77,7 @@ const noTouchAction = css`
 const transformTransition = (duration: number = 0.2) => css`
   transition: transform ${duration}s ease-in-out
 `
+
+export function isDraggedItem<M extends number = number>(data?: Record<string, any>): data is DisplayedItem<M> {
+  return typeof data?.type === 'number' && typeof data?.index === 'number' && typeof data?.displayIndex === 'number'
+}

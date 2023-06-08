@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { FC, useCallback, useState } from 'react'
-import { Location, MaterialRules } from '@gamepark/rules-api'
+import { dropItemMove, MaterialRules } from '@gamepark/rules-api'
 import { TransformWrapper } from 'react-zoom-pan-pinch'
 import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
@@ -8,6 +8,8 @@ import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { isMoveThisItemToLocation } from '../utils'
 import { GameTableContent } from './GameTableContent'
 import { useStocks } from '../../../hooks/useStocks'
+import { isDraggedItem } from '../DraggableMaterial'
+import { isDropLocation } from '../DropAreas'
 
 export type GameTableProps = {
   xMin: number
@@ -35,10 +37,12 @@ export const GameTable: FC<GameTableProps> = (props) => {
   const stocks = useStocks()
   const onDragEnd = useCallback((event: DragEndEvent) => {
     setDragging(false)
-    if (event.active.data.current && event.over?.data.current) {
-      const { type, index } = event.active.data.current
-      const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItemToLocation(move, type, index, event.over?.data.current as Location, stocks)))
+    if (event.over && isDraggedItem(event.active.data.current) && isDropLocation(event.over.data.current)) {
+      const { type, index, displayIndex } = event.active.data.current
+      const location = event.over.data.current
+      const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItemToLocation(move, type, index, location, stocks)))
       if (moves.length === 1) {
+        play(dropItemMove(type, index, displayIndex), { local: true })
         play(moves[0], { delayed: rules.isUnpredictableMove(moves[0], playerId) })
       }
     }
