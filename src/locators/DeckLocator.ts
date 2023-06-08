@@ -6,7 +6,10 @@ export abstract class DeckLocator<P extends number = number, M extends number = 
   limit = 20
 
   hide(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): boolean {
-    return this.getItemIndex(item, context) < 0
+    if (!this.limit) return false
+    const index = super.getItemIndex(item, context)
+    const count = this.countItems(item.location, context)
+    return index < count - this.limit
   }
 
   getItemIndex(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): number {
@@ -14,7 +17,7 @@ export abstract class DeckLocator<P extends number = number, M extends number = 
     if (!this.limit) return index
     const count = this.countItems(item.location, context)
     if (count <= this.limit) return index
-    return index - count + this.limit
+    return Math.max(0, index - count + this.limit)
   }
 
   getDelta(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): Partial<Coordinates> {
