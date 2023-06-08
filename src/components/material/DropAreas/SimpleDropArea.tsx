@@ -9,7 +9,6 @@ import { useDroppable } from '@dnd-kit/core'
 import { isMoveThisItemToLocation } from '../utils'
 import { DragMaterialItem } from '../DraggableMaterial'
 import { combineEventListeners } from '../../../utilities'
-import { isMoveToStock } from '../utils/IsMoveToStock'
 import { useStocks } from '../../../hooks/useStocks'
 
 export type SimpleDropAreaProps<P extends number = number, M extends number = number, L extends number = number> = {
