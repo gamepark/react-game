@@ -23,7 +23,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
       /*case ItemMoveType.Create:
         return this.moveDuration(move, context)*/
       case ItemMoveType.Move:
-      /*case ItemMoveType.Delete:*/
+      case ItemMoveType.Delete:
         if (context.state.droppedItem?.type === move.itemType && context.state.droppedItem?.index === move.itemIndex) {
           return 0.2
         }
@@ -82,10 +82,25 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   }
 
   protected getDeleteItemAnimation(
-    _item: MaterialItem<P, L>, _animation: Animation<DeleteItem<M>>, _context: ItemAnimationContext<P, M, L>
+    item: MaterialItem<P, L>, animation: Animation<DeleteItem<M>>, { rules, ...context }: ItemAnimationContext<P, M, L>
   ): Interpolation<Theme> {
-    // TODO: move to stock or fade out by default
-    return
+    const type = animation.move.itemType
+    const stock = context.material[type].stock
+    if (stock) {
+      const stockItem = context.material[type].items?.(rules.game, context.player).find(item => item.location.type === stock.location.type)
+      const index = stockItem?.quantity ? stockItem.quantity - 1 : 0
+      const targetLocator = context.locators[stock.location.type]
+      const destination = targetLocator.place(stockItem ?? stock, { ...context, game: rules.game, type, index })
+      const animationKeyframes = this.getAnimationKeyframes(destination, item, animation, { rules, ...context })
+      return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
+    } else {
+      const fadeout = keyframes`
+        to {
+          opacity: 0;
+        }
+      `
+      return css`animation: ${fadeout} ${animation.duration}s ease-in-out`
+    }
   }
 }
 
