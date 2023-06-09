@@ -11,6 +11,7 @@ import { useScale } from '../../hooks/useScale'
 import { gameContext, MaterialGameContext } from '../GameProvider'
 import { ItemAnimationContext } from './MaterialAnimations'
 import merge from 'lodash.merge'
+import equal from 'fast-deep-equal'
 
 export type DraggableMaterialProps<P extends number = number, M extends number = number, L extends number = number> = {
   item: MaterialItem<P, L>
@@ -50,14 +51,15 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, inde
   const animationContext: ItemAnimationContext = { ...context, rules, player }
   const isItemToAnimate = !!animation && locator.isItemToAnimate(displayedItem, animation, animationContext)
   const animationCss = isItemToAnimate && materialAnimations?.getItemAnimation(item, animation, animationContext)
+  const isDroppedItem = equal(rules.game.droppedItem, displayedItem)
 
   // We need to delay a little the default transition removal when dragging starts, otherwise dnd-kit suffers from transform side effect
   // because we opted out from ignoring transform in the configuration (using: "draggable: { measure: getClientRect }")
   const [applyTransform, setApplyTransform] = useState(false)
   useEffect(() => {
-    const timeout = setTimeout(() => setApplyTransform(transform !== null))
+    const timeout = setTimeout(() => setApplyTransform(transform !== null && !isDroppedItem))
     return () => clearTimeout(timeout)
-  }, [transform !== null])
+  }, [transform !== null, isDroppedItem])
 
   if (isItemToAnimate && isMoveItem(animation.move) && typeof animation.move.reveal === 'object') {
     item = JSON.parse(JSON.stringify(item))
