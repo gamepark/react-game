@@ -20,13 +20,20 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
 
   override getPreDuration(move: ItemMove<P, M, L>, context: AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>): number {
     switch (move.type) {
-      /*case ItemMoveType.Create:
-        return this.moveDuration(move, context)*/
       case ItemMoveType.Move:
       case ItemMoveType.Delete:
         if (context.state.droppedItem?.type === move.itemType && context.state.droppedItem?.index === move.itemIndex) {
           return 0.2
         }
+        return this.moveDuration(move, context)
+      default:
+        return 0
+    }
+  }
+
+  getPostDuration(move: ItemMove<P, M, L>, context: AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>): number {
+    switch (move.type) {
+      case ItemMoveType.Create:
         return this.moveDuration(move, context)
       default:
         return 0
@@ -49,10 +56,40 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   }
 
   protected getCreateItemAnimation(
-    _item: MaterialItem<P, L>, _animation: Animation<CreateItem<P, M, L>>, _context: ItemAnimationContext<P, M, L>
+    item: MaterialItem<P, L>, animation: Animation<CreateItem<P, M, L>>, context: ItemAnimationContext<P, M, L>
   ): Interpolation<Theme> {
-    // TODO: move from stock or fade in by default
-    return
+    const origin = this.getStockLocation(animation.move.itemType, context)
+    if (origin) {
+      const animationKeyframes = this.getKeyframesFromOrigin(origin, item, animation, context)
+      return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
+    } else {
+      const fadein = keyframes`
+        from {
+          opacity: 0;
+        }
+      `
+      return css`animation: ${fadein} ${animation.duration}s ease-in-out`
+    }
+  }
+
+  protected getStockLocation(itemType: M, { rules, ...context }: ItemAnimationContext<P, M, L>) {
+    const type = itemType
+    const stock = context.material[type].stock
+    if (!stock) return
+    const stockItem = context.material[type].items?.(rules.game, context.player).find(item => item.location.type === stock.location.type)
+    const index = stockItem?.quantity ? stockItem.quantity - 1 : 0
+    const stockLocator = context.locators[stock.location.type]
+    return stockLocator.place(stockItem ?? stock, { ...context, game: rules.game, type, index })
+  }
+
+  protected getKeyframesFromOrigin(
+    origin: string, _item: MaterialItem<P, L>, _animation: Animation<ItemMove<P, M, L>>, _context: ItemAnimationContext<P, M, L>
+  ) {
+    return keyframes`
+      from {
+        transform: ${origin};
+      }
+    `
   }
 
   protected getMoveItemAnimation(
@@ -67,11 +104,11 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const indexAfter = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const targetLocator = context.locators[futureItem.location.type]
     const destination = targetLocator.place(futureItem, { ...context, game: gameCopy, type, index: indexAfter })
-    const animationKeyframes = this.getAnimationKeyframes(destination, item, animation, { rules, ...context })
+    const animationKeyframes = this.getKeyframesToDestination(destination, item, animation, { rules, ...context })
     return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
   }
 
-  protected getAnimationKeyframes(
+  protected getKeyframesToDestination(
     destination: string, _item: MaterialItem<P, L>, _animation: Animation<ItemMove<P, M, L>>, _context: ItemAnimationContext<P, M, L>
   ) {
     return keyframes`
@@ -82,16 +119,11 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   }
 
   protected getDeleteItemAnimation(
-    item: MaterialItem<P, L>, animation: Animation<DeleteItem<M>>, { rules, ...context }: ItemAnimationContext<P, M, L>
+    item: MaterialItem<P, L>, animation: Animation<DeleteItem<M>>, context: ItemAnimationContext<P, M, L>
   ): Interpolation<Theme> {
-    const type = animation.move.itemType
-    const stock = context.material[type].stock
-    if (stock) {
-      const stockItem = context.material[type].items?.(rules.game, context.player).find(item => item.location.type === stock.location.type)
-      const index = stockItem?.quantity ? stockItem.quantity - 1 : 0
-      const targetLocator = context.locators[stock.location.type]
-      const destination = targetLocator.place(stockItem ?? stock, { ...context, game: rules.game, type, index })
-      const animationKeyframes = this.getAnimationKeyframes(destination, item, animation, { rules, ...context })
+    const destination = this.getStockLocation(animation.move.itemType, context)
+    if (destination) {
+      const animationKeyframes = this.getKeyframesToDestination(destination, item, animation, context)
       return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
     } else {
       const fadeout = keyframes`

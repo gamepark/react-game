@@ -20,4 +20,9 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
     if (move.kind !== MoveKind.ItemMove) return 0
     return this.getMaterialAnimations(move.itemType).getPreDuration(move, context)
   }
+
+  override getPostDuration(move: MaterialMove<P, M, L>, context: AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>): number {
+    if (move.kind !== MoveKind.ItemMove) return 0
+    return this.getMaterialAnimations(move.itemType).getPostDuration(move, context)
+  }
 }

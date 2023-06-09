@@ -14,7 +14,7 @@ export type StockDescription<P extends number = number, L extends number = numbe
 export type CommonMaterialDescription<P extends number = number, M extends number = number, L extends number = number> = {
   rules: (props: MaterialRulesProps<P, M, L>) => ReactNode
   items?: (game: MaterialGame<P, M, L>, player?: P) => MaterialItem<P, L>[]
-  stock?: StockDescription
+  stock?: StockDescription<P, L>
 }
 
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {

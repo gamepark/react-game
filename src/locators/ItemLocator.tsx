@@ -2,6 +2,7 @@
 import {
   Coordinates,
   DisplayedItem,
+  isCreateItem,
   isDeleteItem,
   isMoveItem,
   ItemMove,
@@ -193,6 +194,9 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
         }
       }
       return displayIndex >= quantity - (animation.move.quantity ?? 1)
+    } else if (isCreateItem(animation.move)) {
+      const quantity = game.items[type]![index].quantity ?? 1
+      return displayIndex >= quantity - (animation.move.item.quantity ?? 1)
     }
     return false
   }
