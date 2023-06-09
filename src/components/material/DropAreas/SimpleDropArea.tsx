@@ -16,10 +16,11 @@ export type SimpleDropAreaProps<P extends number = number, M extends number = nu
   legalMoves: MaterialMove<P, M, L>[]
   onShortClick?: () => void
   onLongClick?: () => void
+  dragOnly?: boolean;
 } & HTMLAttributes<HTMLDivElement>
 
 export const SimpleDropArea = <P extends number = number, M extends number = number, L extends number = number>(
-  { location, legalMoves, onShortClick, onLongClick, ...props }: SimpleDropAreaProps<P, M, L>
+  { location, legalMoves, onShortClick, onLongClick, dragOnly, ...props }: SimpleDropAreaProps<P, M, L>
 ) => {
   const locator = useItemLocator(location.type)
   const stocks = useStocks()
@@ -75,6 +76,8 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
     },
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
+
+  if (!canDrop && dragOnly) return null
 
   return <div ref={setNodeRef}
               css={[

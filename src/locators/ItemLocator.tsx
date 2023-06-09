@@ -149,7 +149,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     const locations = this.getLocations?.() ?? []
     const stocks = getStocks(context.material)
     return locations.map(location => {
-      return this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location) || isMoveToStock(stocks, move, location))))
+      return this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location) || isMoveToStock(stocks, move, location))), true)
     })
   }
 
@@ -157,9 +157,10 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 
   getLocations?(): Location<P, L>[]
 
-  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[]): ReactNode {
+  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[], dragOnly?: boolean): ReactNode {
     const position = this.getPositionOnParent?.(location) ?? { x: 0, y: 0 }
-    return <SimpleDropArea key={JSON.stringify(location)} location={location} legalMoves={legalMoves}
+
+    return <SimpleDropArea key={JSON.stringify(location)} location={location} legalMoves={legalMoves} dragOnly={dragOnly}
                            css={[childLocationCss(position), this.getLocationCss(location, rules, legalMoves)]}/>
   }
 
