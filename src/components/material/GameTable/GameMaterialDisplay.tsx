@@ -12,13 +12,11 @@ import { RulesDialog } from '../../dialogs'
 import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { gameContext } from '../../GameProvider'
-import { useStocks } from '../../../hooks/useStocks'
 
 export const GameMaterialDisplay = () => {
   const context = useContext(gameContext)
   const material = context.material ?? {}
   const locators = context.locators ?? {}
-  const stocks = useStocks()
   const player = usePlayerId()
   const rules = useRules<MaterialRules>()
   const legalMoves = useLegalMoves<MaterialMove>()
@@ -62,7 +60,7 @@ export const GameMaterialDisplay = () => {
           if (locator.hide(item, context)) return null
           const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItem(move, type, index)))
           const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
-            isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, item.location, stocks)
+            isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, item.location)
           )
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} item={item} index={index} displayIndex={displayIndex} withLocations
