@@ -146,7 +146,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return locations.map(location => this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location))), true))
   }
 
-  createLocations?(legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: BaseContext<P, M, L>): ReactNode {
+  createLocations(legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: BaseContext<P, M, L>): ReactNode {
     const locations = this.getLocations?.() ?? []
     const stocks = getStocks(context.material)
     return locations.map(location => {

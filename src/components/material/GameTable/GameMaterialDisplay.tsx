@@ -77,7 +77,7 @@ export const GameMaterialDisplay = () => {
       })
     })}
     {Object.entries(locators).map(([, locator]) =>
-      locator && locator.createLocations && locator.createLocations(legalMoves, rules, commonContext)
+      locator.createLocations(legalMoves, rules, commonContext)
     )}
     <RulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
   </>
