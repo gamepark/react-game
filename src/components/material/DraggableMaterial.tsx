@@ -31,9 +31,21 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, inde
     disabled
   })
 
+  // We need to delay a little the default transition removal when dragging starts, otherwise dnd-kit suffers from transform side effect
+  // because we opted out from ignoring transform in the configuration (using: "draggable: { measure: getClientRect }")
+  const [ignoreTransform, setIgnoreTransform] = useState(true)
+  useEffect(() => {
+    if (transform !== null) {
+      const timeout = setTimeout(() => setIgnoreTransform(false))
+      return () => clearTimeout(timeout)
+    } else {
+      setIgnoreTransform(true)
+    }
+  }, [transform !== null])
+
   const scale = useScale()
   const transformRef = useRef<string>()
-  if (transform) {
+  if (transform && !ignoreTransform) {
     const { x, y } = transform
     transformRef.current = `translate3d(${Math.round(x / scale)}px, ${y ? Math.round(y / scale) : 0}px, 20em)`
   }
@@ -52,14 +64,7 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, inde
   const isItemToAnimate = !!animation && locator.isItemToAnimate(displayedItem, animation, animationContext)
   const animationCss = isItemToAnimate && materialAnimations?.getItemAnimation(item, animation, animationContext)
   const isDroppedItem = equal(rules.game.droppedItem, displayedItem)
-
-  // We need to delay a little the default transition removal when dragging starts, otherwise dnd-kit suffers from transform side effect
-  // because we opted out from ignoring transform in the configuration (using: "draggable: { measure: getClientRect }")
-  const [applyTransform, setApplyTransform] = useState(false)
-  useEffect(() => {
-    const timeout = setTimeout(() => setApplyTransform(transform !== null && !isDroppedItem))
-    return () => clearTimeout(timeout)
-  }, [transform !== null, isDroppedItem])
+  const applyTransform = isDroppedItem || !ignoreTransform
 
   if (isItemToAnimate && isMoveItem(animation.move) && typeof animation.move.reveal === 'object') {
     item = JSON.parse(JSON.stringify(item))
