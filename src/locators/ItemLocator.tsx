@@ -32,15 +32,15 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return this.limit ? this.getItemIndex(item, context) >= this.limit : false
   }
 
-  place(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string {
-    return ['translate(-50%, -50%)', ...this.getTransforms(item, context)].join(' ')
+  transformItem(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
+    return ['translate(-50%, -50%)', ...this.transformItemLocation(item, context)]
   }
 
-  getTransforms(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
-    return this.getParentTransforms(item.location, context).concat(...this.getChildTransforms(item, context))
+  protected transformItemLocation(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
+    return this.transformParentItemLocation(item.location, context).concat(...this.transformOwnItemLocation(item, context))
   }
 
-  getChildTransforms(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
+  protected transformOwnItemLocation(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
     return [this.getTranslate3d(item, context), ...this.getRotations(item, context)]
   }
 
@@ -101,7 +101,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return false
   }
 
-  getParentTransforms(location: Location<P, L>, context: PlaceItemContext<P, M, L>): string[] {
+  protected transformParentItemLocation(location: Location<P, L>, context: PlaceItemContext<P, M, L>): string[] {
     if (!this.parentItemType) return []
     const { game, player, material, locators } = context
     const parentMaterial = material[this.parentItemType]
@@ -109,13 +109,13 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     if (parentItemIndex !== undefined && parentItemIndex !== -1) {
       const parentItem = game.items[this.parentItemType]![parentItemIndex]
       const parentLocator: ItemLocator<P, M, L> = locators[parentItem.location.type]
-      return parentLocator.getTransforms(parentItem, { ...context, type: this.parentItemType, index: 0 })
+      return parentLocator.transformItemLocation(parentItem, { ...context, type: this.parentItemType, index: 0 })
     } else {
       const parentItemId = this.getParentItemId(location)
       const staticItem = parentMaterial.items && parentMaterial.items(game, player).find(item => equal(item.id, parentItemId))
       if (!staticItem) return []
       const locator: ItemLocator<P, M, L> = locators[staticItem.location.type]
-      return locator.getTransforms(staticItem, { ...context, type: this.parentItemType, index: 0 })
+      return locator.transformItemLocation(staticItem, { ...context, type: this.parentItemType, index: 0 })
     }
   }
 

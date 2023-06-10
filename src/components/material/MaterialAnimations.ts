@@ -79,7 +79,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const stockItem = context.material[type].items?.(rules.game, context.player).find(item => item.location.type === stock.location.type)
     const index = stockItem?.quantity ? stockItem.quantity - 1 : 0
     const stockLocator = context.locators[stock.location.type]
-    return stockLocator.place(stockItem ?? stock, { ...context, game: rules.game, type, index })
+    return stockLocator.transformItem(stockItem ?? stock, { ...context, game: rules.game, type, index }).join(' ')
   }
 
   protected getKeyframesFromOrigin(
@@ -103,7 +103,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const indexAfter = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const targetLocator = context.locators[futureItem.location.type]
-    const destination = targetLocator.place(futureItem, { ...context, game: gameCopy, type, index: indexAfter })
+    const destination = targetLocator.transformItem(futureItem, { ...context, game: gameCopy, type, index: indexAfter }).join(' ')
     const animationKeyframes = this.getKeyframesToDestination(destination, item, animation, { rules, ...context })
     return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
   }
