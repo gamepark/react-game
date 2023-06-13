@@ -63,7 +63,7 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, inde
   const locator = context.locators[item.location.type]
   const animationContext: ItemAnimationContext = { ...context, rules, player }
   const isItemToAnimate = !!animation && locator.isItemToAnimate(displayedItem, animation, animationContext)
-  const animationCss = isItemToAnimate && materialAnimations?.getItemAnimation(item, animation, animationContext)
+  const animationCss = isItemToAnimate && materialAnimations?.getItemAnimation(displayedItem, animation, animationContext)
   const isDroppedItem = equal(rules.game.droppedItem, displayedItem)
   const applyTransform = isDroppedItem || !ignoreTransform
 
