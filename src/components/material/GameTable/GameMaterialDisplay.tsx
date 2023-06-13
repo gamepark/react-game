@@ -8,7 +8,7 @@ import { isMoveOnItem, isMoveThisItem, isMoveThisItemToLocation } from '../utils
 import { MaterialComponent } from '../MaterialComponent'
 import { pointerCursorCss, transformCss } from '../../../css'
 import { DraggableMaterial, isDraggedItem } from '../DraggableMaterial'
-import { RulesDialog } from '../../dialogs'
+import { MaterialRulesDialog } from '../../dialogs'
 import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { gameContext } from '../../GameProvider'
@@ -77,7 +77,7 @@ export const GameMaterialDisplay = () => {
     {Object.entries(locators).map(([, locator]) =>
       locator.createLocations(legalMoves, rules, commonContext)
     )}
-    <RulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
+    <MaterialRulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
   </>
 }
 
