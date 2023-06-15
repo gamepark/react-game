@@ -1,6 +1,6 @@
 import { ItemMoveType, Location, MaterialMove, MoveKind } from '@gamepark/rules-api'
 import { MaterialDescription, StockDescription } from '../MaterialDescription'
-import mapValues from 'lodash.mapvalues'
+import mapValues from 'lodash/mapvalues'
 
 export const isMoveToStock = <P extends number, M extends number, L extends number>(
   stocks: Record<M, StockDescription<P, L> | undefined>, move: MaterialMove<P, M, L>, location: Location<P, L>

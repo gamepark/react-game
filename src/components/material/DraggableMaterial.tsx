@@ -10,7 +10,7 @@ import { useAnimation, useAnimations, useMaterialAnimations, usePlayerId, useRul
 import { useScale } from '../../hooks/useScale'
 import { gameContext, MaterialGameContext } from '../GameProvider'
 import { ItemAnimationContext } from './MaterialAnimations'
-import merge from 'lodash.merge'
+import merge from 'lodash/merge'
 import equal from 'fast-deep-equal'
 
 export type DraggableMaterialProps<P extends number = number, M extends number = number, L extends number = number> = {
