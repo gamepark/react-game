@@ -103,7 +103,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const rules = context.rules
     const type = item.type
     const gameCopy = JSON.parse(JSON.stringify(rules.game))
-    const mutator = new MaterialMutator<P, M, L>(type, gameCopy.items[type] ?? [], rules.getLocationsStrategies()[type])
+    const mutator = new MaterialMutator<P, M, L>(type, gameCopy.items[type] ?? [], rules.locationsStrategies[type])
     const futureIndex = mutator.move(animation.move)
     const futureItem = mutator.items[futureIndex]
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
