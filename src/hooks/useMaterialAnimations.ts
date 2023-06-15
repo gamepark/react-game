@@ -6,12 +6,14 @@ export function useMaterialAnimations<P extends number = number, M extends numbe
   type: M
 ): MaterialAnimations<P, M, L> | undefined {
   const animations = useContext(gameContext).animations
-  if (animations && isMaterialGameAnimations(animations)) {
+  if (animations && isMaterialGameAnimations<P, M, L>(animations)) {
     return animations.getMaterialAnimations(type)
   }
   return
 }
 
-function isMaterialGameAnimations(animations: Animations): animations is MaterialGameAnimations {
+function isMaterialGameAnimations<P extends number = number, M extends number = number, L extends number = number>(
+  animations: Animations
+): animations is MaterialGameAnimations<P, M, L> {
   return typeof (animations as MaterialGameAnimations).getMaterialAnimations === 'function'
 }
