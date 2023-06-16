@@ -4,13 +4,13 @@ import { MaterialComponentType } from './MaterialComponentType'
 import { Board } from './Board'
 import { Card } from './Card'
 import { Token } from './Token'
-import mapValues from 'lodash/mapValues'
-import { MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { MaterialGame, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import mapValues from 'lodash.mapvalues'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { ItemLocator } from '../../locators'
+import { BaseContext, ItemLocator } from '../../locators'
 import { combineEventListeners } from '../../utilities'
-import pickBy from 'lodash/pickBy'
-import { useMaterialDescription, useRules } from '../../hooks'
+import { useGame, useMaterialDescription, usePlayerId, useRules } from '../../hooks'
+import pickBy from 'lodash.pickby'
 import { gameContext } from '../GameProvider'
 
 export type MaterialComponentProps<ItemId extends number = number, P extends number = number, M extends number = number, L extends number = number> = {
@@ -25,8 +25,12 @@ export type MaterialComponentProps<ItemId extends number = number, P extends num
 export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
   { type, itemId, withLocations, legalMovesTo, onShortClick, onLongClick = onShortClick, ...props }, ref
 ) => {
+  const context = useContext(gameContext)
+  const game = useGame<MaterialGame>()
+  const player = usePlayerId()
+  const material = context.material
   const description = useMaterialDescription(type)
-  const locators = useContext(gameContext).locators
+  const locators = context.locators
   const rules = useRules<MaterialRules>()
 
   const innerLocators = pickBy(locators, locator => locator?.parentItemType === type)
@@ -43,7 +47,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
 
-  if (!description || !locators || !rules) return null
+  if (!description || !locators || !rules || !game || !material) return null
 
   const itemProps = getPropForItem(description.props, itemId)
 
@@ -51,7 +55,12 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
     case MaterialComponentType.Board:
       return <Board ref={ref} {...itemProps} {...props} {...combineEventListeners(listeners, props)}>
         {withLocations && (
-          description.getLocations ? description.getLocations(itemId, legalMovesTo) : createLocations(rules, innerLocators, itemId, legalMovesTo)
+          description.getLocations ? description.getLocations(itemId, legalMovesTo) : createLocations(rules, innerLocators, itemId, legalMovesTo, {
+            game,
+            material,
+            locators,
+            player
+          })
         )}
       </Board>
     case MaterialComponentType.Card:
@@ -81,10 +90,10 @@ const isIdRecord = <Id extends number = number>(prop: Object): prop is Record<Id
   return !isNaN(parseInt(Object.keys(prop)[0]))
 }
 
-const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, itemId: number | undefined, moves: MaterialMove<number, number, number>[] = []) => {
+const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, itemId: number | undefined, moves: MaterialMove<number, number, number>[] = [], context: BaseContext) => {
   return <>
     {Object.entries(locators).map(([, locator]) =>
-      locator && locator.createLocationsOnItem(itemId, moves, rules)
+      locator && locator.createLocationsOnItem(itemId, moves, rules, context)
     )}
   </>
 }

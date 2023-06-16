@@ -141,16 +141,16 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
-  createLocationsOnItem<ParentItemId extends number | undefined>(parent: ParentItemId, legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>): ReactNode {
+  createLocationsOnItem<ParentItemId extends number | undefined>(parent: ParentItemId, legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: BaseContext<P, M, L>): ReactNode {
     const locations = this.getParentItemLocations?.(parent) ?? []
-    return locations.map(location => this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location))), true))
+    return locations.map(location => this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location))), context, true))
   }
 
   createLocations(legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: BaseContext<P, M, L>): ReactNode {
     const locations = this.getLocations?.() ?? []
     const stocks = getStocks(context.material)
     return locations.map(location => {
-      return this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location) || isMoveToStock(stocks, move, location))))
+      return this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location) || isMoveToStock(stocks, move, location))), context)
     })
   }
 
@@ -158,14 +158,14 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 
   getLocations?(): Location<P, L>[]
 
-  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[], hasParent?: boolean): ReactNode {
+  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[], context: BaseContext<P, M, L>, hasParent?: boolean): ReactNode {
     const position = this.getPositionOnParent?.(location) ?? { x: 0, y: 0 }
 
     return <SimpleDropArea key={JSON.stringify(location)} location={location} legalMoves={legalMoves} dragOnly={!hasParent}
-                           css={[hasParent && childLocationCss(position), this.getLocationCss(location, rules, legalMoves)]}/>
+                           css={[hasParent && childLocationCss(position), this.getLocationCss(location, rules, legalMoves, context)]}/>
   }
 
-  getLocationCss(_location: Location<P, L>, _rules: MaterialRules<P, M, L>, _legalMoves: MaterialMove<P, M, L>[]): Interpolation<Theme> {
+  getLocationCss(_location: Location<P, L>, _rules: MaterialRules<P, M, L>, _legalMoves: MaterialMove<P, M, L>[], _context: BaseContext<P, M, L>): Interpolation<Theme> {
     return
   }
 
