@@ -15,7 +15,7 @@ export const Token = forwardRef<HTMLDivElement, TokenProps & HTMLAttributes<HTML
     <div ref={ref} css={[shadowCss(image), sizeCss({ height, ratio }), backgroundCss(image), borderRadius && borderRadiusCss(borderRadius)]} {...props}/>
 )
 
-export type TokenMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId extends number = number>
+export type TokenMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
   = CommonMaterialDescription<P, M, L> & {
   type: typeof MaterialComponentType.Token
   props: ItemCustomization<TokenProps, ItemId>

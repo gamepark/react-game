@@ -13,7 +13,7 @@ import { useGame, useMaterialDescription, usePlayerId, useRules } from '../../ho
 import pickBy from 'lodash/pickBy'
 import { gameContext } from '../GameProvider'
 
-export type MaterialComponentProps<ItemId extends number = number, P extends number = number, M extends number = number, L extends number = number> = {
+export type MaterialComponentProps<ItemId = any, P extends number = number, M extends number = number, L extends number = number> = {
   type: M
   itemId?: ItemId
   withLocations?: boolean

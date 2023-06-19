@@ -52,7 +52,7 @@ const backgroundImage = (image: string) => css`
   background-size: cover;
 `
 
-export type CardMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId extends number = number>
+export type CardMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
   = CommonMaterialDescription<P, M, L> & {
   type: typeof MaterialComponentType.Card
   props: ItemCustomization<CardProps, ItemId>,

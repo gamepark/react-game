@@ -21,10 +21,11 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const item = rulesDisplay.item
   const height = getPropForItem(description.props.height, item.id)
   const width = height * getPropForItem(description.props.ratio, item.id)
+  const hidden = typeof item.id === 'object' ? item.id.front === undefined : item.id === undefined
   return <div css={flex}>
     <MaterialComponent type={rulesDisplay.itemType} itemId={item.id} css={[
       noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-      description.type === MaterialComponentType.Card && item.id === undefined && transformCss('rotateY(180deg)')
+      description.type === MaterialComponentType.Card && hidden && transformCss('rotateY(180deg)')
     ]}/>
     <Scrollbars autoHeight css={scrollableContainer}>
       <div css={rules}>
