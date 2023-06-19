@@ -11,13 +11,6 @@ export type StockDescription<P extends number = number, L extends number = numbe
   location: Location<P, L>
 }
 
-export type CommonMaterialDescription<P extends number = number, M extends number = number, L extends number = number> = {
-  rules: (props: MaterialRulesProps<P, M, L>) => ReactNode
-  items?: (game: MaterialGame<P, M, L>, player?: P) => MaterialItem<P, L>[]
-  stock?: StockDescription<P, L>
-  isHidden?: (item: any) => boolean
-}
-
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
   item: Partial<MaterialItem<P, L>>
   legalMoves: ItemMove<P, M, L>[]
@@ -25,3 +18,12 @@ export type MaterialRulesProps<P extends number = number, M extends number = num
 }
 
 export type MaterialLocationsFunction<ItemId = number> = (itemId?: ItemId, legalMoves?: MaterialMove[]) => ReactNode | undefined
+
+
+export abstract class CommonMaterialDescription<P extends number = number, M extends number = number, L extends number = number> {
+  abstract rules: (props: MaterialRulesProps<P, M, L>) => ReactNode
+  items?: (game: MaterialGame<P, M, L>, player?: P) => MaterialItem<P, L>[]
+  stock?: StockDescription<P, L>
+  isHidden?: (item: MaterialItem<P, L>) => boolean
+  abstract images: Record<any, string> | string
+}
