@@ -15,6 +15,7 @@ export type CommonMaterialDescription<P extends number = number, M extends numbe
   rules: (props: MaterialRulesProps<P, M, L>) => ReactNode
   items?: (game: MaterialGame<P, M, L>, player?: P) => MaterialItem<P, L>[]
   stock?: StockDescription<P, L>
+  isHidden?: (item: any) => boolean
 }
 
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
