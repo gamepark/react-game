@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { forwardRef, HTMLAttributes } from 'react'
 import { backgroundCss, ComponentSize, sizeCss } from '../../../css'
-import { CommonMaterialDescription, MaterialLocationsFunction } from '../MaterialDescription'
+import { CommonMaterialDescription, extractImages, MaterialLocationsFunction } from '../MaterialDescription'
 import { MaterialComponentType } from '../MaterialComponentType'
 import { ItemCustomization } from '../Items'
 
@@ -18,4 +18,8 @@ export abstract class BoardMaterialDescription<P extends number = number, M exte
   type: typeof MaterialComponentType.Board = MaterialComponentType.Board
   abstract props: ItemCustomization<BoardProps, ItemId>
   getLocations?: MaterialLocationsFunction<ItemId>
+
+  getImages() {
+    return extractImages(this.props.image)
+  }
 }

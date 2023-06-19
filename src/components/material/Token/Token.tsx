@@ -2,7 +2,7 @@
 import { forwardRef, HTMLAttributes } from 'react'
 import { backgroundCss, borderRadiusCss, ComponentSize, shadowCss, sizeCss } from '../../../css'
 import { MaterialComponentType } from '../MaterialComponentType'
-import { CommonMaterialDescription } from '../MaterialDescription'
+import { CommonMaterialDescription, extractImages } from '../MaterialDescription'
 import { ItemCustomization } from '../Items'
 
 export type TokenProps = {
@@ -18,4 +18,8 @@ export const Token = forwardRef<HTMLDivElement, TokenProps & HTMLAttributes<HTML
 export abstract class TokenMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> extends CommonMaterialDescription<P, M, L> {
   type: typeof MaterialComponentType.Token = MaterialComponentType.Token
   abstract props: ItemCustomization<TokenProps, ItemId>
+
+  getImages() {
+    return extractImages(this.props.image)
+  }
 }

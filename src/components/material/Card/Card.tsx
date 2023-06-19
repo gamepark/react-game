@@ -4,7 +4,7 @@ import { FC, forwardRef, HTMLAttributes } from 'react'
 import { borderRadiusCss, ComponentSize, sizeCss } from '../../../css'
 import { MaterialComponentType } from '../MaterialComponentType'
 import { ItemCustomization } from '../Items'
-import { CommonMaterialDescription } from '../MaterialDescription'
+import { CommonMaterialDescription, extractImages } from '../MaterialDescription'
 
 export type CardProps = {
   front: CardFaceProps
@@ -55,4 +55,11 @@ const backgroundImage = (image: string) => css`
 export abstract class CardMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> extends CommonMaterialDescription<P, M, L> {
   type: typeof MaterialComponentType.Card = MaterialComponentType.Card
   abstract props: ItemCustomization<CardProps, ItemId>
+
+  getImages() {
+    return [
+      ...extractImages(this.props.front.image),
+      ...this.props.back ? extractImages(this.props.back.image) : []
+    ]
+  }
 }

@@ -10,18 +10,7 @@ const useMaterialImages = (): string[] => {
     if (!descriptions) {
       return []
     }
-
-    return Object.values(descriptions).flatMap((description) => {
-
-      const images = []
-      if (typeof description.images === 'string') {
-        images.push(description.images)
-      } else {
-        images.push(...Object.values(description.images))
-      }
-
-      return images
-    })
+    return Object.values(descriptions).flatMap((description) => description.getImages())
   }, [descriptions])
 }
 
