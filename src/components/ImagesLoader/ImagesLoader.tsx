@@ -3,12 +3,12 @@ import { useCallback, useRef } from 'react'
 import { Picture } from '../Picture'
 import { useWebP } from '../../hooks'
 
-type Props = {
+export type ImagesLoaderProps = {
   images: string[]
   onImagesLoad?: () => void
 }
 
-export const ImagesLoader = ({ images, onImagesLoad }: Props) => {
+export const ImagesLoader = ({ images, onImagesLoad }: ImagesLoaderProps) => {
   const webp = useWebP()
   const loadCount = useRef(0)
   const onLoad = useCallback(() => {
