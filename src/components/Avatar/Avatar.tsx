@@ -17,7 +17,7 @@ export const Avatar = ({ playerId, speechBubbleProps, ...props }: Props) => {
   const player = usePlayer(playerId)
   const tutorial = useTutorial()
   const context = useContext(gameContext)
-  const tutorialAvatar = tutorial && context?.tutorial?.avatars
+  const tutorialAvatar = tutorial && context?.tutorial?.avatar
   const me = useMe()
   const myPlayerId = usePlayerId()
   const avatar = myPlayerId === playerId ? me?.user?.avatar : tutorialAvatar ? tutorialAvatar(playerId) : player?.avatar

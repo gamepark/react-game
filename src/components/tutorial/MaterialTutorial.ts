@@ -1,0 +1,52 @@
+import { TutorialDescription } from '@gamepark/react-client'
+import { LocationBuilder, Material, MaterialGame, MaterialGameSetup, MaterialMove } from '@gamepark/rules-api'
+import { TFunction } from 'i18next'
+import { ReactNode } from 'react'
+
+export abstract class MaterialTutorial<P extends number = number, M extends number = number, L extends number = number>
+  implements TutorialDescription<MaterialGame<P, M, L>, MaterialMove<P, M, L>> {
+  abstract options: any
+  abstract setup: MaterialGameSetup<P, M, L>
+  abstract steps: TutorialStep<P, M, L>[]
+  game?: MaterialGame<P, M, L>
+
+  material(type: M): Material<P, M, L> {
+    return new Material(type, Array.from((this.game?.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
+  }
+
+  location(type: L): LocationBuilder<P, L> {
+    return new LocationBuilder({ type })
+  }
+
+  setupTutorial(): [MaterialGame<P, M, L>, P[]] {
+    const game = this.setup.setup(this.options)
+    return [game, game.players]
+  }
+
+  expectedMoves(): (MaterialMove<P, M, L>[] | MaterialMove<P, M, L>)[] {
+    return []
+  }
+}
+
+export enum TutorialStepType {
+  Popup = 1, Move
+}
+
+export enum TutorialFocusType {
+  Header = 1
+}
+
+export type TutorialStep<P extends number = number, M extends number = number, L extends number = number>
+  = TutorialPopupStep<P, M, L> | TutorialMoveStep<P, M, L>
+
+export type TutorialPopupStep<P extends number = number, M extends number = number, L extends number = number> = {
+  type: typeof TutorialStepType.Popup
+  text: (t: TFunction) => string | ReactNode
+  focus?: () => Material<P, M, L> | LocationBuilder<P, L> | TutorialFocusType
+}
+
+export type TutorialMoveStep<P extends number = number, M extends number = number, L extends number = number> = {
+  type: typeof TutorialStepType.Move
+  move?: (moves: MaterialMove<P, M, L>[]) => MaterialMove<P, M, L> | undefined
+  playerId?: P
+}
