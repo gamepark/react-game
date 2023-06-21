@@ -1,4 +1,4 @@
-export type ItemCustomization<Props, ItemId = number> = {
+export type ItemCustomization<Props, ItemId = any> = {
   [Property in keyof Props]: Props[Property] extends object | undefined ? ItemCustomization<Props[Property], ItemId> : ItemProp<Props[Property], ItemId>
 }
 

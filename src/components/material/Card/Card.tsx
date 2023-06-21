@@ -3,14 +3,15 @@ import { css } from '@emotion/react'
 import { FC, forwardRef, HTMLAttributes } from 'react'
 import { borderRadiusCss, ComponentSize, sizeCss } from '../../../css'
 import { MaterialComponentType } from '../MaterialComponentType'
-import { ItemCustomization } from '../Items'
-import { CommonMaterialDescription, extractImages } from '../MaterialDescription'
+import { CommonMaterialDescription, extractImages, Translatable } from '../MaterialDescription'
 
 export type CardProps = {
   front: CardFaceProps
   back?: CardFaceProps
   borderRadius?: number
 } & ComponentSize
+
+export type TranslatableCardProps = CardProps & Translatable<CardProps>
 
 export const Card = forwardRef<HTMLDivElement, CardProps & HTMLAttributes<HTMLDivElement>>(
   ({ height, ratio, front, back, borderRadius = height / 15, ...props }, ref) =>
@@ -52,9 +53,8 @@ const backgroundImage = (image: string) => css`
   background-size: cover;
 `
 
-export abstract class CardMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> extends CommonMaterialDescription<P, M, L> {
+export abstract class CardMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> extends CommonMaterialDescription<P, M, L, ItemId, TranslatableCardProps> {
   type: typeof MaterialComponentType.Card = MaterialComponentType.Card
-  abstract props: ItemCustomization<CardProps, ItemId>
 
   getImages() {
     return [
