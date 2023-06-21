@@ -1,12 +1,5 @@
-import { BoardMaterialDescription } from './Board'
-import { CardMaterialDescription } from './Card'
-import { ReactNode } from 'react'
-import { ItemMove, Location, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
-import { TokenMaterialDescription } from './Token'
-import { ItemCustomization, ItemProp } from './Items'
-
-export type MaterialDescription<P extends number = number, M extends number = number, L extends number = number>
-  = BoardMaterialDescription<P, M, L> | CardMaterialDescription<P, M, L> | TokenMaterialDescription<P, M, L>
+import { FC, ReactNode } from 'react'
+import { Location, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 
 export type StockDescription<P extends number = number, L extends number = number> = {
   location: Location<P, L>
@@ -14,44 +7,37 @@ export type StockDescription<P extends number = number, L extends number = numbe
 
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
   item: Partial<MaterialItem<P, L>>
-  legalMoves: ItemMove<P, M, L>[]
+  legalMoves: MaterialMove<P, M, L>[]
   close: () => void
 }
 
 export type MaterialLocationsFunction<ItemId = any> = (itemId?: ItemId, legalMoves?: MaterialMove[]) => ReactNode | undefined
 
 
-const query = new URLSearchParams(window.location.search)
-const locale = query.get('locale') || 'en'
+//const query = new URLSearchParams(window.location.search)
+//const locale = query.get('locale') || 'en'
 
-export type Translatable<ItemProps = any> = {
-  translations?: Record<string, Partial<ItemProps>>
+export type ComponentSize = {
+  width: number
+  height: number
 }
 
-export abstract class CommonMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, ItemProps extends Translatable = Translatable> {
-  abstract rules: (props: MaterialRulesProps<P, M, L>) => ReactNode
+export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> {
+  abstract rules: FC<MaterialRulesProps<P, M, L>>
   items?: (game: MaterialGame<P, M, L>, player?: P) => MaterialItem<P, L>[]
   stock?: StockDescription<P, L>
-  isHidden?: (item: MaterialItem<P, L>) => boolean
-  readonly props: ItemCustomization<ItemProps, ItemId>
+  getLocations?: MaterialLocationsFunction<ItemId>
 
-  abstract getProps(): ItemCustomization<ItemProps, ItemId>
+  height?: number
+  width?: number
+  ratio?: number
 
-  constructor() {
-    this.props = {
-      ...this.getProps(),
-      ...(this.getProps().translations?.[locale] ?? {})
-    }
+  getSize(_itemId: ItemId): ComponentSize {
+    if (this.width && this.height) return { width: this.width, height: this.height }
+    if (this.ratio && this.width) return { width: this.width, height: this.width / this.ratio }
+    if (this.ratio && this.height) return { width: this.height * this.ratio, height: this.height }
+    throw new Error('You must implement 2 of "width", "height" & "ratio" in any Material description')
   }
 
   abstract getImages(): string[]
-}
-
-export const extractImages = <ItemId = any>(faces?: ItemProp<any, ItemId>): string[] => {
-  if (!faces || typeof faces === 'function') return []
-  if (typeof faces === 'object') {
-    return Object.values(faces) as string[]
-  } else {
-    return [faces]
-  }
 }

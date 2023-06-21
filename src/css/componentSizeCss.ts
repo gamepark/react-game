@@ -1,8 +1,8 @@
 import { css } from '@emotion/react'
 
-export const sizeCss = (size: ComponentSize) => css`
-  width: ${(size.height * size.ratio)}em;
-  height: ${(size.height)}em;
+export const sizeCss = (width: number, height: number) => css`
+  width: ${(width)}em;
+  height: ${(height)}em;
 `
 
 export const borderRadiusCss = (radius: number) => css`
@@ -21,8 +21,3 @@ export const fontSizeCss = (size: number) => css`
 export const perspectiveCss = (perspective: number) => css`
   perspective: ${perspective}em;
 `
-
-export type ComponentSize = {
-  height: number
-  ratio: number
-}

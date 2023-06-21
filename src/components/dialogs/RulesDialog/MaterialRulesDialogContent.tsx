@@ -2,13 +2,13 @@
 import { closeRulesDisplay, MaterialMove, MaterialRulesDisplay } from '@gamepark/rules-api'
 import { css } from '@emotion/react'
 import Scrollbars from 'react-custom-scrollbars-2'
-import { getPropForItem, MaterialComponent, MaterialComponentType, MaterialDescription } from '../../material'
+import { isFlatMaterialDescription, MaterialComponent, MaterialDescription } from '../../material'
 import { fontSizeCss, transformCss } from '../../../css'
 import { usePlay } from '../../../hooks'
 
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
-  rulesDisplay: MaterialRulesDisplay
-  material: Record<MaterialType, MaterialDescription>
+  rulesDisplay: MaterialRulesDisplay<Player, MaterialType, LocationType>
+  material: Record<MaterialType, MaterialDescription<Player, MaterialType, LocationType>>
   legalMoves: MaterialMove<Player, MaterialType, LocationType>[]
 }
 
@@ -19,13 +19,11 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const description = material[rulesDisplay.itemType]
   const RulesContent = description.rules
   const item = rulesDisplay.item
-  const height = getPropForItem(description.props.height, item.id)
-  const width = height * getPropForItem(description.props.ratio, item.id)
-  const hidden = description.isHidden?.(item) ?? item.id === undefined
+  const { width, height } = description.getSize(item.id)
   return <div css={flex}>
     <MaterialComponent type={rulesDisplay.itemType} itemId={item.id} css={[
       noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-      description.type === MaterialComponentType.Card && hidden && transformCss('rotateY(180deg)')
+      isFlatMaterialDescription(description) && description.isHidden(item) && transformCss('rotateY(180deg)')
     ]}/>
     <Scrollbars autoHeight css={scrollableContainer}>
       <div css={rules}>

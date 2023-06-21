@@ -14,11 +14,10 @@ import {
   MaterialRules,
   XYCoordinates
 } from '@gamepark/rules-api'
-import { getPropForItem, ItemAnimationContext, MaterialDescription, SimpleDropArea } from '../components'
+import { ItemAnimationContext, MaterialDescription, SimpleDropArea } from '../components'
 import { ReactNode } from 'react'
 import { css, Interpolation, Theme } from '@emotion/react'
 import equal from 'fast-deep-equal'
-import { ComponentSize } from '../css'
 import { isMoveToLocation } from '../components/material/utils'
 import { Animation } from '@gamepark/react-client'
 import { getStocks, isMoveToStock } from '../components/material/utils/IsMoveToStock'
@@ -50,8 +49,8 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     if (parentMaterial) {
       const positionOnParent = this.getPositionOnParent?.(item.location)
       if (positionOnParent) {
-        const { height, ratio } = getPropForItem(parentMaterial.props, this.getParentItemId(item.location)) as ComponentSize
-        x += height * ratio * (positionOnParent.x - 50) / 100
+        const { width, height } = parentMaterial.getSize(this.getParentItemId(item.location))
+        x += width * (positionOnParent.x - 50) / 100
         y += height * (positionOnParent.y - 50) / 100
       }
     }
