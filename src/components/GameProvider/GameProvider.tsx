@@ -9,7 +9,6 @@ import { useWebP } from '../../hooks'
 import { getApolloClient, LocalGameProvider, LocalGameProviderProps, RemoteGameProvider } from '@gamepark/react-client'
 import { GameContext, gameContext } from './GameContext'
 import merge from 'lodash/merge'
-import { FlatMaterialDescription } from '../material'
 
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
@@ -27,9 +26,7 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
     key: 'css', stylisPlugins: (webP ? [webPReplace, prefixer] : [prefixer]) as Array<StylisPlugin>
   }), [webP])
   if (material && materialI18n && locale in materialI18n) {
-    console.log((material[2] as FlatMaterialDescription).backImage)
     merge(material, materialI18n[locale])
-    console.log((material[2] as FlatMaterialDescription).backImage)
   }
   return (
     <gameContext.Provider value={{ game, Rules: RulesView ?? Rules, material, locators, optionsSpec, animations, tutorial, hasSounds }}>
