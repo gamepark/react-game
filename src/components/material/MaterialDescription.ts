@@ -13,10 +13,6 @@ export type MaterialRulesProps<P extends number = number, M extends number = num
 
 export type MaterialLocationsFunction<ItemId = any> = (itemId?: ItemId, legalMoves?: MaterialMove[]) => ReactNode | undefined
 
-
-//const query = new URLSearchParams(window.location.search)
-//const locale = query.get('locale') || 'en'
-
 export type ComponentSize = {
   width: number
   height: number

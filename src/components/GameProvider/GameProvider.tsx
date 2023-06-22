@@ -8,21 +8,29 @@ import { ApolloProvider } from '@apollo/client'
 import { useWebP } from '../../hooks'
 import { getApolloClient, LocalGameProvider, LocalGameProviderProps, RemoteGameProvider } from '@gamepark/react-client'
 import { GameContext, gameContext } from './GameContext'
+import merge from 'lodash/merge'
+import { FlatMaterialDescription } from '../material'
 
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
+const locale = query.get('locale') || 'en'
 
 export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveView = Move, PlayerId = number>
   = LocalGameProviderProps<Game, GameView, Move, MoveView, PlayerId> & GameContext<Game, Move, PlayerId>
 
 export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId = number>(
-  { material, locators, hasSounds, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
+  { material, materialI18n, locators, hasSounds, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
   const { game, Rules, RulesView, optionsSpec, animations, tutorial } = props
   const webP = useWebP()
   const emotionCache = useMemo(() => createCache({
     key: 'css', stylisPlugins: (webP ? [webPReplace, prefixer] : [prefixer]) as Array<StylisPlugin>
   }), [webP])
+  if (material && materialI18n && locale in materialI18n) {
+    console.log((material[2] as FlatMaterialDescription).backImage)
+    merge(material, materialI18n[locale])
+    console.log((material[2] as FlatMaterialDescription).backImage)
+  }
   return (
     <gameContext.Provider value={{ game, Rules: RulesView ?? Rules, material, locators, optionsSpec, animations, tutorial, hasSounds }}>
       <CacheProvider value={emotionCache}>

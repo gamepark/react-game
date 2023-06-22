@@ -8,6 +8,7 @@ export type GameContext<Game = any, Move = any, PlayerId = any, MaterialType ext
   game: string
   Rules: RulesCreator<Game, Move, PlayerId>
   material?: Record<MaterialType, MaterialDescription>
+  materialI18n?: Record<string, Partial<Record<MaterialType, MaterialDescription>>>
   locators?: Record<LocationType, ItemLocator>
   optionsSpec?: any
   animations?: Animations<Game, Move, PlayerId>
