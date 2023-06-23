@@ -141,31 +141,28 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
-  createLocationsOnItem<ParentItemId = any | undefined>(parent: ParentItemId, legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: BaseContext<P, M, L>): ReactNode {
-    const locations = this.getLocationsOnParent?.(parent, context) ?? []
-    return locations.map(location => this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location))), context, true))
-  }
-
-  createLocations(legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: BaseContext<P, M, L>): ReactNode {
-    const locations = this.getLocations?.() ?? []
+  createLocations(legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: PlaceLocationContext<P, M, L>): ReactNode {
+    const locations = this.getLocations?.(context) ?? []
     const stocks = getStocks(context.material)
     return locations.map(location => {
       return this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location) || isMoveToStock(stocks, move, location))), context)
     })
   }
 
-  getLocationsOnParent?<ParentItemId = any | undefined>(_parent: ParentItemId, _context: BaseContext<P, M, L>): Location<P, L>[]
+  getLocations?(context: PlaceLocationContext<P, M, L>): Location<P, L>[]
 
-  getLocations?(): Location<P, L>[]
+  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[], context: PlaceLocationContext<P, M, L>): ReactNode {
+    const position = this.getPositionOnParent?.(location, context) ?? { x: 0, y: 0, z: 0 }
 
-  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[], context: BaseContext<P, M, L>, hasParent?: boolean): ReactNode {
-    const position = this.getPositionOnParent?.(location, context) ?? { x: 0, y: 0 }
-
-    return <SimpleDropArea key={JSON.stringify(location)} location={location} legalMoves={legalMoves} dragOnly={!hasParent}
-                           css={[hasParent && childLocationCss(position), this.getLocationCss(location, rules, legalMoves, context)]}/>
+    return <SimpleDropArea key={JSON.stringify(location)} location={location} legalMoves={legalMoves} dragOnly={this.isDragOnlyLocation(location, context)}
+                           css={[this.parentItemType !== undefined && childLocationCss(position), this.getLocationCss(location, rules, legalMoves, context)]}/>
   }
 
-  getLocationCss(_location: Location<P, L>, _rules: MaterialRules<P, M, L>, _legalMoves: MaterialMove<P, M, L>[], _context: BaseContext<P, M, L>): Interpolation<Theme> {
+  isDragOnlyLocation(_location: Location<P, L>, _context: PlaceLocationContext<P, M, L>) {
+    return this.parentItemType === undefined
+  }
+
+  getLocationCss(_location: Location<P, L>, _rules: MaterialRules<P, M, L>, _legalMoves: MaterialMove<P, M, L>[], _context: PlaceLocationContext<P, M, L>): Interpolation<Theme> {
     return
   }
 
@@ -215,6 +212,12 @@ export type BaseContext<Player extends number = number, MaterialType extends num
   locators: Record<LocationType, ItemLocator<Player, MaterialType, LocationType>>
   player?: Player
 }
+
+export type PlaceLocationContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number, ParentItemId = any> =
+  {
+    parentItemId?: ParentItemId
+  }
+  & BaseContext<Player, MaterialType, LocationType>
 
 export type PlaceItemContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   type: MaterialType

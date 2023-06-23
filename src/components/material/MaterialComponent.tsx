@@ -2,7 +2,7 @@
 import { forwardRef, HTMLAttributes, MouseEvent, useContext } from 'react'
 import { MaterialGame, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { BaseContext, ItemLocator } from '../../locators'
+import { ItemLocator, PlaceLocationContext } from '../../locators'
 import { combineEventListeners } from '../../utilities'
 import { useGame, useMaterialDescription, usePlayerId, useRules } from '../../hooks'
 import pickBy from 'lodash/pickBy'
@@ -51,7 +51,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
         {withLocations && (
           description.getLocations ?
             description.getLocations(itemId, legalMovesTo)
-            : createLocations(rules, innerLocators, itemId, legalMovesTo, { game, material, locators, player })
+            : createLocations(rules, innerLocators, legalMovesTo, { game, material, locators, player, parentItemId: itemId })
         )}
       </FlatMaterial>
     )
@@ -60,10 +60,10 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
   return null
 })
 
-const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, itemId: any | undefined, moves: MaterialMove<number, number, number>[] = [], context: BaseContext) => {
+const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, moves: MaterialMove<number, number, number>[] = [], context: PlaceLocationContext) => {
   return <>
     {Object.entries(locators).map(([, locator]) =>
-      locator && locator.createLocationsOnItem(itemId, moves, rules, context)
+      locator && locator.createLocations(moves, rules, context)
     )}
   </>
 }
