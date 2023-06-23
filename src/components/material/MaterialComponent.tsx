@@ -60,7 +60,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
   return null
 })
 
-const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, itemId: number | undefined, moves: MaterialMove<number, number, number>[] = [], context: BaseContext) => {
+const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, itemId: any | undefined, moves: MaterialMove<number, number, number>[] = [], context: BaseContext) => {
   return <>
     {Object.entries(locators).map(([, locator]) =>
       locator && locator.createLocationsOnItem(itemId, moves, rules, context)

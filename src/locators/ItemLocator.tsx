@@ -47,7 +47,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     let { x, y, z } = this.getPosition(item, context)
     const parentMaterial = this.parentItemType ? context.material[this.parentItemType] : undefined
     if (parentMaterial) {
-      const positionOnParent = this.getPositionOnParent?.(item.location)
+      const positionOnParent = this.getPositionOnParent?.(item.location, context)
       if (positionOnParent) {
         const { width, height } = parentMaterial.getSize(this.getParentItemId(item.location))
         x += width * (positionOnParent.x - 50) / 100
@@ -78,9 +78,10 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
    * {x: 50, y: 50} centers the item in the parent item.
    *
    * @param location Location of the item or area inside the parent item
+   * @param context THe material game context
    * @return {x, y} with "x" as a percentage from the parent's width, "y" a percentage of the height
    */
-  getPositionOnParent?(location: Location<P, L>): XYCoordinates
+  getPositionOnParent?(location: Location<P, L>, context: BaseContext<P, M, L>): XYCoordinates
 
   getRotations(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
     const rotations = []
@@ -140,8 +141,8 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
-  createLocationsOnItem<ParentItemId extends number | undefined>(parent: ParentItemId, legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: BaseContext<P, M, L>): ReactNode {
-    const locations = this.getParentItemLocations?.(parent) ?? []
+  createLocationsOnItem<ParentItemId = any | undefined>(parent: ParentItemId, legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: BaseContext<P, M, L>): ReactNode {
+    const locations = this.getParentItemLocations?.(parent, context) ?? []
     return locations.map(location => this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location))), context, true))
   }
 
@@ -153,12 +154,12 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     })
   }
 
-  getParentItemLocations?<ParentItemId extends number | undefined>(_parent: ParentItemId): Location<P, L>[]
+  getParentItemLocations?<ParentItemId = any | undefined>(_parent: ParentItemId, _context: BaseContext<P, M, L>): Location<P, L>[]
 
   getLocations?(): Location<P, L>[]
 
   createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[], context: BaseContext<P, M, L>, hasParent?: boolean): ReactNode {
-    const position = this.getPositionOnParent?.(location) ?? { x: 0, y: 0 }
+    const position = this.getPositionOnParent?.(location, context) ?? { x: 0, y: 0 }
 
     return <SimpleDropArea key={JSON.stringify(location)} location={location} legalMoves={legalMoves} dragOnly={!hasParent}
                            css={[hasParent && childLocationCss(position), this.getLocationCss(location, rules, legalMoves, context)]}/>
@@ -170,7 +171,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 
   getLocationRules?(props: LocationRulesProps<P, M, L>): ReactNode
 
-  getRelativePlayerIndex({ game: { players }, player: me }: PlaceItemContext<P, M, L>, player: P): number {
+  getRelativePlayerIndex({ game: { players }, player: me }: BaseContext<P, M, L>, player: P): number {
     const absoluteIndex = players.indexOf(player)
     if (me === undefined || players[0] === me) return absoluteIndex
     return (absoluteIndex - players.indexOf(me) + players.length) % players.length

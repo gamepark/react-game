@@ -16,7 +16,9 @@ export abstract class LineLocator<P extends number = number, M extends number = 
     return { x: coordinates.x + index * (delta.x ?? 0), y: coordinates.y + index * (delta.y ?? 0), z: coordinates.z + index * (delta.z ?? 0) }
   }
 
-  abstract getCoordinates(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): Coordinates
+  getCoordinates(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): Coordinates {
+    return { x: 0, y: 0, z: 0 }
+  }
 
   abstract getDelta(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): Partial<Coordinates>
 
