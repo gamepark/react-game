@@ -142,7 +142,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   createLocationsOnItem<ParentItemId = any | undefined>(parent: ParentItemId, legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: BaseContext<P, M, L>): ReactNode {
-    const locations = this.getParentItemLocations?.(parent, context) ?? []
+    const locations = this.getLocationsOnParent?.(parent, context) ?? []
     return locations.map(location => this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location))), context, true))
   }
 
@@ -154,7 +154,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     })
   }
 
-  getParentItemLocations?<ParentItemId = any | undefined>(_parent: ParentItemId, _context: BaseContext<P, M, L>): Location<P, L>[]
+  getLocationsOnParent?<ParentItemId = any | undefined>(_parent: ParentItemId, _context: BaseContext<P, M, L>): Location<P, L>[]
 
   getLocations?(): Location<P, L>[]
 
