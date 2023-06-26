@@ -9,6 +9,8 @@ import { useWebP } from '../../hooks'
 import { getApolloClient, LocalGameProvider, LocalGameProviderProps, RemoteGameProvider } from '@gamepark/react-client'
 import { GameContext, gameContext } from './GameContext'
 import merge from 'lodash/merge'
+import { isMaterialTutorial } from '../tutorial'
+import { wrapRulesWithTutorial } from '../tutorial/TutorialRulesWrapper'
 
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
@@ -20,6 +22,9 @@ export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveVi
 export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId = number>(
   { material, materialI18n, locators, hasSounds, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
+  if (isMaterialTutorial(props.tutorial)) {
+    wrapRulesWithTutorial(props.tutorial, props.Rules)
+  }
   const { game, Rules, RulesView, optionsSpec, animations, tutorial } = props
   const webP = useWebP()
   const emotionCache = useMemo(() => createCache({

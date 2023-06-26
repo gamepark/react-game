@@ -20,6 +20,7 @@ export abstract class MaterialTutorial<P extends number = number, M extends numb
 
   setupTutorial(): [MaterialGame<P, M, L>, P[]] {
     const game = this.setup.setup(this.options)
+    game.tutorialStep = 0
     return [game, game.players]
   }
 
@@ -47,6 +48,12 @@ export type TutorialPopupStep<P extends number = number, M extends number = numb
 
 export type TutorialMoveStep<P extends number = number, M extends number = number, L extends number = number> = {
   type: typeof TutorialStepType.Move
-  move?: (moves: MaterialMove<P, M, L>[]) => MaterialMove<P, M, L> | undefined
+  isValidMove?: (move: MaterialMove<P, M, L>) => boolean
   playerId?: P
+}
+
+export function isMaterialTutorial(
+  tutorialDescription?: TutorialDescription<any, any, any>
+): tutorialDescription is MaterialTutorial {
+  return !!tutorialDescription && typeof (tutorialDescription as MaterialTutorial).material === 'function'
 }

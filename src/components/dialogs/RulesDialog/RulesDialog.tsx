@@ -30,7 +30,7 @@ const dialogCloseIcon = css`
   z-index: 100;
 `
 
-const rulesDialogCss = css`
+export const rulesDialogCss = css`
   position: relative;
   background-color: #f0fbfc;
   color: #002448;

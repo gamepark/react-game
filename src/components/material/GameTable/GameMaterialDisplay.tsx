@@ -12,6 +12,7 @@ import { MaterialRulesDialog } from '../../dialogs'
 import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { gameContext } from '../../GameProvider'
+import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 
 export const GameMaterialDisplay = () => {
   const context = useContext(gameContext)
@@ -79,6 +80,7 @@ export const GameMaterialDisplay = () => {
       return locator.createLocations(legalMoves, rules, commonContext)
     })}
     <MaterialRulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
+    {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}
   </>
 }
 
