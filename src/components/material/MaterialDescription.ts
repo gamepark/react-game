@@ -3,6 +3,7 @@ import { Location, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/ru
 
 export type StockDescription<P extends number = number, L extends number = number> = {
   location: Location<P, L>
+  id?: any
 }
 
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
@@ -22,6 +23,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   abstract rules: FC<MaterialRulesProps<P, M, L>>
   items?: (game: MaterialGame<P, M, L>, player?: P) => MaterialItem<P, L>[]
   stock?: StockDescription<P, L>
+  stocks?: (game: MaterialGame<P, M, L>, player?: P) => StockDescription<P, L>[]
   getLocations?: MaterialLocationsFunction<ItemId>
 
   height?: number
