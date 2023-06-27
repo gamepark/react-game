@@ -105,9 +105,8 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     if (!this.parentItemType) return []
     const { game, player, material, locators } = context
     const parentMaterial = material[this.parentItemType]
-    const parentItemIndex = game.items[this.parentItemType]?.findIndex(item => equal(item.id, location.parent))
-    if (parentItemIndex !== undefined && parentItemIndex !== -1) {
-      const parentItem = game.items[this.parentItemType]![parentItemIndex]
+    if (location.parent !== undefined) {
+      const parentItem = game.items[this.parentItemType]![location.parent]
       const parentLocator: ItemLocator<P, M, L> = locators[parentItem.location.type]
       return parentLocator.transformItemLocation(parentItem, { ...context, type: this.parentItemType, index: 0 })
     } else {
