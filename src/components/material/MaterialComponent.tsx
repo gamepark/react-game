@@ -8,6 +8,7 @@ import { useGame, useMaterialDescription, usePlayerId, useRules } from '../../ho
 import pickBy from 'lodash/pickBy'
 import { gameContext } from '../GameProvider'
 import { FlatMaterial, isFlatMaterialDescription } from './FlatMaterial'
+import { ComponentCommonProps } from './MaterialDescription'
 
 export type MaterialComponentProps<ItemId = any, P extends number = number, M extends number = number, L extends number = number> = {
   type: M
@@ -16,7 +17,7 @@ export type MaterialComponentProps<ItemId = any, P extends number = number, M ex
   legalMovesTo?: MaterialMove<P, M, L>[]
   onShortClick?: () => void
   onLongClick?: () => void
-} & HTMLAttributes<HTMLElement>
+} & ComponentCommonProps & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
   { type, itemId, withLocations, legalMovesTo, onShortClick, onLongClick = onShortClick, ...props }, ref

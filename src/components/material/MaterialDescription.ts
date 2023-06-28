@@ -19,6 +19,11 @@ export type ComponentSize = {
   height: number
 }
 
+export type ComponentCommonProps = {
+  highlight?: boolean
+  playDown?: boolean
+}
+
 export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> {
   abstract rules: FC<MaterialRulesProps<P, M, L>>
   items?: (game: MaterialGame<P, M, L>, player?: P) => MaterialItem<P, L>[]

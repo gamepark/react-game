@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useContext, useEffect, useRef, useState } from 'react'
+import { forwardRef, useContext, useEffect, useRef, useState } from 'react'
 import { DisplayedItem, isCreateItem, isDeleteItem, isMoveItem, ItemMove, itemsCanMerge, MaterialItem, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
-import { grabbingCursor, grabCursor, pointerCursorCss, shineEffect, transformCss } from '../../css'
+import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../../css'
 import { useDraggable } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
@@ -12,6 +12,7 @@ import { gameContext, MaterialGameContext } from '../GameProvider'
 import { ItemAnimationContext } from './MaterialAnimations'
 import merge from 'lodash/merge'
 import equal from 'fast-deep-equal'
+import { mergeRefs } from 'react-merge-refs'
 
 export type DraggableMaterialProps<P extends number = number, M extends number = number, L extends number = number> = {
   item: MaterialItem<P, L>
@@ -22,7 +23,9 @@ export type DraggableMaterialProps<P extends number = number, M extends number =
   postTransform?: string
 } & MaterialComponentProps<number, P, M, L>
 
-export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, index, displayIndex, disabled, preTransform, postTransform, ...props }) => {
+export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialProps>((
+  { item, type, index, displayIndex, disabled, preTransform, postTransform, ...props }, ref
+) => {
 
   const displayedItem: DisplayedItem = { type, index, displayIndex }
   const { attributes, listeners, transform, setNodeRef } = useDraggable({
@@ -73,17 +76,18 @@ export const DraggableMaterial: FC<DraggableMaterialProps> = ({ item, type, inde
   }
 
   return (
-    <MaterialComponent ref={setNodeRef} type={type} itemId={item.id}
+    <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item.id}
                        css={[
                          !applyTransform && transformTransition(animation?.duration),
                          !disabled && noTouchAction,
-                         disabled || animations.length ? pointerCursorCss : transform ? grabbingCursor : [shineEffect, grabCursor],
+                         disabled || animations.length ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
                          transformCss(preTransform, applyTransform && transformRef.current, postTransform),
                          animationCss
                        ]}
+                       highlight={!disabled && !animations.length && !transform}
                        {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}/>
   )
-}
+})
 
 const noTouchAction = css`
   touch-action: none;

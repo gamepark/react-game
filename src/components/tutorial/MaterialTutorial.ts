@@ -8,10 +8,9 @@ export abstract class MaterialTutorial<P extends number = number, M extends numb
   abstract options: any
   abstract setup: MaterialGameSetup<P, M, L>
   abstract steps: TutorialStep<P, M, L>[]
-  game?: MaterialGame<P, M, L>
 
-  material(type: M): Material<P, M, L> {
-    return new Material(type, Array.from((this.game?.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
+  material(game: MaterialGame<P, M, L>, type: M): Material<P, M, L> {
+    return new Material(type, Array.from((game?.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
   location(type: L): LocationBuilder<P, L> {
@@ -43,8 +42,12 @@ export type TutorialStep<P extends number = number, M extends number = number, L
 export type TutorialPopupStep<P extends number = number, M extends number = number, L extends number = number> = {
   type: typeof TutorialStepType.Popup
   text: (t: TFunction) => string | ReactNode
-  focus?: () => Material<P, M, L> | LocationBuilder<P, L> | TutorialFocusType
+  focus?: (game: MaterialGame<P, M, L>) => TutorialFocus<P, M, L>
+  zoom?: number
 }
+
+export type TutorialFocus<P extends number = number, M extends number = number, L extends number = number> =
+  Material<P, M, L> | LocationBuilder<P, L> | TutorialFocusType
 
 export type TutorialMoveStep<P extends number = number, M extends number = number, L extends number = number> = {
   type: typeof TutorialStepType.Move
@@ -56,4 +59,12 @@ export function isMaterialTutorial(
   tutorialDescription?: TutorialDescription<any, any, any>
 ): tutorialDescription is MaterialTutorial {
   return !!tutorialDescription && typeof (tutorialDescription as MaterialTutorial).material === 'function'
+}
+
+export function isItemFocus(itemType: number, itemIndex: number, focus?: TutorialFocus) {
+  return isMaterialFocus(focus) && focus.type === itemType && focus.indexes.includes(itemIndex)
+}
+
+export function isMaterialFocus(focus?: TutorialFocus): focus is Material {
+  return typeof focus === 'object' && (focus as Material).entries !== undefined
 }

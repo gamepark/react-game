@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { forwardRef, HTMLAttributes } from 'react'
-import { backgroundCss, borderRadiusCss, preserve3d, shadowCss, sizeCss, transformCss } from '../../../css'
-import { ComponentSize, MaterialDescription } from '../MaterialDescription'
+import { backgroundCss, borderRadiusCss, preserve3d, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
+import { ComponentCommonProps, ComponentSize, MaterialDescription } from '../MaterialDescription'
 import { css } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 
-export type FlatMaterialProps = ComponentSize & {
+export type FlatMaterialProps = ComponentSize & ComponentCommonProps & {
   image?: string
   back?: {
     image?: string
@@ -14,13 +14,14 @@ export type FlatMaterialProps = ComponentSize & {
 }
 
 export const FlatMaterial = forwardRef<HTMLDivElement, FlatMaterialProps & HTMLAttributes<HTMLDivElement>>(
-  ({ image, width, height, back, borderRadius, children, ...props }, ref) => {
+  ({ image, width, height, back, borderRadius, highlight, playDown, children, ...props }, ref) => {
     if (!back) {
       return (
         <div ref={ref} css={[
           sizeCss(width, height),
           image && [backgroundCss(image), shadowCss(image)],
-          borderRadius && borderRadiusCss(borderRadius)
+          borderRadius && borderRadiusCss(borderRadius),
+          highlight && shineEffect, playDown && playDownCss(image)
         ]} {...props}>
           {children}
         </div>
@@ -29,13 +30,21 @@ export const FlatMaterial = forwardRef<HTMLDivElement, FlatMaterialProps & HTMLA
     // TODO: we should be able to define children locations inside the back face too
     return (
       <div ref={ref} css={[preserve3d, sizeCss(width, height), borderRadius && borderRadiusCss(borderRadius)]} {...props}>
-        <div css={[faceCss, image && [backgroundCss(image), shadowCss(image)]]}>
+        <Face image={image} css={[highlight && shineEffect, playDown && playDownCss(image)]}>
           {children}
-        </div>
-        <div css={[faceCss, back.image && [backgroundCss(back.image), shadowCss(back.image)], transformCss('rotateY(-180deg)')]}/>
+        </Face>
+        <Face image={back.image} css={[transformCss('rotateY(-180deg)'), highlight && shineEffect, playDown && playDownCss(back.image)]}/>
       </div>
     )
   }
+)
+
+type FaceProps = {
+  image?: string
+} & HTMLAttributes<HTMLDivElement>
+
+const Face = ({ image, ...props }: FaceProps) => (
+  <div css={[faceCss, image && [backgroundCss(image), shadowCss(image)]]} {...props}/>
 )
 
 const faceCss = css`
@@ -108,4 +117,14 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
 export function isFlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
 (description: MaterialDescription<P, M, L, ItemId>): description is FlatMaterialDescription<P, M, L, ItemId> {
   return typeof (description as FlatMaterialDescription<P, M, L, ItemId>).getFlatMaterialProps === 'function'
+}
+
+const playDownCss = (image?: string) => {
+  if (image?.endsWith('.jpg')) {
+    return shadowEffect
+  } else {
+    return css`
+      filter: brightness(0.5);
+    `
+  }
 }

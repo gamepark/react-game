@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { BaseContext, PlaceItemContext } from '../../../locators'
-import { useContext, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { closeRulesDisplay, DisplayedItem, displayMaterialRules, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import pickBy from 'lodash/pickBy'
@@ -13,6 +13,9 @@ import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { gameContext } from '../../GameProvider'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
+import { useTutorialStep } from '../../../hooks/useTutorialStep'
+import { isItemFocus, isMaterialFocus, TutorialStepType } from '../../tutorial'
+import { useControls } from 'react-zoom-pan-pinch'
 
 export const GameMaterialDisplay = () => {
   const context = useContext(gameContext)
@@ -22,12 +25,36 @@ export const GameMaterialDisplay = () => {
   const rules = useRules<MaterialRules>()
   const legalMoves = useLegalMoves<MaterialMove>()
   const play = usePlay()
+  const tutorialStep = useTutorialStep()
+  const tutorialPopupStep = tutorialStep?.type === TutorialStepType.Popup ? tutorialStep : undefined
+  const tutorialFocus = rules?.game ? tutorialPopupStep?.focus?.(rules?.game) : undefined
 
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
   useDndMonitor({
     onDragStart: (event: DragStartEvent) => isDraggedItem(event.active.data.current) && setDraggedItem(event.active.data.current),
     onDragEnd: () => setDraggedItem(undefined)
   })
+
+  const { zoomToElement } = useControls()
+  const focusRefs = useRef<Set<HTMLElement>>(new Set())
+  const [readyToFocus, setReadyToFocus] = useState(false)
+  useEffect(() => {
+    focusRefs.current = new Set()
+    setReadyToFocus(false)
+  }, [tutorialStep])
+  useEffect(() => {
+    if (readyToFocus) {
+      const scale = tutorialPopupStep?.zoom ? 1 / tutorialPopupStep.zoom : undefined
+      zoomToElement(focusRefs.current.values().next().value, scale, 1000)
+    }
+  }, [readyToFocus])
+  const addFocusRef = useCallback((ref: HTMLElement | null) => {
+    if (!ref) return
+    focusRefs.current.add(ref)
+    if (isMaterialFocus(tutorialFocus) && focusRefs.current.size === tutorialFocus.length) {
+      setReadyToFocus(true)
+    }
+  }, [tutorialFocus])
 
   if (!rules) return <></>
   const game = rules?.game
@@ -45,7 +72,7 @@ export const GameMaterialDisplay = () => {
         return [...Array(item.quantity ?? 1)].map((_, index) => {
           const context: PlaceItemContext = { ...commonContext, type, index }
           return <MaterialComponent key={`${stringType}_${index}`} type={type} itemId={item.id} withLocations
-                                    legalMovesTo={legalMovesTo}
+                                    legalMovesTo={legalMovesTo} playDown={tutorialStep?.type === TutorialStepType.Popup}
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, context))]}
                                     onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
         })
@@ -66,6 +93,8 @@ export const GameMaterialDisplay = () => {
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} item={item} index={index} displayIndex={displayIndex} withLocations
                                     disabled={!itemMoves.length}
+                                    playDown={tutorialPopupStep && !isItemFocus(type, index, tutorialFocus)}
+                                    ref={isItemFocus(type, index, tutorialFocus) ? addFocusRef : undefined}
                                     postTransform={locator.transformItem(item, context).join(' ')}
                                     css={draggingToSameLocation && noPointerEvents}
                                     onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}
