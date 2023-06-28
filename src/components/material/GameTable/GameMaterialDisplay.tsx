@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { BaseContext, PlaceItemContext } from '../../../locators'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
+import { useLegalMoves, usePlay, usePlayerId, useRules, useZoomToElements } from '../../../hooks'
 import { closeRulesDisplay, DisplayedItem, displayMaterialRules, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import pickBy from 'lodash/pickBy'
 import { isMoveOnItem, isMoveThisItem, isMoveThisItemToLocation } from '../utils'
@@ -15,7 +15,6 @@ import { gameContext } from '../../GameProvider'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { useTutorialStep } from '../../../hooks/useTutorialStep'
 import { isItemFocus, isMaterialFocus, TutorialStepType } from '../../tutorial'
-import { useControls } from 'react-zoom-pan-pinch'
 
 export const GameMaterialDisplay = () => {
   const context = useContext(gameContext)
@@ -35,7 +34,7 @@ export const GameMaterialDisplay = () => {
     onDragEnd: () => setDraggedItem(undefined)
   })
 
-  const { zoomToElement } = useControls()
+  const zoomToElements = useZoomToElements()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
   const [readyToFocus, setReadyToFocus] = useState(false)
   useEffect(() => {
@@ -45,7 +44,7 @@ export const GameMaterialDisplay = () => {
   useEffect(() => {
     if (readyToFocus) {
       const scale = tutorialPopupStep?.zoom ? 1 / tutorialPopupStep.zoom : undefined
-      zoomToElement(focusRefs.current.values().next().value, scale, 1000)
+      zoomToElements(Array.from(focusRefs.current), scale)
     }
   }, [readyToFocus])
   const addFocusRef = useCallback((ref: HTMLElement | null) => {
