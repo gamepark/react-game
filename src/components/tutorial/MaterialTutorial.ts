@@ -1,5 +1,5 @@
 import { TutorialDescription } from '@gamepark/react-client'
-import { LocationBuilder, Material, MaterialGame, MaterialGameSetup, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { LocationBuilder, Material, MaterialGame, MaterialGameSetup, MaterialItem, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { TFunction } from 'i18next'
 import { ReactNode } from 'react'
 
@@ -42,6 +42,7 @@ export type TutorialStep<P extends number = number, M extends number = number, L
 export type TutorialPopupStep<P extends number = number, M extends number = number, L extends number = number> = {
   type: typeof TutorialStepType.Popup
   text: (t: TFunction) => string | ReactNode
+  position?: XYCoordinates
   focus?: (game: MaterialGame<P, M, L>) => TutorialFocus<P, M, L>
   zoom?: number
 }

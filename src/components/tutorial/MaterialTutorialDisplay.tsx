@@ -9,7 +9,7 @@ import { css, ThemeProvider } from '@emotion/react'
 import { PlayMoveButton, ThemeButton } from '../buttons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
-import { buttonCss } from '../../css'
+import { buttonCss, transformCss } from '../../css'
 import { useTutorial } from '@gamepark/react-client'
 import minBy from 'lodash/minBy'
 import maxBy from 'lodash/maxBy'
@@ -39,7 +39,13 @@ export const MaterialTutorialDisplay = () => {
   const canUndoLastMove = canUndo()
 
   return (
-    <Dialog open={tutorialStep?.type === TutorialStepType.Popup} css={[rulesDialogCss, tutorialDialogCss]} backdropCss={backdropCss}>
+    <Dialog open={tutorialStep?.type === TutorialStepType.Popup}
+            css={[
+              rulesDialogCss,
+              tutorialDialogCss,
+              popupStep?.position && transformCss(`translate(${popupStep.position.x}em, ${popupStep.position.y}em)`)
+            ]}
+            backdropCss={backdropCss}>
       {popupStep &&
         <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
           <div css={rules}>
@@ -91,4 +97,5 @@ const buttonsLine = css`
 const tutorialDialogCss = css`
   width: 80em;
   pointer-events: auto;
+  transition: transform 0.1s ease-in-out;
 `
