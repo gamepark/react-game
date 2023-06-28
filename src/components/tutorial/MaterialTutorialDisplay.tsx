@@ -80,6 +80,7 @@ const rules = css`
 const backdropCss = css`
   background: none;
   pointer-events: none;
+  z-index: 900;
 `
 
 const passButton = css`
