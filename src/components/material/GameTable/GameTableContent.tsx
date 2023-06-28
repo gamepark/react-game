@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { FC, useEffect } from 'react'
 import { css } from '@emotion/react'
-import { TransformComponent, useControls } from 'react-zoom-pan-pinch'
+import { TransformComponent, useTransformContext } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
+import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/bounds.util'
 
 export type GameTableContentProps = {
   xMin: number
@@ -19,9 +20,15 @@ export type GameTableContentProps = {
 export const GameTableContent: FC<GameTableContentProps> = (props) => {
   const { perspective, xMin, xMax, yMin, yMax, zoomMax = 1, margin = { left: 0, right: 0, top: 7, bottom: 0 } } = props
 
-  const { centerView } = useControls()
+  const context = useTransformContext()
   useEffect(() => {
-    const handler = () => centerView()
+    const handler = () => {
+      if (!context.bounds) return
+      const { positionX, positionY, scale } = context.transformState
+      const bounds = calculateBounds(context, scale)
+      const { x, y } = getMouseBoundedPosition(positionX, positionY, bounds, true, 0, 0, context.wrapperComponent)
+      context.setTransformState(scale, x, y)
+    }
     window.addEventListener('resize', handler)
     return () => {
       window.removeEventListener('resize', handler)
