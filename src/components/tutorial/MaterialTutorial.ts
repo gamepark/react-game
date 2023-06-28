@@ -1,5 +1,5 @@
 import { TutorialDescription } from '@gamepark/react-client'
-import { LocationBuilder, Material, MaterialGame, MaterialGameSetup, MaterialMove } from '@gamepark/rules-api'
+import { LocationBuilder, Material, MaterialGame, MaterialGameSetup, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { TFunction } from 'i18next'
 import { ReactNode } from 'react'
 
@@ -47,12 +47,17 @@ export type TutorialPopupStep<P extends number = number, M extends number = numb
 }
 
 export type TutorialFocus<P extends number = number, M extends number = number, L extends number = number> =
-  Material<P, M, L> | LocationBuilder<P, L> | TutorialFocusType
+  Material<P, M, L> | StaticItem<P, M, L> | LocationBuilder<P, L> | TutorialFocusType
 
 export type TutorialMoveStep<P extends number = number, M extends number = number, L extends number = number> = {
   type: typeof TutorialStepType.Move
   isValidMove?: (move: MaterialMove<P, M, L>) => boolean
   playerId?: P
+}
+
+export type StaticItem<P extends number = number, M extends number = number, L extends number = number> = {
+  type: M
+  item: MaterialItem<P, L>
 }
 
 export function isMaterialTutorial(
@@ -67,4 +72,19 @@ export function isItemFocus(itemType: number, itemIndex: number, focus?: Tutoria
 
 export function isMaterialFocus(focus?: TutorialFocus): focus is Material {
   return typeof focus === 'object' && (focus as Material).entries !== undefined
+}
+
+export function countTutorialFocusRefs(focus?: TutorialFocus): number {
+  if (!focus) return 0
+  if (isMaterialFocus(focus)) {
+    return focus.getItems().reduce((sum, item) => sum + (item.quantity ?? 1), 0)
+  } else if (isStaticItem(focus)) {
+    return focus.item.quantity ?? 1
+  } else {
+    return 0 // TODO
+  }
+}
+
+export function isStaticItem(focus?: TutorialFocus): focus is StaticItem {
+  return typeof focus === 'object' && typeof (focus as any).type === 'number' && typeof (focus as any).item === 'object'
 }

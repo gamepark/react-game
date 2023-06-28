@@ -14,7 +14,8 @@ import { css } from '@emotion/react'
 import { gameContext } from '../../GameProvider'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { useTutorialStep } from '../../../hooks/useTutorialStep'
-import { isItemFocus, isMaterialFocus, TutorialStepType } from '../../tutorial'
+import { countTutorialFocusRefs, isItemFocus, isStaticItem, TutorialStepType } from '../../tutorial'
+import equal from 'fast-deep-equal'
 
 export const GameMaterialDisplay = () => {
   const context = useContext(gameContext)
@@ -50,7 +51,7 @@ export const GameMaterialDisplay = () => {
   const addFocusRef = useCallback((ref: HTMLElement | null) => {
     if (!ref) return
     focusRefs.current.add(ref)
-    if (isMaterialFocus(tutorialFocus) && focusRefs.current.size === tutorialFocus.length) {
+    if (countTutorialFocusRefs(tutorialFocus) === focusRefs.current.size) {
       setReadyToFocus(true)
     }
   }, [tutorialFocus])
@@ -64,13 +65,15 @@ export const GameMaterialDisplay = () => {
       const type = parseInt(stringType)
       const innerLocators = pickBy(locators, locator => locator.parentItemType === type)
       const innerLocations = Object.keys(innerLocators).map(type => parseInt(type))
-      return description.getItems(game, player).map((item) => {
+      return description.getItems(game, player).map(item => {
         const legalMovesTo = innerLocations.length > 0 ? legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveOnItem(move, item.id, innerLocations))) : undefined
         const locator = locators[item.location.type]
         return [...Array(item.quantity ?? 1)].map((_, index) => {
           const context: PlaceItemContext = { ...commonContext, type, index }
+          const focus = isStaticItem(tutorialFocus) && tutorialFocus.type === type && equal(tutorialFocus.item, item)
           return <MaterialComponent key={`${stringType}_${index}`} type={type} itemId={item.id} withLocations
-                                    legalMovesTo={legalMovesTo} playDown={tutorialStep?.type === TutorialStepType.Popup}
+                                    legalMovesTo={legalMovesTo} playDown={tutorialPopupStep && !focus}
+                                    ref={focus ? addFocusRef : undefined}
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, context))]}
                                     onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}/>
         })
