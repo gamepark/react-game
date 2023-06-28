@@ -61,11 +61,10 @@ export const GameMaterialDisplay = () => {
 
   return <>
     {Object.entries(material).map(([stringType, description]) => {
-      if (!description.items) return null
       const type = parseInt(stringType)
       const innerLocators = pickBy(locators, locator => locator.parentItemType === type)
       const innerLocations = Object.keys(innerLocators).map(type => parseInt(type))
-      return description.items(game, player).map((item) => {
+      return description.getItems(game, player).map((item) => {
         const legalMovesTo = innerLocations.length > 0 ? legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveOnItem(move, item.id, innerLocations))) : undefined
         const locator = locators[item.location.type]
         return [...Array(item.quantity ?? 1)].map((_, index) => {

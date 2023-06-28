@@ -83,7 +83,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const type = itemType
     const stock = this.getMatchingStock(itemType, itemId, animationContext)
     if (!stock) return
-    const stockItem = context.material[type].items?.(rules.game, context.player).find(i => {
+    const stockItem = context.material[type].getItems(rules.game, context.player).find(i => {
       const { quantity, ...item } = i
       return equal(item, stock)
     })

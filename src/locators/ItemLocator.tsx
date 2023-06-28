@@ -111,7 +111,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
       return parentLocator.transformItemLocation(parentItem, { ...context, type: this.parentItemType, index: 0 })
     } else {
       const parentItemId = this.getParentItemId(location)
-      const staticItem = parentMaterial.items && parentMaterial.items(game, player).find(item => equal(item.id, parentItemId))
+      const staticItem = parentMaterial.getItems(game, player).find(item => equal(item.id, parentItemId))
       if (!staticItem) return []
       const locator: ItemLocator<P, M, L> = locators[staticItem.location.type]
       return locator.transformItemLocation(staticItem, { ...context, type: this.parentItemType, index: 0 })

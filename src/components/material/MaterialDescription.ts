@@ -26,7 +26,12 @@ export type ComponentCommonProps = {
 
 export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> {
   abstract rules: FC<MaterialRulesProps<P, M, L>>
-  items?: (game: MaterialGame<P, M, L>, player?: P) => MaterialItem<P, L>[]
+  item?: MaterialItem<P, L>
+
+  getItems(_game: MaterialGame<P, M, L>, _player?: P): MaterialItem<P, L>[] {
+    return this.item ? [this.item] : []
+  }
+
   stock?: StockDescription<P, L>
   stocks?: (game: MaterialGame<P, M, L>, player?: P) => StockDescription<P, L>[]
   getLocations?: MaterialLocationsFunction<ItemId>
