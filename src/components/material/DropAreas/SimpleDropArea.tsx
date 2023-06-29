@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { HTMLAttributes, MouseEvent, useState } from 'react'
+import { forwardRef, HTMLAttributes, MouseEvent, useState } from 'react'
 import { displayLocationRules, ItemMove, ItemMoveType, Location, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
@@ -11,6 +11,7 @@ import { isDraggedItem } from '../DraggableMaterial'
 import { combineEventListeners } from '../../../utilities'
 import { useStocks } from '../../../hooks/useStocks'
 import { isMoveToStock } from '../utils/IsMoveToStock'
+import { mergeRefs } from 'react-merge-refs'
 
 export type SimpleDropAreaProps<P extends number = number, L extends number = number> = {
   location: Location<P, L>
@@ -19,15 +20,15 @@ export type SimpleDropAreaProps<P extends number = number, L extends number = nu
   dragOnly?: boolean;
 } & HTMLAttributes<HTMLDivElement>
 
-export const SimpleDropArea = <P extends number = number, M extends number = number, L extends number = number>(
-  { location, onShortClick, onLongClick, dragOnly, ...props }: SimpleDropAreaProps<P, L>
+export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
+  { location, onShortClick, onLongClick, dragOnly, ...props }, ref
 ) => {
   const locator = useItemLocator(location.type)
-  const stocks = useStocks<P, M, L>()
-  const rules = useRules<MaterialRules<P, M, L>>()
-  const play = usePlay<MaterialMove<P, M, L>>()
+  const stocks = useStocks()
+  const rules = useRules<MaterialRules>()
+  const play = usePlay<MaterialMove>()
   const player = usePlayerId()
-  const legalMoves = useLegalMoves<ItemMove<P, M, L>>(move =>
+  const legalMoves = useLegalMoves<ItemMove>(move =>
     !!rules && rules.isMoveTrigger(move, move => isMoveToLocation(move, location) || isMoveToStock(stocks, move, location))
   )
 
@@ -52,7 +53,7 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
 
   const canDrop = draggedItem !== undefined && legalMoves.filter(move =>
     rules?.isMoveTrigger(move, move =>
-      isMoveThisItemToLocation(move, draggedItem.type as M, draggedItem.index, location, stocks)
+      isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, location, stocks)
     )
   ).length === 1
 
@@ -82,14 +83,14 @@ export const SimpleDropArea = <P extends number = number, M extends number = num
 
   if (!canDrop && dragOnly) return null
 
-  return <div ref={setNodeRef}
+  return <div ref={mergeRefs([ref, setNodeRef])}
               css={[
                 !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
                 (canDrop || (!draggedItem && legalMoves.length > 0 && !animations.length)) && shineEffect,
                 canDrop && isOver && dropHighlight
               ]}
               {...props} {...combineEventListeners(listeners, props)}/>
-}
+})
 
 const hoverHighlight = css`
   &:hover {
