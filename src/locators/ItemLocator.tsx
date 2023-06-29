@@ -44,12 +44,10 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     let { x, y, z } = this.getPosition(item, context)
     const parentMaterial = this.parentItemType ? context.material[this.parentItemType] : undefined
     if (parentMaterial) {
-      const positionOnParent = this.getPositionOnParent?.(item.location, context)
-      if (positionOnParent) {
-        const { width, height } = parentMaterial.getSize(this.getParentItemId(item.location))
-        x += width * (positionOnParent.x - 50) / 100
-        y += height * (positionOnParent.y - 50) / 100
-      }
+      const positionOnParent = this.getPositionOnParent(item.location, context)
+      const { width, height } = parentMaterial.getSize(this.getParentItemId(item.location))
+      x += width * (positionOnParent.x - 50) / 100
+      y += height * (positionOnParent.y - 50) / 100
     }
     return `translate3d(${x}em, ${y}em, ${z}em)`
   }
@@ -74,11 +72,13 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
    * Examples: {x: 0, y: 0} places the center of the item in the top-left corner of the parent item
    * {x: 50, y: 50} centers the item in the parent item.
    *
-   * @param location Location of the item or area inside the parent item
-   * @param context THe material game context
+   * @param _location Location of the item or area inside the parent item
+   * @param _context THe material game context
    * @return {x, y} with "x" as a percentage from the parent's width, "y" a percentage of the height
    */
-  getPositionOnParent?(location: Location<P, L>, context: BaseContext<P, M, L>): XYCoordinates
+  getPositionOnParent(_location: Location<P, L>, _context: BaseContext<P, M, L>): XYCoordinates {
+    return { x: 0, y: 0 }
+  }
 
   getRotations(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): string[] {
     const rotations = []
@@ -142,10 +142,11 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   createLocation(location: Location<P, L>, context: PlaceLocationContext<P, M, L>): ReactNode {
-    const position = this.getPositionOnParent?.(location, context) ?? { x: 0, y: 0, z: 0 }
-
     return <SimpleDropArea key={JSON.stringify(location)} location={location} dragOnly={this.isDragOnlyLocation(location, context)}
-                           css={[this.parentItemType !== undefined && childLocationCss(position), this.getLocationCss(location, context)]}/>
+                           css={[
+                             this.parentItemType !== undefined && childLocationCss(this.getPositionOnParent(location, context)),
+                             this.getLocationCss(location, context)
+                           ]}/>
   }
 
   isDragOnlyLocation(_location: Location<P, L>, _context: PlaceLocationContext<P, M, L>) {
