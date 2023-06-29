@@ -13,9 +13,9 @@ import {
   MaterialMove,
   XYCoordinates
 } from '@gamepark/rules-api'
-import { ItemAnimationContext, MaterialDescription, SimpleDropArea } from '../components'
+import { ItemAnimationContext, MaterialDescription } from '../components'
 import { ReactNode } from 'react'
-import { css, Interpolation, Theme } from '@emotion/react'
+import { Interpolation, Theme } from '@emotion/react'
 import equal from 'fast-deep-equal'
 import { Animation } from '@gamepark/react-client'
 
@@ -141,15 +141,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return []
   }
 
-  createLocation(location: Location<P, L>, context: PlaceLocationContext<P, M, L>): ReactNode {
-    return <SimpleDropArea key={JSON.stringify(location)} location={location} dragOnly={this.isDragOnlyLocation(location, context)}
-                           css={[
-                             this.parentItemType !== undefined && childLocationCss(this.getPositionOnParent(location, context)),
-                             this.getLocationCss(location, context)
-                           ]}/>
-  }
-
-  isDragOnlyLocation(_location: Location<P, L>, _context: PlaceLocationContext<P, M, L>) {
+  isDragOnlyLocation(_location: Location<P, L>) {
     return this.parentItemType === undefined
   }
 
@@ -189,13 +181,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return false
   }
 }
-
-const childLocationCss = ({ x, y }: XYCoordinates) => css`
-  position: absolute;
-  left: ${x}%;
-  top: ${y}%;
-  transform: translate(-50%, -50%);
-`
 
 export type BaseContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   game: MaterialGame<Player, MaterialType, LocationType>

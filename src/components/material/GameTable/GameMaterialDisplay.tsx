@@ -2,7 +2,7 @@
 import { BaseContext, PlaceItemContext } from '../../../locators'
 import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { useLegalMoves, usePlay, usePlayerId, useRules, useZoomToElements } from '../../../hooks'
-import { closeRulesDisplay, DisplayedItem, displayMaterialRules, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { closeRulesDisplay, DisplayedItem, displayMaterialRules, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import { isMoveThisItem, isMoveThisItemToLocation } from '../utils'
 import { MaterialComponent } from '../MaterialComponent'
 import { pointerCursorCss, transformCss } from '../../../css'
@@ -15,6 +15,7 @@ import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { useTutorialStep } from '../../../hooks/useTutorialStep'
 import { countTutorialFocusRefs, isItemFocus, isStaticItem, TutorialStepType } from '../../tutorial'
 import equal from 'fast-deep-equal'
+import { SimpleDropArea } from '../DropAreas'
 
 export const GameMaterialDisplay = () => {
   const context = useContext(gameContext)
@@ -74,7 +75,11 @@ export const GameMaterialDisplay = () => {
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, context))]}
                                     onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}>
             {innerLocations.map(location =>
-              locators[location.type].createLocation(location, { ...commonContext, parentItemId: item.id })
+              <SimpleDropArea key={JSON.stringify(location)} location={location}
+                              css={[
+                                childLocationCss(locators[location.type].getPositionOnParent(location, commonContext)),
+                                locators[location.type].getLocationCss(location, { ...commonContext, parentItemId: item.id })
+                              ]}/>
             )}
           </MaterialComponent>
         })
@@ -106,7 +111,11 @@ export const GameMaterialDisplay = () => {
                                       () => play(itemMoves[0], { delayed: rules.isUnpredictableMove(itemMoves[0], player) })
                                       : undefined}>
             {innerLocations.map(location =>
-              locators[location.type].createLocation(location, { ...commonContext, parentItemId: item.id })
+              <SimpleDropArea key={JSON.stringify(location)} location={location}
+                              css={[
+                                childLocationCss(locators[location.type].getPositionOnParent(location, commonContext)),
+                                locators[location.type].getLocationCss(location, { ...commonContext, parentItemId: item.id })
+                              ]}/>
             )}
           </DraggableMaterial>
         })
@@ -114,7 +123,8 @@ export const GameMaterialDisplay = () => {
     })}
     {Object.values(locators).map(locator =>
       locator.getLocations(commonContext).map(location =>
-        locator.createLocation(location, commonContext)
+        <SimpleDropArea key={JSON.stringify(location)} location={location}
+                        css={locators[location.type].getLocationCss(location, commonContext)}/>
       )
     )}
     <MaterialRulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
@@ -124,4 +134,11 @@ export const GameMaterialDisplay = () => {
 
 const noPointerEvents = css`
   pointer-events: none;
+`
+
+const childLocationCss = ({ x, y }: XYCoordinates) => css`
+  position: absolute;
+  left: ${x}%;
+  top: ${y}%;
+  transform: translate(-50%, -50%);
 `

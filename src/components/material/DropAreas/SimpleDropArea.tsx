@@ -17,11 +17,10 @@ export type SimpleDropAreaProps<P extends number = number, L extends number = nu
   location: Location<P, L>
   onShortClick?: () => void
   onLongClick?: () => void
-  dragOnly?: boolean;
 } & HTMLAttributes<HTMLDivElement>
 
 export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
-  { location, onShortClick, onLongClick, dragOnly, ...props }, ref
+  { location, onShortClick, onLongClick, ...props }, ref
 ) => {
   const locator = useItemLocator(location.type)
   const stocks = useStocks()
@@ -81,7 +80,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
 
-  if (!canDrop && dragOnly) return null
+  if (locator?.isDragOnlyLocation(location) && !canDrop) return null
 
   return <div ref={mergeRefs([ref, setNodeRef])}
               css={[
