@@ -107,7 +107,7 @@ export const GameMaterialDisplay = () => {
     })}
     {Object.entries(locators).map(([, locator]) => {
       if (locator.parentItemType !== undefined) return null
-      return locator.createLocations(legalMoves, rules, commonContext)
+      return locator.createLocations(rules, commonContext)
     })}
     <MaterialRulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
     {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}

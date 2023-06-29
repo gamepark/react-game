@@ -52,7 +52,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
         {withLocations && (
           description.getLocations ?
             description.getLocations(itemId, legalMovesTo)
-            : createLocations(rules, innerLocators, legalMovesTo, { game, material, locators, player, parentItemId: itemId })
+            : createLocations(rules, innerLocators, { game, material, locators, player, parentItemId: itemId })
         )}
       </FlatMaterial>
     )
@@ -61,10 +61,10 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
   return null
 })
 
-const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, moves: MaterialMove<number, number, number>[] = [], context: PlaceLocationContext) => {
+const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, context: PlaceLocationContext) => {
   return <>
     {Object.entries(locators).map(([, locator]) =>
-      locator && locator.createLocations(moves, rules, context)
+      locator && locator.createLocations(rules, context)
     )}
   </>
 }

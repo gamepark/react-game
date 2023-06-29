@@ -18,9 +18,7 @@ import { ItemAnimationContext, MaterialDescription, SimpleDropArea } from '../co
 import { ReactNode } from 'react'
 import { css, Interpolation, Theme } from '@emotion/react'
 import equal from 'fast-deep-equal'
-import { isMoveToLocation } from '../components/material/utils'
 import { Animation } from '@gamepark/react-client'
-import { getStocks, isMoveToStock } from '../components/material/utils/IsMoveToStock'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
@@ -140,28 +138,27 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
-  createLocations(legalMoves: MaterialMove<P, M, L>[], rules: MaterialRules<P, M, L>, context: PlaceLocationContext<P, M, L>): ReactNode {
+  createLocations(rules: MaterialRules<P, M, L>, context: PlaceLocationContext<P, M, L>): ReactNode {
     const locations = this.getLocations?.(context) ?? []
-    const stocks = getStocks(context.material)
     return locations.map(location => {
-      return this.createLocation(location, rules, legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveToLocation(move, location) || isMoveToStock(stocks, move, location))), context)
+      return this.createLocation(location, rules, context)
     })
   }
 
   getLocations?(context: PlaceLocationContext<P, M, L>): Location<P, L>[]
 
-  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, legalMoves: MaterialMove<P, M, L>[], context: PlaceLocationContext<P, M, L>): ReactNode {
+  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, context: PlaceLocationContext<P, M, L>): ReactNode {
     const position = this.getPositionOnParent?.(location, context) ?? { x: 0, y: 0, z: 0 }
 
-    return <SimpleDropArea key={JSON.stringify(location)} location={location} legalMoves={legalMoves} dragOnly={this.isDragOnlyLocation(location, context)}
-                           css={[this.parentItemType !== undefined && childLocationCss(position), this.getLocationCss(location, rules, legalMoves, context)]}/>
+    return <SimpleDropArea key={JSON.stringify(location)} location={location} dragOnly={this.isDragOnlyLocation(location, context)}
+                           css={[this.parentItemType !== undefined && childLocationCss(position), this.getLocationCss(location, rules, context)]}/>
   }
 
   isDragOnlyLocation(_location: Location<P, L>, _context: PlaceLocationContext<P, M, L>) {
     return this.parentItemType === undefined
   }
 
-  getLocationCss(_location: Location<P, L>, _rules: MaterialRules<P, M, L>, _legalMoves: MaterialMove<P, M, L>[], _context: PlaceLocationContext<P, M, L>): Interpolation<Theme> {
+  getLocationCss(_location: Location<P, L>, _rules: MaterialRules<P, M, L>, _context: PlaceLocationContext<P, M, L>): Interpolation<Theme> {
     return
   }
 

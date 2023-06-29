@@ -1,32 +1,35 @@
 /** @jsxImportSource @emotion/react */
 import { HTMLAttributes, MouseEvent, useState } from 'react'
-import { displayLocationRules, ItemMoveType, Location, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
+import { displayLocationRules, ItemMove, ItemMoveType, Location, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { useAnimations, useItemLocator, usePlay, usePlayerId, useRules } from '../../../hooks'
+import { useAnimations, useItemLocator, useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { shineEffect } from '../../../css'
 import { useDroppable } from '@dnd-kit/core'
-import { isMoveThisItemToLocation } from '../utils'
+import { isMoveThisItemToLocation, isMoveToLocation } from '../utils'
 import { isDraggedItem } from '../DraggableMaterial'
 import { combineEventListeners } from '../../../utilities'
 import { useStocks } from '../../../hooks/useStocks'
+import { isMoveToStock } from '../utils/IsMoveToStock'
 
-export type SimpleDropAreaProps<P extends number = number, M extends number = number, L extends number = number> = {
+export type SimpleDropAreaProps<P extends number = number, L extends number = number> = {
   location: Location<P, L>
-  legalMoves: MaterialMove<P, M, L>[]
   onShortClick?: () => void
   onLongClick?: () => void
   dragOnly?: boolean;
 } & HTMLAttributes<HTMLDivElement>
 
 export const SimpleDropArea = <P extends number = number, M extends number = number, L extends number = number>(
-  { location, legalMoves, onShortClick, onLongClick, dragOnly, ...props }: SimpleDropAreaProps<P, M, L>
+  { location, onShortClick, onLongClick, dragOnly, ...props }: SimpleDropAreaProps<P, L>
 ) => {
   const locator = useItemLocator(location.type)
   const stocks = useStocks<P, M, L>()
   const rules = useRules<MaterialRules<P, M, L>>()
   const play = usePlay<MaterialMove<P, M, L>>()
   const player = usePlayerId()
+  const legalMoves = useLegalMoves<ItemMove<P, M, L>>(move =>
+    !!rules && rules.isMoveTrigger(move, move => isMoveToLocation(move, location) || isMoveToStock(stocks, move, location))
+  )
 
   if (!onLongClick && legalMoves.length === 1) {
     onLongClick = () => play(legalMoves[0], { delayed: rules?.isUnpredictableMove(legalMoves[0], player) })
