@@ -1,5 +1,6 @@
-import { FC, ReactNode } from 'react'
+import { FC } from 'react'
 import { Location, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { BaseContext } from '../../locators'
 
 export type StockDescription<P extends number = number, L extends number = number> = {
   location: Location<P, L>
@@ -11,8 +12,6 @@ export type MaterialRulesProps<P extends number = number, M extends number = num
   legalMoves: MaterialMove<P, M, L>[]
   close: () => void
 }
-
-export type MaterialLocationsFunction<ItemId = any> = (itemId?: ItemId, legalMoves?: MaterialMove[]) => ReactNode | undefined
 
 export type ComponentSize = {
   width: number
@@ -34,7 +33,12 @@ export abstract class MaterialDescription<P extends number = number, M extends n
 
   stock?: StockDescription<P, L>
   stocks?: (game: MaterialGame<P, M, L>, player?: P) => StockDescription<P, L>[]
-  getLocations?: MaterialLocationsFunction<ItemId>
+
+  locations: Location<P, L>[] = []
+
+  getLocations(_item: MaterialItem<P, L>, _context: BaseContext<P, M, L>): Location<P, L>[] {
+    return this.locations
+  }
 
   height?: number
   width?: number

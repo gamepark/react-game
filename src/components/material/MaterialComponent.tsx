@@ -1,22 +1,21 @@
 /** @jsxImportSource @emotion/react */
 import { forwardRef, HTMLAttributes, MouseEvent } from 'react'
-import { MaterialGame, MaterialMove } from '@gamepark/rules-api'
+import { MaterialGame } from '@gamepark/rules-api'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { combineEventListeners } from '../../utilities'
 import { useGame, useMaterialDescription } from '../../hooks'
 import { FlatMaterial, isFlatMaterialDescription } from './FlatMaterial'
 import { ComponentCommonProps } from './MaterialDescription'
 
-export type MaterialComponentProps<ItemId = any, P extends number = number, M extends number = number, L extends number = number> = {
+export type MaterialComponentProps<M extends number = number, ItemId = any> = {
   type: M
   itemId?: ItemId
-  legalMovesTo?: MaterialMove<P, M, L>[]
   onShortClick?: () => void
   onLongClick?: () => void
 } & ComponentCommonProps & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
-  { type, itemId, legalMovesTo, onShortClick, onLongClick = onShortClick, ...props }, ref
+  { type, itemId, onShortClick, onLongClick = onShortClick, ...props }, ref
 ) => {
   const game = useGame<MaterialGame>()
   const description = useMaterialDescription(type)

@@ -21,7 +21,7 @@ export type DraggableMaterialProps<P extends number = number, M extends number =
   disabled?: boolean
   preTransform?: string
   postTransform?: string
-} & MaterialComponentProps<number, P, M, L>
+} & MaterialComponentProps<M>
 
 export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialProps>((
   { item, type, index, displayIndex, disabled, preTransform, postTransform, ...props }, ref
