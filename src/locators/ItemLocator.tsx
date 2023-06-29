@@ -137,10 +137,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
-  createLocations(context: BaseContext<P, M, L>): ReactNode {
-    return this.getLocations(context).map(location => this.createLocation(location, context))
-  }
-
   getLocations(_context: BaseContext<P, M, L>): Location<P, L>[] {
     return []
   }

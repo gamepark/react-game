@@ -64,7 +64,7 @@ export const GameMaterialDisplay = () => {
       const type = parseInt(stringType)
       return description.getItems(game, player).map(item => {
         const locator = locators[item.location.type]
-        const innerLocations = description.getLocations(item, { game, material, locators, player })
+        const innerLocations = description.getLocations(item, commonContext)
         return [...Array(item.quantity ?? 1)].map((_, index) => {
           const context: PlaceItemContext = { ...commonContext, type, index }
           const focus = isStaticItem(tutorialFocus) && tutorialFocus.type === type && equal(tutorialFocus.item, item)
@@ -74,7 +74,7 @@ export const GameMaterialDisplay = () => {
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, context))]}
                                     onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}>
             {innerLocations.map(location =>
-              locators[location.type].createLocation(location, { game, material, locators, player, parentItemId: item.id })
+              locators[location.type].createLocation(location, { ...commonContext, parentItemId: item.id })
             )}
           </MaterialComponent>
         })
@@ -86,7 +86,7 @@ export const GameMaterialDisplay = () => {
       return items.map((item, index) => {
         const locator = locators[item.location.type]
         const description = material[type]
-        const innerLocations = description.getLocations(item, { game, material, locators, player })
+        const innerLocations = description.getLocations(item, commonContext)
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const context: PlaceItemContext = { ...commonContext, type, index: displayIndex }
           if (locator.hide(item, context)) return null
@@ -106,13 +106,17 @@ export const GameMaterialDisplay = () => {
                                       () => play(itemMoves[0], { delayed: rules.isUnpredictableMove(itemMoves[0], player) })
                                       : undefined}>
             {innerLocations.map(location =>
-              locators[location.type].createLocation(location, { game, material, locators, player, parentItemId: item.id })
+              locators[location.type].createLocation(location, { ...commonContext, parentItemId: item.id })
             )}
           </DraggableMaterial>
         })
       })
     })}
-    {Object.entries(locators).map(([, locator]) => locator.createLocations(commonContext))}
+    {Object.values(locators).map(locator =>
+      locator.getLocations(commonContext).map(location =>
+        locator.createLocation(location, commonContext)
+      )
+    )}
     <MaterialRulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
     {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}
   </>
