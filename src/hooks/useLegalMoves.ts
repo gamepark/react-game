@@ -1,15 +1,10 @@
-import { useRules } from './useRules'
 import { useMemo } from 'react'
-import { usePlayerId } from './usePlayerId'
+import { useSelector } from 'react-redux'
+import { GamePageState } from '../../../workshop/packages/react-client'
 
 export function useLegalMoves<Move = any>(predicate?: (move: Move) => boolean): Move[] {
-  const rules = useRules()
-  const playerId = usePlayerId()
-  return useMemo(() => {
-    if (rules === undefined || playerId === undefined) return []
-    const legalMoves = rules.getLegalMoves(playerId)
-    return predicate ? legalMoves.filter(predicate) : legalMoves
-  }, [rules, playerId])
+  const legalMoves = useSelector((state: GamePageState) => state.legalMoves)
+  return useMemo(() => predicate ? legalMoves.filter(predicate) : legalMoves, [legalMoves, predicate])
 }
 
 export function useLegalMove<Move = any>(predicate?: (move: Move) => boolean): Move | undefined {
