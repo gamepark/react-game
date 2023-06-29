@@ -11,7 +11,6 @@ import {
   MaterialGame,
   MaterialItem,
   MaterialMove,
-  MaterialRules,
   XYCoordinates
 } from '@gamepark/rules-api'
 import { ItemAnimationContext, MaterialDescription, SimpleDropArea } from '../components'
@@ -138,27 +137,27 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
-  createLocations(rules: MaterialRules<P, M, L>, context: PlaceLocationContext<P, M, L>): ReactNode {
+  createLocations(context: PlaceLocationContext<P, M, L>): ReactNode {
     const locations = this.getLocations?.(context) ?? []
     return locations.map(location => {
-      return this.createLocation(location, rules, context)
+      return this.createLocation(location, context)
     })
   }
 
   getLocations?(context: PlaceLocationContext<P, M, L>): Location<P, L>[]
 
-  createLocation(location: Location<P, L>, rules: MaterialRules<P, M, L>, context: PlaceLocationContext<P, M, L>): ReactNode {
+  createLocation(location: Location<P, L>, context: PlaceLocationContext<P, M, L>): ReactNode {
     const position = this.getPositionOnParent?.(location, context) ?? { x: 0, y: 0, z: 0 }
 
     return <SimpleDropArea key={JSON.stringify(location)} location={location} dragOnly={this.isDragOnlyLocation(location, context)}
-                           css={[this.parentItemType !== undefined && childLocationCss(position), this.getLocationCss(location, rules, context)]}/>
+                           css={[this.parentItemType !== undefined && childLocationCss(position), this.getLocationCss(location, context)]}/>
   }
 
   isDragOnlyLocation(_location: Location<P, L>, _context: PlaceLocationContext<P, M, L>) {
     return this.parentItemType === undefined
   }
 
-  getLocationCss(_location: Location<P, L>, _rules: MaterialRules<P, M, L>, _context: PlaceLocationContext<P, M, L>): Interpolation<Theme> {
+  getLocationCss(_location: Location<P, L>, _context: PlaceLocationContext<P, M, L>): Interpolation<Theme> {
     return
   }
 

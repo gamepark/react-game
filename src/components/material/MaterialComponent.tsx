@@ -1,10 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { forwardRef, HTMLAttributes, MouseEvent, useContext } from 'react'
-import { MaterialGame, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { MaterialGame, MaterialMove } from '@gamepark/rules-api'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { ItemLocator, PlaceLocationContext } from '../../locators'
 import { combineEventListeners } from '../../utilities'
-import { useGame, useMaterialDescription, usePlayerId, useRules } from '../../hooks'
+import { useGame, useMaterialDescription, usePlayerId } from '../../hooks'
 import pickBy from 'lodash/pickBy'
 import { gameContext } from '../GameProvider'
 import { FlatMaterial, isFlatMaterialDescription } from './FlatMaterial'
@@ -28,7 +28,6 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
   const material = context.material
   const description = useMaterialDescription(type)
   const locators = context.locators
-  const rules = useRules<MaterialRules>()
 
   const innerLocators = pickBy(locators, locator => locator?.parentItemType === type)
 
@@ -44,7 +43,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
 
-  if (!description || !locators || !rules || !game || !material) return null
+  if (!description || !locators || !game || !material) return null
 
   if (isFlatMaterialDescription(description)) {
     return (
@@ -52,7 +51,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
         {withLocations && (
           description.getLocations ?
             description.getLocations(itemId, legalMovesTo)
-            : createLocations(rules, innerLocators, { game, material, locators, player, parentItemId: itemId })
+            : createLocations(innerLocators, { game, material, locators, player, parentItemId: itemId })
         )}
       </FlatMaterial>
     )
@@ -61,10 +60,10 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
   return null
 })
 
-const createLocations = (rules: MaterialRules, locators: Partial<Record<number, ItemLocator>>, context: PlaceLocationContext) => {
+const createLocations = (locators: Partial<Record<number, ItemLocator>>, context: PlaceLocationContext) => {
   return <>
     {Object.entries(locators).map(([, locator]) =>
-      locator && locator.createLocations(rules, context)
+      locator && locator.createLocations(context)
     )}
   </>
 }
