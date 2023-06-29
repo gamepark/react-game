@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { BaseContext, PlaceItemContext } from '../../../locators'
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { useLegalMoves, usePlay, usePlayerId, useRules, useZoomToElements } from '../../../hooks'
 import { closeRulesDisplay, DisplayedItem, displayMaterialRules, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import { isMoveThisItem, isMoveThisItemToLocation } from '../utils'
@@ -13,8 +13,7 @@ import { css } from '@emotion/react'
 import { gameContext } from '../../GameProvider'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { useTutorialStep } from '../../../hooks/useTutorialStep'
-import { countTutorialFocusRefs, isItemFocus, isStaticItem, TutorialStepType } from '../../tutorial'
-import equal from 'fast-deep-equal'
+import { countTutorialFocusRefs, isItemFocus, isLocationFocus, isStaticItemFocus, TutorialStepType } from '../../tutorial'
 import { SimpleDropArea } from '../DropAreas'
 
 export const GameMaterialDisplay = () => {
@@ -25,9 +24,6 @@ export const GameMaterialDisplay = () => {
   const rules = useRules<MaterialRules>()
   const legalMoves = useLegalMoves<MaterialMove>()
   const play = usePlay()
-  const tutorialStep = useTutorialStep()
-  const tutorialPopupStep = tutorialStep?.type === TutorialStepType.Popup ? tutorialStep : undefined
-  const tutorialFocus = rules?.game ? tutorialPopupStep?.focus?.(rules?.game) : undefined
 
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
   useDndMonitor({
@@ -37,22 +33,19 @@ export const GameMaterialDisplay = () => {
 
   const zoomToElements = useZoomToElements()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
-  const [readyToFocus, setReadyToFocus] = useState(false)
-  useEffect(() => {
+  const tutorialStep = useTutorialStep()
+
+  const tutorialFocus = useMemo(() => {
     focusRefs.current = new Set()
-    setReadyToFocus(false)
+    return rules?.game && tutorialStep?.type === TutorialStepType.Popup ? tutorialStep.focus?.(rules?.game) : undefined
   }, [tutorialStep])
-  useEffect(() => {
-    if (readyToFocus) {
-      const scale = tutorialPopupStep?.zoom ? 1 / tutorialPopupStep.zoom : undefined
-      zoomToElements(Array.from(focusRefs.current), scale)
-    }
-  }, [readyToFocus])
+
   const addFocusRef = useCallback((ref: HTMLElement | null) => {
-    if (!ref) return
+    if (!ref || focusRefs.current.has(ref)) return
     focusRefs.current.add(ref)
     if (countTutorialFocusRefs(tutorialFocus) === focusRefs.current.size) {
-      setReadyToFocus(true)
+      const elements = Array.from(focusRefs.current)
+      setTimeout(() => zoomToElements(elements))
     }
   }, [tutorialFocus])
 
@@ -68,14 +61,15 @@ export const GameMaterialDisplay = () => {
         const innerLocations = description.getLocations(item, commonContext)
         return [...Array(item.quantity ?? 1)].map((_, index) => {
           const context: PlaceItemContext = { ...commonContext, type, index }
-          const focus = isStaticItem(tutorialFocus) && tutorialFocus.type === type && equal(tutorialFocus.item, item)
+          const focus = isStaticItemFocus(type, item, tutorialFocus)
           return <MaterialComponent key={`${stringType}_${index}`} type={type} itemId={item.id}
-                                    playDown={tutorialPopupStep && !focus}
+                                    playDown={tutorialStep?.type === TutorialStepType.Popup && !focus}
                                     ref={focus ? addFocusRef : undefined}
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, context))]}
                                     onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}>
             {innerLocations.map(location =>
               <SimpleDropArea key={JSON.stringify(location)} location={location}
+                              ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}
                               css={[
                                 childLocationCss(locators[location.type].getPositionOnParent(location, commonContext)),
                                 locators[location.type].getLocationCss(location, { ...commonContext, parentItemId: item.id })
@@ -99,11 +93,12 @@ export const GameMaterialDisplay = () => {
           const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
             isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, item.location)
           )
+          const focus = isItemFocus(type, index, tutorialFocus)
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} item={item} index={index} displayIndex={displayIndex}
                                     disabled={!itemMoves.length}
-                                    playDown={tutorialPopupStep && !isItemFocus(type, index, tutorialFocus)}
-                                    ref={isItemFocus(type, index, tutorialFocus) ? addFocusRef : undefined}
+                                    playDown={tutorialStep?.type === TutorialStepType.Popup && !focus}
+                                    ref={focus ? addFocusRef : undefined}
                                     postTransform={locator.transformItem(item, context).join(' ')}
                                     css={draggingToSameLocation && noPointerEvents}
                                     onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}
@@ -112,6 +107,7 @@ export const GameMaterialDisplay = () => {
                                       : undefined}>
             {innerLocations.map(location =>
               <SimpleDropArea key={JSON.stringify(location)} location={location}
+                              ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}
                               css={[
                                 childLocationCss(locators[location.type].getPositionOnParent(location, commonContext)),
                                 locators[location.type].getLocationCss(location, { ...commonContext, parentItemId: item.id })
@@ -124,6 +120,7 @@ export const GameMaterialDisplay = () => {
     {Object.values(locators).map(locator =>
       locator.getLocations(commonContext).map(location =>
         <SimpleDropArea key={JSON.stringify(location)} location={location}
+                        ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}
                         css={locators[location.type].getLocationCss(location, commonContext)}/>
       )
     )}

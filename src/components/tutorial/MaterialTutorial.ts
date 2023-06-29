@@ -1,7 +1,8 @@
 import { TutorialDescription } from '@gamepark/react-client'
-import { LocationBuilder, Material, MaterialGame, MaterialGameSetup, MaterialItem, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
+import { Location, LocationBuilder, Material, MaterialGame, MaterialGameSetup, MaterialItem, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { TFunction } from 'i18next'
 import { ReactNode } from 'react'
+import equal from 'fast-deep-equal'
 
 export abstract class MaterialTutorial<P extends number = number, M extends number = number, L extends number = number>
   implements TutorialDescription<MaterialGame<P, M, L>, MaterialMove<P, M, L>> {
@@ -44,7 +45,6 @@ export type TutorialPopupStep<P extends number = number, M extends number = numb
   text: (t: TFunction) => string | ReactNode
   position?: XYCoordinates
   focus?: (game: MaterialGame<P, M, L>) => TutorialFocus<P, M, L>
-  zoom?: number
 }
 
 export type TutorialFocus<P extends number = number, M extends number = number, L extends number = number> =
@@ -81,11 +81,25 @@ export function countTutorialFocusRefs(focus?: TutorialFocus): number {
     return focus.getItems().reduce((sum, item) => sum + (item.quantity ?? 1), 0)
   } else if (isStaticItem(focus)) {
     return focus.item.quantity ?? 1
+  } else if (isLocationBuilder(focus)) {
+    return 1
   } else {
-    return 0 // TODO
+    return 0
   }
 }
 
 export function isStaticItem(focus?: TutorialFocus): focus is StaticItem {
   return typeof focus === 'object' && typeof (focus as any).type === 'number' && typeof (focus as any).item === 'object'
+}
+
+export function isStaticItemFocus(itemType: number, item: MaterialItem, focus?: TutorialFocus) {
+  return isStaticItem(focus) && focus.type === itemType && equal(focus.item, item)
+}
+
+export function isLocationBuilder(focus?: TutorialFocus): focus is LocationBuilder {
+  return typeof focus === 'object' && typeof (focus as LocationBuilder).location === 'object'
+}
+
+export function isLocationFocus(location: Location, focus?: TutorialFocus) {
+  return isLocationBuilder(focus) && equal(focus.location, location)
 }
