@@ -43,8 +43,6 @@ export const GameTableContent: FC<GameTableContentProps> = (props) => {
       height: `calc(100% - ${margin.top + margin.bottom}em)`,
       width: `calc(100% - ${margin.left + margin.right}em)`,
       overflow: 'visible'
-    }} contentStyle={{
-      willChange: 'transform'
     }}>
       <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(zoomMax), perspective && perspectiveCss(perspective)]}>
         <GameMaterialDisplay/>
