@@ -65,7 +65,7 @@ export const Menu = () => {
       <div css={[backdrop, isOpen && displayBackdrop]} onClick={() => setOpen(false)}/>
       {couldEject && <EjectPlayerPopButton onClick={() => setEjectPlayerDialogOpen(true)}/>}
       {couldUndo && <UndoPopButton/>}
-      {gameOver && gameMode !== GameMode.TUTORIAL && <ResultPopButton onClick={() => setResultDialogOpen(true)}/>}
+      {gameOver && <ResultPopButton onClick={() => setResultDialogOpen(true)}/>}
       {fscreen.fullscreenEnabled && <FullscreenPopButton/>}
       <div css={[menuFontSize, menuBaseCss, menuCss, !isOpen && hide]}>
         <h2 css={titleCss}>{t('Menu')}</h2>
@@ -78,7 +78,7 @@ export const Menu = () => {
         {options?.speed === GameSpeed.RealTime && <TimeStatsButton/>}
         {gameMode === GameMode.TUTORIAL && <RestartTutorialButton/>}
         <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}`}><LogoIcon css={buttonLogoIcon}/>{t('Back to Game Park')}</NavButton>
-        {gameOver && gameMode !== GameMode.TUTORIAL && <ResultButton onClick={() => setResultDialogOpen(true)}/>}
+        {gameOver && <ResultButton onClick={() => setResultDialogOpen(true)}/>}
         {canPlayAgain &&
           <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}/play`}><FontAwesomeIcon icon={faChessPawn}/>{t('Play again')}</NavButton>
         }
@@ -92,9 +92,9 @@ export const Menu = () => {
         {isOpen ? <FontAwesomeIcon icon={faTimes} css={iconStyle}/> : <LogoIcon fill="white"/>}
       </button>
       {couldEject && <EjectPlayerDialog open={ejectPlayerDialogOpen} close={() => setEjectPlayerDialogOpen(false)}/>}
-      {gameOver && gameMode !== GameMode.TUTORIAL && <ResultDialog open={resultDialogOpen}
-                                                                   openDialog={() => setResultDialogOpen(true)}
-                                                                   close={() => setResultDialogOpen(false)}/>}
+      {gameOver && <ResultDialog open={resultDialogOpen}
+                                 openDialog={() => setResultDialogOpen(true)}
+                                 close={() => setResultDialogOpen(false)}/>}
       {chatEnable && gameId && <Chat gameId={gameId}/>}
     </>
   )

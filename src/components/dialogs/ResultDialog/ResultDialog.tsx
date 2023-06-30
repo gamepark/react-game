@@ -16,11 +16,17 @@ import { NavButton } from '../../menus/Menu/NavButton'
 import { GamePoints } from '../../GamePoints'
 import { Medal } from '../../menus'
 import { gameContext } from '../../GameProvider'
+import { faChessPawn } from '@fortawesome/free-solid-svg-icons'
+import { RestartTutorialButton } from '../../menus/RestartTutorialButton'
 
 type Props = DialogProps & {
   openDialog: () => void
   close: () => void
 }
+
+const query = new URLSearchParams(window.location.search)
+const locale = query.get('locale') || 'en'
+const gameId = query.get('game')
 
 export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const { t } = useTranslation()
@@ -30,8 +36,6 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const game = useGame()
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const tournament = useSelector((state: GamePageState) => state.tournament)
-  const query = new URLSearchParams(window.location.search)
-  const locale = query.get('locale') || 'en'
   const rules = new context.Rules(game)
   const ranks = players.map(_ => 1)
   if (isCompetitive(rules) && players.length > 1) {
@@ -84,7 +88,18 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
           }
         </Fragment>)}
       </div>
-      <RematchSection openDialog={openDialog}/>
+      {gameMode === GameMode.TUTORIAL &&
+        <div>
+          <p css={css`white-space: break-spaces;`}>{t('tuto.over')}</p>
+          <p css={buttonsLine}>
+            <RestartTutorialButton/>
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}/play`} css={css`margin-left: 1em;`}>
+              <FontAwesomeIcon icon={faChessPawn}/>{t('Play')}
+            </NavButton>
+          </p>
+        </div>
+      }
+      {gameId !== null && <RematchSection openDialog={openDialog}/>}
     </Dialog>
   )
 }
@@ -166,4 +181,10 @@ const borderTop = css`
 
 const trophyIcon = css`
   color: #28b8ce;
+`
+
+const buttonsLine = css`
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
 `
