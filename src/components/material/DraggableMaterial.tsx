@@ -7,12 +7,12 @@ import { useDraggable } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
 import { useAnimation, useAnimations, useMaterialAnimations, usePlayerId, useRules } from '../../hooks'
-import { useScale } from '../../hooks/useScale'
 import { gameContext, MaterialGameContext } from '../GameProvider'
 import { ItemAnimationContext } from './MaterialAnimations'
 import merge from 'lodash/merge'
 import equal from 'fast-deep-equal'
 import { mergeRefs } from 'react-merge-refs'
+import { useTransformContext } from 'react-zoom-pan-pinch'
 
 export type DraggableMaterialProps<P extends number = number, M extends number = number, L extends number = number> = {
   item: MaterialItem<P, L>
@@ -46,10 +46,11 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     }
   }, [transform !== null])
 
-  const scale = useScale()
+  const transformContext = useTransformContext()
   const transformRef = useRef<string>()
   if (transform && !ignoreTransform) {
     const { x, y } = transform
+    const scale = transformContext.transformState.scale
     transformRef.current = `translate3d(${Math.round(x / scale)}px, ${y ? Math.round(y / scale) : 0}px, 20em)`
   }
 
@@ -78,6 +79,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   return (
     <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item.id}
                        css={[
+                         transformWillChange,
                          !applyTransform && transformTransition(animation?.duration),
                          !disabled && noTouchAction,
                          disabled || animations.length ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
@@ -88,6 +90,10 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
                        {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}/>
   )
 })
+
+const transformWillChange = css`
+  will-change: transform;
+`
 
 const noTouchAction = css`
   touch-action: none;
