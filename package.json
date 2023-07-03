@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@dnd-kit/core": "^6.0.8",
-    "@emotion/react": "^11.10.5",
+    "@emotion/react": "^11.11.1",
     "@types/fscreen": "^1.0.1",
     "@types/lodash": "^4.14.195",
     "@types/node": "^18.16.0",
