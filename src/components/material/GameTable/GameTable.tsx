@@ -22,7 +22,7 @@ export type GameTableProps = {
   margin?: { left: number, top: number, right: number, bottom: number }
 }
 
-const wheel = { step: 0.05 }
+const wheel = { step: 0.05, smoothStep: 0.05 }
 const doubleClick = { disabled: true }
 
 export const GameTable: FC<GameTableProps> = (props) => {
