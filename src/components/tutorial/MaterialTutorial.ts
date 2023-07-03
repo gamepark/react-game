@@ -44,7 +44,7 @@ export type TutorialPopupStep<P extends number = number, M extends number = numb
   type: typeof TutorialStepType.Popup
   text: (t: TFunction) => string | ReactNode
   position?: XYCoordinates
-  focus?: (game: MaterialGame<P, M, L>) => TutorialFocus<P, M, L>
+  focus?: (game: MaterialGame<P, M, L>) => TutorialFocus<P, M, L> | TutorialFocus<P, M, L>[]
 }
 
 export type TutorialFocus<P extends number = number, M extends number = number, L extends number = number> =
@@ -67,7 +67,10 @@ export function isMaterialTutorial(
   return !!tutorialDescription && typeof (tutorialDescription as MaterialTutorial).material === 'function'
 }
 
-export function isItemFocus(itemType: number, itemIndex: number, focus?: TutorialFocus) {
+export function isItemFocus(itemType: number, itemIndex: number, focus?: TutorialFocus | TutorialFocus[]): boolean {
+  if (Array.isArray(focus)) {
+    return focus.some(focus => isItemFocus(itemType, itemIndex, focus))
+  }
   return isMaterialFocus(focus) && focus.type === itemType && focus.indexes.includes(itemIndex)
 }
 
@@ -75,8 +78,11 @@ export function isMaterialFocus(focus?: TutorialFocus): focus is Material {
   return typeof focus === 'object' && (focus as Material).entries !== undefined
 }
 
-export function countTutorialFocusRefs(focus?: TutorialFocus): number {
+export function countTutorialFocusRefs(focus?: TutorialFocus | TutorialFocus[]): number {
   if (!focus) return 0
+  if (Array.isArray(focus)) {
+    return focus.reduce((sum, focus) => sum + countTutorialFocusRefs(focus), 0)
+  }
   if (isMaterialFocus(focus)) {
     return focus.getItems().reduce((sum, item) => sum + (item.quantity ?? 1), 0)
   } else if (isStaticItem(focus)) {
@@ -92,7 +98,10 @@ export function isStaticItem(focus?: TutorialFocus): focus is StaticItem {
   return typeof focus === 'object' && typeof (focus as any).type === 'number' && typeof (focus as any).item === 'object'
 }
 
-export function isStaticItemFocus(itemType: number, item: MaterialItem, focus?: TutorialFocus) {
+export function isStaticItemFocus(itemType: number, item: MaterialItem, focus?: TutorialFocus | TutorialFocus[]): boolean {
+  if (Array.isArray(focus)) {
+    return focus.some(focus => isStaticItemFocus(itemType, item, focus))
+  }
   return isStaticItem(focus) && focus.type === itemType && equal(focus.item, item)
 }
 
@@ -100,6 +109,9 @@ export function isLocationBuilder(focus?: TutorialFocus): focus is LocationBuild
   return typeof focus === 'object' && typeof (focus as LocationBuilder).location === 'object'
 }
 
-export function isLocationFocus(location: Location, focus?: TutorialFocus) {
+export function isLocationFocus(location: Location, focus?: TutorialFocus | TutorialFocus[]): boolean {
+  if (Array.isArray(focus)) {
+    return focus.some(focus => isLocationFocus(location, focus))
+  }
   return isLocationBuilder(focus) && equal(focus.location, location)
 }
