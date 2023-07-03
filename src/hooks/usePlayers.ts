@@ -16,7 +16,7 @@ export const usePlayers = <PlayerId = any>(options?: Options): Player<PlayerId>[
   const rawPlayers = useSelector((state: GamePageState<any, any, PlayerId>) => state.players)
   const players = useMemo(() => {
     const index = rawPlayers.findIndex(player => player.id === playerId)
-    if (index < 1) return rawPlayers
+    if (!options?.sortFromMe || index < 1) return rawPlayers
     return rawPlayers.slice(index).concat(rawPlayers.slice(0, index))
   }, [playerId, rawPlayers])
 
