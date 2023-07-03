@@ -22,7 +22,7 @@ export type GameTableProps = {
   margin?: { left: number, top: number, right: number, bottom: number }
 }
 
-const wheel = { step: 0.05, smoothStep: 0.05 }
+const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 
 export const GameTable: FC<GameTableProps> = (props) => {
@@ -51,7 +51,7 @@ export const GameTable: FC<GameTableProps> = (props) => {
   return (
     <DndContext measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }} modifiers={[snapCenterToCursor]}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
-      <TransformWrapper minScale={zoomMin / zoomMax} maxScale={1} initialScale={zoomMin / zoomMax} centerOnInit={true} wheel={wheel}
+      <TransformWrapper minScale={zoomMin / zoomMax} maxScale={1} initialScale={zoomMin / zoomMax} centerOnInit={true} wheel={wheel} smooth={false}
                         panning={{ disabled: dragging }} disablePadding doubleClick={doubleClick}>
         <GameTableContent {...props} />
       </TransformWrapper>
