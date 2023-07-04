@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { ItemMoveType, Location, MaterialGame, MaterialItem, MaterialMove, MoveKind } from '@gamepark/rules-api'
-import { PlaceItemContext } from '../../locators'
+import { ItemContext } from '../../locators'
 
 export type StockDescription<P extends number = number, L extends number = number> = {
   location: Location<P, L>
@@ -36,7 +36,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
 
   locations: Location<P, L>[] = []
 
-  getLocations(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): Location<P, L>[] {
+  getLocations(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): Location<P, L>[] {
     return this.locations
   }
 

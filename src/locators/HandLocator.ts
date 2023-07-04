@@ -1,8 +1,8 @@
-import { ItemLocator, PlaceItemContext } from './ItemLocator'
+import { ItemLocator, ItemContext } from './ItemLocator'
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
 
 export abstract class HandLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
-  getPosition(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): Coordinates {
+  getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
     const coordinates = this.getCoordinates(item.location, context)
     const index = this.getItemIndex(item, context)
     const deltaZ = this.getDeltaZ(item, context)
@@ -14,7 +14,7 @@ export abstract class HandLocator<P extends number = number, M extends number = 
     return { x, y, z: coordinates.z + index * deltaZ }
   }
 
-  getRotation(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): number {
+  getRotation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
     const index = this.getItemIndex(item, context)
     const size = this.countItems(item.location, context)
     const maxAngle = this.getMaxAngle(item, context)
@@ -24,33 +24,33 @@ export abstract class HandLocator<P extends number = number, M extends number = 
     return baseAngle + (index - (size - 1) / 2) * gapAngle * (this.isClockwise(item, context) ? 1 : -1)
   }
 
-  abstract getCoordinates(location: Location<P, L>, context: PlaceItemContext<P, M, L>): Coordinates
+  abstract getCoordinates(location: Location<P, L>, context: ItemContext<P, M, L>): Coordinates
 
-  getItemIndex(item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): number {
+  getItemIndex(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return item.location.x ?? 0
   }
 
-  getRadius(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): number {
+  getRadius(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return 100
   }
 
-  getBaseAngle(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): number {
+  getBaseAngle(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return 0
   }
 
-  getMaxAngle(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): number {
+  getMaxAngle(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return 15
   }
 
-  getGapMaxAngle(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): number {
+  getGapMaxAngle(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return 3
   }
 
-  isClockwise(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): boolean {
+  isClockwise(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): boolean {
     return true
   }
 
-  getDeltaZ(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): number {
+  getDeltaZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return 0.05
   }
 }

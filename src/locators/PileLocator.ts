@@ -1,4 +1,4 @@
-import { ItemLocator, PlaceItemContext } from './ItemLocator'
+import { ItemLocator, ItemContext } from './ItemLocator'
 import { Coordinates, MaterialItem } from '@gamepark/rules-api'
 
 export abstract class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
@@ -7,7 +7,7 @@ export abstract class PileLocator<P extends number = number, M extends number = 
   private positions = new Map<number, Map<number, Coordinates>>()
   private rotations = new Map<number, Map<number, number>>()
 
-  getPosition(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): Coordinates {
+  getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
     const pileId = this.getPileId(item, context)
     if (!this.positions.has(pileId)) this.positions.set(pileId, new Map())
     const pilePositions = this.positions.get(pileId)!
@@ -26,7 +26,7 @@ export abstract class PileLocator<P extends number = number, M extends number = 
     return pilePositions.get(index)!
   }
 
-  getRotation(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): number {
+  getRotation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
     if (!this.rotate) return 0
     const pileId = this.getPileId(item, context)
     if (!this.rotations.has(pileId)) this.rotations.set(pileId, new Map())
@@ -38,11 +38,11 @@ export abstract class PileLocator<P extends number = number, M extends number = 
     return pileRotations.get(index) ?? 0
   }
 
-  abstract getCoordinates(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): Coordinates
+  abstract getCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates
 
-  abstract getRadius(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): number
+  abstract getRadius(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number
 
-  getPileId(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): number {
+  getPileId(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return 0
   }
 }

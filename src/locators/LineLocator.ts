@@ -1,8 +1,8 @@
-import { ItemLocator, PlaceItemContext } from './ItemLocator'
+import { ItemLocator, ItemContext } from './ItemLocator'
 import { Coordinates, MaterialItem } from '@gamepark/rules-api'
 
 export abstract class LineLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
-  getPosition(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): Coordinates {
+  getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
     const coordinates = this.getCoordinates(item, context)
     const index = this.getItemIndex(item, context)
     const delta = this.getDelta(item, context)
@@ -16,11 +16,11 @@ export abstract class LineLocator<P extends number = number, M extends number = 
     return { x: coordinates.x + index * (delta.x ?? 0), y: coordinates.y + index * (delta.y ?? 0), z: coordinates.z + index * (delta.z ?? 0) }
   }
 
-  getCoordinates(_item: MaterialItem<P, L>, _context: PlaceItemContext<P, M, L>): Coordinates {
+  getCoordinates(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): Coordinates {
     return { x: 0, y: 0, z: 0 }
   }
 
-  abstract getDelta(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): Partial<Coordinates>
+  abstract getDelta(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates>
 
-  getDeltaMax?(item: MaterialItem<P, L>, context: PlaceItemContext<P, M, L>): Partial<Coordinates>
+  getDeltaMax?(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates>
 }
