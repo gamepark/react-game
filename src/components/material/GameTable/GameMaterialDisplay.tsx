@@ -3,7 +3,6 @@ import { BaseContext, PlaceItemContext } from '../../../locators'
 import { useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { useLegalMoves, usePlay, usePlayerId, useRules, useZoomToElements } from '../../../hooks'
 import { closeRulesDisplay, DisplayedItem, displayMaterialRules, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
-import { isMoveThisItem, isMoveThisItemToLocation } from '../utils'
 import { MaterialComponent } from '../MaterialComponent'
 import { pointerCursorCss, transformCss } from '../../../css'
 import { DraggableMaterial, isDraggedItem } from '../DraggableMaterial'
@@ -89,9 +88,9 @@ export const GameMaterialDisplay = () => {
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const context: PlaceItemContext = { ...commonContext, type, index: displayIndex }
           if (locator.hide(item, context)) return null
-          const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItem(move, type, index)))
+          const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.isActivable(move, type, index)))
           const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
-            isMoveThisItemToLocation(move, draggedItem.type, draggedItem.index, item.location)
+            locator.isMoveItemToLocation(move, draggedItem.type, draggedItem.index, item.location, undefined, commonContext)
           )
           const focus = isItemFocus(type, index, tutorialFocus)
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}

@@ -5,11 +5,13 @@ import { TransformWrapper } from 'react-zoom-pan-pinch'
 import { useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
-import { isMoveThisItemToLocation } from '../utils'
 import { GameTableContent } from './GameTableContent'
 import { useStocks } from '../../../hooks/useStocks'
 import { isDraggedItem } from '../DraggableMaterial'
 import { isDropLocation } from '../DropAreas'
+import { useLocators } from '../../../hooks/useLocators'
+import { BaseContext } from '../../../locators'
+import { useMaterials } from '../../../hooks/useMaterials'
 
 export type GameTableProps = {
   xMin: number
@@ -30,6 +32,8 @@ export const GameTable: FC<GameTableProps> = (props) => {
 
   const [dragging, setDragging] = useState(false)
 
+  const locators = useLocators()
+  const materials = useMaterials()
   const play = usePlay()
   const playerId = usePlayerId()
   const rules = useRules<MaterialRules>()!
@@ -40,7 +44,9 @@ export const GameTable: FC<GameTableProps> = (props) => {
     if (event.over && isDraggedItem(event.active.data.current) && isDropLocation(event.over.data.current)) {
       const { type, index, displayIndex } = event.active.data.current
       const location = event.over.data.current
-      const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move => isMoveThisItemToLocation(move, type, index, location, stocks)))
+      const locator = locators![location.type]
+      const context: BaseContext = { game: rules!.game, player: playerId, material: materials!, locators: locators! }
+      const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move => locator.isMoveItemToLocation(move, type, index, location, stocks, context)))
       if (moves.length === 1) {
         play(dropItemMove(type, index, displayIndex), { local: true })
         play(moves[0], { delayed: rules.isUnpredictableMove(moves[0], playerId) })

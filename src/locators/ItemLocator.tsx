@@ -6,18 +6,22 @@ import {
   isDeleteItem,
   isMoveItem,
   ItemMove,
+  ItemMoveType,
   Location,
   Material,
   MaterialGame,
   MaterialItem,
   MaterialMove,
+  MoveKind,
   XYCoordinates
 } from '@gamepark/rules-api'
-import { ItemAnimationContext, MaterialDescription } from '../components'
+import { ItemAnimationContext, MaterialDescription, StockDescription } from '../components'
 import { ReactNode } from 'react'
 import { Interpolation, Theme } from '@emotion/react'
 import equal from 'fast-deep-equal'
 import { Animation } from '@gamepark/react-client'
+import { isLocationSubset } from '../components/material/utils'
+import { isMoveToStock } from '../components/material/utils/IsMoveToStock'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
@@ -148,6 +152,23 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   getLocationCss(_location: Location<P, L>, _context: PlaceLocationContext<P, M, L>): Interpolation<Theme> {
     return
   }
+
+  isDropLocation = <P extends number = number, M extends number = number, L extends number = number>(
+    move: MaterialMove<P, M, L>, location: Location<P, L>
+  ): boolean => {
+    return move.kind === MoveKind.ItemMove
+      && move.type === ItemMoveType.Move
+      && move.position.location !== undefined
+      && isLocationSubset(move.position.location, location)
+  }
+
+  isMoveItemToLocation = <P extends number = number, M extends number = number, L extends number = number>(
+    move: MaterialMove<P, M, L>, itemType: M, itemIndex: number, location: Location<P, L>, stocks: Record<M, StockDescription<P, L> | undefined> | undefined, context: BaseContext<P, M, L>
+  ): boolean => {
+    const description = context.material[itemType]
+    return description.isActivable(move, itemType, itemIndex) && (this.isDropLocation(move, location) || (!!stocks && isMoveToStock(stocks, move, location)))
+  }
+
 
   getLocationRules?(props: LocationRulesProps<P, M, L>): ReactNode
 

@@ -37,8 +37,10 @@ export enum TutorialFocusType {
   Header = 1
 }
 
+export type TutorialStepBase = { zoom?: number }
+
 export type TutorialStep<P extends number = number, M extends number = number, L extends number = number>
-  = TutorialPopupStep<P, M, L> | TutorialMoveStep<P, M, L>
+  = (TutorialPopupStep<P, M, L> | TutorialMoveStep<P, M, L>) & TutorialStepBase
 
 export type TutorialPopupStep<P extends number = number, M extends number = number, L extends number = number> = {
   type: typeof TutorialStepType.Popup

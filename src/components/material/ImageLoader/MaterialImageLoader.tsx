@@ -1,11 +1,12 @@
 import { FC, useContext, useMemo } from 'react'
 import { gameContext } from '../../GameProvider'
 import { ImagesLoader, ImagesLoaderProps } from '../../ImagesLoader'
+import { useMaterials } from '../../../hooks/useMaterials'
 
 type MaterialImageLoaderProps = Omit<ImagesLoaderProps, 'images'>;
 
 const useMaterialImages = (): string[] => {
-  const descriptions = useContext(gameContext).material
+  const descriptions = useMaterials()
   return useMemo(() => {
     if (!descriptions) {
       return []

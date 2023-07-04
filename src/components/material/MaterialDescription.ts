@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Location, MaterialGame, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { ItemMoveType, Location, MaterialGame, MaterialItem, MaterialMove, MoveKind } from '@gamepark/rules-api'
 import { BaseContext } from '../../locators'
 
 export type StockDescription<P extends number = number, L extends number = number> = {
@@ -38,6 +38,15 @@ export abstract class MaterialDescription<P extends number = number, M extends n
 
   getLocations(_item: MaterialItem<P, L>, _context: BaseContext<P, M, L>): Location<P, L>[] {
     return this.locations
+  }
+
+  isActivable<P extends number = number, M extends number = number, L extends number = number>(
+    move: MaterialMove<P, M, L>, itemType: M, itemIndex: number
+  ): boolean {
+    return move.kind === MoveKind.ItemMove
+      && move.itemType === itemType
+      && (move.type === ItemMoveType.Move || move.type === ItemMoveType.Delete)
+      && move.itemIndex === itemIndex
   }
 
   height?: number

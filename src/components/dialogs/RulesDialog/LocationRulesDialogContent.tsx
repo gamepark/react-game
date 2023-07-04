@@ -1,22 +1,29 @@
 /** @jsxImportSource @emotion/react */
-import { closeRulesDisplay, LocationRulesDisplay, MaterialMove } from '@gamepark/rules-api'
+import { closeRulesDisplay, LocationRulesDisplay, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { css } from '@emotion/react'
 import Scrollbars from 'react-custom-scrollbars-2'
 import { ItemLocator } from '../../../locators'
 import { MaterialDescription } from '../../material'
-import { usePlay } from '../../../hooks'
+import { useLegalMoves, usePlay, useRules } from '../../../hooks'
+import { useMemo } from 'react'
 
 export type LocationRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   rulesDisplay: LocationRulesDisplay<Player, LocationType>
   material: Record<MaterialType, MaterialDescription>
   locator: ItemLocator<Player, MaterialType, LocationType>
-  legalMoves: MaterialMove<Player, MaterialType, LocationType>[]
+}
+
+const useLocationMoves = <P extends number = number, M extends number = number, L extends number = number>(locator: ItemLocator<P, M, L>, rulesDisplay: LocationRulesDisplay<P, L>) => {
+  const rules = useRules<MaterialRules>()
+  const predicate = useMemo(() => !rules ? undefined : (move: MaterialMove<P, M, L>) => rules?.isMoveTrigger(move, move => locator.isDropLocation(move, rulesDisplay.location)), [rules, rulesDisplay])
+  return useLegalMoves<MaterialMove<P, M, L>>(predicate)
 }
 
 export const LocationRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
-  { rulesDisplay, locator, legalMoves }: LocationRulesDialogContentProps<P, M, L>
+  { rulesDisplay, locator }: LocationRulesDialogContentProps<P, M, L>
 ) => {
   const play = usePlay()
+  const legalMoves = useLocationMoves<P, M, L>(locator, rulesDisplay)
   return <div css={flex}>
     {/* TODO: image of the location? */}
     <Scrollbars autoHeight css={scrollableContainer}>

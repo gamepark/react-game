@@ -1,23 +1,30 @@
 /** @jsxImportSource @emotion/react */
-import { closeRulesDisplay, MaterialMove, MaterialRulesDisplay } from '@gamepark/rules-api'
+import { closeRulesDisplay, MaterialMove, MaterialRules, MaterialRulesDisplay } from '@gamepark/rules-api'
 import { css } from '@emotion/react'
 import Scrollbars from 'react-custom-scrollbars-2'
 import { isFlatMaterialDescription, MaterialComponent, MaterialDescription } from '../../material'
 import { fontSizeCss, transformCss } from '../../../css'
-import { usePlay } from '../../../hooks'
+import { useLegalMoves, usePlay, useRules } from '../../../hooks'
+import { useMemo } from 'react'
 
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   rulesDisplay: MaterialRulesDisplay<Player, MaterialType, LocationType>
   material: Record<MaterialType, MaterialDescription<Player, MaterialType, LocationType>>
-  legalMoves: MaterialMove<Player, MaterialType, LocationType>[]
+}
+
+const useMaterialMoves = <P extends number = number, M extends number = number, L extends number = number>(description: MaterialDescription<P, M, L>, rulesDisplay: MaterialRulesDisplay<P, M, L>) => {
+  const rules = useRules<MaterialRules>()
+  const predicate = useMemo(() => !rules ? undefined : (move: MaterialMove) => rules?.isMoveTrigger(move, move => description.isActivable(move, rulesDisplay.itemType, rulesDisplay.itemIndex)), [description, rules, rulesDisplay])
+  return useLegalMoves<MaterialMove<P, M, L>>(predicate)
 }
 
 export const MaterialRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
-  { rulesDisplay, material, legalMoves }: MaterialRulesDialogContentProps<P, M, L>
+  { rulesDisplay, material }: MaterialRulesDialogContentProps<P, M, L>
 ) => {
   const play = usePlay()
   const description = material[rulesDisplay.itemType]
   const RulesContent = description.rules
+  const legalMoves = useMaterialMoves(description, rulesDisplay)
   const item = rulesDisplay.item
   const { width, height } = description.getSize(item.id)
   return <div css={flex}>
@@ -26,7 +33,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
       isFlatMaterialDescription(description) && description.isHidden(item) && transformCss('rotateY(180deg)')
     ]}/>
     <Scrollbars autoHeight css={scrollableContainer}>
-      <div css={rules}>
+      <div css={rulesStyle}>
         <RulesContent item={item} legalMoves={legalMoves} close={() => play(closeRulesDisplay, { local: true })}/>
       </div>
     </Scrollbars>
@@ -44,7 +51,7 @@ const noShrink = css`
   flex-shrink: 0;
 `
 
-const rules = css`
+const rulesStyle = css`
   margin: 0 1em;
   font-size: 3em;
 

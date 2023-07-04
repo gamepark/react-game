@@ -1,5 +1,2 @@
 export * from './IsLocationSubset'
 export * from './IsMoveOnItem'
-export * from './IsMoveThisItem'
-export * from './IsMoveThisItemToLocation'
-export * from './IsMoveToLocation'
