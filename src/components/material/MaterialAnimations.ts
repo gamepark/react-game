@@ -89,7 +89,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     })
     const index = stockItem?.quantity ? stockItem.quantity - 1 : 0
     const stockLocator = context.locators[stock.location.type]
-    return stockLocator.transformItem(stockItem ?? stock, { ...context, game: rules.game, type, displayIndex: index }).join(' ')
+    return stockLocator.transformItem(stockItem ?? stock, { ...context, game: rules.game, type, index: 0, displayIndex: index }).join(' ')
   }
 
   protected getMatchingStock(itemType: M, itemId: number, context: ItemAnimationContext<P, M, L>) {
@@ -128,7 +128,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const indexAfter = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const targetLocator = context.locators[futureItem.location.type]
-    const targetTransform = targetLocator.transformItem(futureItem, { ...context, game: gameCopy, type, displayIndex: indexAfter }).join(' ')
+    const targetTransform = targetLocator.transformItem(futureItem, { ...context, game: gameCopy, type, index: futureIndex, displayIndex: indexAfter }).join(' ')
     const destination = this.closestItemRotation(targetTransform, item, context)
     const animationKeyframes = this.getKeyframesToDestination(destination, item, animation, context)
     return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
@@ -142,7 +142,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const type = item.type
     const currentItem = game.items[type]![item.index]
     const sourceLocator = context.locators[currentItem.location.type]
-    return sourceLocator.transformItem(currentItem, { ...context, game, type, index: item.displayIndex }).join(' ')
+    return sourceLocator.transformItem(currentItem, { ...context, game, ...item }).join(' ')
   }
 
   private closestRotation(targetTransform: string, sourceTransform: string): string {
