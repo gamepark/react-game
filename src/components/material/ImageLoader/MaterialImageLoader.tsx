@@ -1,5 +1,4 @@
-import { FC, useContext, useMemo } from 'react'
-import { gameContext } from '../../GameProvider'
+import { FC, useMemo } from 'react'
 import { ImagesLoader, ImagesLoaderProps } from '../../ImagesLoader'
 import { useMaterials } from '../../../hooks/useMaterials'
 
