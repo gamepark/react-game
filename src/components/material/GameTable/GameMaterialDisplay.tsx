@@ -57,9 +57,9 @@ export const GameMaterialDisplay = () => {
       const type = parseInt(stringType)
       return description.getItems(game, player).map(item => {
         const locator = locators[item.location.type]
-        const innerLocations = description.getLocations(item, commonContext)
         return [...Array(item.quantity ?? 1)].map((_, index) => {
           const context: PlaceItemContext = { ...commonContext, type, index }
+          const innerLocations = description.getLocations(item, context)
           const focus = isStaticItemFocus(type, item, tutorialFocus)
           return <MaterialComponent key={`${stringType}_${index}`} type={type} itemId={item.id}
                                     playDown={tutorialStep?.type === TutorialStepType.Popup && !focus}
@@ -84,9 +84,9 @@ export const GameMaterialDisplay = () => {
       return items.map((item, index) => {
         const locator = locators[item.location.type]
         const description = material[type]
-        const innerLocations = description.getLocations(item, commonContext)
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const context: PlaceItemContext = { ...commonContext, type, index: displayIndex }
+          const innerLocations = description.getLocations(item, context)
           if (locator.hide(item, context)) return null
           const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.isActivable(move, type, index)))
           const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
