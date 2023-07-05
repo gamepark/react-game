@@ -147,10 +147,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return this.locations
   }
 
-  isDragOnlyLocation(_location: Location<P, L>) {
-    return this.parentItemType === undefined
-  }
-
   isDropLocation = <P extends number = number, M extends number = number, L extends number = number>(
     move: MaterialMove<P, M, L>, location: Location<P, L>
   ): boolean => {

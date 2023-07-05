@@ -86,12 +86,11 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
 
-  if (locator?.isDragOnlyLocation(location) && !canDrop) return null
-
   if (!description) {
     console.warn('You must provide a LocationDescription to create drop locations with an ItemLocator')
     return null
   }
+  if (!description.isAlwaysVisible(location, context) && !canDrop) return null
 
   const { width, height } = description.getSize(location, context)
   const borderRadius = description.getBorderRadius(location, context)
