@@ -63,7 +63,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     if (stockLocation) {
       const origin = this.closestItemRotation(stockLocation, item, context)
       const animationKeyframes = this.getKeyframesFromOrigin(origin, item, animation, context)
-      return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
+      return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out forwards`
     } else {
       return this.fadein(animation.duration)
     }
@@ -75,7 +75,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
         opacity: 0;
       }
     `
-    return css`animation: ${fadein} ${duration}s ease-in-out`
+    return css`animation: ${fadein} ${duration}s ease-in-out forwards`
   }
 
   protected getStockLocation(itemType: M, itemId: number, animationContext: ItemAnimationContext<P, M, L>) {
@@ -131,7 +131,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const targetTransform = targetLocator.transformItem(futureItem, { ...context, game: gameCopy, type, index: futureIndex, displayIndex: indexAfter }).join(' ')
     const destination = this.closestItemRotation(targetTransform, item, context)
     const animationKeyframes = this.getKeyframesToDestination(destination, item, animation, context)
-    return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
+    return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out forwards`
   }
 
   private closestItemRotation(transform: string, item: DisplayedItem<M>, context: ItemAnimationContext<P, M, L>): string {
@@ -175,14 +175,14 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     if (stockLocation) {
       const destination = this.closestItemRotation(stockLocation, item, context)
       const animationKeyframes = this.getKeyframesToDestination(destination, item, animation, context)
-      return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out`
+      return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out forwards`
     } else {
       const fadeout = keyframes`
         to {
           opacity: 0;
         }
       `
-      return css`animation: ${fadeout} ${animation.duration}s ease-in-out`
+      return css`animation: ${fadeout} ${animation.duration}s ease-in-out forwards`
     }
   }
 }
