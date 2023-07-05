@@ -60,6 +60,8 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return undefined
   }
 
+  position: XYCoordinates = { x: 0, y: 0 }
+
   /**
    * Place the center of the item on the screen
    *
@@ -68,8 +70,10 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
    * @return The delta coordinates in em of the center of the item from the center of their parent (or the screen)
    */
   getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
-    return { x: 0, y: 0, z: this.getItemThickness(item, context) }
+    return { ...this.position, z: context.material[context.type].getThickness(item, context) }
   }
+
+  positionOnParent: XYCoordinates = { x: 0, y: 0 }
 
   /**
    * Place the center of the item in the plan of their parent item. This is ignored if "parentItemType" is undefined.
@@ -81,7 +85,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
    * @return {x, y} with "x" as a percentage from the parent's width, "y" a percentage of the height
    */
   getPositionOnParent(_location: Location<P, L>, _context: MaterialContext<P, M, L>): XYCoordinates {
-    return { x: 0, y: 0 }
+    return this.positionOnParent
   }
 
   getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
@@ -98,8 +102,10 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 
   getRotation?(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number
 
+  hidden = false
+
   isHidden(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): boolean {
-    return false
+    return this.hidden
   }
 
   protected transformParentItemLocation(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
@@ -117,10 +123,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
       const locator: ItemLocator<P, M, L> = locators[staticItem.location.type]
       return locator.transformItemLocation(staticItem, { ...context, type: this.parentItemType, displayIndex: 0 })
     }
-  }
-
-  getItemThickness(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
-    return 0.05
   }
 
   getItemIndex(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {

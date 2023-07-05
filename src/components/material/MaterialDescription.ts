@@ -61,4 +61,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   abstract getImages(): string[]
+
+  thickness = 0.05
+
+  getThickness(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+    return this.thickness
+  }
 }

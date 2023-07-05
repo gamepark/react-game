@@ -1,4 +1,4 @@
-import { ItemLocator, ItemContext } from './ItemLocator'
+import { ItemContext, ItemLocator } from './ItemLocator'
 import { Coordinates, MaterialItem } from '@gamepark/rules-api'
 
 export abstract class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
@@ -38,11 +38,19 @@ export abstract class PileLocator<P extends number = number, M extends number = 
     return pileRotations.get(index) ?? 0
   }
 
-  abstract getCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates
+  coordinates: Coordinates = { x: 0, y: 0, z: 0 }
 
-  abstract getRadius(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number
+  getCoordinates(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): Coordinates {
+    return this.coordinates
+  }
 
-  getPileId(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
-    return 0
+  radius = 0
+
+  getRadius(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+    return this.radius
+  }
+
+  getPileId(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+    return typeof item.id === 'number' ? item.id : 0
   }
 }

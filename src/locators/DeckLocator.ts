@@ -20,7 +20,7 @@ export abstract class DeckLocator<P extends number = number, M extends number = 
     return Math.max(0, index - count + this.limit)
   }
 
-  getDelta(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): Partial<Coordinates> {
-    return { z: 0.05 }
+  getDelta(_item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
+    return this.delta ?? { z: context.material[context.type].thickness }
   }
 }
