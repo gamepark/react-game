@@ -1,4 +1,4 @@
-export * from './DropAreas'
+export * from './locations'
 export * from './FlatMaterial'
 export * from './GameTable'
 export * from './MaterialAnimations'

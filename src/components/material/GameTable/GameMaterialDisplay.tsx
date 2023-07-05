@@ -1,24 +1,24 @@
 /** @jsxImportSource @emotion/react */
-import { BaseContext, ItemContext } from '../../../locators'
-import { useCallback, useContext, useMemo, useRef, useState } from 'react'
-import { useLegalMoves, usePlay, usePlayerId, useRules, useZoomToElements } from '../../../hooks'
-import { closeRulesDisplay, DisplayedItem, displayMaterialRules, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
+import { ItemContext } from '../../../locators'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules, useZoomToElements } from '../../../hooks'
+import { closeRulesDisplay, DisplayedItem, displayMaterialRules, Location, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { MaterialComponent } from '../MaterialComponent'
 import { pointerCursorCss, transformCss } from '../../../css'
 import { DraggableMaterial, isDraggedItem } from '../DraggableMaterial'
 import { MaterialRulesDialog } from '../../dialogs'
 import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
-import { gameContext } from '../../GameProvider'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { useTutorialStep } from '../../../hooks/useTutorialStep'
-import { countTutorialFocusRefs, isItemFocus, isLocationFocus, isStaticItemFocus, TutorialStepType } from '../../tutorial'
-import { SimpleDropArea } from '../DropAreas'
+import { countTutorialFocusRefs, isItemFocus, isLocationBuilder, isLocationFocus, isStaticItemFocus, TutorialFocus, TutorialStepType } from '../../tutorial'
+import { LocationsMask, SimpleDropArea } from '../locations'
+import equal from 'fast-deep-equal'
 
 export const GameMaterialDisplay = () => {
-  const context = useContext(gameContext)
-  const material = context.material ?? {}
-  const locators = context.locators ?? {}
+  const context = useMaterialContext()
+  const material = context.material
+  const locators = context.locators
   const player = usePlayerId()
   const rules = useRules<MaterialRules>()
   const legalMoves = useLegalMoves<MaterialMove>()
@@ -50,7 +50,6 @@ export const GameMaterialDisplay = () => {
 
   if (!rules) return <></>
   const game = rules?.game
-  const commonContext: BaseContext = { game, player, material, locators }
 
   return <>
     {Object.entries(material).map(([stringType, description]) => {
@@ -58,21 +57,19 @@ export const GameMaterialDisplay = () => {
       return description.getItems(game, player).map((item, index) => {
         const locator = locators[item.location.type]
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
-          const context: ItemContext = { ...commonContext, type, index, displayIndex }
-          const innerLocations = description.getLocations(item, context)
+          const itemContext: ItemContext = { ...context, type, index, displayIndex }
+          const innerLocations = description.getLocations(item, itemContext)
           const focus = isStaticItemFocus(type, item, tutorialFocus)
+          const locationsFocus = getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location)))
           return <MaterialComponent key={`${type}_${index}_${displayIndex}`} type={type} itemId={item.id}
-                                    playDown={tutorialStep?.type === TutorialStepType.Popup && !focus}
+                                    playDown={tutorialStep?.type === TutorialStepType.Popup && !focus && !locationsFocus.length}
                                     ref={focus ? addFocusRef : undefined}
-                                    css={[pointerCursorCss, transformCss(...locator.transformItem(item, context))]}
-                                    onShortClick={() => play(displayMaterialRules(type, displayIndex, item), { local: true })}>
+                                    css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
+                                    onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}>
+            <LocationsMask locations={locationsFocus}/>
             {innerLocations.map(location =>
               <SimpleDropArea key={JSON.stringify(location)} location={location}
-                              ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}
-                              css={[
-                                childLocationCss(locators[location.type].getPositionOnParent(location, commonContext)),
-                                locators[location.type].getLocationCss(location, { ...commonContext, parentItemId: item.id })
-                              ]}/>
+                              ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}/>
             )}
           </MaterialComponent>
         })
@@ -85,42 +82,39 @@ export const GameMaterialDisplay = () => {
         const locator = locators[item.location.type]
         const description = material[type]
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
-          const context: ItemContext = { ...commonContext, type, index, displayIndex }
-          const innerLocations = description.getLocations(item, context)
-          if (locator.hide(item, context)) return null
+          const itemContext: ItemContext = { ...context, type, index, displayIndex }
+          const innerLocations = description.getLocations(item, itemContext)
+          if (locator.hide(item, itemContext)) return null
           const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.isActivable(move, type, index)))
           const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
-            locator.isMoveItemToLocation(move, draggedItem.type, draggedItem.index, item.location, undefined, commonContext)
+            locator.isMoveItemToLocation(move, draggedItem.type, draggedItem.index, item.location, undefined, context)
           )
           const focus = isItemFocus(type, index, tutorialFocus)
+          const locationsFocus = getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location)))
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} item={item} index={index} displayIndex={displayIndex}
                                     disabled={!itemMoves.length}
                                     playDown={tutorialStep?.type === TutorialStepType.Popup && !focus}
                                     ref={focus ? addFocusRef : undefined}
-                                    postTransform={locator.transformItem(item, context).join(' ')}
+                                    postTransform={locator.transformItem(item, itemContext).join(' ')}
                                     css={draggingToSameLocation && noPointerEvents}
                                     onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}
                                     onLongClick={itemMoves.length === 1 ?
                                       () => play(itemMoves[0], { delayed: rules.isUnpredictableMove(itemMoves[0], player) })
                                       : undefined}>
+            <LocationsMask locations={locationsFocus}/>
             {innerLocations.map(location =>
               <SimpleDropArea key={JSON.stringify(location)} location={location}
-                              ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}
-                              css={[
-                                childLocationCss(locators[location.type].getPositionOnParent(location, commonContext)),
-                                locators[location.type].getLocationCss(location, { ...commonContext, parentItemId: item.id })
-                              ]}/>
+                              ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}/>
             )}
           </DraggableMaterial>
         })
       })
     })}
     {Object.values(locators).map(locator =>
-      locator.getLocations(commonContext).map(location =>
+      locator.getLocations(context).map(location =>
         <SimpleDropArea key={JSON.stringify(location)} location={location}
-                        ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}
-                        css={locators[location.type].getLocationCss(location, commonContext)}/>
+                        ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}/>
       )
     )}
     <MaterialRulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
@@ -132,9 +126,11 @@ const noPointerEvents = css`
   pointer-events: none;
 `
 
-const childLocationCss = ({ x, y }: XYCoordinates) => css`
-  position: absolute;
-  left: ${x}%;
-  top: ${y}%;
-  transform: translate(-50%, -50%);
-`
+const getLocationsFocus = (focus?: TutorialFocus | TutorialFocus[]): Location[] => {
+  if (!focus) return []
+  if (Array.isArray(focus)) {
+    return focus.filter(isLocationBuilder).map(builder => builder.location)
+  }
+  return isLocationBuilder(focus) ? [focus.location] : []
+}
+

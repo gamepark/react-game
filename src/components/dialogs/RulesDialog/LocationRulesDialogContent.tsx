@@ -24,11 +24,12 @@ export const LocationRulesDialogContent = <P extends number = number, M extends 
 ) => {
   const play = usePlay()
   const legalMoves = useLocationMoves<P, M, L>(locator, rulesDisplay)
+  const rules = locator.locationDescription?.rules
   return <div css={flex}>
     {/* TODO: image of the location? */}
     <Scrollbars autoHeight css={scrollableContainer}>
-      <div css={rules}>
-        {locator.getLocationRules && locator.getLocationRules({
+      <div css={rulesCss}>
+        {rules && rules({
           location: rulesDisplay.location,
           legalMoves,
           close: () => play(closeRulesDisplay, { local: true })
@@ -45,7 +46,7 @@ const flex = css`
   max-height: 90vh;
 `
 
-const rules = css`
+const rulesCss = css`
   margin: 0 1em;
   font-size: 3em;
 

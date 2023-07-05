@@ -15,9 +15,7 @@ import {
   MoveKind,
   XYCoordinates
 } from '@gamepark/rules-api'
-import { ItemAnimationContext, MaterialDescription, StockDescription } from '../components'
-import { ReactNode } from 'react'
-import { Interpolation, Theme } from '@emotion/react'
+import { ItemAnimationContext, LocationDescription, MaterialDescription, StockDescription } from '../components'
 import equal from 'fast-deep-equal'
 import { Animation } from '@gamepark/react-client'
 import { isLocationSubset } from '../components/material/utils'
@@ -27,6 +25,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   parentItemType?: M
   rotationUnit = 'deg'
   limit?: number
+  locationDescription?: LocationDescription
 
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
     return this.limit ? this.getItemIndex(item, context) >= this.limit : false
@@ -80,7 +79,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
    * @param _context THe material game context
    * @return {x, y} with "x" as a percentage from the parent's width, "y" a percentage of the height
    */
-  getPositionOnParent(_location: Location<P, L>, _context: BaseContext<P, M, L>): XYCoordinates {
+  getPositionOnParent(_location: Location<P, L>, _context: MaterialContext<P, M, L>): XYCoordinates {
     return { x: 0, y: 0 }
   }
 
@@ -141,16 +140,12 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
-  getLocations(_context: BaseContext<P, M, L>): Location<P, L>[] {
+  getLocations(_context: MaterialContext<P, M, L>): Location<P, L>[] {
     return []
   }
 
   isDragOnlyLocation(_location: Location<P, L>) {
     return this.parentItemType === undefined
-  }
-
-  getLocationCss(_location: Location<P, L>, _context: PlaceLocationContext<P, M, L>): Interpolation<Theme> {
-    return
   }
 
   isDropLocation = <P extends number = number, M extends number = number, L extends number = number>(
@@ -163,16 +158,13 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   isMoveItemToLocation = <P extends number = number, M extends number = number, L extends number = number>(
-    move: MaterialMove<P, M, L>, itemType: M, itemIndex: number, location: Location<P, L>, stocks: Record<M, StockDescription<P, L> | undefined> | undefined, context: BaseContext<P, M, L>
+    move: MaterialMove<P, M, L>, itemType: M, itemIndex: number, location: Location<P, L>, stocks: Record<M, StockDescription<P, L> | undefined> | undefined, context: MaterialContext<P, M, L>
   ): boolean => {
     const description = context.material[itemType]
     return description.isActivable(move, itemType, itemIndex) && (this.isDropLocation(move, location) || (!!stocks && isMoveToStock(stocks, move, location)))
   }
 
-
-  getLocationRules?(props: LocationRulesProps<P, M, L>): ReactNode
-
-  getRelativePlayerIndex({ game: { players }, player: me }: BaseContext<P, M, L>, player: P): number {
+  getRelativePlayerIndex({ game: { players }, player: me }: MaterialContext<P, M, L>, player: P): number {
     const absoluteIndex = players.indexOf(player)
     if (me === undefined || players[0] === me) return absoluteIndex
     return (absoluteIndex - players.indexOf(me) + players.length) % players.length
@@ -203,20 +195,14 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 }
 
-export type BaseContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
+export type MaterialContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   game: MaterialGame<Player, MaterialType, LocationType>
   material: Record<MaterialType, MaterialDescription<Player, MaterialType, LocationType>>
   locators: Record<LocationType, ItemLocator<Player, MaterialType, LocationType>>
   player?: Player
 }
 
-export type PlaceLocationContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number, ParentItemId = any> =
-  {
-    parentItemId?: ParentItemId
-  }
-  & BaseContext<Player, MaterialType, LocationType>
-
-export type ItemContext<P extends number = number, M extends number = number, L extends number = number> = BaseContext<P, M, L> & DisplayedItem<M>
+export type ItemContext<P extends number = number, M extends number = number, L extends number = number> = MaterialContext<P, M, L> & DisplayedItem<M>
 
 export type LocationRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
   location: Location<P, L>
