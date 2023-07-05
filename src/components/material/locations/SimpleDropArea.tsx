@@ -93,14 +93,17 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     return null
   }
 
-  const { width, height } = description.getSize(location)
-  const borderRadius = description.getBorderRadius(location)
+  const { width, height } = description.getSize(location, context)
+  const borderRadius = description.getBorderRadius(location, context)
+  const coordinates = description.getCoordinates(location, context)
 
   return <div ref={mergeRefs([ref, setNodeRef])}
               css={[
-                positionCss(locator.getPositionOnParent(location, context)),
+                absolute,
+                locator.parentItemType !== undefined && positionOnParentCss(locator.getPositionOnParent(location, context)),
                 transformCss(
                   'translate(-50%, -50%)',
+                  coordinates && `translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`,
                   description.getRotation && `rotate(${description.getRotation(location, context)}${description.rotationUnit})`
                 ),
                 sizeCss(width, height), borderRadius && borderRadiusCss(borderRadius),
@@ -112,8 +115,11 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
               {...props} {...combineEventListeners(listeners, props)}/>
 })
 
-const positionCss = ({ x, y }: XYCoordinates) => css`
+const absolute = css`
   position: absolute;
+`
+
+const positionOnParentCss = ({ x, y }: XYCoordinates) => css`
   left: ${x}%;
   top: ${y}%;
 `

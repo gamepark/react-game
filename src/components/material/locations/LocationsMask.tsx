@@ -15,7 +15,7 @@ export const LocationsMask = ({ locations }: LocationsMaskProps) => {
       <defs>
         <mask id={id}>
           <rect width="100%" height="100%" fill="white"/>
-          {locations.map(location => <LocationRect location={location}/>)}
+          {locations.map(location => <LocationRect key={JSON.stringify(location)} location={location}/>)}
         </mask>
       </defs>
       <rect width="100%" height="100%" fill="black" fillOpacity={0.5} mask={`url(#${id})`}/>
@@ -32,9 +32,13 @@ const LocationRect = ({ location }: LocationRectProps) => {
   const description = locator.locationDescription!
   const context = useMaterialContext()
   const position = locator.getPositionOnParent(location, context)
-  const { width, height } = description.getSize(location)
-  const radius = description.getBorderRadius(location)
+  const { width, height } = description.getSize(location, context)
+  const radius = description.getBorderRadius(location, context)
+  const coordinates = description.getCoordinates(location, context)
   const transforms: string[] = ['translate(-50%, -50%)']
+  if (coordinates) {
+    transforms.push(`translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`)
+  }
   if (description.getRotation) {
     transforms.push(`rotate(${description.getRotation(location, context)}${description.rotationUnit})`)
   }
