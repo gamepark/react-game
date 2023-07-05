@@ -3,7 +3,7 @@ import { FC, useCallback, useState } from 'react'
 import { dropItemMove, MaterialRules } from '@gamepark/rules-api'
 import { TransformWrapper } from 'react-zoom-pan-pinch'
 import { useLegalMoves, useMaterialContext, usePlay, useRules } from '../../../hooks'
-import { DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
+import { CollisionDetection, DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { GameTableContent } from './GameTableContent'
 import { useStocks } from '../../../hooks/useStocks'
@@ -11,6 +11,7 @@ import { isDraggedItem } from '../DraggableMaterial'
 import { isDropLocation } from '../locations'
 
 export type GameTableProps = {
+  collisionAlgorithm?: CollisionDetection
   xMin: number
   xMax: number
   yMin: number
@@ -25,7 +26,7 @@ const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 
 export const GameTable: FC<GameTableProps> = (props) => {
-  const { zoomMin = 1, zoomMax = 1 } = props
+  const { collisionAlgorithm, zoomMin = 1, zoomMax = 1 } = props
 
   const [dragging, setDragging] = useState(false)
 
@@ -50,7 +51,8 @@ export const GameTable: FC<GameTableProps> = (props) => {
   }, [play, rules, legalMoves])
 
   return (
-    <DndContext measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }} modifiers={[snapCenterToCursor]}
+    <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
+                modifiers={[snapCenterToCursor]}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
       <TransformWrapper minScale={zoomMin / zoomMax} maxScale={1} initialScale={zoomMin / zoomMax} centerOnInit={true} wheel={wheel} smooth={false}
                         panning={{ disabled: dragging }} disablePadding doubleClick={doubleClick}>
