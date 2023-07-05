@@ -1,21 +1,24 @@
 import { Location } from '@gamepark/rules-api'
 import { useItemLocator, useMaterialContext } from '../../../hooks'
+import uniqueId from 'lodash/uniqueId'
+import { useMemo } from 'react'
 
 export type LocationsMaskProps = {
   locations: Location[]
 }
 
 export const LocationsMask = ({ locations }: LocationsMaskProps) => {
+  const id = useMemo(() => uniqueId('mask'), [])
   if (!locations.length) return null
   return (
     <svg width="100%" height="100%">
       <defs>
-        <mask id="TODO_GENERATE_SOMETHING_UNIQUE">
+        <mask id={id}>
           <rect width="100%" height="100%" fill="white"/>
           {locations.map(location => <LocationRect location={location}/>)}
         </mask>
       </defs>
-      <rect width="100%" height="100%" fill="black" fillOpacity={0.5} mask="url(#TODO_GENERATE_SOMETHING_UNIQUE)"/>
+      <rect width="100%" height="100%" fill="black" fillOpacity={0.5} mask={`url(#${id})`}/>
     </svg>
   )
 }
