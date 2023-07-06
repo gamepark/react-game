@@ -51,6 +51,8 @@ export abstract class PileLocator<P extends number = number, M extends number = 
   }
 
   getPileId(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
-    return typeof item.location.id === 'number' ? item.location.id : 0
+    if (typeof item.location.id === 'number') return item.location.id
+    if (item.location.player !== undefined) return item.location.player
+    return 0
   }
 }
