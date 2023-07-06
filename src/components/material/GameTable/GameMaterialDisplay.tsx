@@ -81,14 +81,14 @@ export const GameMaterialDisplay = () => {
       return items.map((item, index) => {
         const locator = locators[item.location.type]
         const description = material[type]
+        const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
+          locator.isMoveItemToLocation(move, draggedItem.type, draggedItem.index, item.location, undefined, context)
+        )
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
           const innerLocations = description.getLocations(item, itemContext)
           if (locator.hide(item, itemContext)) return null
           const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.isActivable(move, type, index)))
-          const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
-            locator.isMoveItemToLocation(move, draggedItem.type, draggedItem.index, item.location, undefined, context)
-          )
           const focus = isItemFocus(type, index, tutorialFocus)
           const locationsFocus = getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location)))
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
