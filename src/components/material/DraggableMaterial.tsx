@@ -19,12 +19,13 @@ export type DraggableMaterialProps<P extends number = number, M extends number =
   index: number
   displayIndex: number
   disabled?: boolean
+  silent?: boolean
   preTransform?: string
   postTransform?: string
 } & MaterialComponentProps<M>
 
 export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialProps>((
-  { item, type, index, displayIndex, disabled, preTransform, postTransform, ...props }, ref
+  { silent, item, type, index, displayIndex, disabled, preTransform, postTransform, ...props }, ref
 ) => {
 
   const displayedItem: DisplayedItem = { type, index, displayIndex }
@@ -86,7 +87,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
                          transformCss(preTransform, applyTransform && transformRef.current, postTransform),
                          animationCss
                        ]}
-                       highlight={!disabled && !animations.length && !transform}
+                       highlight={!silent && !disabled && !animations.length && !transform}
                        {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}/>
   )
 })
