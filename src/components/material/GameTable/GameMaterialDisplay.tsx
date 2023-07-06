@@ -14,6 +14,7 @@ import { useTutorialStep } from '../../../hooks/useTutorialStep'
 import { countTutorialFocusRefs, isItemFocus, isLocationBuilder, isLocationFocus, isStaticItemFocus, TutorialFocus, TutorialStepType } from '../../tutorial'
 import { LocationsMask, SimpleDropArea } from '../locations'
 import equal from 'fast-deep-equal'
+import { useControls, useTransformContext } from 'react-zoom-pan-pinch'
 
 export const GameMaterialDisplay = () => {
   const context = useMaterialContext()
@@ -31,12 +32,18 @@ export const GameMaterialDisplay = () => {
   })
 
   const zoomToElements = useZoomToElements()
+  const transformContext = useTransformContext()
+  const { resetTransform } = useControls()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
   const tutorialStep = useTutorialStep()
 
   const tutorialFocus = useMemo(() => {
     focusRefs.current = new Set()
-    return rules?.game && tutorialStep?.type === TutorialStepType.Popup ? tutorialStep.focus?.(rules?.game) : undefined
+    const tutorialFocus = rules?.game && tutorialStep?.type === TutorialStepType.Popup ? tutorialStep.focus?.(rules?.game) : undefined
+    if (!tutorialFocus) {
+      resetTransform(1000)
+    }
+    return tutorialFocus
   }, [tutorialStep])
 
   const addFocusRef = useCallback((ref: HTMLElement | null) => {
@@ -44,7 +51,8 @@ export const GameMaterialDisplay = () => {
     focusRefs.current.add(ref)
     if (countTutorialFocusRefs(tutorialFocus) === focusRefs.current.size) {
       const elements = Array.from(focusRefs.current)
-      setTimeout(() => zoomToElements(elements))
+      const scale = tutorialStep?.zoom && transformContext.props.minScale ? transformContext.props.minScale * tutorialStep.zoom : undefined
+      setTimeout(() => zoomToElements(elements, scale, 1000))
     }
   }, [tutorialFocus])
 
