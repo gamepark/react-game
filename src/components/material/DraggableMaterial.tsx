@@ -80,7 +80,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item.id}
                        css={[
                          transformWillChange,
-                         !applyTransform && transformTransition(animation?.duration),
+                         !applyTransform && !disabled && transformTransition(animation?.duration),
                          !disabled && noTouchAction,
                          disabled || animations.length ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
                          transformCss(preTransform, applyTransform && transformRef.current, postTransform),
