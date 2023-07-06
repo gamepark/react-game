@@ -32,7 +32,6 @@ export const GameTable: FC<GameTableProps> = (props) => {
 
   const context = useMaterialContext()
   const play = usePlay()
-  const player = context.player
   const rules = useRules<MaterialRules>()!
   const legalMoves = useLegalMoves()
   const stocks = useStocks()
@@ -45,7 +44,7 @@ export const GameTable: FC<GameTableProps> = (props) => {
       const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move => locator.isMoveItemToLocation(move, type, index, location, stocks, context)))
       if (moves.length === 1) {
         play(dropItemMove(type, index, displayIndex), { local: true })
-        play(moves[0], { delayed: rules.isUnpredictableMove(moves[0], player!) })
+        play(moves[0])
       }
     }
   }, [play, rules, legalMoves])
