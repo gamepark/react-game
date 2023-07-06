@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { Dialog, rulesDialogCss } from '../dialogs'
-import { useLegalMoves, useUndo } from '../../hooks'
-import { isSetTutorialStep, SetTutorialStep } from '@gamepark/rules-api'
+import { useGame, useLegalMoves, useUndo } from '../../hooks'
+import { CloseTutorialPopup, isSetTutorialStep, LocalMoveType, MaterialGame, MoveKind, SetTutorialStep } from '@gamepark/rules-api'
 import { useEffect, useState } from 'react'
-import { TutorialPopupStep, TutorialStepType } from './MaterialTutorial'
 import { useTranslation } from 'react-i18next'
 import { css, ThemeProvider } from '@emotion/react'
 import { PlayMoveButton, ThemeButton } from '../buttons'
@@ -16,21 +15,20 @@ import maxBy from 'lodash/maxBy'
 import { faBackward } from '@fortawesome/free-solid-svg-icons/faBackward'
 import { faForward } from '@fortawesome/free-solid-svg-icons/faForward'
 import { useTutorialStep } from '../../hooks/useTutorialStep'
+import { TutorialPopup } from './MaterialTutorial'
+import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay'
 
 export const MaterialTutorialDisplay = () => {
   const { t } = useTranslation()
+  const game = useGame<MaterialGame>()
   const tutorialStep = useTutorialStep()
   const tutorialMoves = useLegalMoves<SetTutorialStep>(isSetTutorialStep)
-  const [popupStep, setPopupStep] = useState<TutorialPopupStep>()
+
+  const [popup, setPopup] = useState<TutorialPopup>()
+  useEffect(() => setPopup(tutorialStep?.popup), [tutorialStep])
 
   const { setOpponentsPlayAutomatically } = useTutorial()!
   useEffect(() => setOpponentsPlayAutomatically(), [])
-
-  useEffect(() => {
-    if (tutorialStep?.type === TutorialStepType.Popup) {
-      setPopupStep(tutorialStep)
-    }
-  }, [tutorialStep])
 
   const nextStepMove = minBy(tutorialMoves, move => move.step)
   const passMove = maxBy(tutorialMoves, move => move.step)
@@ -39,21 +37,24 @@ export const MaterialTutorialDisplay = () => {
   const canUndoLastMove = canUndo()
 
   return (
-    <Dialog open={tutorialStep?.type === TutorialStepType.Popup}
+    <Dialog open={popup !== undefined && !game?.tutorialPopupClosed}
             css={[
               rulesDialogCss,
               tutorialDialogCss,
-              popupStep?.position && transformCss(`translate(${popupStep.position.x}em, ${popupStep.position.y}em)`)
+              popup?.position && transformCss(`translate(${popup.position.x}em, ${popup.position.y}em)`)
             ]}
             backdropCss={backdropCss}>
-      {popupStep &&
+      {popup &&
         <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
           <div css={rules}>
-            <PlayMoveButton move={passMove} css={passButton}>{t('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>
-            <p>{popupStep.text(t)}</p>
+            {passMove && <PlayMoveButton move={passMove} css={passButton}>{t('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>}
+            <p>{popup.text(t)}</p>
             <p css={buttonsLine}>
               <ThemeButton disabled={!canUndoLastMove} onClick={() => undo()}><FontAwesomeIcon icon={faBackward}/>&nbsp;{t('Previous')}</ThemeButton>
-              <PlayMoveButton move={nextStepMove} disabled={!nextStepMove}>{t('Next')}&nbsp;<FontAwesomeIcon icon={faForward}/></PlayMoveButton>
+              {nextStepMove ?
+                <PlayMoveButton move={nextStepMove} disabled={!nextStepMove}>{t('Next')}&nbsp;<FontAwesomeIcon icon={faForward}/></PlayMoveButton>
+                : <PlayMoveButton move={closeTutorialPopup}>{t('OK')}&nbsp;<FontAwesomeIcon icon={faPlay}/></PlayMoveButton>
+              }
             </p>
           </div>
         </ThemeProvider>
@@ -100,3 +101,5 @@ const tutorialDialogCss = css`
   pointer-events: auto;
   transition: transform 0.1s ease-in-out;
 `
+
+const closeTutorialPopup: CloseTutorialPopup = { kind: MoveKind.LocalMove, type: LocalMoveType.CloseTutorialPopup }

@@ -33,30 +33,24 @@ export enum TutorialStepType {
   Popup = 1, Move
 }
 
-export enum TutorialFocusType {
-  Header = 1
-}
-
 export type TutorialStepBase = { zoom?: number }
 
-export type TutorialStep<P extends number = number, M extends number = number, L extends number = number>
-  = (TutorialPopupStep<P, M, L> | TutorialMoveStep<P, M, L>) & TutorialStepBase
+export type TutorialStep<P extends number = number, M extends number = number, L extends number = number> = {
+  popup?: TutorialPopup
+  focus?: (game: MaterialGame<P, M, L>) => TutorialFocus<P, M, L> | TutorialFocus<P, M, L>[]
+  move?: {
+    player?: P
+    filter?: (move: MaterialMove<P, M, L>, game: MaterialGame<P, M, L>) => boolean
+  }
+}
 
-export type TutorialPopupStep<P extends number = number, M extends number = number, L extends number = number> = {
-  type: typeof TutorialStepType.Popup
+export type TutorialPopup = {
   text: (t: TFunction) => string | ReactNode
   position?: XYCoordinates
-  focus?: (game: MaterialGame<P, M, L>) => TutorialFocus<P, M, L> | TutorialFocus<P, M, L>[]
 }
 
 export type TutorialFocus<P extends number = number, M extends number = number, L extends number = number> =
-  Material<P, M, L> | StaticItem<P, M, L> | LocationBuilder<P, L> | TutorialFocusType
-
-export type TutorialMoveStep<P extends number = number, M extends number = number, L extends number = number> = {
-  type: typeof TutorialStepType.Move
-  isValidMove?: (move: MaterialMove<P, M, L>) => boolean
-  playerId?: P
-}
+  Material<P, M, L> | StaticItem<P, M, L> | LocationBuilder<P, L>
 
 export type StaticItem<P extends number = number, M extends number = number, L extends number = number> = {
   type: M

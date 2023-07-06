@@ -1,6 +1,5 @@
-import { LocalMoveType, MaterialMove, MoveKind, RulesCreator, SetTutorialStep } from '@gamepark/rules-api'
-import { MaterialTutorial, TutorialStep, TutorialStepType } from './MaterialTutorial'
-import equal from 'fast-deep-equal'
+import { LocalMoveType, MaterialGame, MaterialMove, MoveKind, RulesCreator, SetTutorialStep } from '@gamepark/rules-api'
+import { MaterialTutorial, TutorialStep } from './MaterialTutorial'
 
 export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCreator<any, any, any>) {
 
@@ -11,33 +10,50 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
   }
 
   Rules.prototype.getLegalMoves = function (playerId: any): MaterialMove[] {
-    const step = this.getTutorialStep()
-    switch (step?.type) {
-      case TutorialStepType.Popup:
-        if (playerId !== this.game.players[0]) return []
-        const moves: SetTutorialStep[] = [{ kind: MoveKind.LocalMove, type: LocalMoveType.SetTutorialStep, step: this.game.tutorialStep + 1 }]
-        while (tutorial.steps[this.game.tutorialStep + moves.length]?.type === TutorialStepType.Popup) {
-          moves.push({ kind: MoveKind.LocalMove, type: LocalMoveType.SetTutorialStep, step: this.game.tutorialStep + 1 + moves.length })
-        }
-        return moves
-      case TutorialStepType.Move:
-        if ((step.playerId ?? this.game.players[0]) !== playerId) return []
-        return getLegalMoves.bind(this)(playerId).filter((move: MaterialMove) => step.isValidMove?.(move) ?? true)
-      default:
-        return getLegalMoves.bind(this)(playerId)
+    const game = this.game as MaterialGame
+    if (game.tutorialStep === undefined || game.tutorialStep >= tutorial.steps.length) {
+      return getLegalMoves.bind(this)(playerId)
+    }
+    const tutorialStep = tutorial.steps[game.tutorialStep]
+    if (tutorialStep.move) {
+      const player = tutorialStep.move.player ?? this.game.players[0]
+      if (playerId !== player) return []
+      let legalMoves = getLegalMoves.bind(this)(playerId)
+      const filter = tutorialStep.move.filter
+      if (filter) {
+        legalMoves = legalMoves.filter((move: MaterialMove) => filter(move, game))
+      }
+      if (player === this.game.players[0] && tutorialStep.popup) {
+        legalMoves.push({ kind: MoveKind.LocalMove, type: LocalMoveType.CloseTutorialPopup })
+      }
+      return legalMoves
+    } else {
+      if (playerId !== this.game.players[0]) return []
+      const moves: SetTutorialStep[] = [{ kind: MoveKind.LocalMove, type: LocalMoveType.SetTutorialStep, step: this.game.tutorialStep + 1 }]
+      while (this.game.tutorialStep + moves.length < tutorial.steps.length && !tutorial.steps[this.game.tutorialStep + moves.length].move) {
+        moves.push({ kind: MoveKind.LocalMove, type: LocalMoveType.SetTutorialStep, step: this.game.tutorialStep + moves.length + 1 })
+      }
+      return moves
     }
   }
 
   const play = Rules.prototype.play
 
-  Rules.prototype.play = function (move: MaterialMove): MaterialMove[] {
-    const step = this.getTutorialStep() as TutorialStep | undefined
-    const tutorialForward = step?.type === TutorialStepType.Move
-      && this.getLegalMoves(step.playerId ?? this.game.players[0]).some((legalMove: MaterialMove) => equal(move, legalMove))
+  Rules.prototype.play = function (move: MaterialMove) {
+    const game = this.game as MaterialGame
+    const step = game.tutorialStep
+    if (move.kind !== MoveKind.LocalMove && step !== undefined && step < tutorial.steps.length && tutorial.steps[step].move) {
+      game.tutorialStepComplete = true
+    }
+    return play.bind(this)(move)
+  }
 
-    const consequences = play.bind(this)(move) as MaterialMove[]
-    if (tutorialForward) {
-      consequences.push({ kind: MoveKind.LocalMove, type: LocalMoveType.SetTutorialStep, step: this.game.tutorialStep + 1 })
+  const getAutomaticMoves = Rules.prototype.getAutomaticMoves
+
+  Rules.prototype.getAutomaticMoves = function () {
+    const consequences = getAutomaticMoves.bind(this)() as MaterialMove[]
+    if (!consequences.length && (this.game as MaterialGame).tutorialStepComplete) {
+      return [{ kind: MoveKind.LocalMove, type: LocalMoveType.SetTutorialStep, step: this.game.tutorialStep + 1 }]
     }
     return consequences
   }

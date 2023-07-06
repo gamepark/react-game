@@ -11,10 +11,10 @@ import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { useTutorialStep } from '../../../hooks/useTutorialStep'
-import { countTutorialFocusRefs, isItemFocus, isLocationBuilder, isLocationFocus, isStaticItemFocus, TutorialFocus, TutorialStepType } from '../../tutorial'
+import { countTutorialFocusRefs, isItemFocus, isLocationBuilder, isLocationFocus, isStaticItemFocus, TutorialFocus } from '../../tutorial'
 import { LocationsMask, SimpleDropArea } from '../locations'
 import equal from 'fast-deep-equal'
-import { useControls, useTransformContext } from 'react-zoom-pan-pinch'
+import { useControls } from 'react-zoom-pan-pinch'
 
 export const GameMaterialDisplay = () => {
   const context = useMaterialContext()
@@ -32,14 +32,13 @@ export const GameMaterialDisplay = () => {
   })
 
   const zoomToElements = useZoomToElements()
-  const transformContext = useTransformContext()
   const { resetTransform } = useControls()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
   const tutorialStep = useTutorialStep()
 
   const tutorialFocus = useMemo(() => {
     focusRefs.current = new Set()
-    const tutorialFocus = rules?.game && tutorialStep?.type === TutorialStepType.Popup ? tutorialStep.focus?.(rules?.game) : undefined
+    const tutorialFocus = rules?.game ? tutorialStep?.focus?.(rules.game) : undefined
     if (!tutorialFocus) {
       resetTransform(1000)
     }
@@ -51,8 +50,7 @@ export const GameMaterialDisplay = () => {
     focusRefs.current.add(ref)
     if (countTutorialFocusRefs(tutorialFocus) === focusRefs.current.size) {
       const elements = Array.from(focusRefs.current)
-      const scale = tutorialStep?.zoom && transformContext.props.minScale ? transformContext.props.minScale * tutorialStep.zoom : undefined
-      setTimeout(() => zoomToElements(elements, scale, 1000))
+      setTimeout(() => zoomToElements(elements, undefined, 1000))
     }
   }, [tutorialFocus])
 
@@ -70,7 +68,7 @@ export const GameMaterialDisplay = () => {
           const focus = isStaticItemFocus(type, item, tutorialFocus)
           const locationsFocus = getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location)))
           return <MaterialComponent key={`${type}_${index}_${displayIndex}`} type={type} itemId={item.id}
-                                    playDown={tutorialStep?.type === TutorialStepType.Popup && !focus && !locationsFocus.length}
+                                    playDown={tutorialStep?.popup && !focus && !locationsFocus.length}
                                     ref={focus ? addFocusRef : undefined}
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
                                     onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}>
@@ -92,19 +90,19 @@ export const GameMaterialDisplay = () => {
         const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
           locator.isMoveItemToLocation(move, draggedItem.type, draggedItem.index, item.location, undefined, context)
         )
+        const focus = isItemFocus(type, index, tutorialFocus)
+        const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.isActivable(move, type, index)))
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
-          const innerLocations = description.getLocations(item, itemContext)
           if (locator.hide(item, itemContext)) return null
-          const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.isActivable(move, type, index)))
-          const focus = isItemFocus(type, index, tutorialFocus)
+          const innerLocations = description.getLocations(item, itemContext)
           const silent = (draggedItem && (draggedItem.type !== type || draggedItem?.index !== displayIndex))
           const locationsFocus = getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location)))
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} item={item} index={index} displayIndex={displayIndex}
                                     disabled={!itemMoves.length}
                                     silent={silent}
-                                    playDown={tutorialStep?.type === TutorialStepType.Popup && !focus}
+                                    playDown={tutorialStep?.popup && !focus && !itemMoves.length}
                                     ref={focus ? addFocusRef : undefined}
                                     postTransform={locator.transformItem(item, itemContext).join(' ')}
                                     css={draggingToSameLocation && noPointerEvents}

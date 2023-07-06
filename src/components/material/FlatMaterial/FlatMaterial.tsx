@@ -21,7 +21,7 @@ export const FlatMaterial = forwardRef<HTMLDivElement, FlatMaterialProps & HTMLA
           sizeCss(width, height),
           image && [backgroundCss(image), shadowCss(image)],
           borderRadius && borderRadiusCss(borderRadius),
-          highlight && shineEffect, playDown && playDownCss(image)
+          highlight ? shineEffect : playDown && playDownCss(image)
         ]} {...props}>
           {children}
         </div>
@@ -30,7 +30,7 @@ export const FlatMaterial = forwardRef<HTMLDivElement, FlatMaterialProps & HTMLA
     // TODO: we should be able to define children locations inside the back face too
     return (
       <div ref={ref} css={[preserve3d, sizeCss(width, height), borderRadius && borderRadiusCss(borderRadius)]} {...props}>
-        <Face image={image} css={[highlight && shineEffect, playDown && playDownCss(image)]}>
+        <Face image={image} css={[highlight ? shineEffect : playDown && playDownCss(image)]}>
           {children}
         </Face>
         <Face image={back.image} css={[transformCss('rotateY(-180deg)'), highlight && shineEffect, playDown && playDownCss(back.image)]}/>
