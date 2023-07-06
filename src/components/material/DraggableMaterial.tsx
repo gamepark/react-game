@@ -38,8 +38,10 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   // We need to delay a little the default transition removal when dragging starts, otherwise dnd-kit suffers from transform side effect
   // because we opted out from ignoring transform in the configuration (using: "draggable: { measure: getClientRect }")
   const [ignoreTransform, setIgnoreTransform] = useState(true)
+  const [smoothReturn, setSmoothReturn] = useState(false)
   useEffect(() => {
     if (transform !== null) {
+      setSmoothReturn(true)
       const timeout = setTimeout(() => setIgnoreTransform(false))
       return () => clearTimeout(timeout)
     } else {
@@ -77,11 +79,18 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     merge(item, animation.move.reveal)
   }
 
+  // We have to disable the "smooth return transition" when we have an animation, because Firefox bugs when the animation is followed by a transition
+  useEffect(() => {
+    if (isItemToAnimate) {
+      setSmoothReturn(false)
+    }
+  }, [isItemToAnimate])
+
   return (
     <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item.id}
                        css={[
                          transformWillChange,
-                         !applyTransform && !disabled && transformTransition(animation?.duration),
+                         !applyTransform && smoothReturn && transformTransition,
                          !disabled && noTouchAction,
                          disabled || animations.length ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
                          transformCss(preTransform, applyTransform && transformRef.current, postTransform),
@@ -100,8 +109,8 @@ const noTouchAction = css`
   touch-action: none;
 `
 
-const transformTransition = (duration: number = 0.2) => css`
-  transition: transform ${duration}s ease-in-out
+const transformTransition = css`
+  transition: transform 0.2s ease-in-out
 `
 
 export function isDraggedItem<M extends number = number>(data?: Record<string, any>): data is DisplayedItem<M> {
