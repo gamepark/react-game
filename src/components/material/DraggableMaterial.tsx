@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { forwardRef, useContext, useEffect, useRef, useState } from 'react'
+import { forwardRef, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { DisplayedItem, isCreateItem, isDeleteItem, isMoveItem, ItemMove, itemsCanMerge, MaterialItem, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
 import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../../css'
@@ -27,7 +27,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   { highlight, item, type, index, displayIndex, disabled, preTransform, postTransform, ...props }, ref
 ) => {
 
-  const displayedItem: DisplayedItem = { type, index, displayIndex }
+  const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const { attributes, listeners, transform, setNodeRef } = useDraggable({
     id: `${type}_${index}_${displayIndex}`,
     data: displayedItem,

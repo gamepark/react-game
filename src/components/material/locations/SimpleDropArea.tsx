@@ -109,7 +109,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
                 sizeCss(width, height), borderRadius && borderRadiusCss(borderRadius),
                 description.getExtraCss(location, context),
                 !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
-                (canDrop || (!draggedItem && legalMoves.length > 0 && !animations.length)) && shineEffect,
+                ((canDrop && !isOver) || (!draggedItem && legalMoves.length > 0 && !animations.length)) && shineEffect,
                 canDrop && isOver && dropHighlight
               ]}
               {...props} {...combineEventListeners(listeners, props)}/>
