@@ -9,13 +9,14 @@ import { PlayMoveButton, ThemeButton } from '../buttons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
 import { buttonCss, transformCss } from '../../css'
-import { useTutorial } from '@gamepark/react-client'
 import minBy from 'lodash/minBy'
 import maxBy from 'lodash/maxBy'
 import { faBackward } from '@fortawesome/free-solid-svg-icons/faBackward'
 import { faForward } from '@fortawesome/free-solid-svg-icons/faForward'
 import { useTutorialStep } from '../../hooks/useTutorialStep'
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay'
+import { useDispatch } from 'react-redux'
+import { playTutorialMovesAction } from '@gamepark/react-client/dist/Tutorial/PlayTutorialMoves'
 
 export const MaterialTutorialDisplay = () => {
   const { t } = useTranslation()
@@ -25,8 +26,10 @@ export const MaterialTutorialDisplay = () => {
 
   const popup = tutorialStep?.popup
 
-  const { setOpponentsPlayAutomatically } = useTutorial()!
-  useEffect(() => setOpponentsPlayAutomatically(), [])
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(playTutorialMovesAction(Infinity))
+  }, [])
 
   const nextStepMove = minBy(tutorialMoves, move => move.step)
   const passMove = maxBy(tutorialMoves, move => move.step)

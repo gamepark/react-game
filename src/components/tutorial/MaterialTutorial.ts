@@ -3,12 +3,14 @@ import { Location, LocationBuilder, Material, MaterialGame, MaterialGameSetup, M
 import { TFunction } from 'i18next'
 import { ReactNode } from 'react'
 import equal from 'fast-deep-equal'
+import { AvatarProps } from '@gamepark/avataaars'
 
 export abstract class MaterialTutorial<P extends number = number, M extends number = number, L extends number = number>
   implements TutorialDescription<MaterialGame<P, M, L>, MaterialMove<P, M, L>> {
   abstract options: any
   abstract setup: MaterialGameSetup<P, M, L>
   abstract steps: TutorialStep<P, M, L>[]
+  avatars: Partial<Record<P, AvatarProps>> = {}
 
   material(game: MaterialGame<P, M, L>, type: M): Material<P, M, L> {
     return new Material(type, Array.from((game?.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
@@ -57,9 +59,9 @@ export type StaticItem<P extends number = number, M extends number = number, L e
   item: MaterialItem<P, L>
 }
 
-export function isMaterialTutorial(
+export function isMaterialTutorial<P extends number = number, M extends number = number, L extends number = number>(
   tutorialDescription?: TutorialDescription<any, any, any>
-): tutorialDescription is MaterialTutorial {
+): tutorialDescription is MaterialTutorial<P, M, L> {
   return !!tutorialDescription && typeof (tutorialDescription as MaterialTutorial).material === 'function'
 }
 
