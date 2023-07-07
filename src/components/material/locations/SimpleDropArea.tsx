@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { forwardRef, HTMLAttributes, MouseEvent, useState } from 'react'
+import { forwardRef, HTMLAttributes, MouseEvent, useCallback, useMemo, useState } from 'react'
 import { displayLocationRules, ItemMove, ItemMoveType, Location, MaterialMove, MaterialRules, MoveKind, XYCoordinates } from '@gamepark/rules-api'
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
@@ -32,9 +32,10 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const rules = useRules<MaterialRules>()
   const play = usePlay<MaterialMove>()
   const player = usePlayerId()
-  const legalMoves = useLegalMoves<ItemMove>(move =>
-    !!rules && rules.isMoveTrigger(move, move => locator?.isDropLocation(move, location) || isMoveToStock(stocks, move, location))
-  )
+  const predicate = useCallback(
+    (move) => !!rules && rules.isMoveTrigger(move, move => locator?.isDropLocation(move, location) || isMoveToStock(stocks, move, location))
+    , [rules, locator, stocks, location])
+  const legalMoves = useLegalMoves<ItemMove>(predicate)
 
   if (!onLongClick && legalMoves.length === 1) {
     onLongClick = () => play(legalMoves[0], { delayed: rules?.isUnpredictableMove(legalMoves[0], player) })
@@ -56,11 +57,11 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const draggedItem = isDraggedItem(active?.data.current) ? active?.data.current : undefined
 
   const context: MaterialContext = { game: rules!.game, player, material: material!, locators: locators! }
-  const canDrop = draggedItem !== undefined && legalMoves.filter(move =>
+  const canDrop = useMemo(() => draggedItem !== undefined && legalMoves.filter(move =>
     rules?.isMoveTrigger(move, move =>
       locator?.isMoveItemToLocation(move, draggedItem.type, draggedItem.index, location, stocks, context) ?? false
     )
-  ).length === 1
+  ).length === 1, [draggedItem, legalMoves, rules])
 
   const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
 

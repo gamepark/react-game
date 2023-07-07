@@ -96,12 +96,11 @@ export const GameMaterialDisplay = () => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
           if (locator.hide(item, itemContext)) return null
           const innerLocations = description.getLocations(item, itemContext)
-          const silent = (draggedItem && (draggedItem.type !== type || draggedItem?.index !== displayIndex))
           const locationsFocus = getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location)))
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} item={item} index={index} displayIndex={displayIndex}
                                     disabled={!itemMoves.length}
-                                    silent={silent}
+                                    highlight={draggedItem ? false : undefined}
                                     playDown={tutorialStep?.popup && !focus && !itemMoves.length}
                                     ref={focus ? addFocusRef : undefined}
                                     postTransform={locator.transformItem(item, itemContext).join(' ')}
