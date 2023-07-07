@@ -69,7 +69,7 @@ export function isItemFocus(itemType: number, itemIndex: number, focus?: Tutoria
   if (Array.isArray(focus)) {
     return focus.some(focus => isItemFocus(itemType, itemIndex, focus))
   }
-  return isMaterialFocus(focus) && focus.type === itemType && focus.indexes.includes(itemIndex)
+  return isMaterialFocus(focus) && focus.type === itemType && focus.getIndexes().includes(itemIndex)
 }
 
 export function isMaterialFocus(focus?: TutorialFocus): focus is Material {
