@@ -2,7 +2,7 @@
 import { Dialog, rulesDialogCss } from '../dialogs'
 import { useGame, useLegalMoves, useUndo } from '../../hooks'
 import { CloseTutorialPopup, isSetTutorialStep, LocalMoveType, MaterialGame, MoveKind, SetTutorialStep } from '@gamepark/rules-api'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { css, ThemeProvider } from '@emotion/react'
 import { PlayMoveButton, ThemeButton } from '../buttons'
@@ -15,7 +15,6 @@ import maxBy from 'lodash/maxBy'
 import { faBackward } from '@fortawesome/free-solid-svg-icons/faBackward'
 import { faForward } from '@fortawesome/free-solid-svg-icons/faForward'
 import { useTutorialStep } from '../../hooks/useTutorialStep'
-import { TutorialPopup } from './MaterialTutorial'
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay'
 
 export const MaterialTutorialDisplay = () => {
@@ -24,8 +23,7 @@ export const MaterialTutorialDisplay = () => {
   const tutorialStep = useTutorialStep()
   const tutorialMoves = useLegalMoves<SetTutorialStep>(isSetTutorialStep)
 
-  const [popup, setPopup] = useState<TutorialPopup>()
-  useEffect(() => setPopup(tutorialStep?.popup), [tutorialStep])
+  const popup = tutorialStep?.popup
 
   const { setOpponentsPlayAutomatically } = useTutorial()!
   useEffect(() => setOpponentsPlayAutomatically(), [])

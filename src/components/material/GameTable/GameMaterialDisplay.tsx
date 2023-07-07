@@ -35,6 +35,7 @@ export const GameMaterialDisplay = () => {
   const { resetTransform } = useControls()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
   const tutorialStep = useTutorialStep()
+  const tutorialPopup = !rules?.game.tutorialPopupClosed && tutorialStep?.popup
 
   const tutorialFocus = useMemo(() => {
     focusRefs.current = new Set()
@@ -66,9 +67,9 @@ export const GameMaterialDisplay = () => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
           const innerLocations = description.getLocations(item, itemContext)
           const focus = isStaticItemFocus(type, item, tutorialFocus)
-          const locationsFocus = getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location)))
+          const locationsFocus = tutorialPopup ? getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location))) : []
           return <MaterialComponent key={`${type}_${index}_${displayIndex}`} type={type} itemId={item.id}
-                                    playDown={tutorialStep?.popup && !focus && !locationsFocus.length}
+                                    playDown={tutorialPopup && !focus && !locationsFocus.length}
                                     ref={focus ? addFocusRef : undefined}
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
                                     onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}>
@@ -96,12 +97,12 @@ export const GameMaterialDisplay = () => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
           if (locator.hide(item, itemContext)) return null
           const innerLocations = description.getLocations(item, itemContext)
-          const locationsFocus = getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location)))
+          const locationsFocus = tutorialPopup ? getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location))) : []
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} item={item} index={index} displayIndex={displayIndex}
                                     disabled={!itemMoves.length}
                                     highlight={draggedItem ? false : undefined}
-                                    playDown={tutorialStep?.popup && !focus && !itemMoves.length}
+                                    playDown={tutorialPopup && !focus && !itemMoves.length && !locationsFocus.length}
                                     ref={focus ? addFocusRef : undefined}
                                     postTransform={locator.transformItem(item, itemContext).join(' ')}
                                     css={draggingToSameLocation && noPointerEvents}
