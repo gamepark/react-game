@@ -36,7 +36,7 @@ export const Menu = () => {
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const options = useSelector((state: GamePageState) => state.options)
   const playerId = useSelector((state: GamePageState) => state.playerId)
-  const gameOver = useSelector((state: GamePageState) => state.gameOver)
+  const gameOver = useSelector((state: GamePageState) => state.gameOver && !state.actions?.some(action => action.animation))
   const tournament = useSelector((state: GamePageState) => state.tournament)
   const couldEject = !gameOver && (playerId !== undefined || tournament?.signedUp === true) && options?.speed === GameSpeed.RealTime
   const couldUndo = !gameOver && playerId !== undefined

@@ -10,7 +10,7 @@ import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const ResultPopButton = (props: HTMLAttributes<HTMLButtonElement>) => {
   const { t } = useTranslation()
-  const gameOver = useSelector((state: GamePageState) => state.gameOver)
+  const gameOver = useSelector((state: GamePageState) => state.gameOver && !state.actions?.some(action => action.animation))
 
   return (
     <MenuPopButton pop={gameOver} css={style} title={t('result.button')!} {...props}>
