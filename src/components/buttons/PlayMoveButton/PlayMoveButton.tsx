@@ -24,29 +24,32 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
   const { t } = useTranslation()
   const [showDialog, setShowDialog] = useState<boolean>(false)
 
-  const close = () => setShowDialog(false)
-  const onClick = useCallback(() => {
-    if (!showDialog && confirmation?.text) {
-      setShowDialog(true)
-      return
-    }
-
+  const doPlay = useCallback(() => {
     setShowDialog(false)
     play(move, { delayed, skipAnimation, local })
     if (onPlay) onPlay()
   }, [move, delayed, skipAnimation, local, onPlay])
 
+  const onClick = useCallback(() => {
+    if (confirmation !== undefined) {
+      setShowDialog(true)
+    } else {
+      doPlay()
+    }
+  }, [confirmation !== undefined, doPlay])
 
   return (
     <>
       {!!confirmation && (
-        <Dialog key="dialog" open={showDialog} onBackdropClick={close} css={[flex, confirmationDialogCss]}>
+        <Dialog key="dialog" open={showDialog} onBackdropClick={() => setShowDialog(false)} css={[flex, confirmationDialogCss]}>
           <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
             <div css={content}>
-              <div css={description}>{confirmation.text}</div>
+              <p>{confirmation.text}</p>
               <div css={buttons}>
-                <ThemeButton onClick={close} disabled={move === undefined} {...rest}>{confirmation.cancelText ?? t('Cancel')}</ThemeButton>
-                <ThemeButton css={moveButton} onClick={onClick} disabled={move === undefined} {...rest} />
+                <ThemeButton onClick={() => setShowDialog(false)} {...rest}>
+                  {confirmation.cancelText ?? t('Cancel')}
+                </ThemeButton>
+                <ThemeButton css={moveButton} onClick={doPlay} {...rest} />
               </div>
             </div>
           </ThemeProvider>
@@ -77,10 +80,6 @@ const flex = css`
   padding: 3em 1em 3em 3em;
   max-width: 90vw;
   max-height: 90vh;
-`
-
-const description = css`
-  margin-bottom: 1em;
 `
 
 const content = css`
