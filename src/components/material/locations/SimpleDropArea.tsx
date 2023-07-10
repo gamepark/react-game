@@ -6,7 +6,7 @@ import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-l
 import { useAnimations, useItemLocator, useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { borderRadiusCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { useDroppable } from '@dnd-kit/core'
-import { isDraggedItem } from '../DraggableMaterial'
+import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { combineEventListeners } from '../../../utilities'
 import { useStocks } from '../../../hooks/useStocks'
 import { isMoveToStock } from '../utils/IsMoveToStock'
@@ -54,7 +54,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     data: location
   })
 
-  const draggedItem = isDraggedItem(active?.data.current) ? active?.data.current : undefined
+  const draggedItem = dataIsDisplayedItem(active?.data.current) ? active?.data.current : undefined
 
   const context: MaterialContext = { game: rules!.game, player, material: material!, locators: locators! }
   const canDrop = useMemo(() => draggedItem !== undefined && legalMoves.filter(move =>
@@ -160,8 +160,4 @@ const getMoveItemTypes = <P extends number = number, M extends number = number, 
     default:
       return []
   }
-}
-
-export function isDropLocation<P extends number = number, L extends number = number>(data?: Record<string, any>): data is Location<P, L> {
-  return typeof data?.type === 'number'
 }

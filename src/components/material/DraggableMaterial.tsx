@@ -112,6 +112,6 @@ const transformTransition = css`
   transition: transform 0.2s ease-in-out
 `
 
-export function isDraggedItem<M extends number = number>(data?: Record<string, any>): data is DisplayedItem<M> {
+export function dataIsDisplayedItem<M extends number = number>(data?: Record<string, any>): data is DisplayedItem<M> {
   return typeof data?.type === 'number' && typeof data?.index === 'number' && typeof data?.displayIndex === 'number'
 }

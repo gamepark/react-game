@@ -5,7 +5,7 @@ import { useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules, useZ
 import { closeRulesDisplay, DisplayedItem, displayMaterialRules, Location, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { MaterialComponent } from '../MaterialComponent'
 import { pointerCursorCss, transformCss } from '../../../css'
-import { DraggableMaterial, isDraggedItem } from '../DraggableMaterial'
+import { DraggableMaterial, dataIsDisplayedItem } from '../DraggableMaterial'
 import { MaterialRulesDialog } from '../../dialogs'
 import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
@@ -27,7 +27,7 @@ export const GameMaterialDisplay = () => {
 
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
   useDndMonitor({
-    onDragStart: (event: DragStartEvent) => isDraggedItem(event.active.data.current) && setDraggedItem(event.active.data.current),
+    onDragStart: (event: DragStartEvent) => dataIsDisplayedItem(event.active.data.current) && setDraggedItem(event.active.data.current),
     onDragEnd: () => setDraggedItem(undefined)
   })
 
