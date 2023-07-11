@@ -9,7 +9,6 @@ import { useDroppable } from '@dnd-kit/core'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { combineEventListeners } from '../../../utilities'
 import { useStocks } from '../../../hooks/useStocks'
-import { isMoveToStock } from '../utils/IsMoveToStock'
 import { mergeRefs } from 'react-merge-refs'
 import { MaterialContext } from '../../../locators'
 import { useLocators } from '../../../hooks/useLocators'
@@ -33,7 +32,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const play = usePlay<MaterialMove>()
   const player = usePlayerId()
   const predicate = useCallback(
-    (move) => !!rules && rules.isMoveTrigger(move, move => locator?.isDropLocation(move, location) || isMoveToStock(stocks, move, location))
+    (move) => !!rules && !!locator && rules.isMoveTrigger(move, move => locator.isMoveToLocation(move, location, stocks))
     , [rules, locator, stocks, location])
   const legalMoves = useLegalMoves<ItemMove>(predicate)
 
