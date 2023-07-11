@@ -2,11 +2,6 @@ import { FC } from 'react'
 import { ItemMoveType, Location, MaterialGame, MaterialItem, MaterialMove, MaterialRulesDisplay, MoveKind } from '@gamepark/rules-api'
 import { ItemContext, MaterialContext } from '../../locators'
 
-export type StockDescription<P extends number = number, L extends number = number> = {
-  location: Location<P, L>
-  id?: any
-}
-
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
   closeDialog: () => void
 } & Omit<MaterialRulesDisplay<P, M, L>, 'type'>
@@ -29,10 +24,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return this.item ? [this.item] : []
   }
 
-  stock?: StockDescription<P, L>
+  stockLocation?: Location<P, L>
 
-  getStocks(_context: MaterialContext<P, M, L>): StockDescription<P, L>[] {
-    return this.stock ? [this.stock] : []
+  getStockLocation(_item: MaterialItem<P, L>, _context: MaterialContext<P, M, L>): Location<P, L> | undefined {
+    return this.stockLocation
   }
 
   location?: Location<P, L>

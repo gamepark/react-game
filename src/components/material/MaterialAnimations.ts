@@ -6,6 +6,7 @@ import {
   ItemMove,
   ItemMoveType,
   MaterialGame,
+  MaterialItem,
   MaterialMove,
   MaterialMutator,
   MaterialRules,
@@ -59,7 +60,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   protected getCreateItemAnimation(
     item: DisplayedItem<M>, animation: Animation<CreateItem<P, M, L>>, context: ItemAnimationContext<P, M, L>
   ): Interpolation<Theme> {
-    const stockLocation = this.getStockLocation(item.type, animation.move.item.id, context)
+    const stockLocation = this.getStockLocation(item.type, animation.move.item, context)
     if (stockLocation) {
       const origin = this.closestItemRotation(stockLocation, item, context)
       const animationKeyframes = this.getKeyframesFromOrigin(origin, item, animation, context)
@@ -78,24 +79,16 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     return css`animation: ${fadein} ${duration}s ease-in-out forwards`
   }
 
-  protected getStockLocation(itemType: M, itemId: any, animationContext: ItemAnimationContext<P, M, L>) {
+  protected getStockLocation(itemType: M, item: MaterialItem<P, L>, animationContext: ItemAnimationContext<P, M, L>) {
     const { rules, ...context } = animationContext
-    const type = itemType
-    const stock = this.getMatchingStock(itemType, itemId, animationContext)
-    if (!stock) return
-    const stockItem = context.material[type].getItems(rules.game, context.player).find(i => {
-      const { quantity, ...item } = i
-      return equal(item, stock)
-    })
-    const index = stockItem?.quantity ? stockItem.quantity - 1 : 0
-    const stockLocator = context.locators[stock.location.type]
-    return stockLocator.transformItem(stockItem ?? stock, { ...context, game: rules.game, type, index: 0, displayIndex: index }).join(' ')
-  }
-
-  protected getMatchingStock(itemType: M, itemId: any, context: ItemAnimationContext<P, M, L>) {
-    const { rules } = context
     const materialDescription = context.material[itemType]
-    return materialDescription.getStocks({ ...context, game: rules.game }).find(stock => equal(stock.id, itemId))
+    const stockLocation = materialDescription.getStockLocation(item, { ...context, game: rules.game })
+    if (!stockLocation) return
+    const stockItem = context.material[itemType].getItems(rules.game, context.player).find(item => equal(item.location, stockLocation))
+    const index = stockItem?.quantity ? stockItem.quantity - 1 : 0
+    const stockLocator = context.locators[stockLocation.type]
+    return stockLocator.transformItem(stockItem ?? { location: stockLocation },
+      { ...context, game: rules.game, type: itemType, index: 0, displayIndex: index }).join(' ')
   }
 
   protected getKeyframesFromOrigin(
@@ -168,8 +161,8 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   protected getDeleteItemAnimation(
     item: DisplayedItem<M>, animation: Animation<DeleteItem<M>>, context: ItemAnimationContext<P, M, L>
   ): Interpolation<Theme> {
-    const materialItem = context.rules.material(animation.move.itemType).getItem(animation.move.itemIndex)
-    const stockLocation = this.getStockLocation(animation.move.itemType, materialItem!.id, context)
+    const materialItem = context.rules.material(animation.move.itemType).getItem(animation.move.itemIndex)!
+    const stockLocation = this.getStockLocation(animation.move.itemType, materialItem, context)
     if (stockLocation) {
       const destination = this.closestItemRotation(stockLocation, item, context)
       const animationKeyframes = this.getKeyframesToDestination(destination, item, animation, context)

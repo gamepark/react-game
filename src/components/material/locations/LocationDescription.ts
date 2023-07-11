@@ -56,7 +56,12 @@ export abstract class LocationDescription<P extends number = number, M extends n
 
   isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
     if (this.isDropLocation(move, location)) return true
-    return isDeleteItem(move) && context.material[move.itemType].getStocks(context).some(stock => equal(location, stock.location))
+    if (isDeleteItem(move)) {
+      const item = context.game.items[move.itemType]![move.itemIndex]
+      const stockLocation = context.material[move.itemType].getStockLocation(item, context)
+      return equal(stockLocation, location)
+    }
+    return false
   }
 
   isDropLocation(move: MaterialMove<P, M, L>, location: Location<P, L>): boolean {
