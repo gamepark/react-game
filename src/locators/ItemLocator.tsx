@@ -25,7 +25,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   rotationUnit = 'deg'
   limit?: number
   locationDescription?: LocationDescription
-  locations: Location<P, L>[] = []
 
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
     return this.limit ? this.getItemIndex(item, context) >= this.limit : false
@@ -140,10 +139,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 
   getMaterial(game: MaterialGame<P, M, L>, type: M) {
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
-  }
-
-  getLocations(_context: MaterialContext<P, M, L>): Location<P, L>[] {
-    return this.locations
   }
 
   isDropLocation = <P extends number = number, M extends number = number, L extends number = number>(

@@ -120,7 +120,7 @@ export const GameMaterialDisplay = () => {
       })
     })}
     {Object.values(locators).map(locator =>
-      locator.getLocations(context).map(location =>
+      locator.locationDescription?.getLocations(context).map(location =>
         <SimpleDropArea key={JSON.stringify(location)} location={location}
                         ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}/>
       )
