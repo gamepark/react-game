@@ -5,7 +5,7 @@ import { useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules, useZ
 import { closeRulesDisplay, DisplayedItem, displayMaterialRules, Location, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { MaterialComponent } from '../MaterialComponent'
 import { pointerCursorCss, transformCss } from '../../../css'
-import { DraggableMaterial, dataIsDisplayedItem } from '../DraggableMaterial'
+import { dataIsDisplayedItem, DraggableMaterial } from '../DraggableMaterial'
 import { MaterialRulesDialog } from '../../dialogs'
 import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
@@ -88,9 +88,9 @@ export const GameMaterialDisplay = () => {
       return items.map((item, index) => {
         const locator = locators[item.location.type]
         const description = material[type]
-        const draggingToSameLocation = !!draggedItem && legalMoves.some(move =>
-          locator.isMoveItemToLocation(move, draggedItem.type, draggedItem.index, item.location, undefined, context)
-        )
+        const draggingToSameLocation = !!draggedItem && legalMoves.some(move => rules.isMoveTrigger(move, move =>
+          description.isActivable(move, draggedItem.type, draggedItem.index) && locator.isMoveToLocation(move, item.location, undefined)
+        ))
         const focus = isItemFocus(type, index, tutorialFocus)
         const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.isActivable(move, type, index)))
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {

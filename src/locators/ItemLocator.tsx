@@ -156,11 +156,10 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
       && isLocationSubset(move.position.location, location)
   }
 
-  isMoveItemToLocation = <P extends number = number, M extends number = number, L extends number = number>(
-    move: MaterialMove<P, M, L>, itemType: M, itemIndex: number, location: Location<P, L>, stocks: Record<M, StockDescription<P, L> | undefined> | undefined, context: MaterialContext<P, M, L>
+  isMoveToLocation = <P extends number = number, M extends number = number, L extends number = number>(
+    move: MaterialMove<P, M, L>, location: Location<P, L>, stocks: Record<M, StockDescription<P, L> | undefined> | undefined
   ): boolean => {
-    const description = context.material[itemType]
-    return description.isActivable(move, itemType, itemIndex) && (this.isDropLocation(move, location) || (!!stocks && isMoveToStock(stocks, move, location)))
+    return this.isDropLocation(move, location) || !!stocks && isMoveToStock(stocks, move, location)
   }
 
   getRelativePlayerIndex({ game: { players }, player: me }: MaterialContext<P, M, L>, player: P): number {

@@ -57,11 +57,10 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const draggedItem = dataIsDisplayedItem(active?.data.current) ? active?.data.current : undefined
 
   const context: MaterialContext = { game: rules!.game, player, material: material!, locators: locators! }
-  const canDrop = useMemo(() => draggedItem !== undefined && legalMoves.filter(move =>
-    rules?.isMoveTrigger(move, move =>
-      locator?.isMoveItemToLocation(move, draggedItem.type, draggedItem.index, location, stocks, context) ?? false
-    )
-  ).length === 1, [draggedItem, legalMoves, rules])
+  const canDrop = useMemo(() => !!draggedItem && !!locator && !!material && legalMoves.filter(move => rules?.isMoveTrigger(move, move =>
+      material[draggedItem.type].isActivable(move, draggedItem.type, draggedItem.index) && locator.isMoveToLocation(move, location, stocks)
+    )).length === 1
+    , [draggedItem, legalMoves, rules])
 
   const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
 
