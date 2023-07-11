@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { ItemMoveType, Location, MaterialGame, MaterialItem, MaterialMove, MoveKind } from '@gamepark/rules-api'
+import { ItemMoveType, Location, MaterialGame, MaterialItem, MaterialMove, MaterialRulesDisplay, MoveKind } from '@gamepark/rules-api'
 import { ItemContext } from '../../locators'
 
 export type StockDescription<P extends number = number, L extends number = number> = {
@@ -8,10 +8,8 @@ export type StockDescription<P extends number = number, L extends number = numbe
 }
 
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
-  item: Partial<MaterialItem<P, L>>
-  legalMoves: MaterialMove<P, M, L>[]
-  close: () => void
-}
+  closeDialog: () => void
+} & Omit<MaterialRulesDisplay<P, M, L>, 'type'>
 
 export type ComponentSize = {
   width: number

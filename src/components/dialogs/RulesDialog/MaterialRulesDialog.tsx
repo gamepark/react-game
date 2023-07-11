@@ -21,10 +21,10 @@ export const MaterialRulesDialog: FC<RulesDialogProps> = (props: RulesDialogProp
   return (
     <RulesDialog {...props}>
       {rules && rulesDisplay?.type === RulesDisplayType.Material &&
-          <MaterialRulesDialogContent rulesDisplay={rulesDisplay} material={material}/>
+        <MaterialRulesDialogContent rulesDisplay={rulesDisplay}/>
       }
       {rules && rulesDisplay?.type === RulesDisplayType.Location &&
-          <LocationRulesDialogContent rulesDisplay={rulesDisplay} material={material} locator={locators[rulesDisplay.location.type]}/>
+        <LocationRulesDialogContent rulesDisplay={rulesDisplay} material={material} locator={locators[rulesDisplay.location.type]}/>
       }
     </RulesDialog>
   )
