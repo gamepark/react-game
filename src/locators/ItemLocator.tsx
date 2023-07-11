@@ -157,7 +157,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   isMoveToLocation = <P extends number = number, M extends number = number, L extends number = number>(
-    move: MaterialMove<P, M, L>, location: Location<P, L>, stocks: Record<M, StockDescription<P, L> | undefined> | undefined
+    move: MaterialMove<P, M, L>, location: Location<P, L>, stocks: Record<M, StockDescription<P, L>[]> | undefined
   ): boolean => {
     return this.isDropLocation(move, location) || !!stocks && isMoveToStock(stocks, move, location)
   }

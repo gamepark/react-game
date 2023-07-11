@@ -78,7 +78,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     return css`animation: ${fadein} ${duration}s ease-in-out forwards`
   }
 
-  protected getStockLocation(itemType: M, itemId: number, animationContext: ItemAnimationContext<P, M, L>) {
+  protected getStockLocation(itemType: M, itemId: any, animationContext: ItemAnimationContext<P, M, L>) {
     const { rules, ...context } = animationContext
     const type = itemType
     const stock = this.getMatchingStock(itemType, itemId, animationContext)
@@ -92,18 +92,10 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     return stockLocator.transformItem(stockItem ?? stock, { ...context, game: rules.game, type, index: 0, displayIndex: index }).join(' ')
   }
 
-  protected getMatchingStock(itemType: M, itemId: number, context: ItemAnimationContext<P, M, L>) {
+  protected getMatchingStock(itemType: M, itemId: any, context: ItemAnimationContext<P, M, L>) {
     const { rules } = context
-    const type = itemType
-    if (context.material[type].stock) return context.material[type].stock
-    if (context.material[type].stocks) {
-      const stocks = context.material[type].stocks!(rules.game)
-      if (!stocks.length) return
-
-      return stocks.find((stock) => equal(stock.id, itemId))
-    }
-
-    return
+    const materialDescription = context.material[itemType]
+    return materialDescription.getStocks({ ...context, game: rules.game }).find(stock => equal(stock.id, itemId))
   }
 
   protected getKeyframesFromOrigin(
@@ -128,7 +120,13 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const indexAfter = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const targetLocator = context.locators[futureItem.location.type]
-    const targetTransform = targetLocator.transformItem(futureItem, { ...context, game: gameCopy, type, index: futureIndex, displayIndex: indexAfter }).join(' ')
+    const targetTransform = targetLocator.transformItem(futureItem, {
+      ...context,
+      game: gameCopy,
+      type,
+      index: futureIndex,
+      displayIndex: indexAfter
+    }).join(' ')
     const destination = this.closestItemRotation(targetTransform, item, context)
     const animationKeyframes = this.getKeyframesToDestination(destination, item, animation, context)
     return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out forwards`
