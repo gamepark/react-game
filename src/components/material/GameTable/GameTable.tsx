@@ -41,7 +41,7 @@ export const GameTable: FC<GameTableProps> = (props) => {
       const location = event.over.data.current
       const locator = context.locators[location.type]
       const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move =>
-        description.canDrag(move, { ...context, ...item }) && locator.locationDescription!.isMoveToLocation(move, location, context)
+        description.canDrag(move, { ...context, ...item }) && locator.locationDescription!.canDrop(move, location, context)
       ))
       if (moves.length === 1) {
         play(dropItemMove(type, index, displayIndex), { local: true })

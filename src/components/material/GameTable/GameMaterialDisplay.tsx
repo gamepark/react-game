@@ -93,7 +93,7 @@ export const GameMaterialDisplay = () => {
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
           const draggingToSameLocation = !!draggedItem && !!locationDescription && legalMoves.some(move => rules.isMoveTrigger(move, move =>
-            description.canDrag(move, itemContext) && locationDescription.isMoveToLocation(move, item.location, context)
+            description.canDrag(move, itemContext) && locationDescription.canDrop(move, item.location, context)
           ))
           const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.canDrag(move, itemContext)))
           if (locator.hide(item, itemContext)) return null
