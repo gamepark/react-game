@@ -14,7 +14,10 @@ export type MaterialRulesDialogContentProps<Player extends number = number, Mate
 
 const useMaterialMoves = <P extends number = number, M extends number = number, L extends number = number>(description: MaterialDescription<P, M, L>, rulesDisplay: MaterialRulesDisplay<P, M, L>) => {
   const rules = useRules<MaterialRules>()
-  const predicate = useMemo(() => !rules ? undefined : (move: MaterialMove) => rules?.isMoveTrigger(move, move => description.isActivable(move, rulesDisplay.itemType, rulesDisplay.itemIndex)), [description, rules, rulesDisplay])
+  const predicate = useMemo(() => rules && rulesDisplay.itemIndex !== undefined ?
+      (move: MaterialMove) => rules?.isMoveTrigger(move, move => description.isActivable(move, rulesDisplay.itemType, rulesDisplay.itemIndex!))
+      : () => false
+    , [description, rules, rulesDisplay])
   return useLegalMoves<MaterialMove<P, M, L>>(predicate)
 }
 

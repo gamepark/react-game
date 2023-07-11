@@ -72,7 +72,7 @@ export const GameMaterialDisplay = () => {
                                     playDown={tutorialPopup && !focus && !locationsFocus.length}
                                     ref={focus ? addFocusRef : undefined}
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
-                                    onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}>
+                                    onShortClick={() => play(displayMaterialRules(type, item), { local: true })}>
             <LocationsMask locations={locationsFocus}/>
             {innerLocations.map(location =>
               <SimpleDropArea key={JSON.stringify(location)} location={location}
@@ -106,7 +106,7 @@ export const GameMaterialDisplay = () => {
                                     ref={focus ? addFocusRef : undefined}
                                     postTransform={locator.transformItem(item, itemContext).join(' ')}
                                     css={draggingToSameLocation && noPointerEvents}
-                                    onShortClick={() => play(displayMaterialRules(type, index, item), { local: true })}
+                                    onShortClick={() => play(displayMaterialRules(type, item, index), { local: true })}
                                     onLongClick={itemMoves.length === 1 ?
                                       () => play(itemMoves[0], { delayed: rules.isUnpredictableMove(itemMoves[0], player) })
                                       : undefined}>
