@@ -53,16 +53,12 @@ export abstract class LocationDescription<P extends number = number, M extends n
     return context.locators[location.type].parentItemType !== undefined
   }
 
-  isMoveToLocation = <P extends number = number, M extends number = number, L extends number = number>(
-    move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>
-  ): boolean => {
+  isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
     if (this.isDropLocation(move, location)) return true
     return isDeleteItem(move) && context.material[move.itemType].getStocks(context).some(stock => equal(location, stock.location))
   }
 
-  isDropLocation = <P extends number = number, M extends number = number, L extends number = number>(
-    move: MaterialMove<P, M, L>, location: Location<P, L>
-  ): boolean => {
+  isDropLocation(move: MaterialMove<P, M, L>, location: Location<P, L>): boolean {
     return move.kind === MoveKind.ItemMove
       && move.type === ItemMoveType.Move
       && move.position.location !== undefined
