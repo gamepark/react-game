@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { ItemMoveType, Location, MaterialGame, MaterialItem, MaterialMove, MaterialRulesDisplay, MoveKind } from '@gamepark/rules-api'
+import { isDeleteItem, isMoveItem, Location, MaterialGame, MaterialItem, MaterialMove, MaterialRulesDisplay } from '@gamepark/rules-api'
 import { ItemContext, MaterialContext } from '../../locators'
 
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
@@ -37,13 +37,8 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return this.location ? [this.location] : this.locations
   }
 
-  isActivable<P extends number = number, M extends number = number, L extends number = number>(
-    move: MaterialMove<P, M, L>, itemType: M, itemIndex: number
-  ): boolean {
-    return move.kind === MoveKind.ItemMove
-      && move.itemType === itemType
-      && (move.type === ItemMoveType.Move || move.type === ItemMoveType.Delete)
-      && move.itemIndex === itemIndex
+  canDrag(move: MaterialMove<P, M, L>, { index, type }: ItemContext<P, M, L>): boolean {
+    return isMoveItem(move, type, index) || isDeleteItem(move, type, index)
   }
 
   height?: number

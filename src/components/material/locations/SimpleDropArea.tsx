@@ -51,7 +51,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const draggedItem = dataIsDisplayedItem(active?.data.current) ? active?.data.current : undefined
 
   const canDrop = useMemo(() => !!draggedItem && !!description && !!material && legalMoves.filter(move => rules?.isMoveTrigger(move, move =>
-      material[draggedItem.type].isActivable(move, draggedItem.type, draggedItem.index) && description.isMoveToLocation(move, location, context)
+      material[draggedItem.type].canDrag(move, { ...context, ...draggedItem }) && description.isMoveToLocation(move, location, context)
     )).length === 1
     , [draggedItem, legalMoves, rules])
 

@@ -89,13 +89,13 @@ export const GameMaterialDisplay = () => {
         const locator = locators[item.location.type]
         const locationDescription = locator.locationDescription
         const description = material[type]
-        const draggingToSameLocation = !!draggedItem && !!locationDescription && legalMoves.some(move => rules.isMoveTrigger(move, move =>
-          description.isActivable(move, draggedItem.type, draggedItem.index) && locationDescription.isMoveToLocation(move, item.location, context)
-        ))
         const focus = isItemFocus(type, index, tutorialFocus)
-        const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.isActivable(move, type, index)))
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
+          const draggingToSameLocation = !!draggedItem && !!locationDescription && legalMoves.some(move => rules.isMoveTrigger(move, move =>
+            description.canDrag(move, itemContext) && locationDescription.isMoveToLocation(move, item.location, context)
+          ))
+          const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.canDrag(move, itemContext)))
           if (locator.hide(item, itemContext)) return null
           const innerLocations = description.getLocations(item, itemContext)
           const locationsFocus = tutorialPopup ? getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location))) : []
