@@ -35,10 +35,11 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return this.stock ? [this.stock] : []
   }
 
+  location?: Location<P, L>
   locations: Location<P, L>[] = []
 
   getLocations(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): Location<P, L>[] {
-    return this.locations
+    return this.location ? [this.location] : this.locations
   }
 
   isActivable<P extends number = number, M extends number = number, L extends number = number>(

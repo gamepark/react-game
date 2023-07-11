@@ -13,10 +13,11 @@ export abstract class LocationDescription<P extends number = number, M extends n
   ratio?: number
   rotationUnit = 'deg'
 
+  location?: Location<P, L>
   locations: Location<P, L>[] = []
 
   getLocations(_context: MaterialContext<P, M, L>): Location<P, L>[] {
-    return this.locations
+    return this.location ? [this.location] : this.locations
   }
 
   getSize(_location: Location<P, L>, _context: MaterialContext<P, M, L>): ComponentSize {
