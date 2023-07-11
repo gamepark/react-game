@@ -89,7 +89,7 @@ export const GameMaterialDisplay = () => {
         const locator = locators[item.location.type]
         const description = material[type]
         const draggingToSameLocation = !!draggedItem && legalMoves.some(move => rules.isMoveTrigger(move, move =>
-          description.isActivable(move, draggedItem.type, draggedItem.index) && locator.isMoveToLocation(move, item.location, undefined)
+          description.isActivable(move, draggedItem.type, draggedItem.index) && locator.isMoveToLocation(move, item.location, context)
         ))
         const focus = isItemFocus(type, index, tutorialFocus)
         const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.isActivable(move, type, index)))

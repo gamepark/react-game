@@ -15,11 +15,10 @@ import {
   MoveKind,
   XYCoordinates
 } from '@gamepark/rules-api'
-import { ItemAnimationContext, LocationDescription, MaterialDescription, StockDescription } from '../components'
+import { ItemAnimationContext, LocationDescription, MaterialDescription } from '../components'
 import equal from 'fast-deep-equal'
 import { Animation } from '@gamepark/react-client'
 import { isLocationSubset } from '../components/material/utils'
-import { isMoveToStock } from '../components/material/utils/IsMoveToStock'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
@@ -157,9 +156,10 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   isMoveToLocation = <P extends number = number, M extends number = number, L extends number = number>(
-    move: MaterialMove<P, M, L>, location: Location<P, L>, stocks: Record<M, StockDescription<P, L>[]> | undefined
+    move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>
   ): boolean => {
-    return this.isDropLocation(move, location) || !!stocks && isMoveToStock(stocks, move, location)
+    if (this.isDropLocation(move, location)) return true
+    return isDeleteItem(move) && context.material[move.itemType].getStocks(context).some(stock => equal(location, stock.location))
   }
 
   getRelativePlayerIndex({ game: { players }, player: me }: MaterialContext<P, M, L>, player: P): number {

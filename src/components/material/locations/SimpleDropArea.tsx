@@ -3,16 +3,12 @@ import { forwardRef, HTMLAttributes, MouseEvent, useCallback, useMemo, useState 
 import { displayLocationRules, ItemMove, ItemMoveType, Location, MaterialMove, MaterialRules, MoveKind, XYCoordinates } from '@gamepark/rules-api'
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { useAnimations, useItemLocator, useLegalMoves, usePlay, usePlayerId, useRules } from '../../../hooks'
+import { useAnimations, useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules } from '../../../hooks'
 import { borderRadiusCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { useDroppable } from '@dnd-kit/core'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { combineEventListeners } from '../../../utilities'
-import { useStocks } from '../../../hooks/useStocks'
 import { mergeRefs } from 'react-merge-refs'
-import { MaterialContext } from '../../../locators'
-import { useLocators } from '../../../hooks/useLocators'
-import { useMaterials } from '../../../hooks/useMaterials'
 
 export type SimpleDropAreaProps<P extends number = number, L extends number = number> = {
   location: Location<P, L>
@@ -23,17 +19,16 @@ export type SimpleDropAreaProps<P extends number = number, L extends number = nu
 export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   { location, onShortClick, onLongClick, ...props }, ref
 ) => {
-  const locators = useLocators()
-  const material = useMaterials()
-  const locator = useItemLocator(location.type)
+  const context = useMaterialContext()
+  const material = context.material
+  const locator = context.locators[location.type]
   const description = locator?.locationDescription
-  const stocks = useStocks()
   const rules = useRules<MaterialRules>()
   const play = usePlay<MaterialMove>()
   const player = usePlayerId()
   const predicate = useCallback(
-    (move) => !!rules && !!locator && rules.isMoveTrigger(move, move => locator.isMoveToLocation(move, location, stocks))
-    , [rules, locator, stocks, location])
+    (move) => !!rules && !!locator && rules.isMoveTrigger(move, move => locator.isMoveToLocation(move, location, context))
+    , [rules, locator, context, location])
   const legalMoves = useLegalMoves<ItemMove>(predicate)
 
   if (!onLongClick && legalMoves.length === 1) {
@@ -55,9 +50,8 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
 
   const draggedItem = dataIsDisplayedItem(active?.data.current) ? active?.data.current : undefined
 
-  const context: MaterialContext = { game: rules!.game, player, material: material!, locators: locators! }
   const canDrop = useMemo(() => !!draggedItem && !!locator && !!material && legalMoves.filter(move => rules?.isMoveTrigger(move, move =>
-      material[draggedItem.type].isActivable(move, draggedItem.type, draggedItem.index) && locator.isMoveToLocation(move, location, stocks)
+      material[draggedItem.type].isActivable(move, draggedItem.type, draggedItem.index) && locator.isMoveToLocation(move, location, context)
     )).length === 1
     , [draggedItem, legalMoves, rules])
 

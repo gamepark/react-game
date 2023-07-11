@@ -6,7 +6,6 @@ import { useLegalMoves, useMaterialContext, usePlay, useRules } from '../../../h
 import { CollisionDetection, DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { GameTableContent } from './GameTableContent'
-import { useStocks } from '../../../hooks/useStocks'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 
 export type GameTableProps = {
@@ -33,7 +32,6 @@ export const GameTable: FC<GameTableProps> = (props) => {
   const play = usePlay()
   const rules = useRules<MaterialRules>()!
   const legalMoves = useLegalMoves()
-  const stocks = useStocks()
   const onDragEnd = useCallback((event: DragEndEvent) => {
     setDragging(false)
     if (event.over && dataIsDisplayedItem(event.active.data.current) && dataIsLocation(event.over.data.current)) {
@@ -42,7 +40,7 @@ export const GameTable: FC<GameTableProps> = (props) => {
       const location = event.over.data.current
       const locator = context.locators[location.type]
       const moves = legalMoves.filter(move => rules.isMoveTrigger(move, move =>
-        description.isActivable(move, type, index) && locator.isMoveToLocation(move, location, stocks)
+        description.isActivable(move, type, index) && locator.isMoveToLocation(move, location, context)
       ))
       if (moves.length === 1) {
         play(dropItemMove(type, index, displayIndex), { local: true })
