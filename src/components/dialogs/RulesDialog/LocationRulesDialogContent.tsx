@@ -1,39 +1,24 @@
 /** @jsxImportSource @emotion/react */
-import { closeRulesDisplay, LocationRulesDisplay, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { closeRulesDisplay, LocationRulesDisplay } from '@gamepark/rules-api'
 import { css } from '@emotion/react'
 import Scrollbars from 'react-custom-scrollbars-2'
-import { ItemLocator } from '../../../locators'
-import { MaterialDescription } from '../../material'
-import { useLegalMoves, usePlay, useRules } from '../../../hooks'
-import { useMemo } from 'react'
+import { useItemLocator, usePlay } from '../../../hooks'
 
-export type LocationRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
-  rulesDisplay: LocationRulesDisplay<Player, LocationType>
-  material: Record<MaterialType, MaterialDescription>
-  locator: ItemLocator<Player, MaterialType, LocationType>
+export type LocationRulesDialogContentProps<P extends number = number, L extends number = number> = {
+  rulesDisplay: LocationRulesDisplay<P, L>
 }
 
-const useLocationMoves = <P extends number = number, M extends number = number, L extends number = number>(locator: ItemLocator<P, M, L>, rulesDisplay: LocationRulesDisplay<P, L>) => {
-  const rules = useRules<MaterialRules>()
-  const predicate = useMemo(() => !rules ? undefined : (move: MaterialMove<P, M, L>) => rules?.isMoveTrigger(move, move => locator.isDropLocation(move, rulesDisplay.location)), [rules, rulesDisplay])
-  return useLegalMoves<MaterialMove<P, M, L>>(predicate)
-}
-
-export const LocationRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
-  { rulesDisplay, locator }: LocationRulesDialogContentProps<P, M, L>
+export const LocationRulesDialogContent = <P extends number = number, L extends number = number>(
+  { rulesDisplay }: LocationRulesDialogContentProps<P, L>
 ) => {
   const play = usePlay()
-  const legalMoves = useLocationMoves<P, M, L>(locator, rulesDisplay)
-  const rules = locator.locationDescription?.rules
+  const locator = useItemLocator(rulesDisplay.location.type)
+  if (!locator?.locationDescription?.rules) return null
   return <div css={flex}>
     {/* TODO: image of the location? */}
     <Scrollbars autoHeight css={scrollableContainer}>
       <div css={rulesCss}>
-        {rules && rules({
-          location: rulesDisplay.location,
-          legalMoves,
-          close: () => play(closeRulesDisplay, { local: true })
-        })}
+        <locator.locationDescription.rules location={rulesDisplay.location} closeDialog={() => play(closeRulesDisplay, { local: true })}/>
       </div>
     </Scrollbars>
   </div>

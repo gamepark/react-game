@@ -203,8 +203,7 @@ export type MaterialContext<Player extends number = number, MaterialType extends
 
 export type ItemContext<P extends number = number, M extends number = number, L extends number = number> = MaterialContext<P, M, L> & DisplayedItem<M>
 
-export type LocationRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
+export type LocationRulesProps<P extends number = number, L extends number = number> = {
   location: Location<P, L>
-  legalMoves: MaterialMove<P, M, L>[]
-  close: () => void
+  closeDialog: () => void
 }

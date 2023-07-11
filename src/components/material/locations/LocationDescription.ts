@@ -5,7 +5,7 @@ import { Coordinates, Location } from '@gamepark/rules-api'
 import { Interpolation, Theme } from '@emotion/react'
 
 export abstract class LocationDescription<P extends number = number, M extends number = number, L extends number = number> {
-  rules?: FC<LocationRulesProps<P, M, L>>
+  rules?: FC<LocationRulesProps<P, L>>
   height?: number
   width?: number
   ratio?: number
