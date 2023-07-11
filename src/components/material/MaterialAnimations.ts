@@ -84,7 +84,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const materialDescription = context.material[itemType]
     const stockLocation = materialDescription.getStockLocation(item, { ...context, game: rules.game })
     if (!stockLocation) return
-    const stockItem = context.material[itemType].getItems(rules.game, context.player).find(item => equal(item.location, stockLocation))
+    const stockItem = context.material[itemType].getStaticItems({ ...context, game: rules.game }).find(item => equal(item.location, stockLocation))
     const index = stockItem?.quantity ? stockItem.quantity - 1 : 0
     const stockLocator = context.locators[stockLocation.type]
     return stockLocator.transformItem(stockItem ?? { location: stockLocation },

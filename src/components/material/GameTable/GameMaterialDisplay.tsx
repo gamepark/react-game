@@ -61,7 +61,7 @@ export const GameMaterialDisplay = () => {
   return <>
     {Object.entries(material).map(([stringType, description]) => {
       const type = parseInt(stringType)
-      return description.getItems(game, player).map((item, index) => {
+      return description.getStaticItems(context).map((item, index) => {
         const locator = locators[item.location.type]
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }

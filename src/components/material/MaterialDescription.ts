@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { isDeleteItem, isMoveItem, Location, MaterialGame, MaterialItem, MaterialMove, MaterialRulesDisplay } from '@gamepark/rules-api'
+import { isDeleteItem, isMoveItem, Location, MaterialItem, MaterialMove, MaterialRulesDisplay } from '@gamepark/rules-api'
 import { ItemContext, MaterialContext } from '../../locators'
 
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
@@ -18,10 +18,12 @@ export type ComponentCommonProps = {
 
 export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> {
   abstract rules: FC<MaterialRulesProps<P, M, L>>
-  item?: MaterialItem<P, L>
 
-  getItems(_game: MaterialGame<P, M, L>, _player?: P): MaterialItem<P, L>[] {
-    return this.item ? [this.item] : []
+  staticItem?: MaterialItem<P, L>
+  staticItems: MaterialItem<P, L>[] = []
+
+  getStaticItems(_context: MaterialContext<P, M, L>): MaterialItem<P, L>[] {
+    return this.staticItem ? [this.staticItem] : this.staticItems
   }
 
   stockLocation?: Location<P, L>
