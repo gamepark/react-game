@@ -6,19 +6,15 @@ import {
   isDeleteItem,
   isMoveItem,
   ItemMove,
-  ItemMoveType,
   Location,
   Material,
   MaterialGame,
   MaterialItem,
-  MaterialMove,
-  MoveKind,
   XYCoordinates
 } from '@gamepark/rules-api'
 import { ItemAnimationContext, LocationDescription, MaterialDescription } from '../components'
 import equal from 'fast-deep-equal'
 import { Animation } from '@gamepark/react-client'
-import { isLocationSubset } from '../components/material/utils'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
@@ -139,22 +135,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 
   getMaterial(game: MaterialGame<P, M, L>, type: M) {
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
-  }
-
-  isDropLocation = <P extends number = number, M extends number = number, L extends number = number>(
-    move: MaterialMove<P, M, L>, location: Location<P, L>
-  ): boolean => {
-    return move.kind === MoveKind.ItemMove
-      && move.type === ItemMoveType.Move
-      && move.position.location !== undefined
-      && isLocationSubset(move.position.location, location)
-  }
-
-  isMoveToLocation = <P extends number = number, M extends number = number, L extends number = number>(
-    move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>
-  ): boolean => {
-    if (this.isDropLocation(move, location)) return true
-    return isDeleteItem(move) && context.material[move.itemType].getStocks(context).some(stock => equal(location, stock.location))
   }
 
   getRelativePlayerIndex({ game: { players }, player: me }: MaterialContext<P, M, L>, player: P): number {

@@ -87,9 +87,10 @@ export const GameMaterialDisplay = () => {
       const type = parseInt(stringType)
       return items.map((item, index) => {
         const locator = locators[item.location.type]
+        const locationDescription = locator.locationDescription
         const description = material[type]
-        const draggingToSameLocation = !!draggedItem && legalMoves.some(move => rules.isMoveTrigger(move, move =>
-          description.isActivable(move, draggedItem.type, draggedItem.index) && locator.isMoveToLocation(move, item.location, context)
+        const draggingToSameLocation = !!draggedItem && !!locationDescription && legalMoves.some(move => rules.isMoveTrigger(move, move =>
+          description.isActivable(move, draggedItem.type, draggedItem.index) && locationDescription.isMoveToLocation(move, item.location, context)
         ))
         const focus = isItemFocus(type, index, tutorialFocus)
         const itemMoves = legalMoves.filter(move => rules.isMoveTrigger(move, move => description.isActivable(move, type, index)))

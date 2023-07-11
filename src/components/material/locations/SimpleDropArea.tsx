@@ -27,7 +27,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const play = usePlay<MaterialMove>()
   const player = usePlayerId()
   const predicate = useCallback(
-    (move) => !!rules && !!locator && rules.isMoveTrigger(move, move => locator.isMoveToLocation(move, location, context))
+    (move) => !!rules && !!description && rules.isMoveTrigger(move, move => description.isMoveToLocation(move, location, context))
     , [rules, locator, context, location])
   const legalMoves = useLegalMoves<ItemMove>(predicate)
 
@@ -50,8 +50,8 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
 
   const draggedItem = dataIsDisplayedItem(active?.data.current) ? active?.data.current : undefined
 
-  const canDrop = useMemo(() => !!draggedItem && !!locator && !!material && legalMoves.filter(move => rules?.isMoveTrigger(move, move =>
-      material[draggedItem.type].isActivable(move, draggedItem.type, draggedItem.index) && locator.isMoveToLocation(move, location, context)
+  const canDrop = useMemo(() => !!draggedItem && !!description && !!material && legalMoves.filter(move => rules?.isMoveTrigger(move, move =>
+      material[draggedItem.type].isActivable(move, draggedItem.type, draggedItem.index) && description.isMoveToLocation(move, location, context)
     )).length === 1
     , [draggedItem, legalMoves, rules])
 

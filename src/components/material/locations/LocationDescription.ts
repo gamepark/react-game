@@ -1,8 +1,10 @@
 import { FC } from 'react'
 import { LocationRulesProps, MaterialContext } from '../../../locators'
 import { ComponentSize } from '../MaterialDescription'
-import { Coordinates, Location } from '@gamepark/rules-api'
+import { Coordinates, isDeleteItem, ItemMoveType, Location, MaterialMove, MoveKind } from '@gamepark/rules-api'
 import { Interpolation, Theme } from '@emotion/react'
+import { isLocationSubset } from '../utils'
+import equal from 'fast-deep-equal'
 
 export abstract class LocationDescription<P extends number = number, M extends number = number, L extends number = number> {
   rules?: FC<LocationRulesProps<P, L>>
@@ -49,5 +51,21 @@ export abstract class LocationDescription<P extends number = number, M extends n
   isAlwaysVisible(location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
     if (this.alwaysVisible !== undefined) return this.alwaysVisible
     return context.locators[location.type].parentItemType !== undefined
+  }
+
+  isMoveToLocation = <P extends number = number, M extends number = number, L extends number = number>(
+    move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>
+  ): boolean => {
+    if (this.isDropLocation(move, location)) return true
+    return isDeleteItem(move) && context.material[move.itemType].getStocks(context).some(stock => equal(location, stock.location))
+  }
+
+  isDropLocation = <P extends number = number, M extends number = number, L extends number = number>(
+    move: MaterialMove<P, M, L>, location: Location<P, L>
+  ): boolean => {
+    return move.kind === MoveKind.ItemMove
+      && move.type === ItemMoveType.Move
+      && move.position.location !== undefined
+      && isLocationSubset(move.position.location, location)
   }
 }
