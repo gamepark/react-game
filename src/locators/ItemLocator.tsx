@@ -16,6 +16,7 @@ import {
 import { LocationDescription, MaterialDescription } from '../components'
 import equal from 'fast-deep-equal'
 import { Animation } from '@gamepark/react-client'
+import sumBy from 'lodash/sumBy'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
@@ -128,10 +129,8 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return location1.type === location2.type && location1.player === location2.player && location1.parent === location2.parent
   }
 
-  countItems(location: Location<P, L>, context: ItemContext<P, M, L>): number {
-    const items = context.game.items[context.type]
-    if (!items) return 0
-    return items.reduce((sum, item) => this.isSameLocation(item.location, location) ? sum + (item.quantity ?? 1) : sum, 0)
+  countItems(location: Location<P, L>, { game, type }: ItemContext<P, M, L>): number {
+    return game.items[type] ? sumBy(game.items[type], item => this.isSameLocation(item.location, location) ? (item.quantity ?? 1) : 0) : 0
   }
 
   getMaterial(game: MaterialGame<P, M, L>, type: M) {

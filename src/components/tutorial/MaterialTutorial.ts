@@ -4,6 +4,7 @@ import { TFunction } from 'i18next'
 import { ReactNode } from 'react'
 import equal from 'fast-deep-equal'
 import { AvatarProps } from '@gamepark/avataaars'
+import sumBy from 'lodash/sumBy'
 
 export abstract class MaterialTutorial<P extends number = number, M extends number = number, L extends number = number>
   implements TutorialDescription<MaterialGame<P, M, L>, MaterialMove<P, M, L>> {
@@ -79,10 +80,10 @@ export function isMaterialFocus(focus?: TutorialFocus): focus is Material {
 export function countTutorialFocusRefs(focus?: TutorialFocus | TutorialFocus[]): number {
   if (!focus) return 0
   if (Array.isArray(focus)) {
-    return focus.reduce((sum, focus) => sum + countTutorialFocusRefs(focus), 0)
+    return sumBy(focus, focus => countTutorialFocusRefs(focus))
   }
   if (isMaterialFocus(focus)) {
-    return focus.getItems().reduce((sum, item) => sum + (item.quantity ?? 1), 0)
+    return sumBy(focus.getItems(), item => item.quantity ?? 1)
   } else if (isStaticItem(focus)) {
     return focus.item.quantity ?? 1
   } else if (isLocationBuilder(focus)) {

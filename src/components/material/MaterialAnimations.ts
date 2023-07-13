@@ -4,6 +4,7 @@ import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { ItemContext, ItemLocator } from '../../locators'
 import { MaterialDescription } from './MaterialDescription'
 import equal from 'fast-deep-equal'
+import sumBy from 'lodash/sumBy'
 
 export class MaterialAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends Animations<MaterialGame<P, M, L>, ItemMove<P, M, L>, P> {
@@ -107,8 +108,9 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   }
 
   private transformItem(context: ItemContext<P, M, L>): string {
-    const currentItem = context.game.items[context.type]![context.index]
-    const sourceLocator = context.locators[currentItem.location.type]
+    const { game, type, index, locators } = context
+    const currentItem = game.items[type]![index]
+    const sourceLocator = locators[currentItem.location.type]
     return sourceLocator.transformItem(currentItem, context).join(' ')
   }
 
@@ -120,8 +122,8 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   }
 
   private getRotation(transform: string): number {
-    return Array.from(transform.matchAll(/rotateZ\((\d+.?\d*)deg\)/gi)).reduce((sum, match) => sum + parseFloat(match[1]), 0)
-      + Array.from(transform.matchAll(/rotateZ\((\d+.?\d*)rad\)/gi)).reduce((sum, match) => sum + parseFloat(match[1]) * 180 / Math.PI, 0)
+    return sumBy(Array.from(transform.matchAll(/rotateZ\((\d+.?\d*)deg\)/gi)), match => parseFloat(match[1]))
+      + sumBy(Array.from(transform.matchAll(/rotateZ\((\d+.?\d*)rad\)/gi)), match => parseFloat(match[1]) * 180 / Math.PI)
   }
 
   protected getKeyframesToDestination(
