@@ -1,10 +1,26 @@
 import { useMemo } from 'react'
-import { useSelector } from 'react-redux'
-import { GamePageState } from '../../../workshop/packages/react-client'
+import { useRules } from './useRules'
+import { usePlayerId } from './usePlayerId'
+
+type Cache<Game = any, Move = any> = {
+  game: Game
+  moves: Move[]
+}
+
+const cache: Cache = {
+  game: undefined,
+  moves: []
+}
 
 export function useLegalMoves<Move = any>(predicate?: (move: Move) => boolean): Move[] {
-  const legalMoves = useSelector((state: GamePageState) => state.legalMoves)
-  return useMemo(() => predicate ? legalMoves.filter(predicate) : legalMoves, [legalMoves, predicate])
+  const rules = useRules()
+  const playerId = usePlayerId()
+  if (!rules || playerId === undefined) return []
+  if (cache.game !== rules.game) {
+    cache.game = rules.game
+    cache.moves = rules.getLegalMoves(playerId)
+  }
+  return useMemo(() => predicate ? cache.moves.filter(predicate) : cache.moves, [cache.moves, predicate])
 }
 
 export function useLegalMove<Move = any>(predicate?: (move: Move) => boolean): Move | undefined {
