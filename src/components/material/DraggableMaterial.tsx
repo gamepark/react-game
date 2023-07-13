@@ -1,18 +1,17 @@
 /** @jsxImportSource @emotion/react */
-import { forwardRef, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { DisplayedItem, isCreateItem, isDeleteItem, isMoveItem, ItemMove, itemsCanMerge, MaterialItem, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
+import { DisplayedItem, isCreateItem, isDeleteItem, isMoveItem, ItemMove, itemsCanMerge, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
 import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../../css'
 import { useDraggable } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
-import { useAnimation, useAnimations, useMaterialAnimations, usePlayerId, useRules } from '../../hooks'
-import { gameContext, MaterialGameContext } from '../GameProvider'
-import { ItemAnimationContext } from './MaterialAnimations'
+import { useAnimation, useAnimations, useMaterialAnimations, useMaterialContext } from '../../hooks'
 import merge from 'lodash/merge'
 import equal from 'fast-deep-equal'
 import { mergeRefs } from 'react-merge-refs'
 import { useTransformContext } from 'react-zoom-pan-pinch'
+import { ItemContext } from '../../locators'
 
 export type DraggableMaterialProps<P extends number = number, M extends number = number, L extends number = number> = {
   item: MaterialItem<P, L>
@@ -57,20 +56,18 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   }
 
   const materialAnimations = useMaterialAnimations(type)
-  const context = useContext(gameContext) as MaterialGameContext
-  const rules = useRules<MaterialRules>()!
-  const player = usePlayerId()
-  const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
+  const context = useMaterialContext()
+  const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === context.player)
   const animation = useAnimation<ItemMove>(animation =>
     (isCreateItem(animation.move, type) && itemsCanMerge(item, animation.move.item))
     || (isMoveItem(animation.move, type) && animation.move.itemIndex === index)
     || (isDeleteItem(animation.move, type) && animation.move.itemIndex === index)
   )
   const locator = context.locators[item.location.type]
-  const animationContext: ItemAnimationContext = { ...context, rules, player }
-  const isItemToAnimate = !!animation && locator.isItemToAnimate(displayedItem, animation, animationContext)
-  const animationCss = isItemToAnimate && materialAnimations?.getItemAnimation(displayedItem, animation, animationContext)
-  const isDroppedItem = equal(rules.game.droppedItem, displayedItem)
+  const itemContext: ItemContext = { ...context, ...displayedItem }
+  const isItemToAnimate = !!animation && locator.isItemToAnimate(animation, itemContext)
+  const animationCss = isItemToAnimate && materialAnimations?.getItemAnimation(itemContext, animation)
+  const isDroppedItem = equal(context.game.droppedItem, displayedItem)
   const applyTransform = isDroppedItem || !ignoreTransform
 
   if (isItemToAnimate && isMoveItem(animation.move) && typeof animation.move.reveal === 'object') {

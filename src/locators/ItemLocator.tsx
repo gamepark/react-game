@@ -10,9 +10,10 @@ import {
   Material,
   MaterialGame,
   MaterialItem,
+  MaterialRulesCreator,
   XYCoordinates
 } from '@gamepark/rules-api'
-import { ItemAnimationContext, LocationDescription, MaterialDescription } from '../components'
+import { LocationDescription, MaterialDescription } from '../components'
 import equal from 'fast-deep-equal'
 import { Animation } from '@gamepark/react-client'
 
@@ -143,36 +144,35 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return (absoluteIndex - players.indexOf(me) + players.length) % players.length
   }
 
-  isItemToAnimate(
-    { type, index, displayIndex }: DisplayedItem<M>,
-    animation: Animation<ItemMove<P, M, L>>,
-    { rules: { game } }: ItemAnimationContext<P, M, L>
-  ): boolean {
+  isItemToAnimate(animation: Animation<ItemMove<P, M, L>>, { game, type, index, displayIndex }: ItemContext<P, M, L>): boolean {
     if (isMoveItem(animation.move) || isDeleteItem(animation.move)) {
       let quantity = game.items[type]![index].quantity ?? 1
       if (quantity === 1) return true
       if (this.limit) quantity = Math.min(quantity, this.limit)
+      const movedQuantity = animation.move.quantity ?? 1
       if (game.droppedItem?.type === type && game.droppedItem.index === index) {
         const droppedIndex = game.droppedItem.displayIndex
         if (displayIndex === droppedIndex) return true
-        if (droppedIndex < quantity - (animation.move.quantity ?? 1)) {
-          return displayIndex > quantity - (animation.move.quantity ?? 1)
+        if (droppedIndex < quantity - movedQuantity) {
+          return displayIndex > quantity - movedQuantity
         }
       }
-      return displayIndex >= quantity - (animation.move.quantity ?? 1)
+      return displayIndex >= quantity - movedQuantity
     } else if (isCreateItem(animation.move)) {
       const quantity = game.items[type]![index].quantity ?? 1
-      return displayIndex >= quantity - (animation.move.item.quantity ?? 1)
+      const createdQuantity = animation.move.item.quantity ?? 1
+      return displayIndex >= quantity - createdQuantity
     }
     return false
   }
 }
 
-export type MaterialContext<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
-  game: MaterialGame<Player, MaterialType, LocationType>
-  material: Record<MaterialType, MaterialDescription<Player, MaterialType, LocationType>>
-  locators: Record<LocationType, ItemLocator<Player, MaterialType, LocationType>>
-  player?: Player
+export type MaterialContext<P extends number = number, M extends number = number, L extends number = number> = {
+  Rules: MaterialRulesCreator<P, M, L>
+  game: MaterialGame<P, M, L>
+  material: Record<M, MaterialDescription<P, M, L>>
+  locators: Record<L, ItemLocator<P, M, L>>
+  player?: P
 }
 
 export type ItemContext<P extends number = number, M extends number = number, L extends number = number> = MaterialContext<P, M, L> & DisplayedItem<M>
