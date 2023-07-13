@@ -122,8 +122,8 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   }
 
   private getRotation(transform: string): number {
-    return sumBy(Array.from(transform.matchAll(/rotateZ\((\d+.?\d*)deg\)/gi)), match => parseFloat(match[1]))
-      + sumBy(Array.from(transform.matchAll(/rotateZ\((\d+.?\d*)rad\)/gi)), match => parseFloat(match[1]) * 180 / Math.PI)
+    return sumBy(Array.from(transform.matchAll(/rotateZ\((-?\d+.?\d*)deg\)/gi)), match => parseFloat(match[1]))
+      + sumBy(Array.from(transform.matchAll(/rotateZ\((-?\d+.?\d*)rad\)/gi)), match => parseFloat(match[1]) * 180 / Math.PI)
   }
 
   protected getKeyframesToDestination(
