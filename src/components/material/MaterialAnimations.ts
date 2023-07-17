@@ -1,10 +1,20 @@
 import { Animation, AnimationContext, Animations } from '@gamepark/react-client'
-import { CreateItem, DeleteItem, ItemMove, ItemMoveType, MaterialGame, MaterialMove, MaterialRules, MoveItem } from '@gamepark/rules-api'
+import {
+  Coordinates,
+  CreateItem,
+  DeleteItem,
+  ItemMove,
+  ItemMoveType,
+  MaterialGame,
+  MaterialItem,
+  MaterialMove,
+  MaterialRules,
+  MoveItem
+} from '@gamepark/rules-api'
 import { css, Interpolation, Keyframes, keyframes, Theme } from '@emotion/react'
 import { ItemContext, ItemLocator } from '../../locators'
 import { MaterialDescription } from './MaterialDescription'
 import equal from 'fast-deep-equal'
-import sumBy from 'lodash/sumBy'
 
 export class MaterialAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends Animations<MaterialGame<P, M, L>, ItemMove<P, M, L>, P> {
@@ -47,10 +57,10 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   }
 
   protected getCreateItemAnimation(context: ItemContext<P, M, L>, animation: Animation<CreateItem<P, M, L>>): Interpolation<Theme> {
-    const stockLocation = this.getStockLocation(context)
-    if (stockLocation) {
-      const origin = this.closestItemRotation(stockLocation, context)
-      const animationKeyframes = this.getKeyframesFromOrigin(origin, animation, context)
+    const stockTransforms = this.getFirstStockItemTransforms(context)
+    if (stockTransforms) {
+      const targetTransform = adjustRotation(stockTransforms, transformItem(context)).join(' ')
+      const animationKeyframes = this.getKeyframesFromOrigin(targetTransform, animation, context)
       return movementAnimationCss(animationKeyframes, animation.duration)
     } else {
       return this.fadein(animation.duration)
@@ -66,16 +76,16 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     return css`animation: ${fadein} ${duration}s ease-in-out forwards`
   }
 
-  protected getStockLocation(context: ItemContext<P, M, L>) {
+  protected getFirstStockItemTransforms(context: ItemContext<P, M, L>): string[] {
     const { game, type, index, locators, material } = context
     const item = game.items[type]![index]
     const description = material[type]
     const stockLocation = description.getStockLocation(item, context)
-    if (!stockLocation) return
+    if (!stockLocation) return []
     const stockItem = description.getStaticItems(context).find(item => equal(item.location, stockLocation))
     const displayIndex = stockItem?.quantity ? stockItem.quantity - 1 : 0
     const stockLocator = locators[stockLocation.type]
-    return stockLocator.transformItem(stockItem ?? { location: stockLocation }, { ...context, index: 0, displayIndex }).join(' ')
+    return stockLocator.transformItem(stockItem ?? { location: stockLocation }, { ...context, index: 0, displayIndex })
   }
 
   protected getKeyframesFromOrigin(origin: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
@@ -97,33 +107,10 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const targetLocator = locators[futureItem.location.type]
     const futureContext = { ...context, game: futureGame, type, index: futureIndex, displayIndex: futureDisplayIndex }
-    const targetTransform = targetLocator.transformItem(futureItem, futureContext).join(' ')
-    const destination = this.closestItemRotation(targetTransform, context)
-    const animationKeyframes = this.getKeyframesToDestination(destination, animation, context)
+    const targetTransforms = targetLocator.transformItem(futureItem, futureContext)
+    const targetTransform = adjustRotation(targetTransforms, transformItem(context)).join(' ')
+    const animationKeyframes = this.getKeyframesToDestination(targetTransform, animation, context)
     return movementAnimationCss(animationKeyframes, animation.duration)
-  }
-
-  private closestItemRotation(transform: string, context: ItemContext<P, M, L>): string {
-    return this.closestRotation(transform, this.transformItem(context))
-  }
-
-  private transformItem(context: ItemContext<P, M, L>): string {
-    const { game, type, index, locators } = context
-    const currentItem = game.items[type]![index]
-    const sourceLocator = locators[currentItem.location.type]
-    return sourceLocator.transformItem(currentItem, context).join(' ')
-  }
-
-  private closestRotation(targetTransform: string, sourceTransform: string): string {
-    const sourceRotation = this.getRotation(sourceTransform)
-    const targetRotation = this.getRotation(targetTransform)
-    const rotationAdjustment = Math.round((sourceRotation - targetRotation) / 360) * 360
-    return rotationAdjustment ? targetTransform + ` rotateZ(${rotationAdjustment}deg)` : targetTransform
-  }
-
-  private getRotation(transform: string): number {
-    return sumBy(Array.from(transform.matchAll(/rotateZ\((-?\d+.?\d*)deg\)/gi)), match => parseFloat(match[1]))
-      + sumBy(Array.from(transform.matchAll(/rotateZ\((-?\d+.?\d*)rad\)/gi)), match => parseFloat(match[1]) * 180 / Math.PI)
   }
 
   protected getKeyframesToDestination(
@@ -137,10 +124,10 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
   }
 
   protected getDeleteItemAnimation(context: ItemContext<P, M, L>, animation: Animation<DeleteItem<M>>): Interpolation<Theme> {
-    const stockLocation = this.getStockLocation(context)
+    const stockLocation = this.getFirstStockItemTransforms(context)
     if (stockLocation) {
-      const destination = this.closestItemRotation(stockLocation, context)
-      const animationKeyframes = this.getKeyframesToDestination(destination, animation, context)
+      const targetTransform = adjustRotation(stockLocation, transformItem(context)).join(' ')
+      const animationKeyframes = this.getKeyframesToDestination(targetTransform, animation, context)
       return movementAnimationCss(animationKeyframes, animation.duration)
     } else {
       const fadeout = keyframes`
@@ -176,3 +163,42 @@ const upAndDown = keyframes`
     transform: translateZ(10em);
   }
 `
+
+function adjustRotation(targetTransforms: string[], sourceTransforms: string[]): string[] {
+  const result: string[] = []
+  const sourceRotation = sumRotationsDegrees(sourceTransforms)
+  const targetRotation = sumRotationsDegrees(targetTransforms)
+  for (const axis in sourceRotation) {
+    const delta = Math.round((sourceRotation[axis] - targetRotation[axis]) / 360)
+    if (delta) result.push(`rotate${axis.toUpperCase()}(${delta * 360}deg)`)
+  }
+  return targetTransforms.concat(result)
+}
+
+function sumRotationsDegrees(transforms: string[]): Coordinates {
+  const rotations: Coordinates = { x: 0, y: 0, z: 0 }
+  for (const transform of transforms) {
+    const rotateMatch = transform.match(/rotate([^(]*)\((-?\d+.?\d*)([^)]*)\)/)
+    if (rotateMatch) {
+      const axis = rotateMatch[1].toLowerCase(), value = parseFloat(rotateMatch[2]), unit = rotateMatch[3]
+      if (axis in rotations) {
+        switch (unit) {
+          case 'deg':
+            rotations[axis] += value
+            break
+          case 'rad':
+            rotations[axis] += value * 180 / Math.PI
+            break
+        }
+      }
+    }
+  }
+  return rotations
+}
+
+function transformItem<P extends number = number, M extends number = number, L extends number = number>(context: ItemContext<P, M, L>): string[] {
+  const { game, type, index, locators } = context
+  const currentItem: MaterialItem<P, L> = game.items[type]![index]
+  const sourceLocator = locators[currentItem.location.type]
+  return sourceLocator.transformItem(currentItem, context)
+}
