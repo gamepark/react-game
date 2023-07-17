@@ -161,7 +161,7 @@ export type ItemAnimationContext<P extends number = number, M extends number = n
 }
 
 const movementAnimationCss = (keyframes: Keyframes, duration: number) => css`
-  animation: ${upAndDown} ${duration}s ease-in-out;
+  animation: ${upAndDown} ${duration}s linear infinite;
 
   > * {
     animation: ${keyframes} ${duration}s ease-in-out forwards;
