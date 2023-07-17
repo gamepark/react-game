@@ -1,6 +1,6 @@
 import { Animation, AnimationContext, Animations } from '@gamepark/react-client'
 import { CreateItem, DeleteItem, ItemMove, ItemMoveType, MaterialGame, MaterialMove, MaterialRules, MoveItem } from '@gamepark/rules-api'
-import { css, Interpolation, keyframes, Theme } from '@emotion/react'
+import { css, Interpolation, Keyframes, keyframes, Theme } from '@emotion/react'
 import { ItemContext, ItemLocator } from '../../locators'
 import { MaterialDescription } from './MaterialDescription'
 import equal from 'fast-deep-equal'
@@ -51,7 +51,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     if (stockLocation) {
       const origin = this.closestItemRotation(stockLocation, context)
       const animationKeyframes = this.getKeyframesFromOrigin(origin, animation, context)
-      return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out forwards`
+      return movementAnimationCss(animationKeyframes, animation.duration)
     } else {
       return this.fadein(animation.duration)
     }
@@ -100,7 +100,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     const targetTransform = targetLocator.transformItem(futureItem, futureContext).join(' ')
     const destination = this.closestItemRotation(targetTransform, context)
     const animationKeyframes = this.getKeyframesToDestination(destination, animation, context)
-    return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out forwards`
+    return movementAnimationCss(animationKeyframes, animation.duration)
   }
 
   private closestItemRotation(transform: string, context: ItemContext<P, M, L>): string {
@@ -141,7 +141,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     if (stockLocation) {
       const destination = this.closestItemRotation(stockLocation, context)
       const animationKeyframes = this.getKeyframesToDestination(destination, animation, context)
-      return css`animation: ${animationKeyframes} ${animation.duration}s ease-in-out forwards`
+      return movementAnimationCss(animationKeyframes, animation.duration)
     } else {
       const fadeout = keyframes`
         to {
@@ -159,3 +159,20 @@ export type ItemAnimationContext<P extends number = number, M extends number = n
   rules: MaterialRules<P, M, L>
   player?: P
 }
+
+const movementAnimationCss = (keyframes: Keyframes, duration: number) => css`
+  animation: ${upAndDown} ${duration}s ease-in-out;
+
+  > * {
+    animation: ${keyframes} ${duration}s ease-in-out forwards;
+  }
+`
+
+const upAndDown = keyframes`
+  from, to {
+    transform: none;
+  }
+  50% {
+    transform: translateZ(10em);
+  }
+`

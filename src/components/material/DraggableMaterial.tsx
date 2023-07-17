@@ -83,22 +83,26 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   }, [isItemToAnimate])
 
   return (
-    <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item.id}
-                       css={[
-                         transformWillChange,
-                         !applyTransform && smoothReturn && transformTransition,
-                         !disabled && noTouchAction,
-                         disabled || animations.length ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
-                         transformCss(preTransform, applyTransform && transformRef.current, postTransform),
-                         animationCss
-                       ]}
-                       highlight={highlight ?? (!disabled && !animations.length && !transform)}
-                       {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}/>
+    <div css={[animationWrapperCss, animationCss]}>
+      <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item.id}
+                         css={[
+                           !applyTransform && smoothReturn && transformTransition,
+                           !disabled && noTouchAction,
+                           disabled || animations.length ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
+                           transformCss(preTransform, applyTransform && transformRef.current, postTransform)
+                         ]}
+                         highlight={highlight ?? (!disabled && !animations.length && !transform)}
+                         {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}/>
+    </div>
   )
 })
 
-const transformWillChange = css`
-  will-change: transform;
+const animationWrapperCss = css`
+  transform-style: preserve-3d;
+
+  > * {
+    position: absolute;
+  }
 `
 
 const noTouchAction = css`
