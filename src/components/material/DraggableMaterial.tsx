@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
-import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { DisplayedItem, isCreateItem, isDeleteItem, isMoveItem, ItemMove, itemsCanMerge, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
 import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../../css'
-import { useDraggable } from '@dnd-kit/core'
+import { DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
-import { useAnimation, useAnimations, useMaterialAnimations, useMaterialContext } from '../../hooks'
+import { useAnimation, useAnimations, useLegalMoves, useMaterialAnimations, useMaterialContext } from '../../hooks'
 import merge from 'lodash/merge'
 import equal from 'fast-deep-equal'
 import { mergeRefs } from 'react-merge-refs'
@@ -82,6 +82,31 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     }
   }, [isItemToAnimate])
 
+  const legalMoves = useLegalMoves<MaterialMove>()
+  const [isDragging, setIsDragging] = useState(false)
+  const [canDropToSameLocation, setCanDropToSameLocation] = useState(false)
+
+  const onDragStart = useCallback((event: DragStartEvent) => {
+    setIsDragging(true)
+    const dragged = event.active.data.current
+    if (dataIsDisplayedItem(dragged)) {
+      const locationDescription = locator.locationDescription
+      const draggedItemDescription = context.material[dragged.type]
+      if (locationDescription && legalMoves.some(move =>
+        draggedItemDescription.canDrag(move, { ...context, ...dragged }) && locationDescription.canDrop(move, item.location, context)
+      )) {
+        setCanDropToSameLocation(true)
+      }
+    }
+  }, [context, locator, legalMoves])
+
+  const onDragEnd = useCallback(() => {
+    setIsDragging(false)
+    setCanDropToSameLocation(false)
+  }, [])
+
+  useDndMonitor({ onDragStart, onDragEnd })
+
   return (
     <div css={[animationWrapperCss, animationCss]}>
       <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item.id}
@@ -89,9 +114,10 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
                            !applyTransform && smoothReturn && transformTransition,
                            !disabled && noTouchAction,
                            disabled || animations.length ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
-                           transformCss(preTransform, applyTransform && transformRef.current, postTransform)
+                           transformCss(preTransform, applyTransform && transformRef.current, postTransform),
+                           canDropToSameLocation && noPointerEvents
                          ]}
-                         highlight={highlight ?? (!disabled && !animations.length && !transform)}
+                         highlight={highlight ?? (!disabled && !animations.length && !isDragging)}
                          {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}/>
     </div>
   )
@@ -107,6 +133,10 @@ const animationWrapperCss = css`
 
 const noTouchAction = css`
   touch-action: none;
+`
+
+const noPointerEvents = css`
+  pointer-events: none;
 `
 
 const transformTransition = css`

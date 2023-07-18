@@ -1,14 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { ItemContext } from '../../../locators'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules, useZoomToElements } from '../../../hooks'
-import { closeRulesDisplay, DisplayedItem, displayMaterialRules, Location, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { closeRulesDisplay, displayMaterialRules, Location, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { MaterialComponent } from '../MaterialComponent'
 import { pointerCursorCss, transformCss } from '../../../css'
-import { dataIsDisplayedItem, DraggableMaterial } from '../DraggableMaterial'
+import { DraggableMaterial } from '../DraggableMaterial'
 import { MaterialRulesDialog } from '../../dialogs'
-import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
-import { css } from '@emotion/react'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { useTutorialStep } from '../../../hooks/useTutorialStep'
 import { countTutorialFocusRefs, isItemFocus, isLocationBuilder, isLocationFocus, isStaticItemFocus, TutorialFocus } from '../../tutorial'
@@ -24,12 +22,6 @@ export const GameMaterialDisplay = () => {
   const rules = useRules<MaterialRules>()
   const legalMoves = useLegalMoves<MaterialMove>()
   const play = usePlay()
-
-  const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
-  useDndMonitor({
-    onDragStart: (event: DragStartEvent) => dataIsDisplayedItem(event.active.data.current) && setDraggedItem(event.active.data.current),
-    onDragEnd: () => setDraggedItem(undefined)
-  })
 
   const zoomToElements = useZoomToElements()
   const { resetTransform } = useControls()
@@ -87,14 +79,10 @@ export const GameMaterialDisplay = () => {
       const type = parseInt(stringType)
       return items.map((item, index) => {
         const locator = locators[item.location.type]
-        const locationDescription = locator.locationDescription
         const description = material[type]
         const focus = isItemFocus(type, index, tutorialFocus)
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
-          const draggingToSameLocation = !!draggedItem && !!locationDescription && legalMoves.some(move =>
-            description.canDrag(move, itemContext) && locationDescription.canDrop(move, item.location, context)
-          )
           const itemMoves = legalMoves.filter(move => description.canDrag(move, itemContext))
           if (locator.hide(item, itemContext)) return null
           const innerLocations = description.getLocations(item, itemContext)
@@ -102,11 +90,9 @@ export const GameMaterialDisplay = () => {
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} item={item} index={index} displayIndex={displayIndex}
                                     disabled={!itemMoves.length}
-                                    highlight={draggedItem ? false : undefined}
                                     playDown={tutorialPopup && !focus && !itemMoves.length && !locationsFocus.length}
                                     ref={focus ? addFocusRef : undefined}
                                     postTransform={locator.transformItem(item, itemContext).join(' ')}
-                                    css={draggingToSameLocation && noPointerEvents}
                                     onShortClick={() => play(displayMaterialRules(type, item, index), { local: true })}
                                     onLongClick={itemMoves.length === 1 ?
                                       () => play(itemMoves[0], { delayed: rules.isUnpredictableMove(itemMoves[0], player) })
@@ -130,10 +116,6 @@ export const GameMaterialDisplay = () => {
     {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}
   </>
 }
-
-const noPointerEvents = css`
-  pointer-events: none;
-`
 
 const getLocationsFocus = (focus?: TutorialFocus | TutorialFocus[]): Location[] => {
   if (!focus) return []
