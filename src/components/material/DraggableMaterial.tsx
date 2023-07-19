@@ -35,13 +35,14 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
 
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
   const context = useMaterialContext()
+  const { game: { droppedItem }, player, locators, material } = context
   const isDraggingParent = useMemo(() => !!draggedItem && isPlacedOnItem(item, draggedItem, context), [item, draggedItem, context])
   const legalMoves = useLegalMoves<MaterialMove>()
   const canDropToSameLocation = useMemo(() => {
     if (!draggedItem) return false
-    const location = context.locators[item.location.type].locationDescription
+    const location = locators[item.location.type].locationDescription
     if (!location) return false
-    const description = context.material[draggedItem.type]
+    const description = material[draggedItem.type]
     const itemContext = { ...context, ...draggedItem }
     return legalMoves.some(move => description.canDrag(move, itemContext) && location.canDrop(move, item.location, context))
   }, [item, draggedItem, context, legalMoves])
@@ -72,17 +73,17 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   }
 
   const materialAnimations = useMaterialAnimations(type)
-  const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === context.player)
+  const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
   const animation = useAnimation<ItemMove>(animation =>
     (isCreateItem(animation.move, type) && itemsCanMerge(item, animation.move.item))
     || (isMoveItem(animation.move, type) && animation.move.itemIndex === index)
     || (isDeleteItem(animation.move, type) && animation.move.itemIndex === index)
   )
-  const locator = context.locators[item.location.type]
+  const locator = locators[item.location.type]
   const itemContext: ItemContext = { ...context, ...displayedItem }
   const isItemToAnimate = !!animation && locator.isItemToAnimate(animation, itemContext)
   const animationCss = isItemToAnimate && materialAnimations?.getItemAnimation(itemContext, animation)
-  const isDroppedItem = equal(context.game.droppedItem, displayedItem)
+  const isDroppedItem = droppedItem !== undefined && (equal(droppedItem, displayedItem) || isPlacedOnItem(item, droppedItem, context))
   const applyTransform = isDroppedItem || !ignoreTransform
 
   if (isItemToAnimate && isMoveItem(animation.move) && typeof animation.move.reveal === 'object') {
