@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { ItemContext } from '../../../locators'
 import { useCallback, useMemo, useRef } from 'react'
-import { useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules, useZoomToElements } from '../../../hooks'
-import { closeRulesDisplay, displayMaterialRules, Location, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { useMaterialContext, usePlay, useRules, useZoomToElements } from '../../../hooks'
+import { closeRulesDisplay, displayMaterialRules, Location, MaterialRules } from '@gamepark/rules-api'
 import { MaterialComponent } from '../MaterialComponent'
 import { pointerCursorCss, transformCss } from '../../../css'
 import { DraggableMaterial } from '../DraggableMaterial'
@@ -18,9 +18,7 @@ export const GameMaterialDisplay = () => {
   const context = useMaterialContext()
   const material = context.material
   const locators = context.locators
-  const player = usePlayerId()
   const rules = useRules<MaterialRules>()
-  const legalMoves = useLegalMoves<MaterialMove>()
   const play = usePlay()
 
   const zoomToElements = useZoomToElements()
@@ -83,20 +81,15 @@ export const GameMaterialDisplay = () => {
         const focus = isItemFocus(type, index, tutorialFocus)
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
-          const itemMoves = legalMoves.filter(move => description.canDrag(move, itemContext))
           if (locator.hide(item, itemContext)) return null
           const innerLocations = description.getLocations(item, itemContext)
           const locationsFocus = tutorialPopup ? getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location))) : []
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} index={index} displayIndex={displayIndex}
-                                    disabled={!itemMoves.length}
-                                    playDown={tutorialPopup && !focus && !itemMoves.length && !locationsFocus.length}
+                                    playDown={tutorialPopup && !focus && !locationsFocus.length}
                                     ref={focus ? addFocusRef : undefined}
                                     postTransform={locator.transformItem(item, itemContext).join(' ')}
-                                    onShortClick={() => play(displayMaterialRules(type, item, index), { local: true })}
-                                    onLongClick={itemMoves.length === 1 ?
-                                      () => play(itemMoves[0], { delayed: rules.isUnpredictableMove(itemMoves[0], player) })
-                                      : undefined}>
+                                    onShortClick={() => play(displayMaterialRules(type, item, index), { local: true })}>
             <LocationsMask locations={locationsFocus}/>
             {innerLocations.map(location =>
               <SimpleDropArea key={JSON.stringify(location)} location={location}

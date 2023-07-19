@@ -6,7 +6,7 @@ import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../.
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
-import { useAnimation, useAnimations, useGame, useLegalMoves, useMaterialAnimations, useMaterialContext } from '../../hooks'
+import { useAnimation, useAnimations, useGame, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, usePlayerId } from '../../hooks'
 import merge from 'lodash/merge'
 import equal from 'fast-deep-equal'
 import { mergeRefs } from 'react-merge-refs'
@@ -16,16 +16,26 @@ import { MaterialContext } from '../../locators'
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
   displayIndex: number
-  disabled?: boolean
   preTransform?: string
   postTransform?: string
 } & MaterialComponentProps<M>
 
 export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialProps>((
-  { highlight, type, index, displayIndex, disabled, preTransform, postTransform, ...props }, ref
+  { highlight, type, index, displayIndex, preTransform, postTransform, ...props }, ref
 ) => {
+
+  const context = useMaterialContext()
+  const { game: { droppedItem }, locators, material } = context
   const item = useRevealedItem(type, index)
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
+  const play = usePlay()
+  const legalMoves = useLegalMoves<MaterialMove>()
+  const itemMoves = useMemo(() =>
+      legalMoves.filter(move => material[type].canDrag(move, { ...context, type, index, displayIndex }))
+    , [legalMoves])
+  const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
+  const disabled = !itemMoves.length || isAnimatingPlayerAction
+
   const { attributes, listeners, transform: selfTransform, setNodeRef } = useDraggable({
     id: `${type}_${index}_${displayIndex}`,
     data: displayedItem,
@@ -33,18 +43,13 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   })
 
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
-  const context = useMaterialContext()
-  const { game: { droppedItem }, player, locators, material } = context
   const isDraggingParent = useMemo(() => !!item && !!draggedItem && isPlacedOnItem(item, draggedItem, context), [item, draggedItem, context])
-  const legalMoves = useLegalMoves<MaterialMove>()
   const canDropToSameLocation = useMemo(() => {
-    if (!draggedItem) return false
-    const location = item && locators[item.location.type].locationDescription
-    if (!location) return false
+    if (!draggedItem || !item) return false
+    const location = locators[item.location.type].locationDescription
     const description = material[draggedItem.type]
-    const itemContext = { ...context, ...draggedItem }
-    return legalMoves.some(move => description.canDrag(move, itemContext) && location.canDrop(move, item.location, context))
-  }, [item, draggedItem, context, legalMoves])
+    return legalMoves.some(move => description.canDrag(move, { ...context, ...draggedItem }) && location?.canDrop(move, item.location, context))
+  }, [item, draggedItem, legalMoves])
 
   const [parentTransform, setParentTransform] = useState<XYCoordinates>()
   const transform = selfTransform ?? parentTransform
@@ -71,17 +76,16 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     transformRef.current = `translate3d(${Math.round(x / scale)}px, ${y ? Math.round(y / scale) : 0}px, 20em)`
   }
 
-  const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
-  const animationCss = useItemAnimation(displayedItem)
+  const animation = useItemAnimation(displayedItem)
   const isDroppedItem = !!droppedItem && !!item && (equal(droppedItem, displayedItem) || isPlacedOnItem(item, droppedItem, context))
   const applyTransform = isDroppedItem || !ignoreTransform
 
   // We have to disable the "smooth return transition" when we have an animation, because Firefox bugs when the animation is followed by a transition
   useEffect(() => {
-    if (animationCss) {
+    if (animation) {
       setSmoothReturn(false)
     }
-  }, [animationCss])
+  }, [animation])
 
   const onDragStart = useCallback((event: DragStartEvent) => dataIsDisplayedItem(event.active.data.current) && setDraggedItem(event.active.data.current), [])
   const onDragMove = useCallback((event: DragMoveEvent) => isDraggingParent && setParentTransform(event.delta), [isDraggingParent])
@@ -92,17 +96,18 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   useDndMonitor({ onDragStart, onDragEnd, onDragMove })
 
   return (
-    <div css={[animationWrapperCss, animationCss]}>
+    <div css={[animationWrapperCss, animation]}>
       <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item?.id}
                          css={[
                            !applyTransform && smoothReturn && transformTransition,
                            !disabled && noTouchAction,
-                           disabled || animations.length ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
+                           disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
                            transformCss(preTransform, applyTransform && transformRef.current, postTransform),
                            canDropToSameLocation && noPointerEvents
                          ]}
-                         highlight={highlight ?? (!disabled && !animations.length && !draggedItem)}
-                         {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}/>
+                         highlight={highlight ?? (!disabled && !draggedItem)}
+                         {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
+                         onLongClick={itemMoves.length === 1 ? () => play(itemMoves[0]) : undefined}/>
     </div>
   )
 })
@@ -166,4 +171,9 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
     if (itemAnimation) return itemAnimation
   }
   return
+}
+
+const useIsAnimatingPlayerAction = (): boolean => {
+  const player = usePlayerId()
+  return useAnimations<MaterialMove>(animation => animation.action.playerId === player).length > 0
 }
