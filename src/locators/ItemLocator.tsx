@@ -1,21 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import {
-  Coordinates,
-  DisplayedItem,
-  isCreateItem,
-  isDeleteItem,
-  isMoveItem,
-  ItemMove,
-  Location,
-  Material,
-  MaterialGame,
-  MaterialItem,
-  MaterialRulesCreator,
-  XYCoordinates
-} from '@gamepark/rules-api'
+import { Coordinates, DisplayedItem, Location, Material, MaterialGame, MaterialItem, MaterialRulesCreator, XYCoordinates } from '@gamepark/rules-api'
 import { LocationDescription, MaterialDescription } from '../components'
 import equal from 'fast-deep-equal'
-import { Animation } from '@gamepark/react-client'
 import sumBy from 'lodash/sumBy'
 
 export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
@@ -141,28 +127,6 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     const absoluteIndex = players.indexOf(player)
     if (me === undefined || players[0] === me) return absoluteIndex
     return (absoluteIndex - players.indexOf(me) + players.length) % players.length
-  }
-
-  isItemToAnimate(animation: Animation<ItemMove<P, M, L>>, { game, type, index, displayIndex }: ItemContext<P, M, L>): boolean {
-    if (isMoveItem(animation.move) || isDeleteItem(animation.move)) {
-      let quantity = game.items[type]![index].quantity ?? 1
-      if (quantity === 1) return true
-      if (this.limit) quantity = Math.min(quantity, this.limit)
-      const movedQuantity = animation.move.quantity ?? 1
-      if (game.droppedItem?.type === type && game.droppedItem.index === index) {
-        const droppedIndex = game.droppedItem.displayIndex
-        if (displayIndex === droppedIndex) return true
-        if (droppedIndex < quantity - movedQuantity) {
-          return displayIndex > quantity - movedQuantity
-        }
-      }
-      return displayIndex >= quantity - movedQuantity
-    } else if (isCreateItem(animation.move)) {
-      const quantity = game.items[type]![index].quantity ?? 1
-      const createdQuantity = animation.move.item.quantity ?? 1
-      return displayIndex >= quantity - createdQuantity
-    }
-    return false
   }
 }
 

@@ -3,13 +3,18 @@ import {
   Coordinates,
   CreateItem,
   DeleteItem,
+  isCreateItem,
+  isDeleteItem,
+  isMoveItem,
   ItemMove,
   ItemMoveType,
+  itemsCanMerge,
   MaterialGame,
   MaterialItem,
   MaterialMove,
   MaterialRules,
-  MoveItem
+  MoveItem,
+  MoveKind
 } from '@gamepark/rules-api'
 import { css, Interpolation, Keyframes, keyframes, Theme } from '@emotion/react'
 import { ItemContext, ItemLocator } from '../../locators'
@@ -45,7 +50,33 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     return 1
   }
 
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<ItemMove<P, M, L>>): Interpolation<Theme> {
+  isItemToAnimate({ game, type, index, displayIndex, locators }: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>): boolean {
+    const item = game.items[type]![index]
+    if (isMoveItem(animation.move, type, index) || isDeleteItem(animation.move, type, index)) {
+      let quantity = item.quantity ?? 1
+      if (quantity === 1) return true
+      const itemLocator = locators[item.location.type]
+      if (itemLocator.limit) quantity = Math.min(quantity, itemLocator.limit)
+      const movedQuantity = animation.move.quantity ?? 1
+      if (game.droppedItem?.type === type && game.droppedItem.index === index) {
+        const droppedIndex = game.droppedItem.displayIndex
+        if (displayIndex === droppedIndex) return true
+        if (droppedIndex < quantity - movedQuantity) {
+          return displayIndex > quantity - movedQuantity
+        }
+      }
+      return displayIndex >= quantity - movedQuantity
+    } else if (isCreateItem(animation.move, type) && itemsCanMerge(item, animation.move.item)) {
+      const quantity = item.quantity ?? 1
+      const createdQuantity = animation.move.item.quantity ?? 1
+      return displayIndex >= quantity - createdQuantity
+    }
+    return false
+  }
+
+  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>): Interpolation<Theme> {
+    if (!this.isItemToAnimate(context, animation)) return
+    if (animation.move.kind !== MoveKind.ItemMove) return
     switch (animation.move.type) {
       case ItemMoveType.Create:
         return this.getCreateItemAnimation(context, animation as Animation<CreateItem<P, M, L>>)
