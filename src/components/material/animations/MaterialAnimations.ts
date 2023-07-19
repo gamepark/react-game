@@ -17,8 +17,8 @@ import {
   MoveKind
 } from '@gamepark/rules-api'
 import { css, Interpolation, Keyframes, keyframes, Theme } from '@emotion/react'
-import { ItemContext, ItemLocator } from '../../locators'
-import { MaterialDescription } from './MaterialDescription'
+import { ItemContext, ItemLocator } from '../../../locators'
+import { MaterialDescription } from '../MaterialDescription'
 import equal from 'fast-deep-equal'
 
 export class MaterialAnimations<P extends number = number, M extends number = number, L extends number = number>
