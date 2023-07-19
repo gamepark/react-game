@@ -88,7 +88,7 @@ export const GameMaterialDisplay = () => {
           const innerLocations = description.getLocations(item, itemContext)
           const locationsFocus = tutorialPopup ? getLocationsFocus(tutorialFocus).filter(location => innerLocations.some(innerLocation => equal(innerLocation, location))) : []
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
-                                    type={type} item={item} index={index} displayIndex={displayIndex}
+                                    type={type} index={index} displayIndex={displayIndex}
                                     disabled={!itemMoves.length}
                                     playDown={tutorialPopup && !focus && !itemMoves.length && !locationsFocus.length}
                                     ref={focus ? addFocusRef : undefined}
