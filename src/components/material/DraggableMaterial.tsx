@@ -25,7 +25,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const context = useMaterialContext()
   const { game: { droppedItem }, material } = context
   const item = useRevealedItem(type, index)
-  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [])
+  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
   const locator = context.locators[item.location.type]
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const play = usePlay()
@@ -33,7 +33,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const itemMoves = useMemo(() => {
       return legalMoves.filter(move => material[type].canDrag(move, itemContext))
     }
-    , [legalMoves])
+    , [legalMoves, itemContext])
   const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
   const disabled = !itemMoves.length || isAnimatingPlayerAction
 
@@ -58,10 +58,8 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   // We need to delay a little the default transition removal when dragging starts, otherwise dnd-kit suffers from transform side effect
   // because we opted out from ignoring transform in the configuration (using: "draggable: { measure: getClientRect }")
   const [ignoreTransform, setIgnoreTransform] = useState(true)
-  const [smoothReturn, setSmoothReturn] = useState(false)
   useEffect(() => {
     if (transform) {
-      setSmoothReturn(true)
       const timeout = setTimeout(() => setIgnoreTransform(false))
       return () => clearTimeout(timeout)
     } else {
@@ -81,12 +79,9 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const isDroppedItem = !!droppedItem && !!item && (equal(droppedItem, displayedItem) || isPlacedOnItem(item, droppedItem, context))
   const applyTransform = isDroppedItem || !ignoreTransform
 
-  // We have to disable the "smooth return transition" when we have an animation, because Firefox bugs when the animation is followed by a transition
-  useEffect(() => {
-    if (animation) {
-      setSmoothReturn(false)
-    }
-  }, [animation])
+  // Firefox bugs when the animation is immediately followed by the transition: we need to delay by 1 rerender putting back the transition
+  const [animating, setAnimating] = useState(!!animation)
+  useEffect(() => setAnimating(!!animation), [!animation])
 
   const onDragStart = useCallback((event: DragStartEvent) => dataIsDisplayedItem(event.active.data.current) && setDraggedItem(event.active.data.current), [])
   const onDragMove = useCallback((event: DragMoveEvent) => isDraggingParent && setParentTransform(event.delta), [isDraggingParent])
@@ -100,7 +95,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     <div css={[animationWrapperCss, animation]}>
       <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item?.id}
                          css={[
-                           !applyTransform && smoothReturn && transformTransition,
+                           !applyTransform && !animating && transformTransition,
                            !disabled && noTouchAction,
                            disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
                            transformCss(applyTransform && transformRef.current, ...locator.transformItem(item, itemContext)),

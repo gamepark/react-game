@@ -1,7 +1,7 @@
 import { ItemLocator, MaterialContext } from '../locators'
 import { useGame } from './useGame'
 import { MaterialGame, MaterialRulesCreator } from '@gamepark/rules-api'
-import { useContext } from 'react'
+import { useContext, useMemo } from 'react'
 import { gameContext, MaterialDescription } from '../components'
 import { usePlayerId } from './usePlayerId'
 
@@ -12,5 +12,5 @@ export function useMaterialContext<P extends number = number, M extends number =
   const Rules = context.Rules as MaterialRulesCreator<P, M, L>
   const material = context.material as Record<M, MaterialDescription<P, M, L>>
   const locators = context.locators as Record<L, ItemLocator<P, M, L>>
-  return { Rules, game, player, material, locators }
+  return useMemo(() => ({ Rules, game, player, material, locators }), [Rules, game, player, material, locators])
 }
