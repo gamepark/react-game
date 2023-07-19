@@ -77,7 +77,8 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
 
   const animation = useItemAnimation(displayedItem)
   const isDroppedItem = !!droppedItem && !!item && (equal(droppedItem, displayedItem) || isPlacedOnItem(item, droppedItem, context))
-  const applyTransform = isDroppedItem || !ignoreTransform
+  const applyTransform = isDroppedItem || !ignoreTransform || !!animation
+  if (!applyTransform) transformRef.current = undefined
 
   // Firefox bugs when the animation is immediately followed by the transition: we need to delay by 1 rerender putting back the transition
   const [animating, setAnimating] = useState(!!animation)
