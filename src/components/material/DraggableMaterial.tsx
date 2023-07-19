@@ -16,22 +16,23 @@ import { MaterialContext } from '../../locators'
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
   displayIndex: number
-  preTransform?: string
-  postTransform?: string
 } & MaterialComponentProps<M>
 
 export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialProps>((
-  { highlight, type, index, displayIndex, preTransform, postTransform, ...props }, ref
+  { highlight, type, index, displayIndex, ...props }, ref
 ) => {
 
   const context = useMaterialContext()
-  const { game: { droppedItem }, locators, material } = context
+  const { game: { droppedItem }, material } = context
   const item = useRevealedItem(type, index)
+  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [])
+  const locator = context.locators[item.location.type]
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const play = usePlay()
   const legalMoves = useLegalMoves<MaterialMove>()
-  const itemMoves = useMemo(() =>
-      legalMoves.filter(move => material[type].canDrag(move, { ...context, type, index, displayIndex }))
+  const itemMoves = useMemo(() => {
+      return legalMoves.filter(move => material[type].canDrag(move, itemContext))
+    }
     , [legalMoves])
   const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
   const disabled = !itemMoves.length || isAnimatingPlayerAction
@@ -45,8 +46,8 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
   const isDraggingParent = useMemo(() => !!item && !!draggedItem && isPlacedOnItem(item, draggedItem, context), [item, draggedItem, context])
   const canDropToSameLocation = useMemo(() => {
-    if (!draggedItem || !item) return false
-    const location = locators[item.location.type].locationDescription
+    if (!draggedItem) return false
+    const location = locator.locationDescription
     const description = material[draggedItem.type]
     return legalMoves.some(move => description.canDrag(move, { ...context, ...draggedItem }) && location?.canDrop(move, item.location, context))
   }, [item, draggedItem, legalMoves])
@@ -102,7 +103,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
                            !applyTransform && smoothReturn && transformTransition,
                            !disabled && noTouchAction,
                            disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
-                           transformCss(preTransform, applyTransform && transformRef.current, postTransform),
+                           transformCss(applyTransform && transformRef.current, ...locator.transformItem(item, itemContext)),
                            canDropToSameLocation && noPointerEvents
                          ]}
                          highlight={highlight ?? (!disabled && !draggedItem)}
@@ -148,7 +149,7 @@ const isPlacedOnItem = <P extends number = number, M extends number = number, L 
 
 const useRevealedItem = <P extends number = number, M extends number = number, L extends number = number>(
   type: M, index: number
-): MaterialItem<P, L> | undefined => {
+): MaterialItem<P, L> => {
   const animation = useAnimation<MoveItem<P, M, L>>(animation => isMoveItem(animation.move, type, index))
   const game = useGame<MaterialGame<P, M, L>>()
   const item = game?.items[type]?.[index]

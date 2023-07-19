@@ -88,7 +88,6 @@ export const GameMaterialDisplay = () => {
                                     type={type} index={index} displayIndex={displayIndex}
                                     playDown={tutorialPopup && !focus && !locationsFocus.length}
                                     ref={focus ? addFocusRef : undefined}
-                                    postTransform={locator.transformItem(item, itemContext).join(' ')}
                                     onShortClick={() => play(displayMaterialRules(type, item, index), { local: true })}>
             <LocationsMask locations={locationsFocus}/>
             {innerLocations.map(location =>
