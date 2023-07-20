@@ -18,7 +18,8 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   }
 
   override getPreDuration(move: MoveItem<P, M, L>, context: AnimationContext<MaterialGame<P, M, L>, ItemMove<P, M, L>, P>): number {
-    if (context.state.droppedItem?.type === move.itemType && context.state.droppedItem?.index === move.itemIndex) {
+    const droppedItem = context.state.droppedItem
+    if (droppedItem?.type === move.itemType && droppedItem?.index === move.itemIndex) {
       return this.droppedItemDuration
     }
     return this.duration

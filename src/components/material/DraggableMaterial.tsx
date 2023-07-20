@@ -8,10 +8,10 @@ import { css, Interpolation, Theme } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
 import { useAnimation, useAnimations, useGame, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, usePlayerId } from '../../hooks'
 import merge from 'lodash/merge'
-import equal from 'fast-deep-equal'
 import { mergeRefs } from 'react-merge-refs'
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { isPlacedOnItem } from './utils/isPlacedOnItem'
+import { isDroppedItem } from './utils/isDroppedItem'
 
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
@@ -23,7 +23,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
 ) => {
 
   const context = useMaterialContext()
-  const { game: { droppedItem }, material } = context
+  const { material } = context
   const item = useRevealedItem(type, index)
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
   const locator = context.locators[item.location.type]
@@ -76,8 +76,8 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   }
 
   const animation = useItemAnimation(displayedItem)
-  const isDroppedItem = !!droppedItem && !!item && (equal(droppedItem, displayedItem) || isPlacedOnItem(item, droppedItem, context))
-  const applyTransform = isDroppedItem || !ignoreTransform || !!animation
+  const isDropped = useMemo(() => isDroppedItem(itemContext), [itemContext])
+  const applyTransform = isDropped || !ignoreTransform || !!animation
   if (!applyTransform) transformRef.current = undefined
 
   // Firefox bugs when the animation is immediately followed by the transition: we need to delay by 1 rerender putting back the transition
