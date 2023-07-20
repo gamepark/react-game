@@ -1,5 +1,5 @@
 import { ItemAnimations } from './ItemAnimations'
-import { ItemMove, MaterialGame, MoveItem } from '@gamepark/rules-api'
+import { ItemMove, MaterialGame, MaterialItem, MoveItem } from '@gamepark/rules-api'
 import { Animation, AnimationContext } from '@gamepark/react-client'
 import { ItemContext } from '../../../locators'
 import { Interpolation, keyframes, Theme } from '@emotion/react'
@@ -7,6 +7,8 @@ import { adjustRotation } from './adjustRotation'
 import { transformItem } from './transformItem.util'
 import { movementAnimationCss } from './itemMovementCss.util'
 import { isMovedOrDeletedItem } from './isMovedOrDeletedItem.util'
+import { isPlacedOnItem } from '../utils/isPlacedOnItem'
+import { getItemFromContext } from '../utils/getItemFromContext'
 
 export class MoveItemAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
@@ -23,7 +25,16 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   }
 
   getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
-    if (!isMovedOrDeletedItem(context, animation.move)) return
+    if (isMovedOrDeletedItem(context, animation.move)) {
+      return this.getMovedItemAnimation(context, animation)
+    }
+    const item = getItemFromContext(context)
+    if (isPlacedOnItem(item, { type: animation.move.itemType, index: animation.move.itemIndex }, context)) {
+      return this.getChildItemAnimation(item, context, animation)
+    }
+  }
+
+  getMovedItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
     const { type, game, Rules, locators } = context
     const futureGame = JSON.parse(JSON.stringify(game))
     const rules = new Rules(futureGame)
@@ -35,6 +46,19 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const targetLocator = locators[futureItem.location.type]
     const futureContext = { ...context, game: futureGame, type, index: futureIndex, displayIndex: futureDisplayIndex }
     const targetTransforms = targetLocator.transformItem(futureItem, futureContext)
+    const targetTransform = adjustRotation(targetTransforms, transformItem(context)).join(' ')
+    const animationKeyframes = this.getKeyframesToDestination(targetTransform, animation, context)
+    return movementAnimationCss(animationKeyframes, animation.duration)
+  }
+
+  getChildItemAnimation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
+    const { game, Rules, locators } = context
+    const futureGame = JSON.parse(JSON.stringify(game))
+    const rules = new Rules(futureGame)
+    rules.play(animation.move)
+    const targetLocator = locators[item.location.type]
+    const futureContext = { ...context, game: futureGame }
+    const targetTransforms = targetLocator.transformItem(item, futureContext)
     const targetTransform = adjustRotation(targetTransforms, transformItem(context)).join(' ')
     const animationKeyframes = this.getKeyframesToDestination(targetTransform, animation, context)
     return movementAnimationCss(animationKeyframes, animation.duration)

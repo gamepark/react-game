@@ -11,7 +11,7 @@ import merge from 'lodash/merge'
 import equal from 'fast-deep-equal'
 import { mergeRefs } from 'react-merge-refs'
 import { useTransformContext } from 'react-zoom-pan-pinch'
-import { MaterialContext } from '../../locators'
+import { isPlacedOnItem } from './utils/isPlacedOnItem'
 
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
@@ -131,16 +131,6 @@ const transformTransition = css`
 
 export function dataIsDisplayedItem<M extends number = number>(data?: Record<string, any>): data is DisplayedItem<M> {
   return typeof data?.type === 'number' && typeof data?.index === 'number' && typeof data?.displayIndex === 'number'
-}
-
-const isPlacedOnItem = <P extends number = number, M extends number = number, L extends number = number>(
-  childItem: MaterialItem<P, L>, item: DisplayedItem<M>, context: MaterialContext<P, M, L>
-): boolean => {
-  if (childItem.location.parent === undefined) return false
-  const locator = context.locators[childItem.location.type]
-  if (locator.parentItemType === item.type && childItem.location.parent === item.index) return true
-  const parentItem = context.game.items[item.type]![item.index]
-  return isPlacedOnItem(parentItem, item, context)
 }
 
 const useRevealedItem = <P extends number = number, M extends number = number, L extends number = number>(

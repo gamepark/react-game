@@ -5,6 +5,7 @@ import { Coordinates, isDeleteItem, isMoveItem, Location, MaterialMove } from '@
 import { Interpolation, Theme } from '@emotion/react'
 import { isLocationSubset } from '../utils'
 import equal from 'fast-deep-equal'
+import { getItemFromContext } from '../utils/getItemFromContext'
 
 export abstract class LocationDescription<P extends number = number, M extends number = number, L extends number = number> {
   rules?: FC<LocationRulesProps<P, L>>
@@ -63,6 +64,8 @@ export abstract class LocationDescription<P extends number = number, M extends n
   }
 
   canDropToDelete(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
-    return isDeleteItem(move) && equal(location, context.material[move.itemType].getStockLocation(context.game.items[move.itemType]![move.itemIndex], context))
+    return isDeleteItem(move) && equal(location, context.material[move.itemType].getStockLocation(
+      getItemFromContext(context, move.itemType, move.itemIndex), context)
+    )
   }
 }
