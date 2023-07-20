@@ -1,6 +1,6 @@
 import { ItemAnimations } from './ItemAnimations'
-import { ItemMove, MaterialGame, MaterialItem, MoveItem } from '@gamepark/rules-api'
-import { Animation, AnimationContext } from '@gamepark/react-client'
+import { ItemMove, MaterialItem, MoveItem } from '@gamepark/rules-api'
+import { Animation } from '@gamepark/react-client'
 import { ItemContext } from '../../../locators'
 import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { adjustRotation } from './adjustRotation'
@@ -9,6 +9,8 @@ import { movementAnimationCss } from './itemMovementCss.util'
 import { isMovedOrDeletedItem } from './isMovedOrDeletedItem.util'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
 import { getItemFromContext } from '../utils/getItemFromContext'
+import { MaterialAnimationContext } from './MaterialGameAnimations'
+import { isDroppedItem } from '../utils/isDroppedItem'
 
 export class MoveItemAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
@@ -17,9 +19,8 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     super()
   }
 
-  override getPreDuration(move: MoveItem<P, M, L>, context: AnimationContext<MaterialGame<P, M, L>, ItemMove<P, M, L>, P>): number {
-    const droppedItem = context.state.droppedItem
-    if (droppedItem?.type === move.itemType && droppedItem?.index === move.itemIndex) {
+  override getPreDuration(move: MoveItem<P, M, L>, context: MaterialAnimationContext<P, M, L>): number {
+    if (isDroppedItem({ ...context, type: move.itemType, index: move.itemIndex, displayIndex: context.game.droppedItem?.displayIndex ?? 0 })) {
       return this.droppedItemDuration
     }
     return this.duration

@@ -1,4 +1,4 @@
-import { Animation, AnimationContext, Animations } from '@gamepark/react-client'
+import { Animation, Animations } from '@gamepark/react-client'
 import { ItemMove, ItemMoveType, MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
 import { Interpolation, Theme } from '@emotion/react'
 import { ItemContext, ItemLocator } from '../../../locators'
@@ -8,6 +8,7 @@ import { CreateItemAnimations } from './CreateItemAnimations'
 import { ShuffleAnimations } from './ShuffleAnimations'
 import { DeleteItemAnimations } from './DeleteItemAnimations'
 import { MoveItemAnimations } from './MoveItemAnimations'
+import { MaterialAnimationContext } from './MaterialGameAnimations'
 
 export class MaterialAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends Animations<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P> {
@@ -24,7 +25,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     }
   }
 
-  getDuration(move: ItemMove<P, M, L>, context: AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>): number {
+  getDuration(move: ItemMove<P, M, L>, context: MaterialAnimationContext<P, M, L>): number {
     return this.animations[move.type].getDuration(move, context)
   }
 

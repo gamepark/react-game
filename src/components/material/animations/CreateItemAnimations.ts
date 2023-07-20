@@ -1,6 +1,6 @@
 import { ItemAnimations } from './ItemAnimations'
-import { CreateItem, ItemMove, itemsCanMerge, MaterialGame } from '@gamepark/rules-api'
-import { Animation, AnimationContext } from '@gamepark/react-client'
+import { CreateItem, ItemMove, itemsCanMerge } from '@gamepark/rules-api'
+import { Animation } from '@gamepark/react-client'
 import { ItemContext } from '../../../locators'
 import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { fadeIn } from '../../../css'
@@ -8,6 +8,7 @@ import { getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
 import { adjustRotation } from './adjustRotation'
 import { transformItem } from './transformItem.util'
 import { movementAnimationCss } from './itemMovementCss.util'
+import { MaterialAnimationContext } from './MaterialGameAnimations'
 
 export class CreateItemAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
@@ -16,7 +17,7 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     super()
   }
 
-  override getPostDuration(_move: CreateItem<P, M, L>, _context: AnimationContext<MaterialGame<P, M, L>, ItemMove<P, M, L>, P>): number {
+  override getPostDuration(_move: CreateItem<P, M, L>, _context: MaterialAnimationContext<P, M, L>): number {
     return this.duration
   }
 

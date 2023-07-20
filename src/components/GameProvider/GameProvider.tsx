@@ -20,25 +20,24 @@ export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveVi
   = LocalGameProviderProps<Game, GameView, Move, MoveView, PlayerId> & GameContext<Game, Move, PlayerId>
 
 export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId = number>(
-  { material, materialI18n, locators, hasSounds, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
+  { materialI18n, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
   if (isMaterialTutorial(props.tutorial)) {
     wrapRulesWithTutorial(props.tutorial, props.Rules)
   }
-  const { game, Rules, RulesView, optionsSpec, animations, tutorial } = props
   const webP = useWebP()
   const emotionCache = useMemo(() => createCache({
     key: 'css', stylisPlugins: (webP ? [webPReplace, prefixer] : [prefixer]) as Array<StylisPlugin>
   }), [webP])
-  if (material && materialI18n && locale in materialI18n) {
-    merge(material, materialI18n[locale])
+  if (props.material && materialI18n && locale in materialI18n) {
+    merge(props.material, materialI18n[locale])
   }
   return (
-    <gameContext.Provider value={{ game, Rules: RulesView ?? Rules, material, locators, optionsSpec, animations, tutorial, hasSounds }}>
+    <gameContext.Provider value={props}>
       <CacheProvider value={emotionCache}>
         <ApolloProvider client={getApolloClient()}>
           {gameId ?
-            <RemoteGameProvider Rules={RulesView ?? Rules as any} gameId={gameId} animations={props.animations}>{children}</RemoteGameProvider> :
+            <RemoteGameProvider gameId={gameId} {...props}>{children}</RemoteGameProvider> :
             <LocalGameProvider {...props}>{children}</LocalGameProvider>
           }
         </ApolloProvider>
