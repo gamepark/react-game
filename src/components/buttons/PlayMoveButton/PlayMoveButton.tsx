@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { ButtonHTMLAttributes, FC, useCallback, useState } from 'react'
+import { ButtonHTMLAttributes, FC, useCallback, useEffect, useState } from 'react'
 import { PlayOptions, usePlay } from '../../../hooks'
 import { ThemeButton } from '../ThemeButton'
 import { Dialog } from '../../dialogs'
@@ -23,6 +23,11 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
   const play = usePlay()
   const { t } = useTranslation()
   const [showDialog, setShowDialog] = useState<boolean>(false)
+  const [displayedLongEnough, setDisplayedLongEnough] = useState(false)
+  useEffect(() => {
+    const timeout = setTimeout(() => setDisplayedLongEnough(true), 200)
+    return () => clearTimeout(timeout)
+  }, [])
 
   const doPlay = useCallback(() => {
     setShowDialog(false)
@@ -33,10 +38,10 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
   const onClick = useCallback(() => {
     if (confirmation !== undefined) {
       setShowDialog(true)
-    } else {
+    } else if (displayedLongEnough) {
       doPlay()
     }
-  }, [confirmation !== undefined, doPlay])
+  }, [confirmation !== undefined, doPlay, displayedLongEnough])
 
   return (
     <>
