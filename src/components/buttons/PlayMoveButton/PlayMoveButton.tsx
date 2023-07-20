@@ -7,7 +7,6 @@ import { css, ThemeProvider } from '@emotion/react'
 import { buttonCss } from '../../../css'
 import { useTranslation } from 'react-i18next'
 import { useIsAnimatingPlayerAction } from '../../material/utils/useIsAnimatingPlayerAction'
-import { now } from 'lodash'
 
 export type PlayMoveButtonConfirmation = {
   text?: string
@@ -36,9 +35,6 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
       return () => clearTimeout(timeout)
     }
   }, [disabled])
-  if (Array.isArray(rest.children) && rest.children[0] === 'pass') {
-    console.log(displayedLongEnough, now())
-  }
 
   const doPlay = useCallback(() => {
     setShowDialog(false)
