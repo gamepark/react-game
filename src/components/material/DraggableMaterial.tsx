@@ -6,12 +6,13 @@ import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../.
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
-import { useAnimation, useAnimations, useGame, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, usePlayerId } from '../../hooks'
+import { useAnimation, useAnimations, useGame, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay } from '../../hooks'
 import merge from 'lodash/merge'
 import { mergeRefs } from 'react-merge-refs'
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { isPlacedOnItem } from './utils/isPlacedOnItem'
 import { isDroppedItem } from './utils/isDroppedItem'
+import { useIsAnimatingPlayerAction } from './utils/useIsAnimatingPlayerAction'
 
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
@@ -160,7 +161,3 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
   return
 }
 
-const useIsAnimatingPlayerAction = (): boolean => {
-  const player = usePlayerId()
-  return useAnimations<MaterialMove>(animation => animation.action.playerId === player).length > 0
-}
