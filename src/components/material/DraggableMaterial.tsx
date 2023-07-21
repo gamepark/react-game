@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { DisplayedItem, isMoveItem, ItemMove, MaterialGame, MaterialItem, MaterialMove, MoveItem, XYCoordinates } from '@gamepark/rules-api'
+import { DisplayedItem, isMoveItemType, ItemMove, MaterialGame, MaterialItem, MaterialMove, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
 import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../../css'
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
@@ -137,7 +137,7 @@ export function dataIsDisplayedItem<M extends number = number>(data?: Record<str
 const useRevealedItem = <P extends number = number, M extends number = number, L extends number = number>(
   type: M, index: number
 ): MaterialItem<P, L> => {
-  const animation = useAnimation<MoveItem<P, M, L>>(animation => isMoveItem(animation.move, type, index))
+  const animation = useAnimation<MoveItem<P, M, L>>(animation => isMoveItemType(type, index)(animation.move))
   const game = useGame<MaterialGame<P, M, L>>()
   const item = game?.items[type]?.[index]
   return useMemo(() =>

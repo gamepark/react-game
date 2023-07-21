@@ -39,8 +39,8 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return this.location ? [this.location] : this.locations
   }
 
-  canDrag(move: MaterialMove<P, M, L>, { index, type }: ItemContext<P, M, L>): boolean {
-    return isMoveItem(move, type, index) || isDeleteItem(move, type, index)
+  canDrag(move: MaterialMove<P, M, L>, { type, index }: ItemContext<P, M, L>): boolean {
+    return (isMoveItem(move) || isDeleteItem(move)) && move.itemType === type && move.itemIndex === index
   }
 
   height?: number
