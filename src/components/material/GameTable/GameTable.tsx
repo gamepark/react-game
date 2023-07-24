@@ -5,26 +5,18 @@ import { TransformWrapper } from 'react-zoom-pan-pinch'
 import { useLegalMoves, useMaterialContext, usePlay, useRules } from '../../../hooks'
 import { CollisionDetection, DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
-import { GameTableContent } from './GameTableContent'
+import { GameTableContent, GameTableContentProps } from './GameTableContent'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 
-export type GameTableProps = {
+export type GameTableProps = GameTableContentProps & {
   collisionAlgorithm?: CollisionDetection
-  xMin: number
-  xMax: number
-  yMin: number
-  yMax: number
-  zoomMin?: number
-  zoomMax?: number
-  perspective?: number
-  margin?: { left: number, top: number, right: number, bottom: number }
 }
 
 const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 
-export const GameTable: FC<GameTableProps> = (props) => {
-  const { collisionAlgorithm, zoomMin = 1, zoomMax = 1 } = props
+export const GameTable: FC<GameTableProps> = ({ collisionAlgorithm, ...props }) => {
+  const { zoomMin = 1, zoomMax = 1 } = props
 
   const [dragging, setDragging] = useState(false)
 
