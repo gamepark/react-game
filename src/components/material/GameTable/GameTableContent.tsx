@@ -11,6 +11,7 @@ export type GameTableContentProps = {
   xMax: number
   yMin: number
   yMax: number
+  ratio?: number
   zoomMin?: number
   zoomMax?: number
   perspective?: number
@@ -18,7 +19,7 @@ export type GameTableContentProps = {
 }
 
 export const GameTableContent: FC<GameTableContentProps> = (props) => {
-  const { perspective, xMin, xMax, yMin, yMax, zoomMax = 1, margin = { left: 0, right: 0, top: 7, bottom: 0 } } = props
+  const { perspective, xMin, xMax, yMin, yMax, ratio = 16 / 9, zoomMax = 1, margin = { left: 0, right: 0, top: 7, bottom: 0 } } = props
 
   const context = useTransformContext()
   useEffect(() => {
@@ -40,7 +41,7 @@ export const GameTableContent: FC<GameTableContentProps> = (props) => {
       position: 'absolute',
       margin: `${margin.top}em ${margin.right}em ${margin.bottom}em ${margin.left}em`,
       transformStyle: 'preserve-3d',
-      height: `calc(100% - ${margin.top + margin.bottom}em)`,
+      height: `calc(min(100%, 100vw / ${ratio}) - ${(margin.top + margin.bottom)}em)`,
       width: `calc(100% - ${margin.left + margin.right}em)`,
       overflow: 'visible'
     }}>

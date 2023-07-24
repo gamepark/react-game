@@ -1,5 +1,5 @@
 import { useAnimations, usePlayerId } from '../../../hooks'
-import { MaterialMove } from '../../../../../workshop/packages/rules-api'
+import { MaterialMove } from '@gamepark/rules-api'
 
 export const useIsAnimatingPlayerAction = (): boolean => {
   const player = usePlayerId()
