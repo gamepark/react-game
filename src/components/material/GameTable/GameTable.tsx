@@ -1,28 +1,38 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useCallback, useState } from 'react'
-import { dropItemMove, Location, MaterialRules } from '@gamepark/rules-api'
-import { TransformWrapper } from 'react-zoom-pan-pinch'
-import { useLegalMoves, useMaterialContext, usePlay, useRules } from '../../../hooks'
+import { FC, useCallback, useEffect, useRef, useState } from 'react'
+import { dropItemMove, Location } from '@gamepark/rules-api'
+import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
+import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { CollisionDetection, DndContext, DragEndEvent, getClientRect } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
-import { GameTableContent, GameTableContentProps } from './GameTableContent'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
+import { css, Global } from '@emotion/react'
+import normalize from 'emotion-normalize'
+import { fontSizeCss, perspectiveCss } from '../../../css'
+import { GameMaterialDisplay } from './GameMaterialDisplay'
+import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/bounds.util'
 
-export type GameTableProps = GameTableContentProps & {
+export type GameTableProps = {
   collisionAlgorithm?: CollisionDetection
+  xMin: number
+  xMax: number
+  yMin: number
+  yMax: number
+  perspective?: number
+  margin?: { left: number, top: number, right: number, bottom: number }
 }
 
 const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 
-export const GameTable: FC<GameTableProps> = ({ collisionAlgorithm, ...props }) => {
-  const { zoomMin = 1, zoomMax = 1 } = props
+export const GameTable: FC<GameTableProps> = (
+  { collisionAlgorithm, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 } }
+) => {
 
   const [dragging, setDragging] = useState(false)
 
   const context = useMaterialContext()
   const play = usePlay()
-  const rules = useRules<MaterialRules>()!
   const legalMoves = useLegalMoves()
   const onDragEnd = useCallback((event: DragEndEvent) => {
     setDragging(false)
@@ -40,15 +50,50 @@ export const GameTable: FC<GameTableProps> = ({ collisionAlgorithm, ...props }) 
         play(moves[0])
       }
     }
-  }, [play, rules, legalMoves])
+  }, [context, play, legalMoves])
+
+  const ref = useRef<ReactZoomPanPinchContentRef>(null)
+  useEffect(() => {
+    const handler = () => {
+      const zoomPanPinch = ref.current?.instance
+      if (!zoomPanPinch?.bounds) return
+      const { positionX, positionY, scale } = zoomPanPinch.transformState
+      const bounds = calculateBounds(zoomPanPinch, scale)
+      const { x, y } = getMouseBoundedPosition(positionX, positionY, bounds, true, 0, 0, zoomPanPinch.wrapperComponent)
+      zoomPanPinch.setTransformState(scale, x, y)
+    }
+    window.addEventListener('resize', handler)
+    return () => {
+      window.removeEventListener('resize', handler)
+    }
+  }, [])
+
+  const hm = margin.left + margin.right
+  const vm = margin.top + margin.bottom
+  const tableFontSize = 8
+  const minScale = (100 - vm) / tableFontSize / (yMax - yMin)
+  const ratio = (xMax - xMin) / (yMax - yMin)
+  const ratioWithMargins = ((100 - vm) * ratio + hm) / 100
 
   return (
     <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
                 modifiers={[snapCenterToCursor]}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
-      <TransformWrapper minScale={zoomMin / zoomMax} maxScale={1} initialScale={zoomMin / zoomMax} centerOnInit={true} wheel={wheel} smooth={false}
+      <Global styles={[normalize, globalStyle, globalFontSize(ratioWithMargins)]}/>
+      <TransformWrapper ref={ref} minScale={minScale} maxScale={1} initialScale={minScale} centerOnInit={true} wheel={wheel} smooth={false}
                         panning={{ disabled: dragging }} disablePadding doubleClick={doubleClick}>
-        <GameTableContent {...props} />
+        <TransformComponent wrapperStyle={{
+          position: 'absolute',
+          margin: `${margin.top}em ${margin.right}em ${margin.bottom}em ${margin.left}em`,
+          transformStyle: 'preserve-3d',
+          height: `min(100% - ${vm}em, (100vw - ${hm}em) / ${ratio})`,
+          width: `calc(100vw - ${hm}em)`,
+          overflow: 'visible'
+        }}>
+          <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]}>
+            <GameMaterialDisplay/>
+          </div>
+        </TransformComponent>
       </TransformWrapper>
     </DndContext>
   )
@@ -57,3 +102,68 @@ export const GameTable: FC<GameTableProps> = ({ collisionAlgorithm, ...props }) 
 function dataIsLocation<P extends number = number, L extends number = number>(data?: Record<string, any>): data is Location<P, L> {
   return typeof data?.type === 'number'
 }
+
+const globalStyle = css`
+  html {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  *, *::before, *::after {
+    -webkit-box-sizing: inherit;
+    -moz-box-sizing: inherit;
+    box-sizing: inherit;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Oswald', "Roboto Light", serif;
+  }
+
+  #root {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    user-select: none;
+    overflow: hidden;
+    background-image: url(${process.env.PUBLIC_URL + '/cover-1920.jpg'});
+    background-color: white;
+    background-size: cover;
+    background-position: center;
+    color: #eee;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+  }
+`
+
+const globalFontSize = (ratio: number) => css`
+  body {
+    font-size: 1vh;
+    @media (max-aspect-ratio: ${ratio}/1) {
+      font-size: calc(1vw / ${ratio});
+    }
+  }
+`
+
+const tableCss = (xMin: number, xMax: number, yMin: number, yMax: number) => css`
+  transform-style: preserve-3d;
+  width: ${xMax - xMin}em;
+  height: ${yMax - yMin}em;
+
+  > * {
+    position: absolute;
+    top: ${-yMin}em;
+    left: ${-xMin}em;
+    transform-style: preserve-3d;
+  }
+`

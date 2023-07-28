@@ -26,6 +26,7 @@
     "@gamepark/react-client": "^6.0.11-alpha.0",
     "@gamepark/rules-api": "^6.0.11-alpha.0",
     "dayjs": "^1.11.7",
+    "emotion-normalize": "^11.0.1",
     "fscreen": "^1.2.0",
     "graphql": "^15.3.0",
     "i18next": "^22.4.15",
