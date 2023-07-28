@@ -15,12 +15,14 @@ const cache: Cache = {
 export function useLegalMoves<Move = any>(predicate?: (move: Move) => boolean): Move[] {
   const rules = useRules()
   const playerId = usePlayerId()
-  if (!rules || playerId === undefined) return []
-  if (cache.game !== rules.game) {
+  if (rules && playerId !== undefined && cache.game !== rules.game) {
     cache.game = rules.game
     cache.moves = rules.getLegalMoves(playerId)
   }
-  return useMemo(() => predicate ? cache.moves.filter(predicate) : cache.moves, [cache.moves, predicate])
+  return useMemo(() => {
+      return predicate ? cache.moves.filter(predicate) : cache.moves
+    },
+    [cache.moves, predicate])
 }
 
 export function useLegalMove<Move = any>(predicate?: (move: Move) => boolean): Move | undefined {
