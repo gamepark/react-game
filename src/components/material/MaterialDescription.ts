@@ -43,6 +43,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return (isMoveItem(move) || isDeleteItem(move)) && move.itemType === type && move.itemIndex === index
   }
 
+  canLongClick(move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): boolean {
+    return this.canDrag(move, context)
+  }
+
   height?: number
   width?: number
   ratio?: number

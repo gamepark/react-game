@@ -68,4 +68,8 @@ export abstract class LocationDescription<P extends number = number, M extends n
       getItemFromContext(context, move.itemType, move.itemIndex), context)
     )
   }
+
+  canLongClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
+    return this.canDrop(move, location, context)
+  }
 }

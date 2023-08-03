@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
-import { forwardRef, HTMLAttributes, MouseEvent, useCallback, useMemo, useState } from 'react'
-import { displayLocationRules, ItemMove, ItemMoveType, Location, MaterialMove, MaterialRules, MoveKind, XYCoordinates } from '@gamepark/rules-api'
+import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
+import { displayLocationRules, ItemMoveType, Location, MaterialMove, MaterialRules, MoveKind, XYCoordinates } from '@gamepark/rules-api'
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { useAnimations, useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules } from '../../../hooks'
@@ -26,13 +26,12 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const rules = useRules<MaterialRules>()
   const play = usePlay<MaterialMove>()
   const player = usePlayerId()
-  const predicate = useCallback(
-    (move) => !!rules && !!description && description.canDrop(move, location, context)
-    , [rules, locator, context, location])
-  const legalMoves = useLegalMoves<ItemMove>(predicate)
+  const legalMoves = useLegalMoves()
+  const dropMoves = useMemo(() => legalMoves.filter(move => description?.canDrop(move, location, context)), [legalMoves, location, context])
+  const longClickMoves = useMemo(() => legalMoves.filter(move => description?.canLongClick(move, location, context)), [legalMoves, location, context])
 
-  if (!onLongClick && legalMoves.length === 1) {
-    onLongClick = () => play(legalMoves[0], { delayed: rules?.isUnpredictableMove(legalMoves[0], player) })
+  if (!onLongClick && longClickMoves.length === 1) {
+    onLongClick = () => play(longClickMoves[0], { delayed: rules?.isUnpredictableMove(longClickMoves[0], player) })
   }
 
   if (!onShortClick && locator?.locationDescription?.rules) {
@@ -44,16 +43,16 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
 
   const { isOver, active, setNodeRef } = useDroppable({
     id: JSON.stringify(location),
-    disabled: !legalMoves.length,
+    disabled: !dropMoves.length,
     data: location
   })
 
   const draggedItem = dataIsDisplayedItem(active?.data.current) ? active?.data.current : undefined
 
-  const canDrop = useMemo(() => !!draggedItem && !!description && !!material && legalMoves.filter(move =>
+  const canDrop = useMemo(() => !!draggedItem && !!description && !!material && dropMoves.filter(move =>
       material[draggedItem.type].canDrag(move, { ...context, ...draggedItem }) && description.canDrop(move, location, context)
     ).length === 1
-    , [draggedItem, legalMoves, rules])
+    , [draggedItem, dropMoves, rules])
 
   const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
 
@@ -101,7 +100,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
                 sizeCss(width, height), borderRadius && borderRadiusCss(borderRadius),
                 description.getExtraCss(location, context),
                 !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
-                ((canDrop && !isOver) || (!draggedItem && legalMoves.length > 0 && !animations.length)) && shineEffect,
+                ((canDrop && !isOver) || (!draggedItem && (dropMoves.length || longClickMoves.length) && !animations.length)) && shineEffect,
                 canDrop && isOver && dropHighlight
               ]}
               {...props} {...combineEventListeners(listeners, props)}/>

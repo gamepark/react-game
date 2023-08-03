@@ -30,13 +30,15 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const locator = context.locators[item.location.type]
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const play = usePlay()
-  const legalMoves = useLegalMoves<MaterialMove>()
-  const itemMoves = useMemo(() => {
-      return legalMoves.filter(move => material[type].canDrag(move, itemContext))
-    }
-    , [legalMoves, itemContext])
   const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
-  const disabled = !itemMoves.length || isAnimatingPlayerAction
+  const legalMoves = useLegalMoves<MaterialMove>()
+  const longClickMove = useMemo(() => {
+    if (isAnimatingPlayerAction) return
+    const eligibleMoves = legalMoves.filter(move => material[type].canLongClick(move, itemContext))
+    return eligibleMoves.length === 1 ? eligibleMoves[0] : undefined
+  }, [legalMoves, itemContext, isAnimatingPlayerAction])
+  const disabled = useMemo(() => isAnimatingPlayerAction || !legalMoves.some(move => material[type].canDrag(move, itemContext))
+    , [legalMoves, itemContext, isAnimatingPlayerAction])
 
   const { attributes, listeners, transform: selfTransform, setNodeRef } = useDraggable({
     id: `${type}_${index}_${displayIndex}`,
@@ -103,9 +105,9 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
                            transformCss(applyTransform && transformRef.current, ...locator.transformItem(item, itemContext)),
                            canDropToSameLocation && noPointerEvents
                          ]}
-                         highlight={highlight ?? (!disabled && !draggedItem)}
+                         highlight={highlight ?? (!draggedItem && (!disabled || longClickMove !== undefined))}
                          {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
-                         onLongClick={itemMoves.length === 1 ? () => play(itemMoves[0]) : undefined}/>
+                         onLongClick={longClickMove ? () => play(longClickMove) : undefined}/>
     </div>
   )
 })
