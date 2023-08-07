@@ -40,11 +40,14 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   canDrag(move: MaterialMove<P, M, L>, { type, index }: ItemContext<P, M, L>): boolean {
-    return (isMoveItem(move) || isDeleteItem(move)) && move.itemType === type && move.itemIndex === index
+    return (
+      (isMoveItem(move) && move.position.location !== undefined)
+      || (isDeleteItem(move) && this.stockLocation !== undefined)
+    ) && move.itemType === type && move.itemIndex === index
   }
 
-  canLongClick(move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): boolean {
-    return this.canDrag(move, context)
+  canLongClick(move: MaterialMove<P, M, L>, { type, index }: ItemContext<P, M, L>): boolean {
+    return (isMoveItem(move) || isDeleteItem(move)) && move.itemType === type && move.itemIndex === index
   }
 
   height?: number
