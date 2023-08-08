@@ -21,6 +21,7 @@ export const FlatMaterial = forwardRef<HTMLDivElement, FlatMaterialProps & HTMLA
           sizeCss(width, height),
           image && [backgroundCss(image), shadowCss(image)],
           borderRadius && borderRadiusCss(borderRadius),
+          noBlueHighlight,
           highlight ? shineEffect : playDown && playDownCss(image)
         ]} {...props}>
           {children}
@@ -29,7 +30,7 @@ export const FlatMaterial = forwardRef<HTMLDivElement, FlatMaterialProps & HTMLA
     }
     // TODO: we should be able to define children locations inside the back face too
     return (
-      <div ref={ref} css={[preserve3d, sizeCss(width, height), borderRadius && borderRadiusCss(borderRadius)]} {...props}>
+      <div ref={ref} css={[preserve3d, sizeCss(width, height), borderRadius && borderRadiusCss(borderRadius), noBlueHighlight]} {...props}>
         <Face image={image} css={[highlight ? shineEffect : playDown && playDownCss(image)]}>
           {children}
         </Face>
@@ -128,3 +129,12 @@ const playDownCss = (image?: string) => {
     `
   }
 }
+
+/**
+ * When an item has cursor: pointer; on Chrome mobile there is a blue highlight on touch screens.
+ * When we click a location inside a material item, the blue highlight also appears on the material item (despite the event.stopPropagation),
+ * which is very ugly, so we disable this.
+ */
+const noBlueHighlight = css`
+  -webkit-tap-highlight-color: transparent;
+`
