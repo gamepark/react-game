@@ -118,7 +118,7 @@ const globalStyle = css`
 
   body {
     margin: 0;
-    font-family: 'Oswald', "Roboto Light", serif;
+    font-family: "Mulish", sans-serif;
   }
 
   #root {
