@@ -14,6 +14,8 @@ export abstract class LocationDescription<P extends number = number, M extends n
   ratio?: number
   rotationUnit = 'deg'
 
+  image?: string
+
   location?: Location<P, L>
   locations: Location<P, L>[] = []
 
