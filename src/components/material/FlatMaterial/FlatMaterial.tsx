@@ -52,6 +52,7 @@ const faceCss = css`
   position: absolute;
   width: 100%;
   height: 100%;
+  transform-style: preserve-3d;
   backface-visibility: hidden;
   border-radius: inherit;
   box-shadow: 0 0 0.1em black;
