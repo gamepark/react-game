@@ -33,8 +33,8 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     }
   }
 
-  isItemToAnimate({ game, type, index, displayIndex }: ItemContext<P, M, L>, animation: Animation<CreateItem<P, M, L>>): boolean {
-    const item = game.items[type]![index]
+  isItemToAnimate({ rules, type, index, displayIndex }: ItemContext<P, M, L>, animation: Animation<CreateItem<P, M, L>>): boolean {
+    const item = rules.material(type).getItem(index)!
     if (animation.move.itemType !== type || !itemsCanMerge(item, animation.move.item)) return false
     const quantity = item.quantity ?? 1
     const createdQuantity = animation.move.item.quantity ?? 1

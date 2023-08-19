@@ -154,7 +154,7 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
   const context = useMaterialContext<P, M, L>()
   const materialAnimations = useMaterialAnimations<P, M, L>(type)
   const animations = useAnimations<ItemMove<P, M, L>>()
-  const item = context.game?.items[type]?.[index]
+  const item = context.rules.material(type).getItem(index)
   if (!item || !materialAnimations) return
   for (const animation of animations) {
     const itemAnimation = materialAnimations.getItemAnimation({ ...context, ...displayedItem }, animation)

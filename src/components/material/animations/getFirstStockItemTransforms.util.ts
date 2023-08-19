@@ -4,8 +4,8 @@ import equal from 'fast-deep-equal'
 export const getFirstStockItemTransforms = <P extends number = number, M extends number = number, L extends number = number>(
   context: ItemContext<P, M, L>
 ): string[] => {
-  const { game, type, index, locators, material } = context
-  const item = game.items[type]![index]
+  const { rules, type, index, locators, material } = context
+  const item = rules.material(type).getItem(index)!
   const description = material[type]
   const stockLocation = description.getStockLocation(item, context)
   if (!stockLocation) return []

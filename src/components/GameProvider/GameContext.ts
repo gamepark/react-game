@@ -4,22 +4,22 @@ import React from 'react'
 import { MaterialDescription } from '../material'
 import { ItemLocator } from '../../locators'
 
-export type GameContext<Game = any, Move = any, PlayerId = any, MaterialType extends number = number, LocationType extends number = number> = {
+export type GameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   game: string
   Rules: RulesCreator<Game, Move, PlayerId>
-  material?: Record<MaterialType, MaterialDescription>
-  materialI18n?: Record<string, Partial<Record<MaterialType, MaterialDescription>>>
-  locators?: Record<LocationType, ItemLocator>
+  material?: Record<MaterialType, MaterialDescription<PlayerId, MaterialType, LocationType>>
+  materialI18n?: Record<string, Partial<Record<MaterialType, MaterialDescription<PlayerId, MaterialType, LocationType>>>>
+  locators?: Record<LocationType, ItemLocator<PlayerId, MaterialType, LocationType>>
   optionsSpec?: any
   animations?: Animations<Game, Move, PlayerId>
   tutorial?: TutorialDescription<Game, Move, PlayerId>
   hasSounds?: boolean
 }
 
-export type MaterialGameContext<Game = any, Move = any, PlayerId = any, MaterialType extends number = number, LocationType extends number = number>
+export type MaterialGameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number>
   = GameContext<Game, Move, PlayerId, MaterialType, LocationType> & {
-  material: Record<MaterialType, MaterialDescription>
-  locators: Record<LocationType, ItemLocator>
+  material: Record<MaterialType, MaterialDescription<PlayerId, MaterialType, LocationType>>
+  locators: Record<LocationType, ItemLocator<PlayerId, MaterialType, LocationType>>
 }
 
 class MissingRules {

@@ -19,7 +19,8 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
   }
 
   override getPreDuration(move: MoveItem<P, M, L>, context: MaterialAnimationContext<P, M, L>): number {
-    if (isDroppedItem({ ...context, type: move.itemType, index: move.itemIndex, displayIndex: context.game.droppedItem?.displayIndex ?? 0 })) {
+    const potentialDroppedItem = { type: move.itemType, index: move.itemIndex, displayIndex: context.game.droppedItem?.displayIndex ?? 0 }
+    if (isDroppedItem(this.getItemContext(context, potentialDroppedItem))) {
       return this.droppedItemDuration
     }
     return this.duration

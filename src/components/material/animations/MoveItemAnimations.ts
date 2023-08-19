@@ -1,5 +1,5 @@
 import { ItemAnimations } from './ItemAnimations'
-import { ItemMove, MaterialItem, MoveItem } from '@gamepark/rules-api'
+import { ItemMove, MaterialItem, MaterialMutator, MoveItem } from '@gamepark/rules-api'
 import { Animation } from '@gamepark/react-client'
 import { ItemContext } from '../../../locators'
 import { Interpolation, keyframes, Theme } from '@emotion/react'
@@ -8,7 +8,6 @@ import { transformItem } from './transformItem.util'
 import { movementAnimationCss } from './itemMovementCss.util'
 import { isMovedOrDeletedItem } from './isMovedOrDeletedItem.util'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
-import { getItemFromContext } from '../utils/getItemFromContext'
 import { MaterialAnimationContext } from './MaterialGameAnimations'
 import { isDroppedItem } from '../utils/isDroppedItem'
 
@@ -20,7 +19,8 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   }
 
   override getPreDuration(move: MoveItem<P, M, L>, context: MaterialAnimationContext<P, M, L>): number {
-    if (isDroppedItem({ ...context, type: move.itemType, index: move.itemIndex, displayIndex: context.game.droppedItem?.displayIndex ?? 0 })) {
+    const potentialDroppedItem = { type: move.itemType, index: move.itemIndex, displayIndex: context.game.droppedItem?.displayIndex ?? 0 }
+    if (isDroppedItem(this.getItemContext(context, potentialDroppedItem))) {
       return this.droppedItemDuration
     }
     return this.duration
@@ -30,19 +30,18 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     if (isMovedOrDeletedItem(context, animation.move)) {
       return this.getMovedItemAnimation(context, animation)
     }
-    const item = getItemFromContext(context)
+    const item = context.rules.material(context.type).getItem(context.index)!
     if (isPlacedOnItem(item, { type: animation.move.itemType, index: animation.move.itemIndex }, context)) {
       return this.getChildItemAnimation(item, context, animation)
     }
   }
 
   getMovedItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
-    const { type, game, Rules, locators } = context
-    const futureGame = JSON.parse(JSON.stringify(game))
-    const rules = new Rules(futureGame)
-    const mutator = rules.mutator(type)
+    const { type, rules, locators } = context
+    const futureGame = JSON.parse(JSON.stringify(rules.game))
+    const mutator = new MaterialMutator(type, futureGame.items[type]!, rules.locationsStrategies[type], rules.materialLocations[type])
     const futureIndex = mutator.move(animation.move)
-    const futureItem = rules.items(type)[futureIndex]
+    const futureItem = futureGame.items[type]![futureIndex]
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const targetLocator = locators[futureItem.location.type]
@@ -54,10 +53,10 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   }
 
   getChildItemAnimation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
-    const { game, Rules, locators } = context
-    const futureGame = JSON.parse(JSON.stringify(game))
-    const rules = new Rules(futureGame)
-    rules.play(animation.move)
+    const type = animation.move.itemType
+    const { rules, locators } = context
+    const futureGame = JSON.parse(JSON.stringify(rules.game))
+    new MaterialMutator(type, futureGame.items[type]!, rules.locationsStrategies[type], rules.materialLocations[type]).move(animation.move)
     const targetLocator = locators[item.location.type]
     const futureContext = { ...context, game: futureGame }
     const targetTransforms = targetLocator.transformItem(item, futureContext)

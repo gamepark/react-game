@@ -16,10 +16,10 @@ const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
 const locale = query.get('locale') || 'en'
 
-export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveView = Move, PlayerId = number>
+export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveView = Move, PlayerId extends number = number>
   = LocalGameProviderProps<Game, GameView, Move, MoveView, PlayerId> & GameContext<Game, Move, PlayerId>
 
-export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId = number>(
+export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId extends number = number>(
   { materialI18n, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
   if (isMaterialTutorial(props.tutorial)) {
@@ -33,7 +33,7 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
     merge(props.material, materialI18n[locale])
   }
   return (
-    <gameContext.Provider value={props}>
+    <gameContext.Provider value={props as GameContext}>
       <CacheProvider value={emotionCache}>
         <ApolloProvider client={getApolloClient()}>
           {gameId ?

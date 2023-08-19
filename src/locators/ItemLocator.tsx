@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { Coordinates, DisplayedItem, Location, Material, MaterialGame, MaterialItem, MaterialRulesCreator, XYCoordinates } from '@gamepark/rules-api'
+import { Coordinates, DisplayedItem, Location, Material, MaterialGame, MaterialItem, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import { LocationDescription, MaterialDescription } from '../components'
 import equal from 'fast-deep-equal'
 import sumBy from 'lodash/sumBy'
@@ -92,10 +92,10 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 
   protected transformParentItemLocation(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
     if (!this.parentItemType) return []
-    const { game, material, locators } = context
+    const { rules, material, locators } = context
     const parentMaterial = material[this.parentItemType]
     if (location.parent !== undefined) {
-      const parentItem = game.items[this.parentItemType]![location.parent]
+      const parentItem = rules.material(this.parentItemType).getItem(location.parent)!
       const parentLocator: ItemLocator<P, M, L> = locators[parentItem.location.type]
       return parentLocator.transformItemLocation(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 })
     } else {
@@ -115,15 +115,15 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     return location1.type === location2.type && location1.player === location2.player && location1.parent === location2.parent
   }
 
-  countItems(location: Location<P, L>, { game, type }: ItemContext<P, M, L>): number {
-    return game.items[type] ? sumBy(game.items[type], item => this.isSameLocation(item.location, location) ? (item.quantity ?? 1) : 0) : 0
+  countItems(location: Location<P, L>, { rules, type }: ItemContext<P, M, L>): number {
+    return sumBy(rules.items(type), item => this.isSameLocation(item.location, location) ? (item.quantity ?? 1) : 0)
   }
 
   getMaterial(game: MaterialGame<P, M, L>, type: M) {
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
-  getRelativePlayerIndex({ game: { players }, player: me }: MaterialContext<P, M, L>, player: P): number {
+  getRelativePlayerIndex({ rules: { players }, player: me }: MaterialContext<P, M, L>, player: P): number {
     const absoluteIndex = players.indexOf(player)
     if (me === undefined || players[0] === me) return absoluteIndex
     return (absoluteIndex - players.indexOf(me) + players.length) % players.length
@@ -131,8 +131,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
 }
 
 export type MaterialContext<P extends number = number, M extends number = number, L extends number = number> = {
-  Rules: MaterialRulesCreator<P, M, L>
-  game: MaterialGame<P, M, L>
+  rules: MaterialRules<P, M, L>
   material: Record<M, MaterialDescription<P, M, L>>
   locators: Record<L, ItemLocator<P, M, L>>
   player?: P

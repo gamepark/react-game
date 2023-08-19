@@ -1,10 +1,11 @@
 import { AnimationContext, Animations } from '@gamepark/react-client'
 import { MaterialGame, MaterialMove, MoveKind } from '@gamepark/rules-api'
 import { MaterialAnimations } from './MaterialAnimations'
-import { MaterialContext } from '../../../locators'
+import { GameContext } from '../../GameProvider'
 
 export type MaterialAnimationContext<P extends number = number, M extends number = number, L extends number = number> =
-  AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P> & MaterialContext<P, M, L>
+  AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>
+  & Omit<GameContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P, M, L>, 'game'>
 
 export class MaterialGameAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends Animations<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P> {
