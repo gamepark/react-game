@@ -13,10 +13,16 @@ export type DialogProps = {
 
 export const Dialog = ({ children, open, backdropCss, onBackdropClick, transitionDelay = 0.3, rootId = 'root', ...props }: DialogProps) => {
   const [display, setDisplay] = useState(open)
+  // When we open the dialog with use-long-press, Chrome mobile generates a click event on the backdrop even though the pointer down event
+  // was done before the dialog existed. It causes the dialog to close immediately. We prevent any backdrop click for 300ms to workaround this issue.
+  const [justDisplayed, setJustDisplayed] = useState(false)
 
   useEffect(() => {
     if (open) {
       setDisplay(true)
+      setJustDisplayed(true)
+      const timeout = setTimeout(() => setJustDisplayed(false), 300)
+      return () => clearTimeout(timeout)
     } else {
       const timeout = setTimeout(() => setDisplay(false), transitionDelay * 1000)
       return () => clearTimeout(timeout)
@@ -31,9 +37,8 @@ export const Dialog = ({ children, open, backdropCss, onBackdropClick, transitio
     return null
   }
 
-
   return createPortal(
-    <div css={[backdropStyle(transitionDelay), !open && hide(transitionDelay), backdropCss]} onClick={onBackdropClick}>
+    <div css={[backdropStyle(transitionDelay), !open && hide(transitionDelay), backdropCss]} onClick={event => !justDisplayed && onBackdropClick?.(event)}>
       <div onClick={event => event.stopPropagation()} {...props}>
         {children}
       </div>
