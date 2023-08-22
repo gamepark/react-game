@@ -10,6 +10,8 @@
     "dist"
   ],
   "scripts": {
+    "linkall": "yarn link @gamepark/react-client @gamepark/rules-api",
+    "unlinkall": "yarn unlink @gamepark/react-client @gamepark/rules-api",
     "test": "yarn test",
     "build": "tsc -p tsconfig.build.json",
     "prepublishOnly": "tsc -p tsconfig.build.json"
@@ -23,8 +25,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@gamepark/avataaars": "^2.2.0",
-    "@gamepark/react-client": "^6.3.0",
-    "@gamepark/rules-api": "^6.3.0",
+    "@gamepark/react-client": "^6.4.0",
+    "@gamepark/rules-api": "^6.4.0",
     "dayjs": "^1.11.7",
     "emotion-normalize": "^11.0.1",
     "fscreen": "^1.2.0",
