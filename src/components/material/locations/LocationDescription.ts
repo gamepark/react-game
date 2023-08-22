@@ -13,8 +13,6 @@ export abstract class LocationDescription<P extends number = number, M extends n
   ratio?: number
   rotationUnit = 'deg'
 
-  image?: string
-
   location?: Location<P, L>
   locations: Location<P, L>[] = []
 
@@ -27,6 +25,12 @@ export abstract class LocationDescription<P extends number = number, M extends n
     if (this.ratio && this.width) return { width: this.width, height: this.width / this.ratio }
     if (this.ratio && this.height) return { width: this.height * this.ratio, height: this.height }
     throw new Error('You must implement 2 of "width", "height" & "ratio" in any Location description')
+  }
+
+  image?: string
+
+  getImage(_location: Location<P, L>, _context: MaterialContext<P, M, L>): string | undefined {
+    return this.image
   }
 
   borderRadius?: number

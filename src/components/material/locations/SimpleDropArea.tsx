@@ -4,7 +4,7 @@ import { displayLocationRules, ItemMoveType, Location, MaterialMove, MaterialRul
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { useAnimations, useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules } from '../../../hooks'
-import { borderRadiusCss, shineEffect, sizeCss, transformCss } from '../../../css'
+import { backgroundCss, borderRadiusCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { useDroppable } from '@dnd-kit/core'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { combineEventListeners } from '../../../utilities'
@@ -85,6 +85,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   if (!description.isAlwaysVisible(location, context) && !canDrop) return null
 
   const { width, height } = description.getSize(location, context)
+  const image = description.getImage(location, context)
   const borderRadius = description.getBorderRadius(location, context)
   const coordinates = description.getCoordinates(location, context)
 
@@ -97,7 +98,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
                   coordinates && `translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`,
                   description.getRotation && `rotate(${description.getRotation(location, context)}${description.rotationUnit})`
                 ),
-                sizeCss(width, height), borderRadius && borderRadiusCss(borderRadius),
+                sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
                 description.getExtraCss(location, context),
                 !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
                 ((canDrop && !isOver) || (!draggedItem && (dropMoves.length || longClickMoves.length) && !animations.length)) && shineEffect,
