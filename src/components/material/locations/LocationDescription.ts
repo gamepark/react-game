@@ -6,7 +6,7 @@ import { Interpolation, Theme } from '@emotion/react'
 import { isLocationSubset } from '../utils'
 import equal from 'fast-deep-equal'
 
-export abstract class LocationDescription<P extends number = number, M extends number = number, L extends number = number> {
+export abstract class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any> {
   rules?: FC<LocationRulesProps<P, L>>
   height?: number
   width?: number
@@ -28,9 +28,10 @@ export abstract class LocationDescription<P extends number = number, M extends n
   }
 
   image?: string
+  images?: Record<Id extends keyof any ? Id : never, string>
 
-  getImage(_location: Location<P, L>, _context: MaterialContext<P, M, L>): string | undefined {
-    return this.image
+  getImage(location: Location<P, L>, _context: MaterialContext<P, M, L>): string | undefined {
+    return this.images?.[location.id] ?? this.image
   }
 
   borderRadius?: number
