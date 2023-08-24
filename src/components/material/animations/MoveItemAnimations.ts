@@ -1,5 +1,5 @@
 import { ItemAnimations } from './ItemAnimations'
-import { ItemMove, MaterialItem, MaterialMutator, MoveItem } from '@gamepark/rules-api'
+import { ItemMove, MaterialItem, MaterialMutator, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
 import { Animation } from '@gamepark/react-client'
 import { ItemContext } from '../../../locators'
 import { Interpolation, keyframes, Theme } from '@emotion/react'
@@ -53,12 +53,12 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   }
 
   getChildItemAnimation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
-    const type = animation.move.itemType
     const { rules, locators } = context
-    const futureGame = JSON.parse(JSON.stringify(rules.game))
-    new MaterialMutator(type, futureGame.items[type]!, rules.locationsStrategies[type], rules.materialLocations[type]).move(animation.move)
+    const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
+    const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)))
+    futureRules.play(animation.move)
     const targetLocator = locators[item.location.type]
-    const futureContext = { ...context, game: futureGame }
+    const futureContext = { ...context, rules: futureRules }
     const targetTransforms = targetLocator.transformItem(item, futureContext)
     const targetTransform = adjustRotation(targetTransforms, transformItem(context)).join(' ')
     const animationKeyframes = this.getKeyframesToDestination(targetTransform, animation, context)
