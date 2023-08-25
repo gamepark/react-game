@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useCallback, useEffect, useRef, useState } from 'react'
+import { FC, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 import { dropItemMove, Location } from '@gamepark/rules-api'
 import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
@@ -22,7 +22,7 @@ export type GameTableProps = {
   margin?: { left: number, top: number, right: number, bottom: number }
   background?: string | ((player?: number) => string)
   backgroundOverlay?: string
-}
+} & HTMLAttributes<HTMLDivElement>
 
 const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
@@ -30,7 +30,8 @@ const doubleClick = { disabled: true }
 export const GameTable: FC<GameTableProps> = (
   {
     collisionAlgorithm, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 },
-    background, backgroundOverlay = 'rgba(0, 0, 0, 0.8)', children
+    background, backgroundOverlay = 'rgba(0, 0, 0, 0.8)', children,
+    ...props
   }
 ) => {
 
@@ -95,7 +96,7 @@ export const GameTable: FC<GameTableProps> = (
           width: `calc(100vw - ${hm}em)`,
           overflow: 'visible'
         }}>
-          <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]}>
+          <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} { ...props }>
             <GameMaterialDisplay/>
             {children}
           </div>
