@@ -30,7 +30,7 @@ const doubleClick = { disabled: true }
 export const GameTable: FC<GameTableProps> = (
   {
     collisionAlgorithm, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 },
-    background, backgroundOverlay = 'rgba(0, 0, 0, 0.8)'
+    background, backgroundOverlay = 'rgba(0, 0, 0, 0.8)', children
   }
 ) => {
 
@@ -97,6 +97,7 @@ export const GameTable: FC<GameTableProps> = (
         }}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]}>
             <GameMaterialDisplay/>
+            {children}
           </div>
         </TransformComponent>
       </TransformWrapper>
