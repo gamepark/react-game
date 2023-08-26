@@ -40,7 +40,7 @@ export const useUndo = <Move = any, PlayerId extends number = number, Game = any
     const action = actions[index]
     if (action.pending) return false
     const consecutiveActions = actions.slice(index + 1).filter(action => !action.cancelled)
-    const rules = new Rules(JSON.parse(JSON.stringify(setup)))
+    const rules = new Rules(JSON.parse(JSON.stringify(setup)), { player: playerId })
     if (!hasUndo(rules)) return false
     replayActions(rules, actions.filter(action => !action.delayed && !action.cancelled))
     return rules.canUndo(action, consecutiveActions)

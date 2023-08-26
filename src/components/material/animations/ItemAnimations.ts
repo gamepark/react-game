@@ -12,7 +12,7 @@ export class ItemAnimations<P extends number = number, M extends number = number
   }
 
   getMaterialContext({ Rules, game, material, locators, playerId }: MaterialAnimationContext<P, M, L>): MaterialContext<P, M, L> {
-    return { rules: new Rules(game) as MaterialRules<P, M, L>, material: material!, locators: locators!, player: playerId }
+    return { rules: new Rules(game, {player: playerId}) as MaterialRules<P, M, L>, material: material!, locators: locators!, player: playerId }
   }
 
   getItemContext(context: MaterialAnimationContext<P, M, L>, item: DisplayedItem<M>): ItemContext<P, M, L> {

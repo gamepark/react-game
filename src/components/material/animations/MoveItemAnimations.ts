@@ -53,9 +53,9 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   }
 
   getChildItemAnimation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
-    const { rules, locators } = context
+    const { rules, locators, player } = context
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
-    const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)))
+    const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
     const targetLocator = locators[item.location.type]
     const futureContext = { ...context, rules: futureRules }
