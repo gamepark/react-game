@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
-import { displayLocationRules, ItemMoveType, Location, MaterialMove, MaterialRules, MoveKind, XYCoordinates } from '@gamepark/rules-api'
+import { displayLocationRules, Location, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { useAnimations, useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules } from '../../../hooks'
@@ -140,16 +140,3 @@ const clickingAnimation = css`
 const dropHighlight = css`
   background-color: rgba(0, 255, 0, 0.5);
 `
-
-const getMoveItemTypes = <P extends number = number, M extends number = number, L extends number = number>(
-  move: MaterialMove<P, M, L>, rules: MaterialRules<P, M, L>
-): number[] => {
-  switch (move.kind) {
-    case MoveKind.ItemMove:
-      return move.type === ItemMoveType.Move ? [move.itemType] : []
-    case MoveKind.CustomMove:
-      return rules.play(move).flatMap(move => getMoveItemTypes(move, rules))
-    default:
-      return []
-  }
-}
