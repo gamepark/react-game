@@ -56,9 +56,9 @@ export abstract class PileLocator<P extends number = number, M extends number = 
     return this.maxAngle
   }
 
-  getPileId(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+  getPileId(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
     if (typeof item.location.id === 'number') return item.location.id
     if (item.location.player !== undefined) return item.location.player
-    return 0
+    return context.type
   }
 }
