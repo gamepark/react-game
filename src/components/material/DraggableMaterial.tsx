@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { DisplayedItem, isMoveItemType, ItemMove, MaterialGame, MaterialItem, MaterialMove, MoveItem, XYCoordinates } from '@gamepark/rules-api'
+import { DisplayedItem, isMoveItemType, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
 import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../../css'
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
-import { useAnimation, useAnimations, useGame, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay } from '../../hooks'
+import { useAnimation, useAnimations, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, useRules } from '../../hooks'
 import merge from 'lodash/merge'
 import { mergeRefs } from 'react-merge-refs'
 import { useTransformContext } from 'react-zoom-pan-pinch'
@@ -140,8 +140,8 @@ const useRevealedItem = <P extends number = number, M extends number = number, L
   type: M, index: number
 ): MaterialItem<P, L> => {
   const animation = useAnimation<MoveItem<P, M, L>>(animation => isMoveItemType(type, index)(animation.move))
-  const game = useGame<MaterialGame<P, M, L>>()
-  const item = game?.items[type]?.[index]
+  const rules = useRules<MaterialRules<P, M, L>>()
+  const item = rules?.material(type).getItem(index)
   return useMemo(() =>
       item && typeof animation?.move.reveal === 'object' ? merge(JSON.parse(JSON.stringify(item)), animation.move.reveal) : item
     , [item, animation?.move.reveal])

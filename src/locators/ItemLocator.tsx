@@ -116,7 +116,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   countItems(location: Location<P, L>, { rules, type }: ItemContext<P, M, L>): number {
-    return sumBy(rules.items(type), item => this.isSameLocation(item.location, location) ? (item.quantity ?? 1) : 0)
+    return sumBy(rules.material(type).getItems(), item => this.isSameLocation(item.location, location) ? (item.quantity ?? 1) : 0)
   }
 
   getMaterial(game: MaterialGame<P, M, L>, type: M) {
