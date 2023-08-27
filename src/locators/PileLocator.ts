@@ -3,7 +3,6 @@ import { Coordinates, MaterialItem } from '@gamepark/rules-api'
 
 export abstract class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
   limit = 20
-  rotate = false
   private positions = new Map<number, Map<number, Coordinates>>()
   private rotations = new Map<number, Map<number, number>>()
 
@@ -27,13 +26,14 @@ export abstract class PileLocator<P extends number = number, M extends number = 
   }
 
   getRotation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
-    if (!this.rotate) return 0
+    if (!this.maxAngle) return 0
     const pileId = this.getPileId(item, context)
     if (!this.rotations.has(pileId)) this.rotations.set(pileId, new Map())
     const pileRotations = this.rotations.get(pileId)!
     const index = this.getItemIndex(item, context)
     if (!pileRotations.has(index)) {
-      pileRotations.set(index, Math.random() * 360)
+      const maxAngle = this.getMaxAngle(item, context)
+      pileRotations.set(index, (Math.random() - 0.5) * maxAngle)
     }
     return pileRotations.get(index) ?? 0
   }
@@ -48,6 +48,12 @@ export abstract class PileLocator<P extends number = number, M extends number = 
 
   getRadius(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return this.radius
+  }
+
+  maxAngle = 180
+
+  getMaxAngle(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+    return this.maxAngle
   }
 
   getPileId(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
