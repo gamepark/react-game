@@ -34,6 +34,12 @@ export abstract class LocationDescription<P extends number = number, M extends n
     return this.images?.[location.id] ?? this.image
   }
 
+  rulesImage?: string
+
+  getRulesImage(location: Location<P, L>, context: MaterialContext<P, M, L>): string | undefined {
+    return this.rulesImage ?? this.getImage(location, context)
+  }
+
   borderRadius?: number
 
   getBorderRadius(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
