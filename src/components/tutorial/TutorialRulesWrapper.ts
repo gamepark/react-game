@@ -4,9 +4,19 @@ import { MaterialTutorial, TutorialStep } from './MaterialTutorial'
 export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCreator<any, any, any>) {
 
   const getLegalMoves = Rules.prototype.getLegalMoves
+  const isTurnToPlay = Rules.prototype.isTurnToPlay
 
   Rules.prototype.getTutorialStep = function (): TutorialStep | undefined {
     return this.game.tutorialStep !== undefined ? tutorial.steps[this.game.tutorialStep] : undefined
+  }
+
+  Rules.prototype.isTurnToPlay = function (playerId: any): boolean {
+    const game = this.game as MaterialGame
+    if (game.tutorialStep === undefined || game.tutorialStep >= tutorial.steps.length) {
+      return isTurnToPlay.bind(this)(playerId)
+    }
+    const tutorialStep = tutorial.steps[game.tutorialStep]
+    return playerId === (tutorialStep.move?.player ?? this.game.players[0])
   }
 
   Rules.prototype.getLegalMoves = function (playerId: any): MaterialMove[] {
