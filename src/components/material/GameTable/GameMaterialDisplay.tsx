@@ -64,10 +64,11 @@ export const GameMaterialDisplay = () => {
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
                                     onShortClick={() => play(displayMaterialRules(type, item), { local: true })}>
             <LocationsMask locations={locationsFocus}/>
-            {innerLocations.map(location =>
-              <SimpleDropArea key={JSON.stringify(location)} location={location}
-                              ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}/>
-            )}
+            {innerLocations.map(location => {
+              const isFocus = isLocationFocus(location, tutorialFocus)
+              return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={isFocus}
+                                     ref={isFocus ? addFocusRef : undefined}/>
+            })}
           </MaterialComponent>
         })
       })
@@ -90,19 +91,22 @@ export const GameMaterialDisplay = () => {
                                     ref={focus ? addFocusRef : undefined}
                                     onShortClick={() => play(displayMaterialRules(type, item, index), { local: true })}>
             <LocationsMask locations={locationsFocus}/>
-            {innerLocations.map(location =>
-              <SimpleDropArea key={JSON.stringify(location)} location={location}
-                              ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}/>
-            )}
+            {innerLocations.map(location => {
+              const isFocus = isLocationFocus(location, tutorialFocus)
+              return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={isFocus}
+                                     ref={isFocus ? addFocusRef : undefined}/>
+            })}
           </DraggableMaterial>
         })
       })
     })}
-    {Object.values(locators).map(locator =>
-      locator.locationDescription?.getLocations(context).map(location =>
-        <SimpleDropArea key={JSON.stringify(location)} location={location}
-                        ref={isLocationFocus(location, tutorialFocus) ? addFocusRef : undefined}/>
-      )
+    {Object.values(locators).map(locator => {
+        return locator.locationDescription?.getLocations(context).map(location => {
+          const isFocus = isLocationFocus(location, tutorialFocus)
+          return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={isFocus}
+                                 ref={isFocus ? addFocusRef : undefined}/>
+        })
+      }
     )}
     <MaterialRulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
     {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}

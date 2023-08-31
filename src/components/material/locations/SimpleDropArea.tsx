@@ -14,10 +14,11 @@ export type SimpleDropAreaProps<P extends number = number, L extends number = nu
   location: Location<P, L>
   onShortClick?: () => void
   onLongClick?: () => void
+  alwaysVisible?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
-  { location, onShortClick, onLongClick, ...props }, ref
+  { location, onShortClick, onLongClick, alwaysVisible, ...props }, ref
 ) => {
   const context = useMaterialContext()
   const material = context.material
@@ -82,7 +83,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     console.warn('You must provide a LocationDescription to create drop locations with an ItemLocator')
     return null
   }
-  if (!description.isAlwaysVisible(location, context) && !canDrop) return null
+  if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
 
   const { width, height } = description.getSize(location, context)
   const image = description.getImage(location, context)
