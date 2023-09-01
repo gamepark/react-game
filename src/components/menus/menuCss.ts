@@ -74,7 +74,7 @@ export const menuButtonCss = css`
 export const menuBaseCss = css`
   position: absolute;
   top: 0;
-  max-height: 100vh;
+  max-height: 100dvh;
   background: #F0FBFC;
   overflow: hidden;
   color: #002448;
@@ -101,8 +101,8 @@ export const addStylesheetUrl = (url: string) => {
 
 export const backdrop = css`
   position: fixed;
-  width: 100vw;
-  height: 100vw;
+  width: 100dvw;
+  height: 100dvw;
   background: rgba(0, 0, 0, 0.5);
   opacity: 0;
   transition: opacity 0.5s;

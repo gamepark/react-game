@@ -92,8 +92,8 @@ export const GameTable: FC<GameTableProps> = (
           position: 'absolute',
           margin: `${margin.top}em ${margin.right}em ${margin.bottom}em ${margin.left}em`,
           transformStyle: 'preserve-3d',
-          height: `min(100% - ${vm}em, (100vw - ${hm}em) / ${ratio})`,
-          width: `calc(100vw - ${hm}em)`,
+          height: `min(100% - ${vm}em, (100dvw - ${hm}em) / ${ratio})`,
+          width: `calc(100dvw - ${hm}em)`,
           overflow: 'visible'
         }}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} { ...props }>
@@ -130,8 +130,8 @@ const globalStyle = css`
 
   #root {
     position: absolute;
-    height: 100vh;
-    width: 100vw;
+    height: 100dvh;
+    width: 100dvw;
     user-select: none;
     overflow: hidden;
     background-color: white;
@@ -168,9 +168,9 @@ const backgroundImage = (
 
 const globalFontSize = (ratio: number) => css`
   body {
-    font-size: 1vh;
+    font-size: 1dvh;
     @media (max-aspect-ratio: ${ratio}/1) {
-      font-size: calc(1vw / ${ratio});
+      font-size: calc(1dvw / ${ratio});
     }
   }
 `
