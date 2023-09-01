@@ -56,7 +56,6 @@ export const GameMaterialDisplay = () => {
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
           const innerLocations = getInnerLocations(item, itemContext, tutorialPopup, tutorialFocus)
-          console.log(innerLocations)
           const focus = isStaticItemFocus(type, item, tutorialFocus)
           return <MaterialComponent key={`${type}_${index}_${displayIndex}`} type={type} itemId={item.id}
                                     playDown={tutorialPopup && !focus && !innerLocations.some(location => location.focus)}
