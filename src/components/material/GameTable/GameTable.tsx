@@ -76,7 +76,7 @@ export const GameTable: FC<GameTableProps> = (
 
   const hm = margin.left + margin.right
   const vm = margin.top + margin.bottom
-  const tableFontSize = 8
+  const tableFontSize = 4
   const minScale = (100 - vm) / tableFontSize / (yMax - yMin)
   const ratio = (xMax - xMin) / (yMax - yMin)
   const ratioWithMargins = ((100 - vm) * ratio + hm) / 100
