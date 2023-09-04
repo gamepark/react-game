@@ -67,7 +67,7 @@ const scrollableContainer = css`
   max-height: calc(90vh - 6em) !important;
 
   > div {
-    max-height: calc(90vh - 6em + 17px) !important;
+    max-height: calc(90vh - 6em) !important;
 
     // trick to avoid very thin bar on some resolutions with react-custom-scrollbars-2
     scrollbar-width: none;
