@@ -1,9 +1,8 @@
-import { TutorialDescription } from '@gamepark/react-client'
+import { Player, TutorialDescription } from '@gamepark/react-client'
 import { Location, LocationBuilder, Material, MaterialGame, MaterialGameSetup, MaterialItem, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { TFunction } from 'i18next'
 import { ReactNode } from 'react'
 import equal from 'fast-deep-equal'
-import { AvatarProps } from '@gamepark/avataaars'
 import sumBy from 'lodash/sumBy'
 
 export abstract class MaterialTutorial<P extends number = number, M extends number = number, L extends number = number>
@@ -11,7 +10,7 @@ export abstract class MaterialTutorial<P extends number = number, M extends numb
   abstract options: any
   abstract setup: MaterialGameSetup<P, M, L>
   abstract steps: TutorialStep<P, M, L>[]
-  avatars: Partial<Record<P, AvatarProps>> = {}
+  abstract players: Player<P>[]
 
   material(game: MaterialGame<P, M, L>, type: M): Material<P, M, L> {
     return new Material(type, Array.from((game?.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
@@ -21,10 +20,10 @@ export abstract class MaterialTutorial<P extends number = number, M extends numb
     return new LocationBuilder({ type })
   }
 
-  setupTutorial(): [MaterialGame<P, M, L>, P[]] {
+  setupTutorial(): [MaterialGame<P, M, L>, Player<P>[]] {
     const game = this.setup.setup(this.options)
     game.tutorialStep = 0
-    return [game, game.players]
+    return [game, this.players]
   }
 
   expectedMoves(): (MaterialMove<P, M, L>[] | MaterialMove<P, M, L>)[] {
