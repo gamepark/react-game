@@ -132,6 +132,7 @@ const globalStyle = css`
     position: absolute;
     height: 100dvh;
     width: 100dvw;
+    -webkit-touch-callout: none;
     user-select: none;
     overflow: hidden;
     background-color: white;
