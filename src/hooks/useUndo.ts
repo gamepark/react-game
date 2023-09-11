@@ -2,14 +2,13 @@ import { DisplayedAction, GamePageState, moveUndone } from '@gamepark/react-clie
 import { hasUndo, replayActions } from '@gamepark/rules-api'
 import { useCallback, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import findLast from 'lodash/findLast'
 import findLastIndex from 'lodash/findLastIndex'
 import { gameContext } from '../components'
 
 export type UndoOptions = { delayed?: boolean }
 export type MovePredicate<Move> = (move: Move) => boolean
 export type CanUndo<Move> = (movePredicate?: MovePredicate<Move>) => boolean
-export type UndoFunction<Move> = ((arg?: string | MovePredicate<Move> | UndoOptions, options?: UndoOptions) => void)
+export type UndoFunction<Move> = ((arg?: string | number | MovePredicate<Move> | UndoOptions, options?: UndoOptions) => void)
 
 export const useUndo = <Move = any, PlayerId extends number = number, Game = any>(): [UndoFunction<Move>, CanUndo<Move>] => {
   const actions = useSelector<GamePageState<Game, Move, PlayerId>, DisplayedAction<Move, PlayerId>[] | undefined>(state => state.actions)
@@ -19,16 +18,21 @@ export const useUndo = <Move = any, PlayerId extends number = number, Game = any
   const Rules = useContext(gameContext)?.Rules
   if (!Rules) throw new Error('Cannot useUndo outside a GameProvider')
 
-  const undo: UndoFunction<Move> = useCallback((arg?: string | MovePredicate<Move> | UndoOptions, options?: UndoOptions) => {
+  const undo: UndoFunction<Move> = useCallback((arg?: string | number | MovePredicate<Move> | UndoOptions, options?: UndoOptions) => {
     if (typeof arg === 'string') {
       dispatch(moveUndone(arg, options?.delayed))
     } else {
       if (!actions) return console.error('Cannot undo before actions history is loaded')
-      const action = findLast(actions, action => action.playerId === playerId && !action.cancelled && (typeof arg !== 'function' || arg(action.move)))
-      if (!action) return console.error('This action does not exist, it cannot be undone')
-      const delayed = typeof arg !== 'function' ? arg?.delayed : options?.delayed
-      if (action.id) {
-        dispatch(moveUndone(action.id, delayed))
+      const actionToUndo = findLastN(actions, action =>
+          action.playerId === playerId && !action.cancelled && (typeof arg !== 'function' || arg(action.move)),
+        typeof arg === 'number' ? arg : 1
+      )
+      if (!actionToUndo.length) return console.error('This action does not exist, it cannot be undone')
+      const delayed = typeof arg === 'object' ? arg?.delayed : options?.delayed
+      for (const action of actionToUndo) {
+        if (action.id) {
+          dispatch(moveUndone(action.id, delayed))
+        }
       }
     }
   }, [actions, playerId, dispatch])
@@ -47,4 +51,16 @@ export const useUndo = <Move = any, PlayerId extends number = number, Game = any
   }, [setup, actions, playerId, Rules])
 
   return [undo, canUndo]
+}
+
+function findLastN<T>(array: T[], predicate: (item: T) => boolean, n: number = 1): T[] {
+  const result: T[] = []
+  for (let i = array.length - 1; i >= 0; i--) {
+    const item = array[i]
+    if (predicate(item)) {
+      result.push(item)
+      if (result.length >= n) return result
+    }
+  }
+  return result
 }
