@@ -17,10 +17,11 @@ export type PlayMoveButtonProps = {
   move: any
   onPlay?: () => void
   confirmation?: PlayMoveButtonConfirmation
+  auto?: number
 } & PlayOptions & ButtonHTMLAttributes<HTMLButtonElement>
 
 export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
-  const { move, confirmation, delayed, skipAnimation, local, onPlay, ...rest } = props
+  const { move, confirmation, delayed, skipAnimation, local, onPlay, auto, ...rest } = props
   const play = usePlay()
   const { t } = useTranslation()
   const [showDialog, setShowDialog] = useState<boolean>(false)
@@ -50,6 +51,17 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
     }
   }, [confirmation !== undefined, doPlay, displayedLongEnough])
 
+  const [countdown, setCountdown] = useState(auto)
+  useEffect(() => {
+    if (auto) {
+      const interval = setInterval(() => setCountdown(countdown => countdown && countdown > 0 ? countdown - 1 : countdown), 1000)
+      return () => clearInterval(interval)
+    }
+  }, [auto])
+  useEffect(() => {
+    if (countdown === 0) play(move)
+  }, [countdown, move])
+
   return (
     <>
       {!!confirmation && (
@@ -67,7 +79,7 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
           </ThemeProvider>
         </Dialog>
       )}
-      <ThemeButton key="button" onClick={onClick} disabled={disabled} {...rest}/>
+      <ThemeButton key="button" onClick={onClick} disabled={disabled} css={countdown && countdownCss(countdown)} {...rest}/>
     </>
   )
 }
@@ -109,4 +121,16 @@ const confirmationDialogCss = css`
   border-radius: 1em;
   box-shadow: 0 0 0.2em black;
   font-family: "Mulish", sans-serif;
+`
+
+const countdownCss = (countdown: number) => css`
+  padding-right: 2em;
+  position: relative;
+
+  &:after {
+    content: '${countdown}';
+    position: absolute;
+    right: 0.5em;
+    font-style: italic;
+  }
 `
