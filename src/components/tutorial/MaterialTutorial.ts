@@ -1,5 +1,15 @@
 import { Player, TutorialDescription } from '@gamepark/react-client'
-import { Location, LocationBuilder, Material, MaterialGame, MaterialGameSetup, MaterialItem, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
+import {
+  Location,
+  LocationBuilder,
+  Material,
+  MaterialGame,
+  MaterialGameSetup,
+  MaterialItem,
+  MaterialMove,
+  MaterialRules,
+  XYCoordinates
+} from '@gamepark/rules-api'
 import { TFunction } from 'i18next'
 import { ReactNode } from 'react'
 import equal from 'fast-deep-equal'
@@ -26,8 +36,14 @@ export abstract class MaterialTutorial<P extends number = number, M extends numb
     return [game, this.players]
   }
 
-  expectedMoves(): (MaterialMove<P, M, L>[] | MaterialMove<P, M, L>)[] {
-    return []
+  getNextMove(rules: MaterialRules<P, M, L>) {
+    if (rules.game.tutorialStep !== undefined && rules.game.tutorialStep < this.steps.length) {
+      const step = this.steps[rules.game.tutorialStep]
+      if (!step.move || step.move.player === undefined || step.move.player === rules.game.players[0]) return
+      const moves = rules.getLegalMoves(step.move.player)
+      return moves[Math.floor(Math.random() * moves.length)]
+    }
+    return undefined
   }
 }
 
