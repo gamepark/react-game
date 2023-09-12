@@ -2,7 +2,7 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { DisplayedItem, isMoveItemType, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
-import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../../css'
+import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
 import { combineEventListeners } from '../../utilities'
@@ -95,6 +95,9 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   }, [])
   useDndMonitor({ onDragStart, onDragEnd, onDragMove })
 
+  const locatorTransform = useMemo(() => locator.transformItem(item, itemContext), [locator, item, itemContext])
+  const transformStyle = (applyTransform? [transformRef.current, ...locatorTransform]: locatorTransform).join(' ')
+
   return (
     <div css={[animationWrapperCss, animation]}>
       <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item?.id}
@@ -102,9 +105,9 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
                            !applyTransform && !animating && transformTransition,
                            !disabled && noTouchAction,
                            disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
-                           transformCss(applyTransform && transformRef.current, ...locator.transformItem(item, itemContext)),
                            canDropToSameLocation && noPointerEvents
                          ]}
+                         style={{ transform: transformStyle }}
                          highlight={highlight ?? (!draggedItem && (!disabled || longClickMove !== undefined))}
                          {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
                          onLongClick={longClickMove ? () => play(longClickMove) : undefined}/>
