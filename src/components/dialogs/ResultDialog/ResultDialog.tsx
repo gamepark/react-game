@@ -3,13 +3,13 @@ import { css } from '@emotion/react'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
-import { getFallbackPlayerName, isCompetitive } from '@gamepark/rules-api'
-import { Fragment, useContext } from 'react'
+import { GameMode, GamePageState, PLATFORM_URI, Player } from '@gamepark/react-client'
+import { isCompetitive } from '@gamepark/rules-api'
+import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Dialog, dialogDefaultCss, DialogProps } from '../Dialog'
-import { useGame, usePlayerId, usePlayers } from '../../../hooks'
+import { usePlayerId, usePlayerName, usePlayers, useRules } from '../../../hooks'
 import { Avatar } from '../../Avatar'
 import { RematchSection } from './RematchSection'
 import { NavButton } from '../../menus/Menu/NavButton'
@@ -33,10 +33,9 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const playerId = usePlayerId()
   const players = [...usePlayers()]
   const context = useContext(gameContext)
-  const game = useGame()
+  const rules = useRules()!
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const tournament = useSelector((state: GamePageState) => state.tournament)
-  const rules = new context.Rules(game)
   const ranks = players.map(_ => 1)
   if (isCompetitive(rules) && players.length > 1) {
     players.sort((playerA, playerB) => rules.rankPlayers(playerA.id, playerB.id))
@@ -45,13 +44,14 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
     }
   }
   const rows = gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1
+  const winnerName = usePlayerName(players[0])
   return (
     <Dialog onBackdropClick={close} css={style} {...props}>
       <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={close}/>
       {isCompetitive(rules) && players.length > 1 ?
         rules.rankPlayers(players[0].id, players[1].id) === 0 ? <h2>{t('result.equality')}</h2> :
           players[0].id === playerId ? <h2>{t('result.victory')}</h2> :
-            <h2>{t('result.victory.other', { player: players[0].name ?? getFallbackPlayerName(players[0].id, t, context.optionsSpec) })}</h2> :
+            <h2>{t('result.victory.other', { player: winnerName })}</h2> :
         <h2>{t('result.over')}</h2>
       }
       {gameMode === GameMode.TOURNAMENT && tournament &&
@@ -68,32 +68,17 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
         {rows > 1 && <div/>}
         {gameMode === GameMode.TOURNAMENT && <div css={borderTop}>{t('Tournament')}</div>}
         {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={borderTop}>{t('Ranking')}</div>}
-        {players.map((player, index) => <Fragment key={index}>
-          <div key={index} css={[relative, rows > 1 && borderLeft]}>
-            <div css={avatarContainer}>
-              <Avatar playerId={player.id} css={avatarCss}/>
-              {isCompetitive(rules) && ranks[index] <= 3 && <Medal rank={ranks[index]} css={medalCss}/>}
-            </div>
-            <span>{player.name ?? getFallbackPlayerName(player.id, t, context.optionsSpec)}</span>
-          </div>
-          {gameMode === GameMode.TOURNAMENT &&
-            <div css={[borderLeft, borderTop]}>
-              {!!player.tournamentPoints && <><FontAwesomeIcon icon={faTrophy} css={trophyIcon}/><span>+{player.tournamentPoints}</span></>}
-            </div>
-          }
-          {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) &&
-            <div css={[borderLeft, borderTop]}>
-              <GamePoints playerId={player.id}/>
-            </div>
-          }
-        </Fragment>)}
+        {players.map((player, index) =>
+          <PlayerDisplay key={index} player={player} gameMode={gameMode}
+                         rank={isCompetitive(rules) && ranks[index] <= 3 ? ranks[index] : undefined} border={rows > 1}/>)
+        }
       </div>
       {gameMode === GameMode.TUTORIAL &&
         <div>
           <p css={css`white-space: break-spaces;`}>{t('tuto.over')}</p>
           <p css={buttonsLine}>
             <RestartTutorialButton/>
-            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}/play`} css={css`margin-left: 1em;`}>
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`} css={css`margin-left: 1em;`}>
               <FontAwesomeIcon icon={faChessPawn}/>{t('Play')}
             </NavButton>
           </p>
@@ -102,6 +87,29 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
       {gameId !== null && <RematchSection openDialog={openDialog}/>}
     </Dialog>
   )
+}
+
+const PlayerDisplay = ({ gameMode, player, rank, border }: { gameMode?: GameMode, player: Player, rank?: number, border: boolean }) => {
+  const playerName = usePlayerName(player.id)
+  return <>
+    <div css={[relative, border && borderLeft]}>
+      <div css={avatarContainer}>
+        <Avatar playerId={player.id} css={avatarCss}/>
+        {rank !== undefined && <Medal rank={rank} css={medalCss}/>}
+      </div>
+      <span>{playerName}</span>
+    </div>
+    {gameMode === GameMode.TOURNAMENT &&
+      <div css={[borderLeft, borderTop]}>
+        {!!player.tournamentPoints && <><FontAwesomeIcon icon={faTrophy} css={trophyIcon}/><span>+{player.tournamentPoints}</span></>}
+      </div>
+    }
+    {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) &&
+      <div css={[borderLeft, borderTop]}>
+        <GamePoints playerId={player.id}/>
+      </div>
+    }
+  </>
 }
 
 const style = css`

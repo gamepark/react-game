@@ -3,17 +3,15 @@ import { css } from '@emotion/react'
 import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ejectPlayerAction, GamePageState } from '@gamepark/react-client'
-import { getFallbackPlayerName } from '@gamepark/rules-api'
 import dayjs from 'dayjs'
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { Dialog, DialogProps } from '../../dialogs'
 import { menuButtonCss, menuDialogCss } from '../menuCss'
-import { useOpponentWithMaxTime } from '../../../hooks'
+import { useOpponentWithMaxTime, usePlayerName } from '../../../hooks'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { gameContext } from '../../GameProvider'
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
@@ -24,14 +22,13 @@ export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: ()
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   const opponentThatCanBeEjected = useOpponentWithMaxTime()
   const dispatch = useDispatch()
-  const optionsSpec = useContext(gameContext)?.optionsSpec
+  const opponentName = usePlayerName(opponentWithNegativeTime)
   useEffect(() => {
     if (!opponentWithNegativeTime) {
       close()
     }
   }, [opponentWithNegativeTime])
   if (!opponentWithNegativeTime) return null
-  const opponentName = opponentWithNegativeTime.name || getFallbackPlayerName(opponentWithNegativeTime.id, t, optionsSpec)
   return (
     <Dialog onBackdropClick={close} css={menuDialogCss} {...props}>
       <h2>{t('eject.dialog.p1', { player: opponentName })}</h2>

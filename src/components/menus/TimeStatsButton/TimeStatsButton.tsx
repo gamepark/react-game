@@ -3,13 +3,11 @@ import { css } from '@emotion/react'
 import { faClock } from '@fortawesome/free-solid-svg-icons'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { gameContext } from '../../GameProvider'
-import { getFallbackPlayerName } from '@gamepark/rules-api'
-import { Fragment, useContext, useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Dialog } from '../../dialogs'
 import { Avatar } from '../../Avatar'
-import { usePlayers } from '../../../hooks'
+import { usePlayerName, usePlayers } from '../../../hooks'
 import { menuButtonCss, menuDialogCss } from '../menuCss'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
@@ -21,7 +19,6 @@ dayjs.extend(utc)
 export const TimeStatsButton = () => {
   const { t } = useTranslation()
   const [displayPopup, setDisplayPopup] = useState(false)
-  const context = useContext(gameContext)
   const players = usePlayers()
 
   return (
@@ -44,7 +41,7 @@ export const TimeStatsButton = () => {
             <Fragment key={index}>
               <div key={index} css={[relative, borderLeft]}>
                 <Avatar playerId={player.id} css={avatarCss}/>
-                <span>{player.name ?? getFallbackPlayerName(player.id, t, context.optionsSpec)}</span>
+                <span><PlayerName playerId={player.id}/></span>
               </div>
               <div css={[borderLeft, borderTop, orangeBackground]}>
                 {humanize(player.time?.cumulatedPlayTime)}
@@ -67,6 +64,11 @@ export const TimeStatsButton = () => {
       </Dialog>
     </>
   )
+}
+
+const PlayerName = ({ playerId }: { playerId: any }) => {
+  const name = usePlayerName(playerId)
+  return <>{name}</>
 }
 
 const closeIcon = css`

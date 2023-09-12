@@ -1,13 +1,10 @@
 /** @jsxImportSource @emotion/react */
-import { HTMLAttributes, useContext } from 'react'
-import { usePlayer, useRules } from '../../hooks'
-import { useTranslation } from 'react-i18next'
+import { HTMLAttributes } from 'react'
+import { usePlayerName, useRules } from '../../hooks'
 import { GamePoints } from '../GamePoints'
 import { Avatar, SpeechBubbleDirection } from '../Avatar'
 import { PlayerTimer } from '../PlayerTimer'
 import { css } from '@emotion/react'
-import { gameContext } from '../GameProvider'
-import { getFallbackPlayerName } from '@gamepark/rules-api'
 
 export type PlayerPanelProps<PlayerId = any> = {
   playerId: PlayerId
@@ -15,14 +12,12 @@ export type PlayerPanelProps<PlayerId = any> = {
 } & HTMLAttributes<HTMLDivElement>
 
 export const PlayerPanel = <PlayerId extends any>({ playerId, color = '#28B8CE', children, ...props }: PlayerPanelProps<PlayerId>) => {
-  const { t } = useTranslation()
-  const playerInfo = usePlayer(playerId)
-  const optionsSpec = useContext(gameContext).optionsSpec
+  const playerName = usePlayerName(playerId)
   const rules = useRules()
   return (
     <div css={panelPlayerStyle(color, rules?.isTurnToPlay(playerId))} {...props}>
       <Avatar css={avatarStyle} playerId={playerId} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }}/>
-      <h2 css={nameStyle}>{playerInfo?.name ?? getFallbackPlayerName(playerId, t, optionsSpec)}</h2>
+      <h2 css={nameStyle}>{playerName}</h2>
       {!rules?.isOver() && <PlayerTimer playerId={playerId} css={timerStyle}/>}
       <GamePoints playerId={playerId} css={gamePointCss}/>
       {children}
