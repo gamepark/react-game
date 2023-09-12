@@ -98,6 +98,7 @@ const loadingScreenStyle = css`
   background-position: center;
   pointer-events: none;
   background-image: url(${process.env.PUBLIC_URL + '/cover-1920.jpg'});
+  background-color: black;
 
   &:before {
     content: '';
