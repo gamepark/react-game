@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { FC, HTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
+import React, { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { dropItemMove, Location } from '@gamepark/rules-api'
 import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
@@ -80,22 +80,23 @@ export const GameTable: FC<GameTableProps> = (
   const minScale = (100 - vm) / tableFontSize / (yMax - yMin)
   const ratio = (xMax - xMin) / (yMax - yMin)
   const ratioWithMargins = ((100 - vm) * ratio + hm) / 100
-
+  const panning = useMemo(() => ({ disabled: dragging }), [dragging])
+  const wrapperStyle: React.CSSProperties = useMemo(() => ({
+    position: 'absolute',
+    margin: `${margin.top}em ${margin.right}em ${margin.bottom}em ${margin.left}em`,
+    transformStyle: 'preserve-3d',
+    height: `min(100% - ${vm}em, (100dvw - ${hm}em) / ${ratio})`,
+    width: `calc(100dvw - ${hm}em)`,
+    overflow: 'visible'
+  }), [margin, vm, hm, ratio])
   return (
     <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
                 modifiers={[snapCenterToCursor]}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
       <Global styles={[normalize, globalStyle, backgroundImage(background, context.player, backgroundOverlay), globalFontSize(ratioWithMargins)]}/>
       <TransformWrapper ref={ref} minScale={minScale} maxScale={1} initialScale={minScale} centerOnInit={true} wheel={wheel} smooth={false}
-                        panning={{ disabled: dragging }} disablePadding doubleClick={doubleClick}>
-        <TransformComponent wrapperStyle={{
-          position: 'absolute',
-          margin: `${margin.top}em ${margin.right}em ${margin.bottom}em ${margin.left}em`,
-          transformStyle: 'preserve-3d',
-          height: `min(100% - ${vm}em, (100dvw - ${hm}em) / ${ratio})`,
-          width: `calc(100dvw - ${hm}em)`,
-          overflow: 'visible'
-        }}>
+                        panning={panning} disablePadding doubleClick={doubleClick}>
+        <TransformComponent wrapperStyle={wrapperStyle}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} { ...props }>
             <GameMaterialDisplay/>
             {children}
