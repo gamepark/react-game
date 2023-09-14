@@ -12,7 +12,7 @@ export type RulesDialogProps = {
 
 export const RulesDialog: FC<RulesDialogProps> = ({ close, children, ...props }: RulesDialogProps) => {
   return (
-    <Dialog css={rulesDialogCss} onBackdropClick={close} {...props}>
+    <Dialog onBackdropClick={close} {...props}>
       <FontAwesomeIcon icon={faXmark} css={dialogCloseIcon} onClick={close}/>
       <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
         {children}
@@ -28,14 +28,4 @@ const dialogCloseIcon = css`
   font-size: 4em;
   cursor: pointer;
   z-index: 100;
-`
-
-export const rulesDialogCss = css`
-  position: relative;
-  background-color: #f0fbfc;
-  color: #002448;
-  padding: 1em;
-  border-radius: 1em;
-  box-shadow: 0 0 0.2em black;
-  font-family: "Mulish", sans-serif;
 `

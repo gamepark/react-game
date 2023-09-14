@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css, Interpolation, keyframes } from '@emotion/react'
+import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { HTMLAttributes, MouseEventHandler, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -39,7 +39,7 @@ export const Dialog = ({ children, open, backdropCss, onBackdropClick, transitio
 
   return createPortal(
     <div css={[backdropStyle(transitionDelay), !open && hide(transitionDelay), backdropCss]} onClick={event => !justDisplayed && onBackdropClick?.(event)}>
-      <div onClick={event => event.stopPropagation()} {...props}>
+      <div onClick={event => event.stopPropagation()} css={theme => dialogCss(theme)} {...props}>
         {children}
       </div>
     </div>,
@@ -84,14 +84,11 @@ const hide = (transitionDelay: number) => css`
   pointer-events: none;
 `
 
-export const dialogDefaultCss = css`
+const dialogCss = (theme: Theme) => css`
   position: relative;
-  background-color: #f0fbfc;
-  color: #002448;
-  font-size: 3.2em;
+  background-color: ${theme.dialog.backgroundColor};
+  color: ${theme.dialog.color};
   padding: 1em;
   border-radius: 1em;
-  border: 0.2em solid #28B8CE;
   box-shadow: 0 0 0.2em black;
-  font-family: "Mulish", sans-serif;
 `

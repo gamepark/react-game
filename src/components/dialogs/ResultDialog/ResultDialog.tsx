@@ -8,7 +8,7 @@ import { isCompetitive } from '@gamepark/rules-api'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { Dialog, dialogDefaultCss, DialogProps } from '../Dialog'
+import { Dialog, DialogProps } from '../Dialog'
 import { usePlayerId, usePlayerName, usePlayers, useRules } from '../../../hooks'
 import { Avatar } from '../../Avatar'
 import { RematchSection } from './RematchSection'
@@ -44,7 +44,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
     }
   }
   const rows = gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1
-  const winnerName = usePlayerName(players[0])
+  const winnerName = usePlayerName(players[0].id)
   return (
     <Dialog onBackdropClick={close} css={style} {...props}>
       <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={close}/>
@@ -113,7 +113,7 @@ const PlayerDisplay = ({ gameMode, player, rank, border }: { gameMode?: GameMode
 }
 
 const style = css`
-  ${dialogDefaultCss};
+  font-size: 3.2em;
   text-align: center;
 
   > h2 {

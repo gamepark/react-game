@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import createCache, { StylisPlugin } from '@emotion/cache'
-import { CacheProvider } from '@emotion/react'
+import { CacheProvider, css, Global, Theme, ThemeProvider } from '@emotion/react'
 import { PropsWithChildren, useMemo } from 'react'
 import { DECLARATION, Element, Middleware, prefixer } from 'stylis'
 import { datadogLogs, StatusType } from '@datadog/browser-logs'
@@ -11,16 +11,21 @@ import { GameContext, gameContext } from './GameContext'
 import merge from 'lodash/merge'
 import { isMaterialTutorial } from '../tutorial'
 import { wrapRulesWithTutorial } from '../tutorial/TutorialRulesWrapper'
+import { BackgroundTheme, defaultTheme } from '../../css'
+import normalize from 'emotion-normalize'
+import { DeepPartial } from '../../utilities'
 
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
 const locale = query.get('locale') || 'en'
 
 export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveView = Move, PlayerId extends number = number>
-  = LocalGameProviderProps<Game, GameView, Move, MoveView, PlayerId> & GameContext<Game, Move, PlayerId>
+  = LocalGameProviderProps<Game, GameView, Move, MoveView, PlayerId> & GameContext<Game, Move, PlayerId> & {
+  theme?: DeepPartial<Theme>
+}
 
 export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId extends number = number>(
-  { materialI18n, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
+  { materialI18n, theme = {}, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
   if (isMaterialTutorial(props.tutorial)) {
     wrapRulesWithTutorial(props.tutorial, props.Rules)
@@ -35,12 +40,15 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
   return (
     <gameContext.Provider value={props as GameContext}>
       <CacheProvider value={emotionCache}>
-        <ApolloProvider client={getApolloClient()}>
-          {gameId ?
-            <RemoteGameProvider gameId={gameId} {...props}>{children}</RemoteGameProvider> :
-            <LocalGameProvider {...props}>{children}</LocalGameProvider>
-          }
-        </ApolloProvider>
+        <ThemeProvider theme={merge(defaultTheme, theme)}>
+          <Global styles={[normalize, globalCss]}/>
+          <ApolloProvider client={getApolloClient()}>
+            {gameId ?
+              <RemoteGameProvider gameId={gameId} {...props}>{children}</RemoteGameProvider> :
+              <LocalGameProvider {...props}>{children}</LocalGameProvider>
+            }
+          </ApolloProvider>
+        </ThemeProvider>
       </CacheProvider>
     </gameContext.Provider>
   )
@@ -66,3 +74,45 @@ if (process.env.NODE_ENV === 'production') {
   console.info = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.info(buildMessage(message, optionalParams), { origin: 'console' })
   console.warn = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.warn(buildMessage(message, optionalParams), { origin: 'console' })
 }
+
+const globalCss = (theme: Theme) => css`
+  html {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  *, *::before, *::after {
+    -webkit-box-sizing: inherit;
+    -moz-box-sizing: inherit;
+    box-sizing: inherit;
+  }
+
+  body {
+    margin: 0;
+    font-family: "${theme.root.fontFamily}", sans-serif;
+    font-size: 1dvh;
+    @media (max-aspect-ratio: 16/9) {
+      font-size: calc(9dvw / 16);
+    }
+  }
+
+  #root {
+    position: absolute;
+    height: 100dvh;
+    width: 100dvw;
+    -webkit-touch-callout: none;
+    user-select: none;
+    overflow: hidden;
+    color: #eee;
+    ${backgroundCss(theme.root.background)};
+  }
+`
+
+const backgroundCss = ({ image, overlay }: BackgroundTheme) => overlay ?
+  css`
+    background: linear-gradient(${overlay}, ${overlay}), url(${image}) center / cover, black;
+  ` :
+  css`
+    background: url(${image}) center / cover, black;
+  `

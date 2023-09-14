@@ -1,9 +1,8 @@
 import { css } from '@emotion/react'
-import { dialogDefaultCss } from '../dialogs'
 import { buttonResetCss } from '../../css'
 
 export const menuDialogCss = css`
-  ${dialogDefaultCss};
+  font-size: 3.2em;
 
   h2 {
     margin: 0 0 0.5em;

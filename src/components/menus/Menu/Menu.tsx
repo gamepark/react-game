@@ -18,7 +18,7 @@ import { RestartTutorialButton } from '../RestartTutorialButton'
 import { SoundButton } from '../SoundButton'
 import { UndoButton, UndoPopButton } from '../UndoButton'
 import { Chat } from '../../Chat'
-import { addStylesheetUrl, menuBaseCss, menuFloatingButtonCss, menuFontSize } from '../menuCss'
+import { menuBaseCss, menuFloatingButtonCss, menuFontSize } from '../menuCss'
 import { NavButton } from './NavButton'
 import { LogoIcon } from './LogoIcon'
 import { GamePointIcon } from '../../GamePoints'
@@ -95,8 +95,6 @@ export const Menu = () => {
     </>
   )
 }
-
-addStylesheetUrl('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap')
 
 const mainButtonCss = css`
   ${menuFloatingButtonCss};

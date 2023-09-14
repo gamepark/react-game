@@ -7,7 +7,6 @@ import { CollisionDetection, DndContext, DragEndEvent, getClientRect } from '@dn
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { css, Global } from '@emotion/react'
-import normalize from 'emotion-normalize'
 import { fontSizeCss, perspectiveCss } from '../../../css'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
 import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/bounds.util'
@@ -20,19 +19,13 @@ export type GameTableProps = {
   yMax: number
   perspective?: number
   margin?: { left: number, top: number, right: number, bottom: number }
-  background?: string | ((player?: number) => string)
-  backgroundOverlay?: string
 } & HTMLAttributes<HTMLDivElement>
 
 const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 
 export const GameTable: FC<GameTableProps> = (
-  {
-    collisionAlgorithm, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 },
-    background, backgroundOverlay = 'rgba(0, 0, 0, 0.8)', children,
-    ...props
-  }
+  { collisionAlgorithm, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, children, ...props }
 ) => {
 
   const [dragging, setDragging] = useState(false)
@@ -93,11 +86,11 @@ export const GameTable: FC<GameTableProps> = (
     <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
                 modifiers={[snapCenterToCursor]}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
-      <Global styles={[normalize, globalStyle, backgroundImage(background, context.player, backgroundOverlay), globalFontSize(ratioWithMargins)]}/>
+      <Global styles={ratioFontSize(ratioWithMargins)}/>
       <TransformWrapper ref={ref} minScale={minScale} maxScale={1} initialScale={minScale} centerOnInit={true} wheel={wheel} smooth={false}
                         panning={panning} disablePadding doubleClick={doubleClick}>
         <TransformComponent wrapperStyle={wrapperStyle}>
-          <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} { ...props }>
+          <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
             <GameMaterialDisplay/>
             {children}
           </div>
@@ -111,65 +104,8 @@ function dataIsLocation<P extends number = number, L extends number = number>(da
   return typeof data?.type === 'number'
 }
 
-const globalStyle = css`
-  html {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-  }
-
-  *, *::before, *::after {
-    -webkit-box-sizing: inherit;
-    -moz-box-sizing: inherit;
-    box-sizing: inherit;
-  }
-
-  body {
-    margin: 0;
-    font-family: "Mulish", sans-serif;
-  }
-
-  #root {
-    position: absolute;
-    height: 100dvh;
-    width: 100dvw;
-    -webkit-touch-callout: none;
-    user-select: none;
-    overflow: hidden;
-    background-color: white;
-    background-size: cover;
-    background-position: center;
-    color: #eee;
-  }
-`
-
-const backgroundImage = (
-  background: string | ((player?: number) => string) = process.env.PUBLIC_URL + '/cover-1920.jpg', player?: number, backgroundOverlay?: string
-) => [
-  css`
-    #root {
-      background-image: url(${typeof background === 'function' ? background(player) : background});
-    }
-  `,
-  backgroundOverlay &&
-  css`
-    #root {
-      &:before {
-        content: '';
-        display: block;
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: ${backgroundOverlay};
-      }
-    }
-  `
-]
-
-const globalFontSize = (ratio: number) => css`
-  body {
+const ratioFontSize = (ratio: number) => css`
+  .react-transform-wrapper {
     font-size: 1dvh;
     @media (max-aspect-ratio: ${ratio}/1) {
       font-size: calc(1dvw / ${ratio});

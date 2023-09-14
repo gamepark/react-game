@@ -1,10 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
+import { css, Theme } from '@emotion/react'
 import { faLaptopCode, faLightbulb, faPaintBrush, faWrench } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { Picture } from '../Picture'
+import { BackgroundTheme } from '../../css'
 
 export type LoadingScreenProps = {
   gameBox?: string
@@ -84,7 +85,7 @@ export const LoadingScreen = ({
 
 const fadeOutDuration = 2000
 
-const loadingScreenStyle = css`
+const loadingScreenStyle = (theme: Theme) => css`
   position: absolute;
   top: 0;
   left: 0;
@@ -94,22 +95,8 @@ const loadingScreenStyle = css`
   flex-direction: column;
   align-items: center;
   transition: opacity ${fadeOutDuration}ms;
-  background-size: cover;
-  background-position: center;
   pointer-events: none;
-  background-image: url(${process.env.PUBLIC_URL + '/cover-1920.jpg'});
-  background-color: black;
-
-  &:before {
-    content: '';
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-  }
+  ${backgroundCss(theme.root.background)};
 
   > * {
     z-index: 1;
@@ -142,3 +129,11 @@ const iconStyle = css`
 const hiddenStyle = css`
   opacity: 0;
 `
+
+const backgroundCss = ({ image, overlay }: BackgroundTheme) => overlay ?
+  css`
+    background: linear-gradient(${overlay}, ${overlay}), url(${image}) center / cover, black;
+  ` :
+  css`
+    background: url(${image}) center / cover, black;
+  `

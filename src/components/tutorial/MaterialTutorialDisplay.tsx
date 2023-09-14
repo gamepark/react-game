@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { Dialog, rulesDialogCss } from '../dialogs'
+import { Dialog } from '../dialogs'
 import { useGame, useLegalMoves, useUndo } from '../../hooks'
 import { CloseTutorialPopup, isSetTutorialStep, LocalMoveType, MaterialGame, MoveKind, SetTutorialStep } from '@gamepark/rules-api'
 import { useEffect } from 'react'
@@ -40,7 +40,6 @@ export const MaterialTutorialDisplay = () => {
   return (
     <Dialog open={popup !== undefined && !game?.tutorialPopupClosed}
             css={[
-              rulesDialogCss,
               tutorialDialogCss,
               popup?.position && transformCss(`translate(${popup.position.x}em, ${popup.position.y}em)`)
             ]}

@@ -1,8 +1,7 @@
 import '@emotion/react'
-import { Interpolation } from '@emotion/react'
+import { GameTheme } from './GameTheme'
 
 declare module '@emotion/react' {
-  export interface Theme {
-    buttons?: Interpolation<Theme>
+  export interface Theme extends GameTheme {
   }
 }
