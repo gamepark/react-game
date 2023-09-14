@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css, useTheme } from '@emotion/react'
+import { css } from '@emotion/react'
 import { faChessPawn, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
@@ -18,8 +18,6 @@ import { RestartTutorialButton } from '../RestartTutorialButton'
 import { SoundButton } from '../SoundButton'
 import { UndoButton, UndoPopButton } from '../UndoButton'
 import { Chat } from '../../Chat'
-import { isContrastTheme } from '../../../hooks'
-import { ContrastThemeButton } from '../ContrastThemeButton'
 import { addStylesheetUrl, menuBaseCss, menuFloatingButtonCss, menuFontSize } from '../menuCss'
 import { NavButton } from './NavButton'
 import { LogoIcon } from './LogoIcon'
@@ -59,7 +57,6 @@ export const Menu = () => {
   useEffect(() => {
     if (resultDialogOpen) setResultDialogAutoOpen(false)
   }, [resultDialogOpen])
-  const theme = useTheme()
   return (
     <>
       <div css={[backdrop, isOpen && displayBackdrop]} onClick={() => setOpen(false)}/>
@@ -71,7 +68,6 @@ export const Menu = () => {
         <h2 css={titleCss}>{t('Menu')}</h2>
         {fscreen.fullscreenEnabled && <FullscreenButton/>}
         <SoundButton/>
-        {isContrastTheme(theme) && <ContrastThemeButton theme={theme}/>}
         {couldUndo && <UndoButton/>}
         {canGiveUp && <GiveUpButton/>}
         {couldEject && <EjectPlayerButton onClick={() => setEjectPlayerDialogOpen(true)}/>}
