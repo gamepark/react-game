@@ -16,12 +16,20 @@ export type PlayerTimerProps<PlayerId> = {
   customStyle?: ((playing: boolean, timeLeft: number) => Interpolation<Theme>)[]
 } & HTMLAttributes<HTMLSpanElement>
 
-export const PlayerTimer = <PlayerId extends any>(
-  { playerId, customStyle = [halfOpacityOnPause, blinkOnRunningTimeout], ...props }: PlayerTimerProps<PlayerId>
+export const PlayerTimer = <PlayerId extends any>(props: PlayerTimerProps<PlayerId>) => {
+  const playerTime = usePlayerTime(props.playerId)
+  if (!playerTime) return null
+  return <PlayerTimerDisplay playerTime={playerTime} {...props}/>
+}
+
+export type PlayerTimerDisplayProps<PlayerId> = PlayerTimerProps<PlayerId> & {
+  playerTime: number
+}
+
+export const PlayerTimerDisplay = <PlayerId extends any>(
+  { playerTime, playerId, customStyle = [halfOpacityOnPause, blinkOnRunningTimeout], ...props }: PlayerTimerDisplayProps<PlayerId>
 ) => {
   const playing = useSelector((state: GamePageState) => state.players.find(p => p.id === playerId)?.time?.playing ?? false)
-  const playerTime = usePlayerTime(playerId)
-  if (!playerTime) return null
   return (
     <span {...props} css={customStyle.map(fc => fc(playing, playerTime))}>
       {playerTime < 0 && '-'}{humanizeTimer(Math.abs(playerTime))}
