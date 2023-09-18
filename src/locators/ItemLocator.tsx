@@ -112,7 +112,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 
   isSameLocation(location1: Location<P, L>, location2: Location<P, L>) {
-    return location1.type === location2.type && location1.player === location2.player && location1.parent === location2.parent
+    return location1.type === location2.type && location1.player === location2.player && location1.id === location2.id && location1.parent === location2.parent
   }
 
   countItems(location: Location<P, L>, { rules, type }: ItemContext<P, M, L>): number {
