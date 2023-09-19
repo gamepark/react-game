@@ -4,7 +4,7 @@ import { displayLocationRules, Location, MaterialMove, MaterialRules, XYCoordina
 import { css, keyframes } from '@emotion/react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { useAnimations, useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules } from '../../../hooks'
-import { backgroundCss, borderRadiusCss, shineEffect, sizeCss, transformCss } from '../../../css'
+import { backgroundCss, borderRadiusCss, pointerCursorCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { useDroppable } from '@dnd-kit/core'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { combineEventListeners } from '../../../utilities'
@@ -37,9 +37,6 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
 
   if (!onShortClick && locator?.locationDescription?.rules) {
     onShortClick = () => play(displayLocationRules(location), { local: true })
-    if (!onLongClick) {
-      onLongClick = () => play(displayLocationRules(location), { local: true })
-    }
   }
 
   const { isOver, active, setNodeRef } = useDroppable({
@@ -59,13 +56,16 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
 
   const [clicking, setClicking] = useState(false)
 
-  const listeners = useLongPress(() => onLongClick && onLongClick(), {
+  const listeners = useLongPress(() => {
+    if (onLongClick) onLongClick()
+    else if (onShortClick) onShortClick()
+  }, {
     detect: LongPressEventType.Pointer,
     cancelOnMovement: 5,
     threshold: 600,
     onStart: event => {
-      setClicking(true)
-      if (onShortClick || onLongClick) {
+      if (onLongClick) {
+        setClicking(true)
         event.stopPropagation()
       }
     },
@@ -92,7 +92,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
 
   return <div ref={mergeRefs([ref, setNodeRef])}
               css={[
-                absolute,
+                absolute, (onShortClick || onLongClick) && pointerCursorCss,
                 locator.parentItemType !== undefined && positionOnParentCss(locator.getPositionOnParent(location, context)),
                 transformCss(
                   'translate(-50%, -50%)',
