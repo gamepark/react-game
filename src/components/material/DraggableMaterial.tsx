@@ -80,7 +80,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
 
   const animation = useItemAnimation(displayedItem)
   const isDropped = useMemo(() => isDroppedItem(itemContext), [itemContext])
-  const applyTransform = isDropped || !ignoreTransform
+  const applyTransform = isDropped || (!disabled && !ignoreTransform)
   if (!applyTransform) transformRef.current = undefined
 
   // Firefox bugs when the animation is immediately followed by the transition: we need to delay by 1 rerender putting back the transition
@@ -96,7 +96,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   useDndMonitor({ onDragStart, onDragEnd, onDragMove })
 
   const locatorTransform = useMemo(() => locator.transformItem(item, itemContext), [locator, item, itemContext])
-  const transformStyle = (applyTransform? [transformRef.current, ...locatorTransform]: locatorTransform).join(' ')
+  const transformStyle = (applyTransform ? [transformRef.current, ...locatorTransform] : locatorTransform).join(' ')
 
   return (
     <div css={[animationWrapperCss, animation]}>
