@@ -87,8 +87,8 @@ export const GameTable: FC<GameTableProps> = (
                 modifiers={[snapCenterToCursor]}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
       <Global styles={ratioFontSize(ratioWithMargins)}/>
-      <TransformWrapper ref={ref} minScale={minScale} maxScale={1} initialScale={minScale} centerOnInit={true} wheel={wheel} smooth={false}
-                        panning={panning} disablePadding doubleClick={doubleClick}>
+      <TransformWrapper ref={ref} minScale={minScale} maxScale={Math.max(1, minScale)} initialScale={minScale}
+                        centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
         <TransformComponent wrapperStyle={wrapperStyle}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
             <GameMaterialDisplay/>
