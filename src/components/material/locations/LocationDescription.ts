@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { LocationRulesProps, MaterialContext } from '../../../locators'
+import { ItemContext, LocationRulesProps, MaterialContext } from '../../../locators'
 import { ComponentSize } from '../MaterialDescription'
 import { Coordinates, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import { Interpolation, Theme } from '@emotion/react'
@@ -67,21 +67,18 @@ export abstract class LocationDescription<P extends number = number, M extends n
     return context.locators[location.type].parentItemType !== undefined
   }
 
-  canDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
-    return this.canDropToMove(move, location, context) || this.canDropToDelete(move, location, context)
-  }
-
-  canDropToMove(move: MaterialMove<P, M, L>, location: Location<P, L>, _context: MaterialContext<P, M, L>): boolean {
-    return isMoveItem(move) && move.position.location !== undefined && isLocationSubset(move.position.location, location)
-  }
-
-  canDropToDelete(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
-    return isDeleteItem(move) && equal(location, context.material[move.itemType].getStockLocation(
-      context.rules.material(move.itemType).getItem(move.itemIndex)!, context)
-    )
+  canDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: ItemContext<P, M, L>): boolean {
+    return this.isMoveToLocation(move, location, context)
   }
 
   canLongClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
-    return this.canDrop(move, location, context)
+    return this.isMoveToLocation(move, location, context)
+  }
+
+  protected isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
+    return (isMoveItem(move) && move.position.location !== undefined && isLocationSubset(move.position.location, location))
+      || (isDeleteItem(move) && equal(location, context.material[move.itemType].getStockLocation(
+        context.rules.material(move.itemType).getItem(move.itemIndex)!, context)
+      ))
   }
 }

@@ -28,7 +28,6 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const play = usePlay<MaterialMove>()
   const player = usePlayerId()
   const legalMoves = useLegalMoves()
-  const dropMoves = useMemo(() => legalMoves.filter(move => description?.canDrop(move, location, context)), [legalMoves, location, context])
   const longClickMoves = useMemo(() => legalMoves.filter(move => description?.canLongClick(move, location, context)), [legalMoves, location, context])
 
   if (!onLongClick && longClickMoves.length === 1) {
@@ -41,16 +40,15 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
 
   const { isOver, active, setNodeRef } = useDroppable({
     id: JSON.stringify(location),
-    disabled: !dropMoves.length,
     data: location
   })
 
   const draggedItem = dataIsDisplayedItem(active?.data.current) ? active?.data.current : undefined
-
-  const canDrop = useMemo(() => !!draggedItem && !!description && !!material && dropMoves.filter(move =>
-      material[draggedItem.type].canDrag(move, { ...context, ...draggedItem }) && description.canDrop(move, location, context)
+  const draggedItemContext = useMemo(() => draggedItem ? { ...context, ...draggedItem } : undefined, [draggedItem, context])
+  const canDrop = useMemo(() => !!draggedItemContext && !!description && !!material && legalMoves.filter(move =>
+      material[draggedItemContext.type].canDrag(move, draggedItemContext) && description.canDrop(move, location, draggedItemContext)
     ).length === 1
-    , [draggedItem, dropMoves, rules])
+    , [draggedItemContext, legalMoves, rules])
 
   const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
 
@@ -102,7 +100,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
                 sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
                 description.getExtraCss(location, context),
                 !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
-                ((canDrop && !isOver) || (!draggedItem && (dropMoves.length || longClickMoves.length) && !animations.length)) && shineEffect,
+                ((canDrop && !isOver) || (!draggedItem && longClickMoves.length && !animations.length)) && shineEffect,
                 canDrop && isOver && dropHighlight
               ]}
               {...props} {...combineEventListeners(listeners, props)}/>

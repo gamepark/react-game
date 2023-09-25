@@ -13,6 +13,7 @@ import { useTransformContext } from 'react-zoom-pan-pinch'
 import { isPlacedOnItem } from './utils/isPlacedOnItem'
 import { isDroppedItem } from './utils/isDroppedItem'
 import { useIsAnimatingPlayerAction } from './utils/useIsAnimatingPlayerAction'
+import { ItemContext } from '../../locators'
 
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
@@ -47,13 +48,14 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   })
 
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
+  const draggedItemContext = useMemo<ItemContext | undefined>(() => draggedItem && { ...context, ...draggedItem }, [draggedItem, context])
   const isDraggingParent = useMemo(() => !!item && !!draggedItem && isPlacedOnItem(item, draggedItem, context), [item, draggedItem, context])
   const canDropToSameLocation = useMemo(() => {
-    if (!draggedItem) return false
+    if (!draggedItemContext) return false
     const location = locator.locationDescription
-    const description = material[draggedItem.type]
-    return legalMoves.some(move => description.canDrag(move, { ...context, ...draggedItem }) && location?.canDrop(move, item.location, context))
-  }, [item, draggedItem, legalMoves])
+    const description = material[draggedItemContext.type]
+    return legalMoves.some(move => description.canDrag(move, draggedItemContext) && location?.canDrop(move, item.location, draggedItemContext))
+  }, [item, draggedItemContext, legalMoves])
 
   const [parentTransform, setParentTransform] = useState<XYCoordinates>()
   const transform = selfTransform ?? parentTransform
