@@ -3,8 +3,8 @@ import { Coordinates, MaterialItem } from '@gamepark/rules-api'
 
 export abstract class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
   limit = 20
-  private positions = new Map<number, Map<number, Coordinates>>()
-  private rotations = new Map<number, Map<number, number>>()
+  private positions = new Map<string, Map<number, Coordinates>>()
+  private rotations = new Map<string, Map<number, number>>()
 
   getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
     const pileId = this.getPileId(item, context)
@@ -56,9 +56,7 @@ export abstract class PileLocator<P extends number = number, M extends number = 
     return this.maxAngle
   }
 
-  getPileId(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
-    if (typeof item.location.id === 'number') return item.location.id
-    if (item.location.player !== undefined) return item.location.player
-    return context.type
+  getPileId(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string {
+    return [item.location.player, item.location.id, item.location.parent, context.type].filter(part => part !== undefined).join('_')
   }
 }
