@@ -16,7 +16,7 @@ import { faForward } from '@fortawesome/free-solid-svg-icons/faForward'
 import { useTutorialStep } from '../../hooks/useTutorialStep'
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay'
 import { useDispatch } from 'react-redux'
-import { playTutorialMovesAction } from '@gamepark/react-client/dist/Tutorial/PlayTutorialMoves'
+import { playTutorialMovesAction } from '@gamepark/react-client'
 
 export const MaterialTutorialDisplay = () => {
   const { t } = useTranslation()
