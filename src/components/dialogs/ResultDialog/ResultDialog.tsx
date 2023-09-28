@@ -4,12 +4,12 @@ import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameMode, GamePageState, PLATFORM_URI, Player } from '@gamepark/react-client'
-import { isCompetitive } from '@gamepark/rules-api'
+import { isCompetitive, rankPlayers } from '@gamepark/rules-api'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { Dialog, DialogProps } from '../Dialog'
-import { usePlayerId, usePlayerName, usePlayers, useRules } from '../../../hooks'
+import { usePlayerName, usePlayers, useResultText, useRules } from '../../../hooks'
 import { Avatar } from '../../Avatar'
 import { RematchSection } from './RematchSection'
 import { NavButton } from '../../menus/Menu/NavButton'
@@ -30,7 +30,6 @@ const gameId = query.get('game')
 
 export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const { t } = useTranslation()
-  const playerId = usePlayerId()
   const players = [...usePlayers()]
   const context = useContext(gameContext)
   const rules = useRules()!
@@ -38,22 +37,17 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const tournament = useSelector((state: GamePageState) => state.tournament)
   const ranks = players.map(_ => 1)
   if (isCompetitive(rules) && players.length > 1) {
-    players.sort((playerA, playerB) => rules.rankPlayers(playerA.id, playerB.id))
+    players.sort((playerA, playerB) => rankPlayers(rules, playerA.id, playerB.id))
     for (let i = 1; i < players.length; i++) {
-      ranks[i] = rules.rankPlayers(players[i - 1].id, players[i].id) === 0 ? ranks[i - 1] : i + 1
+      ranks[i] = rankPlayers(rules, players[i - 1].id, players[i].id) === 0 ? ranks[i - 1] : i + 1
     }
   }
   const rows = gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1
-  const winnerName = usePlayerName(players[0].id)
+  const resultText = useResultText()
   return (
     <Dialog onBackdropClick={close} css={style} {...props}>
       <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={close}/>
-      {isCompetitive(rules) && players.length > 1 ?
-        rules.rankPlayers(players[0].id, players[1].id) === 0 ? <h2>{t('result.equality')}</h2> :
-          players[0].id === playerId ? <h2>{t('result.victory')}</h2> :
-            <h2>{t('result.victory.other', { player: winnerName })}</h2> :
-        <h2>{t('result.over')}</h2>
-      }
+      <h2>{resultText}</h2>
       {gameMode === GameMode.TOURNAMENT && tournament &&
         <NavButton css={autoMargin} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
           {t('result.tournament.link')}

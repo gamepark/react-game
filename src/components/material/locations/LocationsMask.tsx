@@ -33,7 +33,7 @@ const LocationRect = ({ location }: LocationRectProps) => {
   const context = useMaterialContext()
   const position = locator.getPositionOnParent(location, context)
   const { width, height } = description.getSize(location, context)
-  const radius = description.getBorderRadius(location, context)
+  const radius = description.getBorderRadius(location, context) ?? 0
   const coordinates = description.getCoordinates(location, context)
   const transforms: string[] = ['translate(-50%, -50%)']
   if (coordinates) {
