@@ -28,6 +28,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const play = usePlay<MaterialMove>()
   const player = usePlayerId()
   const legalMoves = useLegalMoves()
+  const disabled = useMemo(() => !legalMoves.some(move => description?.couldDrop(move, location, context)), [legalMoves, location, context])
   const longClickMoves = useMemo(() => legalMoves.filter(move => description?.canLongClick(move, location, context)), [legalMoves, location, context])
 
   if (!onLongClick && longClickMoves.length === 1) {
@@ -40,6 +41,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
 
   const { isOver, active, setNodeRef } = useDroppable({
     id: JSON.stringify(location),
+    disabled,
     data: location
   })
 
