@@ -64,7 +64,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     cancelOnMovement: 5,
     threshold: 600,
     onStart: event => {
-      if (onLongClick) {
+      if (onShortClick || onLongClick) {
         setClicking(true)
         event.stopPropagation()
       }
