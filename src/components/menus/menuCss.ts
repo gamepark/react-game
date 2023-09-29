@@ -91,13 +91,6 @@ export const hide = css`
   transform: scale(0);
 `
 
-export const addStylesheetUrl = (url: string) => {
-  const link = document.createElement('link')
-  link.rel = 'stylesheet'
-  link.href = url
-  document.getElementsByTagName('head')[0].appendChild(link)
-}
-
 export const backdrop = css`
   position: fixed;
   width: 100dvw;
