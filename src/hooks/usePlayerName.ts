@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { usePlayerId } from './usePlayerId'
 
 export function usePlayerName<PlayerId = any>(playerId: PlayerId): string {
-  const name = useSelector((state: GamePageState) => state.players.find(player => player.id === playerId ?? state.playerId)?.name ?? '')
+  const name = useSelector((state: GamePageState) => state.players.find(player => player.id === (playerId ?? state.playerId))?.name ?? '')
   const optionsSpec = useContext(gameContext).optionsSpec
   const me = useMe()
   const myId = usePlayerId()

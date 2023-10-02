@@ -22,7 +22,7 @@ export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: ()
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   const opponentThatCanBeEjected = useOpponentWithMaxTime()
   const dispatch = useDispatch()
-  const opponentName = usePlayerName(opponentWithNegativeTime)
+  const opponentName = usePlayerName(opponentWithNegativeTime?.id)
   useEffect(() => {
     if (!opponentWithNegativeTime) {
       close()
