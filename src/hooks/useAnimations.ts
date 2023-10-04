@@ -23,7 +23,7 @@ export const getAnimationFromState = (action: DisplayedAction): Animation => ({
 })
 
 export const useAnimations = <Move = any, PlayerId = number>(predicate?: (animation: Animation<Move, PlayerId>) => boolean): Animation<Move, PlayerId>[] => {
-  const actions = useSelector((state: GamePageState<any, Move, PlayerId>) => state.actions || [])
+  const actions = useSelector((state: GamePageState<any, Move, PlayerId>) => state.actions) ?? []
   return actions.filter(action => action.animation !== undefined)
     .map<Animation<Move, PlayerId>>(getAnimationFromState)
     .filter(animation => !predicate || predicate(animation))
