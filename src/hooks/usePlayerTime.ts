@@ -2,14 +2,13 @@ import { GamePageState } from '@gamepark/react-client'
 import { GameSpeed } from '@gamepark/rules-api'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { usePlayer } from './usePlayers'
 
 export const usePlayerTime = <PlayerId>(playerId: PlayerId) => {
   const [result, setResult] = useState<number>()
-  const { options, player, clientTimeDelta } = useSelector((state: GamePageState) => ({
-    options: state.options,
-    player: state.players.find(p => p.id === playerId),
-    clientTimeDelta: state.clientTimeDelta
-  }))
+  const options = useSelector((state: GamePageState) => state.options)
+  const player = usePlayer(playerId)
+  const clientTimeDelta = useSelector((state: GamePageState) => state.clientTimeDelta)
   const running = options && options.speed === GameSpeed.RealTime && player?.time?.playing
 
   useEffect(() => {
