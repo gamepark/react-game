@@ -1,19 +1,19 @@
 /** @jsxImportSource @emotion/react */
-import { Header, HeaderProps } from './Header'
-import { useTranslation } from 'react-i18next'
-import { useGame, useResultText } from '../../hooks'
-import { ComponentType, useState } from 'react'
-import { MaterialGame } from '@gamepark/rules-api'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons/faCircleQuestion'
-import { pointerCursorCss } from '../../css'
-import { RulesDialog } from '../dialogs'
-import Scrollbars from 'react-custom-scrollbars-2'
 import { css } from '@emotion/react'
+import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons/faCircleQuestion'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { MaterialGame } from '@gamepark/rules-api'
+import { ComponentType, useState } from 'react'
+import Scrollbars from 'react-custom-scrollbars-2'
+import { useTranslation } from 'react-i18next'
+import { pointerCursorCss } from '../../css'
+import { useGame, useResultText } from '../../hooks'
+import { RulesDialog } from '../dialogs'
+import { Header, HeaderProps } from './Header'
 
 export type MaterialHeaderProps<RulesStep extends number = number> = {
   loading?: boolean
-  rulesStepsHeaders: Record<RulesStep, ComponentType>
+  rulesStepsHeaders: Partial<Record<RulesStep, ComponentType>>
   GameOver?: ComponentType
   GameOverRule?: ComponentType
 } & HeaderProps
@@ -29,7 +29,8 @@ export const MaterialHeader = <RulesStep extends number = number>(
       {
         loading ? t('Game loading...')
           : RulesStepsHeader ? <RulesStepsHeader/>
-            : GameOver ? <GameOver/> : <GameOverHeader GameOverRule={GameOverRule}/>
+            : game?.rule !== undefined ? t(`TODO: header for rule id ${game.rule.id}`)
+              : GameOver ? <GameOver/> : <GameOverHeader GameOverRule={GameOverRule}/>
       }
     </Header>
   )
