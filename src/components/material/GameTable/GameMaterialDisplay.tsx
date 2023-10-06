@@ -1,18 +1,18 @@
 /** @jsxImportSource @emotion/react */
-import { ItemContext } from '../../../locators'
-import { useCallback, useMemo, useRef } from 'react'
-import { useMaterialContext, usePlay, useRules, useZoomToElements } from '../../../hooks'
 import { closeRulesDisplay, displayMaterialRules, Location, MaterialItem, MaterialRules } from '@gamepark/rules-api'
-import { MaterialComponent } from '../MaterialComponent'
-import { pointerCursorCss, transformCss } from '../../../css'
-import { DraggableMaterial } from '../DraggableMaterial'
-import { MaterialRulesDialog } from '../../dialogs'
-import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
-import { useTutorialStep } from '../../../hooks/useTutorialStep'
-import { countTutorialFocusRefs, isItemFocus, isLocationBuilder, isLocationFocus, isStaticItemFocus, TutorialFocus, TutorialPopup } from '../../tutorial'
-import { LocationsMask, SimpleDropArea } from '../locations'
 import equal from 'fast-deep-equal'
+import { useCallback, useMemo, useRef } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
+import { pointerCursorCss, transformCss } from '../../../css'
+import { useMaterialContext, usePlay, useRules, useZoomToElements } from '../../../hooks'
+import { useTutorialStep } from '../../../hooks/useTutorialStep'
+import { centerLocator, ItemContext } from '../../../locators'
+import { MaterialRulesDialog } from '../../dialogs'
+import { countTutorialFocusRefs, isItemFocus, isLocationBuilder, isLocationFocus, isStaticItemFocus, TutorialFocus, TutorialPopup } from '../../tutorial'
+import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
+import { DraggableMaterial } from '../DraggableMaterial'
+import { LocationsMask, SimpleDropArea } from '../locations'
+import { MaterialComponent } from '../MaterialComponent'
 
 export const GameMaterialDisplay = () => {
   const context = useMaterialContext()
@@ -51,8 +51,8 @@ export const GameMaterialDisplay = () => {
   return <>
     {Object.entries(material).map(([stringType, description]) => {
       const type = parseInt(stringType)
-      return description.getStaticItems(context).map((item, index) => {
-        const locator = locators[item.location.type]
+      return description?.getStaticItems(context).map((item, index) => {
+        const locator = locators[item.location.type] ?? centerLocator
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
           const innerLocations = getInnerLocations(item, itemContext, tutorialPopup, tutorialFocus)
@@ -77,7 +77,7 @@ export const GameMaterialDisplay = () => {
         const locator = locators[item.location.type]
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
-          if (locator.hide(item, itemContext)) return null
+          if (locator?.hide(item, itemContext)) return null
           const innerLocations = getInnerLocations(item, itemContext, tutorialPopup, tutorialFocus)
           const focus = isItemFocus(type, index, tutorialFocus)
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
@@ -93,7 +93,7 @@ export const GameMaterialDisplay = () => {
       })
     })}
     {Object.values(locators).map(locator => {
-        return locator.locationDescription?.getLocations(context).map(location => {
+        return locator?.locationDescription?.getLocations(context).map(location => {
           const isFocus = isLocationFocus(location, tutorialFocus)
           return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={isFocus} ref={isFocus ? addFocusRef : undefined}/>
         })
@@ -113,9 +113,9 @@ const getInnerLocations = (
   item: MaterialItem, context: ItemContext, tutorialPopup?: TutorialPopup | false, tutorialFocus?: TutorialFocus | TutorialFocus[]
 ): FocusableLocation[] => {
   const locationsFocus = tutorialPopup ? getLocationsFocus(tutorialFocus).filter(location =>
-    context.locators[location.type].parentItemType === context.type && (location.parent ?? 0) === context.index
+    context.locators[location.type]?.parentItemType === context.type && (location.parent ?? 0) === context.index
   ) : []
-  const result: FocusableLocation[] = context.material[context.type].getLocations(item, context).map(location => ({ location }))
+  const result: FocusableLocation[] = context.material[context.type]?.getLocations(item, context).map(location => ({ location })) ?? []
   for (const locationFocus of locationsFocus) {
     const focusableLocation = result.find(focusableLocation => equal(focusableLocation.location, locationFocus))
     if (focusableLocation) {

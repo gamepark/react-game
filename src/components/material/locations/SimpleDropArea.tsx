@@ -1,14 +1,14 @@
 /** @jsxImportSource @emotion/react */
-import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
-import { displayLocationRules, Location, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
-import { css, keyframes } from '@emotion/react'
-import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { useAnimations, useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules } from '../../../hooks'
-import { backgroundCss, borderRadiusCss, pointerCursorCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { useDroppable } from '@dnd-kit/core'
-import { dataIsDisplayedItem } from '../DraggableMaterial'
-import { combineEventListeners } from '../../../utilities'
+import { css, keyframes } from '@emotion/react'
+import { displayLocationRules, Location, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
+import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
+import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
+import { backgroundCss, borderRadiusCss, pointerCursorCss, shineEffect, sizeCss, transformCss } from '../../../css'
+import { useAnimations, useLegalMoves, useMaterialContext, usePlay, usePlayerId, useRules } from '../../../hooks'
+import { combineEventListeners } from '../../../utilities'
+import { dataIsDisplayedItem } from '../DraggableMaterial'
 
 export type SimpleDropAreaProps<P extends number = number, L extends number = number> = {
   location: Location<P, L>
@@ -48,7 +48,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const draggedItem = dataIsDisplayedItem(active?.data.current) ? active?.data.current : undefined
   const draggedItemContext = useMemo(() => draggedItem ? { ...context, ...draggedItem } : undefined, [draggedItem, context])
   const canDrop = useMemo(() => !!draggedItemContext && !!description && !!material && legalMoves.filter(move =>
-      material[draggedItemContext.type].canDrag(move, draggedItemContext) && description.canDrop(move, location, draggedItemContext)
+      material[draggedItemContext.type]?.canDrag(move, draggedItemContext) && description.canDrop(move, location, draggedItemContext)
     ).length === 1
     , [draggedItemContext, legalMoves, rules])
 

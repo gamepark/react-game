@@ -1,15 +1,15 @@
 import { Animations, TutorialDescription } from '@gamepark/react-client'
 import { RulesCreator } from '@gamepark/rules-api'
 import React from 'react'
-import { MaterialDescription } from '../material'
-import { ItemLocator } from '../../locators'
+import { ItemLocatorRecord } from '../../locators'
+import { MaterialDescriptionRecord } from '../material'
 
 export type GameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   game: string
   Rules: RulesCreator<Game, Move, PlayerId>
-  material?: Record<MaterialType, MaterialDescription<PlayerId, MaterialType, LocationType>>
-  materialI18n?: Record<string, Partial<Record<MaterialType, MaterialDescription<PlayerId, MaterialType, LocationType>>>>
-  locators?: Record<LocationType, ItemLocator<PlayerId, MaterialType, LocationType>>
+  material?: Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType>>
+  materialI18n?: Record<string, Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType>>>
+  locators?: Partial<ItemLocatorRecord<PlayerId, MaterialType, LocationType>>
   optionsSpec?: any
   animations?: Animations<Game, Move, PlayerId>
   tutorial?: TutorialDescription<Game, Move, PlayerId>
@@ -18,8 +18,8 @@ export type GameContext<Game = any, Move = any, PlayerId extends number = number
 
 export type MaterialGameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number>
   = GameContext<Game, Move, PlayerId, MaterialType, LocationType> & {
-  material: Record<MaterialType, MaterialDescription<PlayerId, MaterialType, LocationType>>
-  locators: Record<LocationType, ItemLocator<PlayerId, MaterialType, LocationType>>
+  material: Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType>>
+  locators: Partial<ItemLocatorRecord<PlayerId, MaterialType, LocationType>>
 }
 
 class MissingRules {

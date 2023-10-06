@@ -1,10 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { Coordinates, DisplayedItem, Location, Material, MaterialGame, MaterialItem, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
-import { LocationDescription, MaterialDescription } from '../components'
 import equal from 'fast-deep-equal'
 import sumBy from 'lodash/sumBy'
+import { LocationDescription, MaterialDescriptionRecord } from '../components'
 
-export abstract class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
+export class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
   rotationUnit = 'deg'
   limit?: number
@@ -52,7 +52,7 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
    * @return The delta coordinates in em of the center of the item from the center of their parent (or the screen)
    */
   getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
-    return { ...this.position, z: context.material[context.type].getThickness(item, context) }
+    return { ...this.position, z: context.material[context.type]?.getThickness(item, context) ?? 0 }
   }
 
   positionOnParent: XYCoordinates = { x: 0, y: 0 }
@@ -96,14 +96,14 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
     const parentMaterial = material[this.parentItemType]
     if (location.parent !== undefined) {
       const parentItem = rules.material(this.parentItemType).getItem(location.parent)!
-      const parentLocator: ItemLocator<P, M, L> = locators[parentItem.location.type]
-      return parentLocator.transformItemLocation(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 })
+      const parentLocator = locators[parentItem.location.type]
+      return parentLocator?.transformItemLocation(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 }) ?? []
     } else {
       const parentItemId = this.getParentItemId(location)
-      const staticItem = parentMaterial.getStaticItems(context).find(item => equal(item.id, parentItemId))
+      const staticItem = parentMaterial?.getStaticItems(context).find(item => equal(item.id, parentItemId))
       if (!staticItem) return []
-      const locator: ItemLocator<P, M, L> = locators[staticItem.location.type]
-      return locator.transformItemLocation(staticItem, { ...context, type: this.parentItemType, displayIndex: 0 })
+      const locator = locators[staticItem.location.type]
+      return locator?.transformItemLocation(staticItem, { ...context, type: this.parentItemType, displayIndex: 0 }) ?? []
     }
   }
 
@@ -130,10 +130,12 @@ export abstract class ItemLocator<P extends number = number, M extends number = 
   }
 }
 
+export type ItemLocatorRecord<P extends number = number, M extends number = number, L extends number = number> = Record<L, ItemLocator<P, M, L>>
+
 export type MaterialContext<P extends number = number, M extends number = number, L extends number = number> = {
   rules: MaterialRules<P, M, L>
-  material: Record<M, MaterialDescription<P, M, L>>
-  locators: Record<L, ItemLocator<P, M, L>>
+  material: Partial<MaterialDescriptionRecord<P, M, L>>
+  locators: Partial<ItemLocatorRecord<P, M, L>>
   player?: P
 }
 
@@ -143,3 +145,5 @@ export type LocationRulesProps<P extends number = number, L extends number = num
   location: Location<P, L>
   closeDialog: () => void
 }
+
+export const centerLocator = new ItemLocator()

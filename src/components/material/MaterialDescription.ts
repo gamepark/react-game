@@ -1,5 +1,5 @@
-import { FC } from 'react'
 import { isDeleteItem, isMoveItem, Location, MaterialItem, MaterialMove, MaterialRulesDisplay } from '@gamepark/rules-api'
+import { FC } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
 
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
@@ -69,3 +69,5 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return this.thickness
   }
 }
+
+export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number> = Record<M, MaterialDescription<P, M, L>>

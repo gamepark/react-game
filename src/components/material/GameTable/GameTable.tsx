@@ -1,15 +1,15 @@
 /** @jsxImportSource @emotion/react */
-import React, { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { dropItemMove, Location } from '@gamepark/rules-api'
-import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
-import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { CollisionDetection, DndContext, DragEndEvent, getClientRect, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
-import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { css, Global } from '@emotion/react'
+import { dropItemMove, Location } from '@gamepark/rules-api'
+import React, { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
-import { GameMaterialDisplay } from './GameMaterialDisplay'
+import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/bounds.util'
+import { dataIsDisplayedItem } from '../DraggableMaterial'
+import { GameMaterialDisplay } from './GameMaterialDisplay'
 
 export type GameTableProps = {
   collisionAlgorithm?: CollisionDetection
@@ -23,7 +23,7 @@ export type GameTableProps = {
 
 const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
-const pointerSensorOptions = { activationConstraint: { distance: 2 }}
+const pointerSensorOptions = { activationConstraint: { distance: 2 } }
 export const GameTable: FC<GameTableProps> = (
   { collisionAlgorithm, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, children, ...props }
 ) => {
@@ -46,7 +46,7 @@ export const GameTable: FC<GameTableProps> = (
       const locator = context.locators[location.type]
       const itemContext = { ...context, ...item }
       const moves = legalMoves.filter(move =>
-        description.canDrag(move, itemContext) && locator.locationDescription!.canDrop(move, location, itemContext)
+        description?.canDrag(move, itemContext) && locator?.locationDescription?.canDrop(move, location, itemContext)
       )
       if (moves.length === 1) {
         play(dropItemMove(type, index, displayIndex), { local: true })
