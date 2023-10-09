@@ -1,10 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons/faCircleQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { MaterialGame } from '@gamepark/rules-api'
 import { ComponentType, useState } from 'react'
-import Scrollbars from 'react-custom-scrollbars-2'
 import { useTranslation } from 'react-i18next'
 import { pointerCursorCss } from '../../css'
 import { useGame, useResultText } from '../../hooks'
@@ -43,27 +41,8 @@ const GameOverHeader = ({ GameOverRule }: { GameOverRule?: ComponentType }) => {
   if (!GameOverRule) return <>{resultText}</>
   return <>
     <span>{resultText}&nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => setDialogOpen(true)} css={pointerCursorCss}/></span>
-    <RulesDialog open={dialogOpen} close={() => setDialogOpen(false)}>
-      <Scrollbars autoHeight css={scrollableContainer}>
-        <GameOverRule/>
-      </Scrollbars>
+    <RulesDialog open={dialogOpen} close={() => setDialogOpen(false)} scrollbar>
+      <GameOverRule/>
     </RulesDialog>
   </>
 }
-
-const scrollableContainer = css`
-  max-height: calc(90vh - 6em) !important;
-
-  > div {
-    max-height: calc(90vh - 6em) !important;
-
-    // trick to avoid very thin bar on some resolutions with react-custom-scrollbars-2
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    ::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-    }
-  }
-`
