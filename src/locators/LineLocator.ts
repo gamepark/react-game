@@ -9,11 +9,17 @@ export abstract class LineLocator<P extends number = number, M extends number = 
     if (this.getDeltaMax) {
       const deltaMax = this.getDeltaMax(item, context)
       const count = this.countItems(item.location, context)
-      if (deltaMax.x !== undefined) delta.x = Math.min(delta.x ?? 0, deltaMax.x / count)
-      if (deltaMax.y !== undefined) delta.y = Math.min(delta.y ?? 0, deltaMax.y / count)
-      if (deltaMax.z !== undefined) delta.z = Math.min(delta.z ?? 0, deltaMax.z / count)
+      delta.x = this.getDeltaValue(delta.x, deltaMax.x, count)
+      delta.y = this.getDeltaValue(delta.y, deltaMax.y, count)
+      delta.z = this.getDeltaValue(delta.z, deltaMax.z, count)
     }
     return { x: coordinates.x + index * (delta.x ?? 0), y: coordinates.y + index * (delta.y ?? 0), z: coordinates.z + index * (delta.z ?? 0) }
+  }
+
+  getDeltaValue(delta: number = 0, max?: number, count: number = 1) {
+    if (max !== undefined && max > 0) return Math.min(delta, max / count)
+    if (max !== undefined && max < 0) return Math.max(delta, max / count)
+    return delta
   }
 
   coordinates: Coordinates = { x: 0, y: 0, z: 0 }
