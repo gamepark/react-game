@@ -16,7 +16,7 @@ export const Avatar = ({ playerId, speechBubbleProps, ...props }: Props) => {
   const player = usePlayer(playerId)
   const me = useMe()
   const myPlayerId = usePlayerId()
-  const avatar = myPlayerId === playerId ? me?.user?.avatar : player?.avatar
+  const avatar = myPlayerId === playerId ? me?.user?.avatar ?? player?.avatar : player?.avatar
   const query = new URLSearchParams(window.location.search)
   const gameId = query.get('game')
   return (
