@@ -4,6 +4,7 @@ import { backgroundCss, borderRadiusCss, preserve3d, shadowCss, shadowEffect, sh
 import { ComponentCommonProps, ComponentSize, MaterialDescription } from '../MaterialDescription'
 import { css } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
+import { MaterialContext } from '../../../locators'
 
 export type FlatMaterialProps = ComponentSize & ComponentCommonProps & {
   image?: string
@@ -64,29 +65,29 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
   image?: string
   images?: Record<ItemId extends keyof any ? ItemId : never, string>
 
-  getImage(itemId: ItemId): string | undefined {
-    return this.images?.[this.getFrontId(itemId)] ?? this.image
+  getImage(itemId: ItemId, context: MaterialContext<P, M, L>): string | undefined {
+    return this.images?.[this.getFrontId(itemId, context)] ?? this.image
   }
 
   backImage?: string
   backImages?: Record<ItemId extends keyof any ? ItemId : never, string>
 
-  getBackImage(itemId: ItemId): string | undefined {
-    return this.backImages?.[this.getBackId(itemId)] ?? this.backImage
+  getBackImage(itemId: ItemId, context: MaterialContext<P, M, L>): string | undefined {
+    return this.backImages?.[this.getBackId(itemId, context)] ?? this.backImage
   }
 
   borderRadius?: number
 
-  getBorderRadius(_itemId: ItemId): number | undefined {
+  getBorderRadius(_itemId: ItemId, _context: MaterialContext<P, M, L>): number | undefined {
     return this.borderRadius
   }
 
-  getFlatMaterialProps(itemId: ItemId): FlatMaterialProps {
+  getFlatMaterialProps(itemId: ItemId, context: MaterialContext<P, M, L>): FlatMaterialProps {
     return {
-      ...this.getSize(itemId),
-      image: this.getImage(itemId),
-      back: this.backImage || this.backImages ? { image: this.getBackImage(itemId) } : undefined,
-      borderRadius: this.getBorderRadius(itemId)
+      ...this.getSize(itemId, context),
+      image: this.getImage(itemId, context),
+      back: this.backImage || this.backImages ? { image: this.getBackImage(itemId, context) } : undefined,
+      borderRadius: this.getBorderRadius(itemId, context)
     }
   }
 
@@ -99,11 +100,11 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return images
   }
 
-  protected getFrontId(itemId: ItemId) {
+  protected getFrontId(itemId: ItemId, _context: MaterialContext<P, M, L>) {
     return typeof itemId === 'object' ? (itemId as any).front : itemId as keyof any
   }
 
-  protected getBackId(itemId: ItemId) {
+  protected getBackId(itemId: ItemId, _context: MaterialContext<P, M, L>) {
     return typeof itemId === 'object' ? (itemId as any).back : itemId as keyof any
   }
 
@@ -111,8 +112,8 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return !!this.backImage || !!this.backImages
   }
 
-  isHidden(item: Partial<MaterialItem<P, L>>): boolean {
-    return this.hasBackFace() && this.getFrontId(item.id) === undefined
+  isHidden(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
+    return this.hasBackFace() && this.getFrontId(item.id, context) === undefined
   }
 }
 

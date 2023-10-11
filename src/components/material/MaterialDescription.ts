@@ -54,7 +54,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   width?: number
   ratio?: number
 
-  getSize(_itemId: ItemId): ComponentSize {
+  getSize(_itemId: ItemId, _context: MaterialContext<P, M, L>): ComponentSize {
     if (this.width && this.height) return { width: this.width, height: this.height }
     if (this.ratio && this.width) return { width: this.width, height: this.width / this.ratio }
     if (this.ratio && this.height) return { width: this.height * this.ratio, height: this.height }

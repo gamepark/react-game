@@ -3,7 +3,7 @@ import { forwardRef, HTMLAttributes, MouseEvent } from 'react'
 import { MaterialGame } from '@gamepark/rules-api'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { combineEventListeners } from '../../utilities'
-import { useGame, useMaterialDescription } from '../../hooks'
+import { useGame, useMaterialContext, useMaterialDescription } from '../../hooks'
 import { FlatMaterial, isFlatMaterialDescription } from './FlatMaterial'
 import { ComponentCommonProps } from './MaterialDescription'
 
@@ -19,6 +19,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
 ) => {
   const game = useGame<MaterialGame>()
   const description = useMaterialDescription(type)
+  const context = useMaterialContext()
 
   const listeners = useLongPress(() => onLongClick && onLongClick(), {
     detect: LongPressEventType.Pointer,
@@ -36,7 +37,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
 
   if (isFlatMaterialDescription(description)) {
     return (
-      <FlatMaterial ref={ref} {...description.getFlatMaterialProps(itemId)} {...props} {...combineEventListeners(listeners, props)}/>
+      <FlatMaterial ref={ref} {...description.getFlatMaterialProps(itemId, context)} {...props} {...combineEventListeners(listeners, props)}/>
     )
   }
 

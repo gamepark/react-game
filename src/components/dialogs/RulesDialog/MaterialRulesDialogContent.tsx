@@ -4,7 +4,7 @@ import { css } from '@emotion/react'
 import Scrollbars from 'react-custom-scrollbars-2'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
 import { fontSizeCss, transformCss } from '../../../css'
-import { useMaterialDescription, usePlay } from '../../../hooks'
+import { useMaterialContext, useMaterialDescription, usePlay } from '../../../hooks'
 
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   rulesDisplay: MaterialRulesDisplay<Player, MaterialType, LocationType>
@@ -14,14 +14,15 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   { rulesDisplay }: MaterialRulesDialogContentProps<P, M, L>
 ) => {
   const play = usePlay()
-  const description = useMaterialDescription(rulesDisplay.itemType)
+  const context = useMaterialContext<P, M, L>()
+  const description = useMaterialDescription<P, M, L>(rulesDisplay.itemType)
   if (!description) return null
   const item = rulesDisplay.item
-  const { width, height } = description.getSize(item.id)
+  const { width, height } = description.getSize(item.id, context)
   return <div css={flex}>
     <MaterialComponent type={rulesDisplay.itemType} itemId={item.id} css={[
       noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-      isFlatMaterialDescription(description) && description.isHidden(item) && transformCss('rotateY(180deg)')
+      isFlatMaterialDescription(description) && description.isHidden(item, context) && transformCss('rotateY(180deg)')
     ]}/>
     <Scrollbars autoHeight css={scrollableContainer}>
       <div css={rulesStyle}>
