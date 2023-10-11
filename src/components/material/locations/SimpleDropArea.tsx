@@ -51,6 +51,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
       material[draggedItemContext.type]?.canDrag(move, draggedItemContext) && description.canDrop(move, location, draggedItemContext)
     ).length === 1
     , [draggedItemContext, legalMoves, rules])
+  const locationContext = useMemo(() => ({ ...context, canDrop }), [context, canDrop])
 
   const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
 
@@ -88,7 +89,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const { width, height } = description.getSize(location, context)
   const image = description.getImage(location, context)
   const borderRadius = description.getBorderRadius(location, context)
-  const coordinates = description.getCoordinates(location, context)
+  const coordinates = description.getCoordinates(location, locationContext)
 
   return <div ref={mergeRefs([ref, setNodeRef])}
               css={[
@@ -97,10 +98,10 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
                 transformCss(
                   'translate(-50%, -50%)',
                   coordinates && `translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`,
-                  description.getRotation && `rotate(${description.getRotation(location, context)}${description.rotationUnit})`
+                  description.getRotation && `rotate(${description.getRotation(location, locationContext)}${description.rotationUnit})`
                 ),
                 sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
-                description.getExtraCss(location, context),
+                description.getExtraCss(location, locationContext),
                 !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
                 ((canDrop && !isOver) || (!draggedItem && longClickMoves.length && !animations.length)) && shineEffect,
                 canDrop && isOver && dropHighlight

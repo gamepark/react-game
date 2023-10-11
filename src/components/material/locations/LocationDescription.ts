@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { ItemContext, LocationRulesProps, MaterialContext } from '../../../locators'
+import { ItemContext, LocationContext, LocationRulesProps, MaterialContext } from '../../../locators'
 import { ComponentSize } from '../MaterialDescription'
 import { Coordinates, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import { Interpolation, Theme } from '@emotion/react'
@@ -48,17 +48,17 @@ export abstract class LocationDescription<P extends number = number, M extends n
 
   extraCss?: Interpolation<Theme>
 
-  getExtraCss(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Interpolation<Theme> {
+  getExtraCss(_location: Location<P, L>, _context: LocationContext<P, M, L>): Interpolation<Theme> {
     return this.extraCss
   }
 
   coordinates?: Coordinates
 
-  getCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Coordinates | undefined {
+  getCoordinates(_location: Location<P, L>, _context: LocationContext<P, M, L>): Coordinates | undefined {
     return this.coordinates
   }
 
-  getRotation?(location: Location<P, L>, context: MaterialContext<P, M, L>): number
+  getRotation?(location: Location<P, L>, context: LocationContext<P, M, L>): number
 
   alwaysVisible?: boolean
 
