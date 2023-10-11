@@ -1,10 +1,11 @@
-import { LocalMoveType, MaterialGame, MaterialMove, MoveKind, RulesCreator, SetTutorialStep } from '@gamepark/rules-api'
+import { Action, LocalMoveType, MaterialGame, MaterialMove, MoveKind, RulesCreator, SetTutorialStep } from '@gamepark/rules-api'
 import { MaterialTutorial, TutorialStep } from './MaterialTutorial'
 
 export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCreator<any, any, any>) {
 
   const getLegalMoves = Rules.prototype.getLegalMoves
   const isTurnToPlay = Rules.prototype.isTurnToPlay
+  const canUndo = Rules.prototype.canUndo
 
   Rules.prototype.getTutorialStep = function (): TutorialStep | undefined {
     return this.game.tutorialStep !== undefined ? tutorial.steps[this.game.tutorialStep] : undefined
@@ -66,5 +67,14 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
       return [{ kind: MoveKind.LocalMove, type: LocalMoveType.SetTutorialStep, step: this.game.tutorialStep + 1 }]
     }
     return consequences
+  }
+
+  Rules.prototype.canUndo = function (action: Action, consecutiveActions: Action[]) {
+    const game = this.game as MaterialGame
+    if (game.tutorialStep !== undefined && game.tutorialStep < tutorial.steps.length && consecutiveActions.length) {
+      // It is forbidden to undo any move but the very last one during the tutorial
+      return false
+    }
+    return canUndo.bind(this)(action, consecutiveActions)
   }
 }
