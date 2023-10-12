@@ -39,7 +39,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   getMovedItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
     const { type, rules, locators } = context
     const futureGame = JSON.parse(JSON.stringify(rules.game))
-    const mutator = new MaterialMutator(type, futureGame.items[type]!, rules.locationsStrategies[type], rules.materialLocations[type])
+    const mutator = new MaterialMutator(type, futureGame.items[type]!, rules.locationsStrategies[type], rules.itemsCanMerge(type))
     const futureIndex = mutator.move(animation.move)
     const futureItem = futureGame.items[type]![futureIndex]
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
