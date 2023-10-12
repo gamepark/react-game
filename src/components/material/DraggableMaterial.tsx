@@ -13,7 +13,7 @@ import { useTransformContext } from 'react-zoom-pan-pinch'
 import { isPlacedOnItem } from './utils/isPlacedOnItem'
 import { isDroppedItem } from './utils/isDroppedItem'
 import { useIsAnimatingPlayerAction } from './utils/useIsAnimatingPlayerAction'
-import { ItemContext } from '../../locators'
+import { centerLocator, ItemContext } from '../../locators'
 
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
@@ -28,17 +28,17 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const { material } = context
   const item = useRevealedItem(type, index)
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
-  const locator = context.locators[item.location.type]
+  const locator = context.locators[item.location.type] ?? centerLocator
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const play = usePlay()
   const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
   const legalMoves = useLegalMoves<MaterialMove>()
   const longClickMove = useMemo(() => {
     if (isAnimatingPlayerAction) return
-    const eligibleMoves = legalMoves.filter(move => material[type].canLongClick(move, itemContext))
+    const eligibleMoves = legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
     return eligibleMoves.length === 1 ? eligibleMoves[0] : undefined
   }, [legalMoves, itemContext, isAnimatingPlayerAction])
-  const disabled = useMemo(() => isAnimatingPlayerAction || !legalMoves.some(move => material[type].canDrag(move, itemContext))
+  const disabled = useMemo(() => isAnimatingPlayerAction || !legalMoves.some(move => material[type]?.canDrag(move, itemContext))
     , [legalMoves, itemContext, isAnimatingPlayerAction])
 
   const { attributes, listeners, transform: selfTransform, setNodeRef } = useDraggable({
@@ -54,7 +54,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     if (!draggedItemContext) return false
     const location = locator.locationDescription
     const description = material[draggedItemContext.type]
-    return legalMoves.some(move => description.canDrag(move, draggedItemContext) && location?.canDrop(move, item.location, draggedItemContext))
+    return legalMoves.some(move => description?.canDrag(move, draggedItemContext) && location?.canDrop(move, item.location, draggedItemContext))
   }, [item, draggedItemContext, legalMoves])
 
   const [parentTransform, setParentTransform] = useState<XYCoordinates>()

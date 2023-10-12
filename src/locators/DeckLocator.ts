@@ -21,6 +21,6 @@ export abstract class DeckLocator<P extends number = number, M extends number = 
   }
 
   getDelta(_item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
-    return this.delta ?? { z: context.material[context.type].thickness }
+    return this.delta ?? { z: context.material[context.type]?.thickness ?? 0.05 }
   }
 }

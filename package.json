@@ -15,8 +15,8 @@
     "linkgp": "yarn link @gamepark/react-client @gamepark/rules-api",
     "unlinkgp": "yarn unlink @gamepark/react-client @gamepark/rules-api",
     "test": "yarn test",
-    "build": "tsc -p tsconfig.build.json",
-    "prepublishOnly": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@apollo/client": "^3.5.0",

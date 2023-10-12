@@ -64,7 +64,7 @@ export abstract class LocationDescription<P extends number = number, M extends n
 
   isAlwaysVisible(location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
     if (this.alwaysVisible !== undefined) return this.alwaysVisible
-    return context.locators[location.type].parentItemType !== undefined
+    return context.locators[location.type]?.parentItemType !== undefined
   }
 
   couldDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
@@ -81,7 +81,7 @@ export abstract class LocationDescription<P extends number = number, M extends n
 
   protected isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
     return (isMoveItem(move) && move.position.location !== undefined && isLocationSubset(move.position.location, location))
-      || (isDeleteItem(move) && equal(location, context.material[move.itemType].getStockLocation(
+      || (isDeleteItem(move) && equal(location, context.material[move.itemType]?.getStockLocation(
         context.rules.material(move.itemType).getItem(move.itemIndex)!, context)
       ))
   }

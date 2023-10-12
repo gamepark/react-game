@@ -9,7 +9,7 @@ export const isMovedOrDeletedItem = <P extends number = number, M extends number
   let quantity = item.quantity ?? 1
   if (quantity === 1) return true
   const itemLocator = locators[item.location.type]
-  if (itemLocator.limit) quantity = Math.min(quantity, itemLocator.limit)
+  if (itemLocator?.limit) quantity = Math.min(quantity, itemLocator.limit)
   const movedQuantity = move.quantity ?? 1
   const droppedItem = rules.game.droppedItem
   if (droppedItem?.type === type && droppedItem.index === index) {

@@ -1,15 +1,15 @@
-import { ItemAnimations } from './ItemAnimations'
-import { ItemMove, MaterialItem, MaterialMutator, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
-import { Animation } from '@gamepark/react-client'
-import { ItemContext } from '../../../locators'
 import { Interpolation, keyframes, Theme } from '@emotion/react'
-import { adjustRotation } from './adjustRotation'
-import { transformItem } from './transformItem.util'
-import { movementAnimationCss } from './itemMovementCss.util'
-import { isMovedOrDeletedItem } from './isMovedOrDeletedItem.util'
-import { isPlacedOnItem } from '../utils/isPlacedOnItem'
-import { MaterialAnimationContext } from './MaterialGameAnimations'
+import { Animation } from '@gamepark/react-client'
+import { ItemMove, MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
+import { centerLocator, ItemContext, ItemLocator } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
+import { isPlacedOnItem } from '../utils/isPlacedOnItem'
+import { adjustRotation } from './adjustRotation'
+import { isMovedOrDeletedItem } from './isMovedOrDeletedItem.util'
+import { ItemAnimations } from './ItemAnimations'
+import { movementAnimationCss } from './itemMovementCss.util'
+import { MaterialAnimationContext } from './MaterialGameAnimations'
+import { transformItem } from './transformItem.util'
 
 export class MoveItemAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
@@ -37,15 +37,16 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   }
 
   getMovedItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
-    const { type, rules, locators } = context
-    const futureGame = JSON.parse(JSON.stringify(rules.game))
-    const mutator = new MaterialMutator(type, futureGame.items[type]!, rules.locationsStrategies[type], rules.itemsCanMerge(type))
+    const { type, rules, locators, player } = context
+    const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
+    const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
+    const mutator = futureRules.mutator(type)
     const futureIndex = mutator.move(animation.move)
-    const futureItem = futureGame.items[type]![futureIndex]
+    const futureItem = futureRules.material(type).getItem(futureIndex)!
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
-    const targetLocator = locators[futureItem.location.type]
-    const futureContext = { ...context, game: futureGame, type, index: futureIndex, displayIndex: futureDisplayIndex }
+    const targetLocator = locators[futureItem.location.type] ?? centerLocator as unknown as ItemLocator<P, M, L>
+    const futureContext = { ...context, index: futureIndex, displayIndex: futureDisplayIndex }
     const targetTransforms = targetLocator.transformItem(futureItem, futureContext)
     const targetTransform = adjustRotation(targetTransforms, transformItem(context)).join(' ')
     const animationKeyframes = this.getKeyframesToDestination(targetTransform, animation, context)
@@ -57,7 +58,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
-    const targetLocator = locators[item.location.type]
+    const targetLocator = locators[item.location.type] ?? centerLocator as unknown as ItemLocator<P, M, L>
     const futureContext = { ...context, rules: futureRules }
     const targetTransforms = targetLocator.transformItem(item, futureContext)
     const targetTransform = adjustRotation(targetTransforms, transformItem(context)).join(' ')
