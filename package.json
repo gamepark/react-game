@@ -1,6 +1,6 @@
 {
   "name": "@gamepark/react-game",
-  "version": "6.9.0",
+  "version": "6.9.2",
   "description": "React components & tools to create a Board Game user interface for Game Park",
   "author": "Romain Fromi <romain@game-park.com> (https://game-park.com/)",
   "license": "ISC",
@@ -27,8 +27,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@gamepark/avataaars": "^2.2.0",
-    "@gamepark/react-client": "^6.9.0",
-    "@gamepark/rules-api": "^6.9.0",
+    "@gamepark/react-client": "^6.9.2",
+    "@gamepark/rules-api": "^6.9.2",
     "dayjs": "^1.11.7",
     "emotion-normalize": "^11.0.1",
     "fscreen": "^1.2.0",
