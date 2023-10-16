@@ -41,7 +41,7 @@ const GameOverHeader = ({ GameOverRule }: { GameOverRule?: ComponentType }) => {
   if (!GameOverRule) return <>{resultText}</>
   return <>
     <span>{resultText}&nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => setDialogOpen(true)} css={pointerCursorCss}/></span>
-    <RulesDialog open={dialogOpen} close={() => setDialogOpen(false)} scrollbar>
+    <RulesDialog open={dialogOpen} close={() => setDialogOpen(false)}>
       <GameOverRule/>
     </RulesDialog>
   </>

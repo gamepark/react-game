@@ -77,14 +77,10 @@ if (process.env.NODE_ENV === 'production') {
 
 const globalCss = (theme: Theme) => css`
   html {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
   }
 
   *, *::before, *::after {
-    -webkit-box-sizing: inherit;
-    -moz-box-sizing: inherit;
     box-sizing: inherit;
   }
 
@@ -106,6 +102,20 @@ const globalCss = (theme: Theme) => css`
     overflow: hidden;
     color: #eee;
     ${backgroundCss(theme.root.background)};
+  }
+  
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
   }
 `
 

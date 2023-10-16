@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import { closeRulesDisplay, LocationRulesDisplay } from '@gamepark/rules-api'
 import { css } from '@emotion/react'
-import Scrollbars from 'react-custom-scrollbars-2'
-import { useItemLocator, useMaterialContext, usePlay } from '../../../hooks'
+import { closeRulesDisplay, LocationRulesDisplay } from '@gamepark/rules-api'
 import { fontSizeCss } from '../../../css'
+import { useItemLocator, useMaterialContext, usePlay } from '../../../hooks'
 
 export type LocationRulesDialogContentProps<P extends number = number, L extends number = number> = {
   rulesDisplay: LocationRulesDisplay<P, L>
@@ -23,19 +22,17 @@ export const LocationRulesDialogContent = <P extends number = number, L extends 
     {!!image &&
       <div css={[noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)), backgroundImage(image, height, width)]}/>
     }
-    <Scrollbars autoHeight css={scrollableContainer}>
-      <div css={rulesCss}>
-        <description.rules location={rulesDisplay.location} closeDialog={() => play(closeRulesDisplay, { local: true })}/>
-      </div>
-    </Scrollbars>
+    <div css={rulesCss}>
+      <description.rules location={rulesDisplay.location} closeDialog={() => play(closeRulesDisplay, { local: true })}/>
+    </div>
   </div>
 }
 
 const flex = css`
   display: flex;
   padding: 3em 1em 3em 3em;
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: inherit;
+  max-height: inherit;
 `
 
 const noShrink = css`
@@ -43,8 +40,10 @@ const noShrink = css`
 `
 
 const rulesCss = css`
-  margin: 0 1em;
+  margin: 0 0.5em;
+  padding: 0 0.5em;
   font-size: 3em;
+  overflow: auto;
 
   > h2 {
     margin: 0 1em;
@@ -61,21 +60,4 @@ const backgroundImage = (image: string, height: number, width: number) => css`
   background-size: cover;
   height: ${height}em;
   width: ${width}em;
-`
-
-const scrollableContainer = css`
-  max-height: calc(90vh - 6em) !important;
-
-  > div {
-    max-height: calc(90vh - 6em) !important;
-
-    // trick to avoid very thin bar on some resolutions with react-custom-scrollbars-2
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-
-    ::-webkit-scrollbar {
-      width: 0;
-      height: 0;
-    }
-  }
 `
