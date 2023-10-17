@@ -4,6 +4,7 @@ import { ItemContext } from './ItemLocator'
 
 export abstract class DeckLocator<P extends number = number, M extends number = number, L extends number = number> extends LineLocator<P, M, L> {
   limit = 20
+  hidden = true
 
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
     if (!this.limit) return false
