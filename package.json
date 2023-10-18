@@ -41,7 +41,7 @@
     "o9n": "^2.1.1",
     "react-infinite-scroller": "^1.2.6",
     "react-merge-refs": "^2.0.2",
-    "react-zoom-pan-pinch": "^3.1.0",
+    "react-zoom-pan-pinch": "3.1.0",
     "stylis": "^4.2.0",
     "supports-webp": "^3.0.0",
     "use-long-press": "^3.1.3"
