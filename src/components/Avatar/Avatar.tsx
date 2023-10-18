@@ -3,16 +3,16 @@ import { css } from '@emotion/react'
 import Avataaar from '@gamepark/avataaars'
 import { useMe } from '@gamepark/react-client'
 import { HTMLAttributes } from 'react'
+import { usePlayer, usePlayerId } from '../../hooks'
 import { ChatSpeechBubble } from './ChatSpeechBubble'
 import { SpeechBubble, SpeechBubbleProps } from './SpeechBubble'
-import { usePlayer, usePlayerId } from '../../hooks'
 
 type Props = {
   playerId: any
   speechBubbleProps?: SpeechBubbleProps
 } & HTMLAttributes<HTMLDivElement>
 
-export const Avatar = ({ playerId, speechBubbleProps, ...props }: Props) => {
+export const Avatar = ({ playerId, speechBubbleProps, children, ...props }: Props) => {
   const player = usePlayer(playerId)
   const me = useMe()
   const myPlayerId = usePlayerId()
@@ -26,6 +26,7 @@ export const Avatar = ({ playerId, speechBubbleProps, ...props }: Props) => {
         <SpeechBubble {...speechBubbleProps}>{speechBubbleProps.children}</SpeechBubble> :
         gameId && player && <ChatSpeechBubble gameId={gameId} player={player} {...speechBubbleProps}/>
       }
+      {children}
     </div>
   )
 }
