@@ -1,5 +1,6 @@
 export * from './animations'
 export * from './locations'
+export * from './Dices'
 export * from './FlatMaterial'
 export * from './GameTable'
 export * from './MaterialComponent'

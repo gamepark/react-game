@@ -1,10 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import { forwardRef, HTMLAttributes, MouseEvent } from 'react'
+import { css } from '@emotion/react'
 import { MaterialGame } from '@gamepark/rules-api'
+import { forwardRef, HTMLAttributes, MouseEvent } from 'react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { combineEventListeners } from '../../utilities'
+import { sizeCss } from '../../css'
 import { useGame, useMaterialContext, useMaterialDescription } from '../../hooks'
-import { FlatMaterial, isFlatMaterialDescription } from './FlatMaterial'
+import { combineEventListeners } from '../../utilities'
 import { ComponentCommonProps } from './MaterialDescription'
 
 export type MaterialComponentProps<M extends number = number, ItemId = any> = {
@@ -15,7 +16,7 @@ export type MaterialComponentProps<M extends number = number, ItemId = any> = {
 } & ComponentCommonProps & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
-  { type, itemId, onShortClick, onLongClick = onShortClick, ...props }, ref
+  { type, itemId, onShortClick, onLongClick = onShortClick, highlight, playDown, ...props }, ref
 ) => {
   const game = useGame<MaterialGame>()
   const description = useMaterialDescription(type)
@@ -35,11 +36,16 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
 
   if (!description || !game) return null
 
-  if (isFlatMaterialDescription(description)) {
-    return (
-      <FlatMaterial ref={ref} {...description.getFlatMaterialProps(itemId, context)} {...props} {...combineEventListeners(listeners, props)}/>
-    )
-  }
+  const { width, height } = description.getSize(itemId, context)
 
-  return null
+  return (
+    <div ref={ref} css={[materialCss, sizeCss(width, height)]} {...props} {...combineEventListeners(listeners, props)}>
+      {description.content({ itemId, context, highlight, playDown, ...props })}
+    </div>
+  )
 })
+
+const materialCss = css`
+  transform-style: preserve-3d;
+  -webkit-tap-highlight-color: transparent;
+`

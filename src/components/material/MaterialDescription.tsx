@@ -1,5 +1,6 @@
+/** @jsxImportSource @emotion/react */
 import { isDeleteItem, isMoveItem, Location, MaterialItem, MaterialMove, MaterialRulesDisplay } from '@gamepark/rules-api'
-import { FC } from 'react'
+import { FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
 
 export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
@@ -16,8 +17,16 @@ export type ComponentCommonProps = {
   playDown?: boolean
 }
 
+export type MaterialContentProps<P extends number = number, M extends number = number, L extends number = number, ItemId = any> = {
+  itemId: ItemId,
+  context: MaterialContext<P, M, L>,
+  highlight?: boolean
+  playDown?: boolean
+} & HTMLAttributes<HTMLElement>
+
 export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> {
-  abstract rules: FC<MaterialRulesProps<P, M, L>>
+  rules: FC<MaterialRulesProps<P, M, L>> = () => <></>
+  abstract content: FC<MaterialContentProps<P, M, L, ItemId>>
 
   staticItem?: MaterialItem<P, L>
   staticItems: MaterialItem<P, L>[] = []

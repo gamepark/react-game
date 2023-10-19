@@ -1,63 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import { forwardRef, HTMLAttributes } from 'react'
-import { backgroundCss, borderRadiusCss, preserve3d, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
-import { ComponentCommonProps, ComponentSize, MaterialDescription } from '../MaterialDescription'
 import { css } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
+import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
 import { MaterialContext } from '../../../locators'
-
-export type FlatMaterialProps = ComponentSize & ComponentCommonProps & {
-  image?: string
-  back?: {
-    image?: string
-  }
-  borderRadius?: number
-}
-
-export const FlatMaterial = forwardRef<HTMLDivElement, FlatMaterialProps & HTMLAttributes<HTMLDivElement>>(
-  ({ image, width, height, back, borderRadius, highlight, playDown, children, ...props }, ref) => {
-    if (!back) {
-      return (
-        <div ref={ref} css={[
-          sizeCss(width, height),
-          image && [backgroundCss(image), shadowCss(image)],
-          borderRadius && borderRadiusCss(borderRadius),
-          noBlueHighlight,
-          highlight ? shineEffect : playDown && playDownCss(image)
-        ]} {...props}>
-          {children}
-        </div>
-      )
-    }
-    // TODO: we should be able to define children locations inside the back face too
-    return (
-      <div ref={ref} css={[preserve3d, sizeCss(width, height), borderRadius && borderRadiusCss(borderRadius), noBlueHighlight]} {...props}>
-        <Face image={image} css={[highlight ? shineEffect : playDown && playDownCss(image)]}>
-          {children}
-        </Face>
-        <Face image={back.image} css={[transformCss('rotateY(-180deg)'), highlight && shineEffect, playDown && playDownCss(back.image)]}/>
-      </div>
-    )
-  }
-)
-
-type FaceProps = {
-  image?: string
-} & HTMLAttributes<HTMLDivElement>
-
-const Face = ({ image, ...props }: FaceProps) => (
-  <div css={[faceCss, image && [backgroundCss(image), shadowCss(image)]]} {...props}/>
-)
-
-const faceCss = css`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
-  border-radius: inherit;
-  box-shadow: 0 0 0.1em black;
-`
+import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
 
 export abstract class FlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
   extends MaterialDescription<P, M, L, ItemId> {
@@ -80,15 +26,6 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
 
   getBorderRadius(_itemId: ItemId, _context: MaterialContext<P, M, L>): number | undefined {
     return this.borderRadius
-  }
-
-  getFlatMaterialProps(itemId: ItemId, context: MaterialContext<P, M, L>): FlatMaterialProps {
-    return {
-      ...this.getSize(itemId, context),
-      image: this.getImage(itemId, context),
-      back: this.backImage || this.backImages ? { image: this.getBackImage(itemId, context) } : undefined,
-      borderRadius: this.getBorderRadius(itemId, context)
-    }
   }
 
   getImages(): string[] {
@@ -115,12 +52,44 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
   isHidden(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
     return this.hasBackFace() && this.getFrontId(item.id, context) === undefined
   }
+
+  content = ({ itemId, context, highlight, playDown, children }: MaterialContentProps<P, M, L, ItemId>) => {
+    const image = this.getImage(itemId, context)
+    const backImage = this.getBackImage(itemId, context)
+    const size = this.getSize(itemId, context)
+    const borderRadius = this.getBorderRadius(itemId, context)
+    return <>
+      <div css={[
+        faceCss,
+        sizeCss(size.width, size.height),
+        image && [backgroundCss(image), shadowCss(image)],
+        borderRadius && borderRadiusCss(borderRadius),
+        highlight ? shineEffect : playDown && playDownCss(image)
+      ]}>
+        {children}
+      </div>
+      <div css={[
+        faceCss,
+        sizeCss(size.width, size.height),
+        backImage && [backgroundCss(backImage), shadowCss(backImage)],
+        borderRadius && borderRadiusCss(borderRadius),
+        transformCss('rotateY(-180deg)'),
+        highlight && shineEffect, playDown && playDownCss(backImage)
+      ]}/>
+    </>
+  }
 }
 
 export function isFlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
 (description: MaterialDescription<P, M, L, ItemId>): description is FlatMaterialDescription<P, M, L, ItemId> {
-  return typeof (description as FlatMaterialDescription<P, M, L, ItemId>).getFlatMaterialProps === 'function'
+  return typeof (description as FlatMaterialDescription<P, M, L, ItemId>).isHidden === 'function'
 }
+
+const faceCss = css`
+  position: absolute;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+`
 
 const playDownCss = (image?: string) => {
   if (image?.endsWith('.jpg')) {
@@ -131,12 +100,3 @@ const playDownCss = (image?: string) => {
     `
   }
 }
-
-/**
- * When an item has cursor: pointer; on Chrome mobile there is a blue highlight on touch screens.
- * When we click a location inside a material item, the blue highlight also appears on the material item (despite the event.stopPropagation),
- * which is very ugly, so we disable this.
- */
-const noBlueHighlight = css`
-  -webkit-tap-highlight-color: transparent;
-`
