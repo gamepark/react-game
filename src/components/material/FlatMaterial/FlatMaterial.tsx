@@ -68,14 +68,14 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
       ]}>
         {children}
       </div>
-      <div css={[
+      {backImage && <div css={[
         faceCss,
         sizeCss(size.width, size.height),
-        backImage && [backgroundCss(backImage), shadowCss(backImage)],
+        backgroundCss(backImage), shadowCss(backImage),
         borderRadius && borderRadiusCss(borderRadius),
         transformCss('rotateY(-180deg)'),
         highlight && shineEffect, playDown && playDownCss(backImage)
-      ]}/>
+      ]}/>}
     </>
   }
 }
