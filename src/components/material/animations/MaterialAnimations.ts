@@ -1,14 +1,14 @@
+import { Interpolation, Theme } from '@emotion/react'
 import { Animation, Animations } from '@gamepark/react-client'
 import { ItemMove, ItemMoveType, MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
-import { Interpolation, Theme } from '@emotion/react'
 import { ItemContext, ItemLocator } from '../../../locators'
 import { MaterialDescription } from '../MaterialDescription'
-import { ItemAnimations } from './ItemAnimations'
 import { CreateItemAnimations } from './CreateItemAnimations'
-import { ShuffleAnimations } from './ShuffleAnimations'
 import { DeleteItemAnimations } from './DeleteItemAnimations'
-import { MoveItemAnimations } from './MoveItemAnimations'
+import { ItemAnimations } from './ItemAnimations'
 import { MaterialAnimationContext } from './MaterialGameAnimations'
+import { MoveItemAnimations } from './MoveItemAnimations'
+import { ShuffleAnimations } from './ShuffleAnimations'
 
 export class MaterialAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends Animations<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P> {
@@ -21,7 +21,8 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
       [ItemMoveType.Create]: new CreateItemAnimations(duration),
       [ItemMoveType.Move]: new MoveItemAnimations(duration, droppedItemDuration),
       [ItemMoveType.Delete]: new DeleteItemAnimations(duration, droppedItemDuration),
-      [ItemMoveType.Shuffle]: new ShuffleAnimations(duration)
+      [ItemMoveType.Shuffle]: new ShuffleAnimations(0),
+      [ItemMoveType.Roll]: new ShuffleAnimations(0) // TODO RollAnimations
     }
   }
 

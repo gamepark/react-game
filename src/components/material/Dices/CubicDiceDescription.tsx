@@ -57,18 +57,35 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
 
   getSideTransform(index: number): Interpolation<Theme> {
     switch (index) {
-      case 1:
-        return transformCss(`translateX(-${this.width / 2}em)`, 'rotateY(-90deg)')
-      case 2:
-        return transformCss(`translateY(-${this.width / 2}em)`, 'rotateX(90deg)')
-      case 3:
-        return transformCss(`translateX(${this.width / 2}em)`, 'rotateY(90deg)')
-      case 4:
-        return transformCss(`translateY(${this.width / 2}em)`, 'rotateX(-90deg)')
-      case 5:
-        return transformCss(`translateZ(-${this.width / 2}em)`, 'rotateY(180deg)')
-      default:
+      case 0:
         return transformCss(`translateZ(${this.width / 2}em)`)
+      case 1:
+        return transformCss(`translateY(${this.width / 2}em)`, 'rotateX(-90deg)')
+      case 2:
+        return transformCss(`translateX(${this.width / 2}em)`, 'rotateY(90deg)')
+      case 3:
+        return transformCss(`translateX(-${this.width / 2}em)`, 'rotateY(-90deg)')
+      case 4:
+        return transformCss(`translateY(-${this.width / 2}em)`, 'rotateX(90deg)')
+      default:
+        return transformCss(`translateZ(-${this.width / 2}em)`, 'rotateY(180deg)')
+    }
+  }
+
+  getRotationForSide(index: number): string {
+    switch (index) {
+      case 1:
+        return 'rotateX(90deg)'
+      case 2:
+        return 'rotateY(-90deg)'
+      case 3:
+        return 'rotateY(90deg)'
+      case 4:
+        return 'rotateX(-90deg)'
+      case 5:
+        return 'rotateY(-180deg)'
+      default:
+        return ''
     }
   }
 }
