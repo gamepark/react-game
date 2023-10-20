@@ -82,7 +82,11 @@ export class ItemLocator<P extends number = number, M extends number = number, L
     return rotations
   }
 
-  getRotation?(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number
+  rotation?: number
+
+  getRotation(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number | undefined {
+    return this.rotation
+  }
 
   hidden = false
 
