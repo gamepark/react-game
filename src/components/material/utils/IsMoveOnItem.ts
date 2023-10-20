@@ -5,7 +5,6 @@ export function isMoveOnItem<P extends number = number, M extends number = numbe
 ): boolean {
   return move.kind === MoveKind.ItemMove
     && move.type === ItemMoveType.Move
-    && move.position.location !== undefined
-    && itemInnerLocationTypes.includes(move.position.location.type)
-    && move.position.location.parent === itemIndex
+    && itemInnerLocationTypes.includes(move.location.type)
+    && move.location.parent === itemIndex
 }
