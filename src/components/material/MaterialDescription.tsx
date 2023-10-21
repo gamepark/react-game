@@ -74,6 +74,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   getThickness(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return this.thickness
   }
+
+  getRotation(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string {
+    return ''
+  }
 }
 
 export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number> = Record<M, MaterialDescription<P, M, L>>

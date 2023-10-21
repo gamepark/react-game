@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css, Interpolation, Theme } from '@emotion/react'
 import { flatten } from 'lodash'
+import { MaterialItem } from '../../../../../workshop/packages/rules-api'
 import { backgroundCss, borderRadiusCss, shadowEffect, shineEffect, transformCss } from '../../../css'
-import { MaterialContext } from '../../../locators'
+import { ItemContext, MaterialContext } from '../../../locators'
 import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
 
 export abstract class CubicDiceDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
@@ -72,8 +73,8 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
     }
   }
 
-  getRotationForSide(index: number): string {
-    switch (index) {
+  getRotation(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string {
+    switch (item.location.rotation) {
       case 1:
         return 'rotateX(90deg)'
       case 2:

@@ -2,7 +2,7 @@
 import { css } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
-import { MaterialContext } from '../../../locators'
+import { ItemContext, MaterialContext } from '../../../locators'
 import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
 
 export abstract class FlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
@@ -51,6 +51,10 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
 
   isHidden(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
     return this.hasBackFace() && this.getFrontId(item.id, context) === undefined
+  }
+
+  getRotation(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string {
+    return item.location.rotation ? 'rotateY(180deg)' : ''
   }
 
   content = ({ itemId, context, highlight, playDown, children }: MaterialContentProps<P, M, L, ItemId>) => {
