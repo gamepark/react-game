@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, Interpolation, Theme } from '@emotion/react'
-import { flatten } from 'lodash'
+import range from 'lodash/range'
 import { MaterialItem } from '../../../../../workshop/packages/rules-api'
 import { backgroundCss, borderRadiusCss, shadowEffect, shineEffect, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
@@ -12,10 +12,10 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
   ratio = 1
   borderRadius = 0.3
   color = '#000000'
-  abstract images: string[] | Record<any, string[]>
+  abstract images: string[] | Record<any, string>
 
   getImages(): string[] {
-    return Array.isArray(this.images) ? this.images : flatten(Object.values(this.images))
+    return Array.isArray(this.images) ? this.images : Object.values(this.images)
   }
 
   getDiceImages(itemId: ItemId, _context: MaterialContext<P, M, L>) {
@@ -26,8 +26,11 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
     return this.color
   }
 
+  getSideId(index: number, _itemId: ItemId): any {
+    return index
+  }
+
   content = ({ itemId, context, highlight, playDown }: MaterialContentProps<P, M, L, ItemId>) => {
-    const images = this.getDiceImages(itemId, context)
     const internalMask = css`
       position: absolute;
       width: calc(${this.width}em - 2px);
@@ -37,7 +40,7 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
       border-radius: ${this.borderRadius / 2}em;
     `
     return <>
-      {images.map((image, index) =>
+      {range(6).map((_, index) =>
         <div key={index} css={[
           css`
             position: absolute;
@@ -45,7 +48,7 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
             width: calc(${this.width}em);
             height: calc(${this.width}em);
           `,
-          backgroundCss(image),
+          backgroundCss(this.images[this.getSideId(index, itemId)]),
           highlight ? shineEffect : playDown && shadowEffect,
           borderRadiusCss(this.borderRadius),
           this.getSideTransform(index)
