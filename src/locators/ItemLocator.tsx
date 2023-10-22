@@ -72,16 +72,12 @@ export class ItemLocator<P extends number = number, M extends number = number, L
 
   getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     const rotations = []
-    const rotation = this.getRotation(item, context)
+    const rotation = this.getRotation(item, context) ?? context.material[context.type]?.getRotation(item, context)
     if (rotation) {
       rotations.push(`rotateZ(${rotation}${this.rotationUnit})`)
-    } else if (this.isHidden(item, context)) {
+    }
+    if (this.isHidden(item, context)) {
       rotations.push(`rotateY(180deg)`)
-    } else {
-      const rotation = context.material[context.type]?.getRotation(item, context)
-      if (rotation) {
-        rotations.push(rotation)
-      }
     }
     return rotations
   }
