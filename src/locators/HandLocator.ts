@@ -8,13 +8,13 @@ export abstract class HandLocator<P extends number = number, M extends number = 
     const deltaZ = this.getDeltaZ(item, context)
     const radius = this.getRadius(item, context)
     const baseAngle = this.getBaseAngle(item, context)
-    const angle = this.getRotation(item, context)
+    const angle = this.getRotateZ(item, context)
     const x = coordinates.x + radius * Math.sin(angle * Math.PI / 180) - radius * Math.sin(baseAngle * Math.PI / 180)
     const y = coordinates.y - radius * Math.cos(angle * Math.PI / 180) + radius * Math.cos(baseAngle * Math.PI / 180)
     return { x, y, z: coordinates.z + index * deltaZ }
   }
 
-  getRotation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+  getRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
     const index = this.getItemIndex(item, context)
     const size = this.countItems(item.location, context)
     const maxAngle = this.getMaxAngle(item, context)
