@@ -21,7 +21,7 @@ export const Avatar = ({ playerId, speechBubbleProps, children, ...props }: Prop
   const gameId = query.get('game')
   return (
     <div css={style} {...props}>
-      <Avataaar circle {...avatar} css={avatarCss}/>
+      <Avataaar circle {...avatar} css={[avatarCss, player?.quit && greyscale]}/>
       {speechBubbleProps?.children ?
         <SpeechBubble {...speechBubbleProps}>{speechBubbleProps.children}</SpeechBubble> :
         gameId && player && <ChatSpeechBubble gameId={gameId} player={player} {...speechBubbleProps}/>
@@ -42,4 +42,8 @@ const avatarCss = css`
   left: -6%;
   width: 112%;
   height: 117%;
+`
+
+const greyscale = css`
+  filter: grayscale();
 `
