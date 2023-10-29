@@ -1,6 +1,6 @@
 import { GamePageState } from '@gamepark/react-client'
 import { GameSpeed } from '@gamepark/rules-api'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { usePlayer } from './usePlayers'
 
@@ -11,23 +11,22 @@ export const usePlayerTime = <PlayerId>(playerId: PlayerId) => {
   const clientTimeDelta = useSelector((state: GamePageState) => state.clientTimeDelta)
   const running = options && options.speed === GameSpeed.RealTime && player?.time?.playing
 
-  useEffect(() => {
-    if (running) {
-      const intervalID = setInterval(() => setResult(result => result ? result - 1000 : result), 1000)
-      return () => clearInterval(intervalID)
-    }
-    return
-  }, [running])
+  const getPlayerTime = useCallback(() => {
+    if (options?.speed !== GameSpeed.RealTime || !player?.time) return undefined
+    if (!player.time.playing) return player.time.availableTime
+    return player.time.availableTime + Date.parse(player.time.lastChange) - new Date().getTime() - clientTimeDelta
+  }, [options?.speed, player?.time, clientTimeDelta])
 
   useEffect(() => {
-    if (options?.speed !== GameSpeed.RealTime || !player?.time) {
-      setResult(undefined)
-    } else if (player.time.playing) {
-      setResult(player.time.availableTime + Date.parse(player.time.lastChange) - new Date().getTime() - clientTimeDelta)
-    } else {
-      setResult(player.time.availableTime)
+    if (running) {
+      const intervalID = setInterval(() => setResult(getPlayerTime()), 1000)
+      return () => clearInterval(intervalID)
     }
-  }, [options?.speed, player?.time?.playing, player?.time?.lastChange, player?.time?.availableTime, clientTimeDelta])
+  }, [running, getPlayerTime])
+
+  useEffect(() => {
+    setResult(getPlayerTime())
+  }, [getPlayerTime])
 
   return result
 }
