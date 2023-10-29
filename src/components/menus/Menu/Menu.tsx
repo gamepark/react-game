@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { ResultDialog } from '../../dialogs'
+import { TrackPlayersQuit } from '../PlayerQuit'
 import { TimeStatsButton } from '../TimeStatsButton'
 import { ResultButton, ResultPopButton } from '../Result'
 import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
@@ -88,6 +89,7 @@ export const Menu = () => {
         {isOpen ? <FontAwesomeIcon icon={faTimes} css={iconStyle}/> : <LogoIcon fill="white"/>}
       </button>
       {couldEject && <EjectPlayerDialog open={ejectPlayerDialogOpen} close={() => setEjectPlayerDialogOpen(false)}/>}
+      {!gameOver && <TrackPlayersQuit/>}
       {gameOver && <ResultDialog open={resultDialogOpen}
                                  openDialog={() => setResultDialogOpen(true)}
                                  close={() => setResultDialogOpen(false)}/>}

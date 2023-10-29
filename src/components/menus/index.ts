@@ -1,5 +1,6 @@
 export * from './Fullscreen'
 export * from './GiveUpButton'
 export * from './Menu'
+export * from './PlayerQuit'
 export * from './Result'
 export * from './TimeStatsButton'

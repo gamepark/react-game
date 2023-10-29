@@ -37,9 +37,20 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const tournament = useSelector((state: GamePageState) => state.tournament)
   const ranks = players.map(_ => 1)
   if (isCompetitive(rules) && players.length > 1) {
-    players.sort((playerA, playerB) => rankPlayers(rules, playerA.id, playerB.id))
+    players.sort((playerA, playerB) => {
+      if (playerA.quit || playerB.quit) {
+        return playerA.quit ? playerB.quit ? 0 : 1 : -1
+      }
+      return rankPlayers(rules, playerA.id, playerB.id)
+    })
     for (let i = 1; i < players.length; i++) {
-      ranks[i] = rankPlayers(rules, players[i - 1].id, players[i].id) === 0 ? ranks[i - 1] : i + 1
+      if (players[i - 1].quit) {
+        ranks[i] = ranks[i - 1]
+      } else if (players[i].quit) {
+        ranks[i] = ranks[i - 1] + 1
+      } else {
+        ranks[i] = rankPlayers(rules, players[i - 1].id, players[i].id) === 0 ? ranks[i - 1] : ranks[i - 1] + 1
+      }
     }
   }
   const rows = gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1
