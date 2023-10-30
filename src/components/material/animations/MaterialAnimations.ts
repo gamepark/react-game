@@ -13,7 +13,7 @@ import { ShuffleAnimations } from './ShuffleAnimations'
 export class MaterialAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends Animations<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P> {
 
-  protected readonly animations: Record<ItemMoveType, ItemAnimations<P, M, L>>
+  protected readonly animations: Partial<Record<ItemMoveType, ItemAnimations<P, M, L>>>
 
   constructor(duration = 1, droppedItemDuration = 0.2) {
     super()
@@ -21,18 +21,17 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
       [ItemMoveType.Create]: new CreateItemAnimations(duration),
       [ItemMoveType.Move]: new MoveItemAnimations(duration, droppedItemDuration),
       [ItemMoveType.Delete]: new DeleteItemAnimations(duration, droppedItemDuration),
-      [ItemMoveType.Shuffle]: new ShuffleAnimations(0),
-      [ItemMoveType.Roll]: new ShuffleAnimations(0) // TODO RollAnimations
+      [ItemMoveType.Shuffle]: new ShuffleAnimations(0)
     }
   }
 
   getDuration(move: ItemMove<P, M, L>, context: MaterialAnimationContext<P, M, L>): number {
-    return this.animations[move.type].getDuration(move, context)
+    return this.animations[move.type]?.getDuration(move, context) ?? 0
   }
 
   getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>): Interpolation<Theme> {
     if (animation.move.kind !== MoveKind.ItemMove) return
-    return this.animations[animation.move.type].getItemAnimation(context, animation)
+    return this.animations[animation.move.type]?.getItemAnimation(context, animation)
   }
 }
 
