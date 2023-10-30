@@ -5,6 +5,7 @@ import {
   DisplayedItem,
   displayMaterialRules,
   isMoveItemType,
+  isSelectItem,
   ItemMove,
   MaterialItem,
   MaterialMove,
@@ -17,7 +18,7 @@ import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'r
 import { mergeRefs } from 'react-merge-refs'
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
-import { useAnimation, useAnimations, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, useRules } from '../../hooks'
+import { useAnimation, useAnimations, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
 import { centerLocator, ItemContext } from '../../locators'
 import { combineEventListeners } from '../../utilities'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
@@ -43,13 +44,20 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const play = usePlay()
   const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
   const legalMoves = useLegalMoves<MaterialMove>()
+  const [undo, canUndo] = useUndo()
+  const undoSelectItem = useMemo(() => {
+    if (!item.selected) return
+    const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
+    if (!canUndo(predicate)) return
+    return () => undo(predicate)
+  }, [item, canUndo])
 
   const [onShortClick, onLongClick, canClickToMove] = useMemo(() => {
     const shortClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canShortClick(move, itemContext))
     const longClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
     const openRules = () => play(displayMaterialRules(type, item, index), { local: true })
-    const onShortClick = shortClickMoves.length === 1 ? () => play(shortClickMoves[0]) : openRules
-    const onLongClick = shortClickMoves.length === 1 ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0]) : undefined
+    const onShortClick = undoSelectItem ?? (shortClickMoves.length === 1 ? () => play(shortClickMoves[0]) : openRules)
+    const onLongClick = (undoSelectItem || shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0]) : undefined
     return [onShortClick, onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]
   }, [legalMoves, itemContext, isAnimatingPlayerAction, play])
 
