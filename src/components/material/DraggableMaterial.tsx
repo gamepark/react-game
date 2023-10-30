@@ -1,19 +1,29 @@
 /** @jsxImportSource @emotion/react */
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { DisplayedItem, isMoveItemType, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
-import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
-import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
-import { combineEventListeners } from '../../utilities'
-import { useAnimation, useAnimations, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, useRules } from '../../hooks'
+import {
+  DisplayedItem,
+  displayMaterialRules,
+  isMoveItemType,
+  ItemMove,
+  MaterialItem,
+  MaterialMove,
+  MaterialRules,
+  MoveItem,
+  XYCoordinates
+} from '@gamepark/rules-api'
 import merge from 'lodash/merge'
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { useTransformContext } from 'react-zoom-pan-pinch'
-import { isPlacedOnItem } from './utils/isPlacedOnItem'
-import { isDroppedItem } from './utils/isDroppedItem'
-import { useIsAnimatingPlayerAction } from './utils/useIsAnimatingPlayerAction'
+import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
+import { useAnimation, useAnimations, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, useRules } from '../../hooks'
 import { centerLocator, ItemContext } from '../../locators'
+import { combineEventListeners } from '../../utilities'
+import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
+import { isDroppedItem } from './utils/isDroppedItem'
+import { isPlacedOnItem } from './utils/isPlacedOnItem'
+import { useIsAnimatingPlayerAction } from './utils/useIsAnimatingPlayerAction'
 
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
@@ -112,6 +122,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
                          style={{ transform: transformStyle }}
                          highlight={highlight ?? (!draggedItem && (!disabled || longClickMove !== undefined))}
                          {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
+                         onShortClick={() => play(displayMaterialRules(type, item, index), { local: true })}
                          onLongClick={longClickMove ? () => play(longClickMove) : undefined}/>
     </div>
   )
