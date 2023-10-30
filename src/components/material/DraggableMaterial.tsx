@@ -43,11 +43,14 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const play = usePlay()
   const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
   const legalMoves = useLegalMoves<MaterialMove>()
-  const longClickMove = useMemo(() => {
+  const onShortClick = useMemo(() => {
+    return () => play(displayMaterialRules(type, item, index), { local: true })
+  }, [play, type, item, index])
+  const onLongClick = useMemo(() => {
     if (isAnimatingPlayerAction) return
     const eligibleMoves = legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
-    return eligibleMoves.length === 1 ? eligibleMoves[0] : undefined
-  }, [legalMoves, itemContext, isAnimatingPlayerAction])
+    return eligibleMoves.length === 1 ? () => play(eligibleMoves[0]) : undefined
+  }, [legalMoves, itemContext, isAnimatingPlayerAction, play])
   const disabled = useMemo(() => isAnimatingPlayerAction || !legalMoves.some(move => material[type]?.canDrag(move, itemContext))
     , [legalMoves, itemContext, isAnimatingPlayerAction])
 
@@ -120,10 +123,9 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
                            canDropToSameLocation && noPointerEvents
                          ]}
                          style={{ transform: transformStyle }}
-                         highlight={highlight ?? (!draggedItem && (!disabled || longClickMove !== undefined))}
+                         highlight={highlight ?? (!draggedItem && (!disabled || onLongClick !== undefined))}
                          {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
-                         onShortClick={() => play(displayMaterialRules(type, item, index), { local: true })}
-                         onLongClick={longClickMove ? () => play(longClickMove) : undefined}/>
+                         onShortClick={onShortClick} onLongClick={onLongClick}/>
     </div>
   )
 })
