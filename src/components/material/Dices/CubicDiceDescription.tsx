@@ -33,6 +33,8 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
   content = ({ itemId, context, highlight, playDown }: MaterialContentProps<P, M, L, ItemId>) => {
     const internalMask = css`
       position: absolute;
+      top: 1px;
+      left: 1px;
       width: calc(${this.width}em - 2px);
       height: calc(${this.width}em - 2px);
       background-color: ${this.getColor(itemId, context)};
