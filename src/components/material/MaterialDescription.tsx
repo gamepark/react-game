@@ -24,11 +24,6 @@ export type ComponentSize = {
   height: number
 }
 
-export type ComponentCommonProps = {
-  highlight?: boolean
-  playDown?: boolean
-}
-
 export type MaterialContentProps<P extends number = number, M extends number = number, L extends number = number, ItemId = any> = {
   itemId: ItemId,
   context: MaterialContext<P, M, L>,
