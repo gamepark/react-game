@@ -36,7 +36,6 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
       width: calc(${this.width}em - 2px);
       height: calc(${this.width}em - 2px);
       background-color: ${this.getColor(itemId, context)};
-      transform: translateZ(-${this.borderRadius}em);
       border-radius: ${this.borderRadius / 2}em;
     `
     return <>
@@ -45,17 +44,18 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
           css`
             position: absolute;
             transform-style: preserve-3d;
-            width: calc(${this.width}em);
-            height: calc(${this.width}em);
+            width: ${this.width}em;
+            height: ${this.width}em;
           `,
           backgroundCss(this.images[this.getSideId(index, itemId)]),
           highlight ? shineEffect : playDown && shadowEffect,
           borderRadiusCss(this.borderRadius),
           this.getSideTransform(index)
-        ]}>
-          <div css={internalMask}/>
-        </div>
+        ]}/>
       )}
+      <div css={internalMask}/>
+      <div css={[internalMask, css`transform: rotateX(90deg)`]}/>
+      <div css={[internalMask, css`transform: rotateY(90deg)`]}/>
     </>
   }
 
