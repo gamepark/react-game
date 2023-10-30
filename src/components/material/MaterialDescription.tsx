@@ -1,5 +1,16 @@
 /** @jsxImportSource @emotion/react */
-import { DeleteItem, isDeleteItem, isMoveItem, isRoll, Location, MaterialItem, MaterialMove, MaterialRulesDisplay, MoveItem } from '@gamepark/rules-api'
+import {
+  DeleteItem,
+  isDeleteItem,
+  isMoveItem,
+  isRoll,
+  isSelectItem,
+  Location,
+  MaterialItem,
+  MaterialMove,
+  MaterialRulesDisplay,
+  MoveItem
+} from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
 import { FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
@@ -71,6 +82,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
 
   canLongClick(move: MaterialMove<P, M, L>, { type, index }: ItemContext<P, M, L>): boolean {
     return (isMoveItem(move) || isDeleteItem(move) || isRoll(move)) && move.itemType === type && move.itemIndex === index
+  }
+
+  canShortClick(move: MaterialMove<P, M, L>, { type, index }: ItemContext<P, M, L>): boolean {
+    return isSelectItem(move) && move.itemType === type && move.itemIndex === index
   }
 
   height?: number
