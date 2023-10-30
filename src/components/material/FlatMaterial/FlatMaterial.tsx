@@ -22,12 +22,6 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return this.backImages?.[this.getBackId(itemId, context)] ?? this.backImage
   }
 
-  borderRadius?: number
-
-  getBorderRadius(_itemId: ItemId, _context: MaterialContext<P, M, L>): number | undefined {
-    return this.borderRadius
-  }
-
   getImages(): string[] {
     const images: string[] = []
     if (this.image) images.push(this.image)

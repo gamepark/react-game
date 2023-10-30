@@ -23,7 +23,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const context = useMaterialContext()
   const material = context.material
   const locator = context.locators[location.type]
-  const description = locator?.locationDescription
+  const description = locator?.getLocationDescription(context)
   const rules = useRules<MaterialRules>()
   const play = usePlay<MaterialMove>()
   const player = usePlayerId()
@@ -94,7 +94,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   return <div ref={mergeRefs([ref, setNodeRef])}
               css={[
                 absolute, (onShortClick || onLongClick) && pointerCursorCss,
-                locator.parentItemType !== undefined && positionOnParentCss(locator.getPositionOnParent(location, context)),
+                locator?.parentItemType !== undefined && positionOnParentCss(locator.getPositionOnParent(location, context)),
                 transformCss(
                   'translate(-50%, -50%)',
                   coordinates && `translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`,

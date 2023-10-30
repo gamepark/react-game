@@ -29,8 +29,8 @@ type LocationRectProps = {
 
 const LocationRect = ({ location }: LocationRectProps) => {
   const locator = useItemLocator(location.type)!
-  const description = locator.locationDescription!
   const context = useMaterialContext()
+  const description = locator.getLocationDescription(context)!
   const position = locator.getPositionOnParent(location, context)
   const { width, height } = description.getSize(location, context)
   const radius = description.getBorderRadius(location, context) ?? 0

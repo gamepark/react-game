@@ -8,7 +8,22 @@ export class ItemLocator<P extends number = number, M extends number = number, L
   parentItemType?: M
   rotationUnit = 'deg'
   limit?: number
-  locationDescription?: LocationDescription
+  locationDescription?: LocationDescription<P, M, L>
+
+  getLocationDescription(context: MaterialContext<P, M, L>): LocationDescription<P, M, L> | undefined {
+    if (!this.locationDescription && this.parentItemType !== undefined) {
+      const material = context.material[this.parentItemType]
+      if (material) {
+        this.locationDescription = new LocationDescription<P, M, L>()
+        this.locationDescription.width = material.width
+        this.locationDescription.height = material.height
+        this.locationDescription.ratio = material.ratio
+        this.locationDescription.borderRadius = material.borderRadius
+        this.locationDescription.alwaysVisible = false
+      }
+    }
+    return this.locationDescription
+  }
 
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
     return this.limit ? this.getItemIndex(item, context) >= this.limit : false

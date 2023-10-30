@@ -93,7 +93,7 @@ export const GameMaterialDisplay = () => {
       })
     })}
     {Object.values(locators).map(locator => {
-        return locator?.locationDescription?.getLocations(context).map(location => {
+        return locator?.getLocationDescription(context)?.getLocations(context).map(location => {
           const isFocus = isLocationFocus(location, tutorialFocus)
           return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={isFocus} ref={isFocus ? addFocusRef : undefined}/>
         })

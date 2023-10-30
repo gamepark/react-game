@@ -76,12 +76,17 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   height?: number
   width?: number
   ratio?: number
+  borderRadius?: number
 
   getSize(_itemId: ItemId, _context: MaterialContext<P, M, L>): ComponentSize {
     if (this.width && this.height) return { width: this.width, height: this.height }
     if (this.ratio && this.width) return { width: this.width, height: this.width / this.ratio }
     if (this.ratio && this.height) return { width: this.height * this.ratio, height: this.height }
     throw new Error('You must implement 2 of "width", "height" & "ratio" in any Material description')
+  }
+
+  getBorderRadius(_itemId: ItemId, _context: MaterialContext<P, M, L>): number | undefined {
+    return this.borderRadius
   }
 
   abstract getImages(): string[]
