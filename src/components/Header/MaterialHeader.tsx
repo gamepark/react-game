@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons/faCircleQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { GamePageState } from '@gamepark/react-client'
 import { MaterialGame } from '@gamepark/rules-api'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { GamePageState } from '../../../../workshop/packages/react-client'
 import { pointerCursorCss } from '../../css'
 import { useGame, usePlayerId, usePlayerName, useResultText } from '../../hooks'
 import { RulesDialog } from '../dialogs'

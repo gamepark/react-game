@@ -1,6 +1,6 @@
+import { GamePageState } from '@gamepark/react-client'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { GamePageState } from '../../../workshop/packages/react-client'
 import { usePlayerId } from './usePlayerId'
 import { useRules } from './useRules'
 
