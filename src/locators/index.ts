@@ -1,3 +1,4 @@
+export * from './utils'
 export * from './DeckLocator'
 export * from './GridLocator'
 export * from './HandLocator'
