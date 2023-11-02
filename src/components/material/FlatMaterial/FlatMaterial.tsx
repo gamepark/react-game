@@ -4,6 +4,7 @@ import { MaterialItem } from '@gamepark/rules-api'
 import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
+import { ReactNode } from 'react'
 
 export abstract class FlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
   extends MaterialDescription<P, M, L, ItemId> {
@@ -23,6 +24,10 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
   }
 
   borderRadius?: number
+
+  getFrontContent(_itemId: ItemId, _context: MaterialContext<P, M, L>): ReactNode | undefined {
+    return
+  }
 
   getBorderRadius(_itemId: ItemId, _context: MaterialContext<P, M, L>): number | undefined {
     return this.borderRadius
@@ -70,6 +75,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         borderRadius && borderRadiusCss(borderRadius),
         highlight ? shineEffect : playDown && playDownCss(image)
       ]}>
+        {this.getFrontContent(itemId, context)}
         {children}
       </div>
       {backImage && <div css={[

@@ -98,3 +98,5 @@ export abstract class MaterialDescription<P extends number = number, M extends n
 }
 
 export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number> = Record<M, MaterialDescription<P, M, L>>
+
+
