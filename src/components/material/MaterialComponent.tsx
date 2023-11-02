@@ -6,14 +6,15 @@ import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-l
 import { sizeCss } from '../../css'
 import { useGame, useMaterialContext, useMaterialDescription } from '../../hooks'
 import { combineEventListeners } from '../../utilities'
-import { ComponentCommonProps } from './MaterialDescription'
 
 export type MaterialComponentProps<M extends number = number, ItemId = any> = {
   type: M
   itemId?: ItemId
   onShortClick?: () => void
   onLongClick?: () => void
-} & ComponentCommonProps & HTMLAttributes<HTMLElement>
+  highlight?: boolean
+  playDown?: boolean
+} & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
   { type, itemId, onShortClick, onLongClick = onShortClick, highlight, playDown, ...props }, ref

@@ -6,7 +6,7 @@ import { Interpolation, Theme } from '@emotion/react'
 import { isLocationSubset } from '../utils'
 import equal from 'fast-deep-equal'
 
-export abstract class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any> {
+export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any> {
   rules?: FC<LocationRulesProps<P, L>>
   height?: number
   width?: number

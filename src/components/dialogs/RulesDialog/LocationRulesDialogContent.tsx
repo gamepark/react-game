@@ -8,13 +8,13 @@ export type LocationRulesDialogContentProps<P extends number = number, L extends
   rulesDisplay: LocationRulesDisplay<P, L>
 }
 
-export const LocationRulesDialogContent = <P extends number = number, L extends number = number>(
+export const LocationRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
   { rulesDisplay }: LocationRulesDialogContentProps<P, L>
 ) => {
   const play = usePlay()
-  const context = useMaterialContext()
-  const locator = useItemLocator(rulesDisplay.location.type)
-  const description = locator?.locationDescription
+  const context = useMaterialContext<P, M, L>()
+  const locator = useItemLocator<P, M, L>(rulesDisplay.location.type)
+  const description = locator?.getLocationDescription(context)
   if (!description?.rules) return null
   const image = description.getRulesImage(rulesDisplay.location, context)
   const { width, height } = description.getSize(rulesDisplay.location, context)

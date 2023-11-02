@@ -83,8 +83,7 @@ export const GameMaterialDisplay = () => {
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} index={index} displayIndex={displayIndex}
                                     playDown={tutorialPopup && !focus && !innerLocations.some(location => location.focus)}
-                                    ref={focus ? addFocusRef : undefined}
-                                    onShortClick={() => play(displayMaterialRules(type, item, index), { local: true })}>
+                                    ref={focus ? addFocusRef : undefined}>
             <LocationsMask locations={innerLocations.filter(l => l.focus).map(l => l.location)}/>
             {innerLocations.map(({ focus, location }) =>
               <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={focus} ref={focus ? addFocusRef : undefined}/>)}
@@ -93,7 +92,7 @@ export const GameMaterialDisplay = () => {
       })
     })}
     {Object.values(locators).map(locator => {
-        return locator?.locationDescription?.getLocations(context).map(location => {
+        return locator?.getLocationDescription(context)?.getLocations(context).map(location => {
           const isFocus = isLocationFocus(location, tutorialFocus)
           return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={isFocus} ref={isFocus ? addFocusRef : undefined}/>
         })

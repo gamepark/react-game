@@ -1,19 +1,30 @@
 /** @jsxImportSource @emotion/react */
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { DisplayedItem, isMoveItemType, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
-import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
-import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
-import { combineEventListeners } from '../../utilities'
-import { useAnimation, useAnimations, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, useRules } from '../../hooks'
+import {
+  DisplayedItem,
+  displayMaterialRules,
+  isMoveItemType,
+  isSelectItem,
+  ItemMove,
+  MaterialItem,
+  MaterialMove,
+  MaterialRules,
+  MoveItem,
+  XYCoordinates
+} from '@gamepark/rules-api'
 import merge from 'lodash/merge'
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { useTransformContext } from 'react-zoom-pan-pinch'
-import { isPlacedOnItem } from './utils/isPlacedOnItem'
-import { isDroppedItem } from './utils/isDroppedItem'
-import { useIsAnimatingPlayerAction } from './utils/useIsAnimatingPlayerAction'
+import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
+import { useAnimation, useAnimations, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
 import { centerLocator, ItemContext } from '../../locators'
+import { combineEventListeners } from '../../utilities'
+import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
+import { isDroppedItem } from './utils/isDroppedItem'
+import { isPlacedOnItem } from './utils/isPlacedOnItem'
+import { useIsAnimatingPlayerAction } from './utils/useIsAnimatingPlayerAction'
 
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
@@ -33,11 +44,23 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const play = usePlay()
   const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
   const legalMoves = useLegalMoves<MaterialMove>()
-  const longClickMove = useMemo(() => {
-    if (isAnimatingPlayerAction) return
-    const eligibleMoves = legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
-    return eligibleMoves.length === 1 ? eligibleMoves[0] : undefined
-  }, [legalMoves, itemContext, isAnimatingPlayerAction])
+  const [undo, canUndo] = useUndo()
+  const undoSelectItem = useMemo(() => {
+    if (!item.selected) return
+    const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
+    if (!canUndo(predicate)) return
+    return () => undo(predicate)
+  }, [item, canUndo])
+
+  const [onShortClick, onLongClick, canClickToMove] = useMemo(() => {
+    const shortClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canShortClick(move, itemContext))
+    const longClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
+    const openRules = () => play(displayMaterialRules(type, item, index), { local: true })
+    const onShortClick = undoSelectItem ?? (shortClickMoves.length === 1 ? () => play(shortClickMoves[0]) : openRules)
+    const onLongClick = (undoSelectItem || shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0]) : undefined
+    return [onShortClick, onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]
+  }, [legalMoves, itemContext, isAnimatingPlayerAction, play])
+
   const disabled = useMemo(() => isAnimatingPlayerAction || !legalMoves.some(move => material[type]?.canDrag(move, itemContext))
     , [legalMoves, itemContext, isAnimatingPlayerAction])
 
@@ -52,7 +75,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const isDraggingParent = useMemo(() => !!item && !!draggedItem && isPlacedOnItem(item, draggedItem, context), [item, draggedItem, context])
   const canDropToSameLocation = useMemo(() => {
     if (!draggedItemContext) return false
-    const location = locator.locationDescription
+    const location = locator.getLocationDescription(context)
     const description = material[draggedItemContext.type]
     return legalMoves.some(move => description?.canDrag(move, draggedItemContext) && location?.canDrop(move, item.location, draggedItemContext))
   }, [item, draggedItemContext, legalMoves])
@@ -110,9 +133,9 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
                            canDropToSameLocation && noPointerEvents
                          ]}
                          style={{ transform: transformStyle }}
-                         highlight={highlight ?? (!draggedItem && (!disabled || longClickMove !== undefined))}
+                         highlight={highlight ?? (!draggedItem && (!disabled || canClickToMove))}
                          {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
-                         onLongClick={longClickMove ? () => play(longClickMove) : undefined}/>
+                         onShortClick={onShortClick} onLongClick={onLongClick}/>
     </div>
   )
 })

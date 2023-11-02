@@ -1,5 +1,16 @@
 /** @jsxImportSource @emotion/react */
-import { DeleteItem, isDeleteItem, isMoveItem, Location, MaterialItem, MaterialMove, MaterialRulesDisplay, MoveItem } from '@gamepark/rules-api'
+import {
+  DeleteItem,
+  isDeleteItem,
+  isMoveItem,
+  isRoll,
+  isSelectItem,
+  Location,
+  MaterialItem,
+  MaterialMove,
+  MaterialRulesDisplay,
+  MoveItem
+} from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
 import { FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
@@ -11,11 +22,6 @@ export type MaterialRulesProps<P extends number = number, M extends number = num
 export type ComponentSize = {
   width: number
   height: number
-}
-
-export type ComponentCommonProps = {
-  highlight?: boolean
-  playDown?: boolean
 }
 
 export type MaterialContentProps<P extends number = number, M extends number = number, L extends number = number, ItemId = any> = {
@@ -70,18 +76,27 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   canLongClick(move: MaterialMove<P, M, L>, { type, index }: ItemContext<P, M, L>): boolean {
-    return (isMoveItem(move) || isDeleteItem(move)) && move.itemType === type && move.itemIndex === index
+    return (isMoveItem(move) || isDeleteItem(move) || isRoll(move)) && move.itemType === type && move.itemIndex === index
+  }
+
+  canShortClick(move: MaterialMove<P, M, L>, { type, index }: ItemContext<P, M, L>): boolean {
+    return isSelectItem(move) && move.itemType === type && move.itemIndex === index
   }
 
   height?: number
   width?: number
   ratio?: number
+  borderRadius?: number
 
   getSize(_itemId: ItemId, _context: MaterialContext<P, M, L>): ComponentSize {
     if (this.width && this.height) return { width: this.width, height: this.height }
     if (this.ratio && this.width) return { width: this.width, height: this.width / this.ratio }
     if (this.ratio && this.height) return { width: this.height * this.ratio, height: this.height }
     throw new Error('You must implement 2 of "width", "height" & "ratio" in any Material description')
+  }
+
+  getBorderRadius(_itemId: ItemId, _context: MaterialContext<P, M, L>): number | undefined {
+    return this.borderRadius
   }
 
   abstract getImages(): string[]

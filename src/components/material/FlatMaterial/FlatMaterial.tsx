@@ -23,15 +23,9 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return this.backImages?.[this.getBackId(itemId, context)] ?? this.backImage
   }
 
-  borderRadius?: number
-
-  getFrontContent(_itemId: ItemId, _context: MaterialContext<P, M, L>): ReactNode | undefined {
-    return
-  }
-
-  getBorderRadius(_itemId: ItemId, _context: MaterialContext<P, M, L>): number | undefined {
-    return this.borderRadius
-  }
+    getFrontContent(_itemId: ItemId, _context: MaterialContext<P, M, L>): ReactNode | undefined {
+        return
+    }
 
   getImages(): string[] {
     const images: string[] = []

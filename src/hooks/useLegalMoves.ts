@@ -1,6 +1,8 @@
+import { GamePageState } from '@gamepark/react-client'
 import { useMemo } from 'react'
-import { useRules } from './useRules'
+import { useSelector } from 'react-redux'
 import { usePlayerId } from './usePlayerId'
+import { useRules } from './useRules'
 
 type Cache<Game = any, Move = any> = {
   game: Game
@@ -15,14 +17,16 @@ const cache: Cache = {
 export function useLegalMoves<Move = any>(predicate?: (move: Move) => boolean): Move[] {
   const rules = useRules()
   const playerId = usePlayerId()
+  const gameOver = useSelector((state: GamePageState) => state.gameOver)
   if (rules && playerId !== undefined && cache.game !== rules.game) {
     cache.game = rules.game
     cache.moves = rules.getLegalMoves(playerId)
   }
   return useMemo(() => {
+      if (gameOver) return []
       return predicate ? cache.moves.filter(predicate) : cache.moves
     },
-    [cache.moves, predicate])
+    [cache.moves, predicate, gameOver])
 }
 
 export function useLegalMove<Move = any>(predicate?: (move: Move) => boolean): Move | undefined {
