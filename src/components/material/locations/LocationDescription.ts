@@ -1,10 +1,10 @@
+import { Interpolation, Theme } from '@emotion/react'
+import { Coordinates, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
+import equal from 'fast-deep-equal'
 import { FC } from 'react'
 import { ItemContext, LocationContext, LocationRulesProps, MaterialContext } from '../../../locators'
 import { ComponentSize } from '../MaterialDescription'
-import { Coordinates, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
-import { Interpolation, Theme } from '@emotion/react'
 import { isLocationSubset } from '../utils'
-import equal from 'fast-deep-equal'
 
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any> {
   rules?: FC<LocationRulesProps<P, L>>
@@ -50,6 +50,22 @@ export class LocationDescription<P extends number = number, M extends number = n
 
   getExtraCss(_location: Location<P, L>, _context: LocationContext<P, M, L>): Interpolation<Theme> {
     return this.extraCss
+  }
+
+  transformLocation(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
+    return ['translate(-50%, -50%)'].concat(this.transformOwnLocation(location, context))
+  }
+
+  transformOwnLocation(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
+    const transform: string[] = []
+    const coordinates = this.getCoordinates(location, context)
+    if (coordinates) {
+      transform.push(`translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`)
+    }
+    if (this.getRotation) {
+      `rotate(${this.getRotation(location, context)}${this.rotationUnit})`
+    }
+    return transform
   }
 
   coordinates?: Coordinates
