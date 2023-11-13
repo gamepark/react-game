@@ -33,7 +33,7 @@ export class ItemLocator<P extends number = number, M extends number = number, L
     return ['translate(-50%, -50%)', ...this.transformItemLocation(item, context)]
   }
 
-  protected transformItemLocation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+  transformItemLocation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     return this.transformParentItemLocation(item.location, context).concat(...this.transformOwnItemLocation(item, context))
   }
 
