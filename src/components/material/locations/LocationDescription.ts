@@ -96,9 +96,12 @@ export class LocationDescription<P extends number = number, M extends number = n
   }
 
   protected isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
-    return (isMoveItem(move) && isLocationSubset(move.location, location))
-      || (isDeleteItem(move) && equal(location, context.material[move.itemType]?.getStockLocation(
+    return (isMoveItem(move) && isLocationSubset(move.location, location)
+      && !isLocationSubset(context.rules.material(move.itemType).getItem(move.itemIndex)!.location, location)
+    ) || (
+      isDeleteItem(move) && equal(location, context.material[move.itemType]?.getStockLocation(
         context.rules.material(move.itemType).getItem(move.itemIndex)!, context)
-      ))
+      )
+    )
   }
 }
