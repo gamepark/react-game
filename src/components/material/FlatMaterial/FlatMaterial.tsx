@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
+import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
@@ -59,6 +59,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return <>
       <div css={[
         faceCss,
+        this.getFrontExtraCss(itemId, context),
         sizeCss(size.width, size.height),
         image && [backgroundCss(image), shadowCss(image)],
         borderRadius && borderRadiusCss(borderRadius),
@@ -68,6 +69,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
       </div>
       {backImage && <div css={[
         faceCss,
+        this.getBackExtraCss(itemId, context),
         sizeCss(size.width, size.height),
         backgroundCss(backImage), shadowCss(backImage),
         borderRadius && borderRadiusCss(borderRadius),
@@ -75,6 +77,14 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         highlight && shineEffect, playDown && playDownCss(backImage)
       ]}/>}
     </>
+  }
+
+  getFrontExtraCss(_itemId: ItemId, _context: MaterialContext<P, M, L>): Interpolation<Theme> {
+    return
+  }
+
+  getBackExtraCss(_itemId: ItemId, _context: MaterialContext<P, M, L>): Interpolation<Theme> {
+    return
   }
 }
 
