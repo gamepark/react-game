@@ -1,7 +1,7 @@
 import { Location } from '@gamepark/rules-api'
-import { useItemLocator, useMaterialContext } from '../../../hooks'
 import uniqueId from 'lodash/uniqueId'
 import { useMemo } from 'react'
+import { useItemLocator, useMaterialContext } from '../../../hooks'
 
 export type LocationsMaskProps = {
   locations: Location[]
@@ -34,14 +34,7 @@ const LocationRect = ({ location }: LocationRectProps) => {
   const position = locator.getPositionOnParent(location, context)
   const { width, height } = description.getSize(location, context)
   const radius = description.getBorderRadius(location, context) ?? 0
-  const coordinates = description.getCoordinates(location, context)
-  const transforms: string[] = ['translate(-50%, -50%)']
-  if (coordinates) {
-    transforms.push(`translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`)
-  }
-  if (description.getRotation) {
-    transforms.push(`rotate(${description.getRotation(location, context)}${description.rotationUnit})`)
-  }
+  const transforms: string[] = description.transformLocation(location, context)
   return (
     <rect fill="black" x={`${position.x}%`} y={`${position.y}%`} width={`${width}em`} height={`${height}em`} rx={`${radius}em`} ry={`${radius}em`}
           style={{ transformBox: 'fill-box', transformOrigin: 'center', transform: transforms.join(' ') }}/>

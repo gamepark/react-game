@@ -62,8 +62,9 @@ export class LocationDescription<P extends number = number, M extends number = n
     if (coordinates) {
       transform.push(`translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`)
     }
-    if (this.getRotation) {
-      `rotate(${this.getRotation(location, context)}${this.rotationUnit})`
+    const rotateZ = this.getRotateZ(location, context)
+    if (rotateZ) {
+      transform.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
     }
     return transform
   }
@@ -74,7 +75,11 @@ export class LocationDescription<P extends number = number, M extends number = n
     return this.coordinates
   }
 
-  getRotation?(location: Location<P, L>, context: LocationContext<P, M, L>): number
+  rotateZ: number = 0
+
+  getRotateZ(_location: Location<P, L>, _context: LocationContext<P, M, L>): number {
+    return this.rotateZ
+  }
 
   alwaysVisible?: boolean
 
