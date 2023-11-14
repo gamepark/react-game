@@ -93,7 +93,7 @@ export class LocationDescription<P extends number = number, M extends number = n
   }
 
   canDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: ItemContext<P, M, L>): boolean {
-    return this.isMoveToLocation(move, location, context)
+    return this.couldDrop(move, location, context)
   }
 
   canLongClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
