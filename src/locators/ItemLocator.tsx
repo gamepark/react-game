@@ -90,10 +90,11 @@ export class ItemLocator<P extends number = number, M extends number = number, L
     const rotateZ = this.getRotateZ(item, context)
     if (rotateZ) {
       rotations.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
-    }
-    const rotation = context.material[context.type]?.getRotation(item, context)
-    if (rotation) {
-      rotations.push(rotation)
+    } else {
+      const rotation = context.material[context.type]?.getRotation(item, context)
+      if (rotation) {
+        rotations.push(rotation)
+      }
     }
     if (this.isHidden(item, context)) {
       rotations.push(`rotateY(180deg)`)
