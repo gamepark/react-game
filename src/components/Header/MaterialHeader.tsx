@@ -24,7 +24,9 @@ export const MaterialHeader = <RulesStep extends number = number>(
   const { t } = useTranslation()
   const game = useGame<MaterialGame>()
   const cancelled = useSelector<GamePageState, boolean>(state => state.players.every(player => player.quit))
-  const gameOver = useSelector<GamePageState, boolean>(state => !!state.gameOver) || !game?.rule
+  const gameOver = useSelector<GamePageState, boolean>(state =>
+    state.actions?.every(action => !action.animation) === true && state.gameOver === true
+  ) || !game?.rule
   const victoryClaim = gameOver && game?.rule
   const RulesStepsHeader = game?.rule ? rulesStepsHeaders[game.rule.id] : undefined
   return (
