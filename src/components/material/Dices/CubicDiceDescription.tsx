@@ -78,20 +78,20 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
     }
   }
 
-  getRotation(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string {
+  getRotations(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
     switch (item.location.rotation) {
       case 1:
-        return 'rotateX(90deg)'
+        return ['rotateX(90deg)']
       case 2:
-        return 'rotateY(-90deg)'
+        return ['rotateY(-90deg)']
       case 3:
-        return 'rotateY(90deg)'
+        return ['rotateY(90deg)']
       case 4:
-        return 'rotateX(-90deg)'
+        return ['rotateX(-90deg)']
       case 5:
-        return 'rotateY(-180deg)'
+        return ['rotateY(-180deg)']
       default:
-        return ''
+        return []
     }
   }
 }

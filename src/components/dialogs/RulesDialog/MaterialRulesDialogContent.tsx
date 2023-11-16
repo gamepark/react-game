@@ -21,7 +21,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   return <div css={flex}>
     <MaterialComponent type={rulesDisplay.itemType} itemId={item.id} css={[
       noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-      isFlatMaterialDescription(description) && description.isHidden(item, context) && transformCss('rotateY(180deg)')
+      isFlatMaterialDescription(description) && description.isFlipped(item, context) && transformCss('rotateY(180deg)')
     ]}/>
     <div css={rulesStyle}>
       <description.rules {...rulesDisplay} closeDialog={() => play(closeRulesDisplay, { local: true })}/>

@@ -1,5 +1,5 @@
-import { ItemContext, ItemLocator } from './ItemLocator'
 import { Coordinates, MaterialItem } from '@gamepark/rules-api'
+import { ItemContext, ItemLocator } from './ItemLocator'
 
 export abstract class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
   limit = 20
@@ -23,6 +23,12 @@ export abstract class PileLocator<P extends number = number, M extends number = 
       })
     }
     return pilePositions.get(index)!
+  }
+
+  getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    const rotateZ = this.getRotateZ(item, context)
+    const rotations = super.getRotations(item, context)
+    return rotateZ ? [`rotateZ(${rotateZ})deg`, ...rotations] : rotations
   }
 
   getRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {

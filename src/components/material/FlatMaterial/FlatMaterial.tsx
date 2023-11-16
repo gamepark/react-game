@@ -43,12 +43,20 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return !!this.backImage || !!this.backImages
   }
 
-  isHidden(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
+  isFlipped(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
     return this.hasBackFace() && this.getFrontId(item.id, context) === undefined
   }
 
-  getRotation(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string {
-    return item.location.rotation ? 'rotateY(180deg)' : ''
+  getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    const rotations: string[] = []
+    const rotateZ = this.getRotateZ(item, context)
+    if (rotateZ) rotations.push(`rotateZ(${rotateZ}deg)`)
+    if (this.isFlipped(item, context)) rotations.push('rotateY(180deg)')
+    return rotations
+  }
+
+  getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+    return 0
   }
 
   content = ({ itemId, context, highlight, playDown, children }: MaterialContentProps<P, M, L, ItemId>) => {
@@ -90,7 +98,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
 
 export function isFlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
 (description: MaterialDescription<P, M, L, ItemId>): description is FlatMaterialDescription<P, M, L, ItemId> {
-  return typeof (description as FlatMaterialDescription<P, M, L, ItemId>).isHidden === 'function'
+  return typeof (description as FlatMaterialDescription<P, M, L, ItemId>).isFlipped === 'function'
 }
 
 const faceCss = css`

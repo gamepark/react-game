@@ -1,5 +1,5 @@
-import { ItemLocator, ItemContext } from './ItemLocator'
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
+import { ItemContext, ItemLocator } from './ItemLocator'
 
 export abstract class HandLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
   getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
@@ -12,6 +12,12 @@ export abstract class HandLocator<P extends number = number, M extends number = 
     const x = coordinates.x + radius * Math.sin(angle * Math.PI / 180) - radius * Math.sin(baseAngle * Math.PI / 180)
     const y = coordinates.y - radius * Math.cos(angle * Math.PI / 180) + radius * Math.cos(baseAngle * Math.PI / 180)
     return { x, y, z: coordinates.z + index * deltaZ }
+  }
+
+  getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    const rotateZ = this.getRotateZ(item, context)
+    const rotations = super.getRotations(item, context)
+    return rotateZ ? [`rotateZ(${rotateZ})deg`, ...rotations] : rotations
   }
 
   getRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {

@@ -107,8 +107,8 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return this.thickness
   }
 
-  getRotation(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string {
-    return ''
+  getRotations(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
+    return []
   }
 }
 
