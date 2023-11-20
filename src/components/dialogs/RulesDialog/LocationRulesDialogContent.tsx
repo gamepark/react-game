@@ -1,29 +1,29 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { closeRulesDisplay, LocationRulesDisplay } from '@gamepark/rules-api'
+import { closeHelpDisplay, LocationHelpDisplay } from '@gamepark/rules-api'
 import { fontSizeCss } from '../../../css'
 import { useItemLocator, useMaterialContext, usePlay } from '../../../hooks'
 
 export type LocationRulesDialogContentProps<P extends number = number, L extends number = number> = {
-  rulesDisplay: LocationRulesDisplay<P, L>
+  helpDisplay: LocationHelpDisplay<P, L>
 }
 
 export const LocationRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
-  { rulesDisplay }: LocationRulesDialogContentProps<P, L>
+  { helpDisplay }: LocationRulesDialogContentProps<P, L>
 ) => {
   const play = usePlay()
   const context = useMaterialContext<P, M, L>()
-  const locator = useItemLocator<P, M, L>(rulesDisplay.location.type)
+  const locator = useItemLocator<P, M, L>(helpDisplay.location.type)
   const description = locator?.getLocationDescription(context)
   if (!description?.rules) return null
-  const image = description.getRulesImage(rulesDisplay.location, context)
-  const { width, height } = description.getSize(rulesDisplay.location, context)
+  const image = description.getRulesImage(helpDisplay.location, context)
+  const { width, height } = description.getSize(helpDisplay.location, context)
   return <div css={flex}>
     {!!image &&
       <div css={[noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)), backgroundImage(image, height, width)]}/>
     }
     <div css={rulesCss}>
-      <description.rules location={rulesDisplay.location} closeDialog={() => play(closeRulesDisplay, { local: true })}/>
+      <description.rules location={helpDisplay.location} closeDialog={() => play(closeHelpDisplay, { local: true })}/>
     </div>
   </div>
 }

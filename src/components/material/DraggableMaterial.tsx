@@ -3,7 +3,7 @@ import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd
 import { css, Interpolation, Theme } from '@emotion/react'
 import {
   DisplayedItem,
-  displayMaterialRules,
+  displayMaterialHelp,
   isMoveItemType,
   isSelectItem,
   ItemMove,
@@ -55,7 +55,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const [onShortClick, onLongClick, canClickToMove] = useMemo(() => {
     const shortClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canShortClick(move, itemContext))
     const longClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
-    const openRules = () => play(displayMaterialRules(type, item, index), { local: true })
+    const openRules = () => play(displayMaterialHelp(type, item, index), { local: true })
     const onShortClick = undoSelectItem ?? (shortClickMoves.length === 1 ? () => play(shortClickMoves[0]) : openRules)
     const onLongClick = (undoSelectItem || shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0]) : undefined
     return [onShortClick, onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]

@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { closeRulesDisplay, displayMaterialRules, Location, MaterialItem, MaterialRules } from '@gamepark/rules-api'
+import { closeHelpDisplay, displayMaterialHelp, Location, MaterialItem, MaterialRules } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
 import { useCallback, useMemo, useRef } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
@@ -61,7 +61,7 @@ export const GameMaterialDisplay = () => {
                                     playDown={tutorialPopup && !focus && !innerLocations.some(location => location.focus)}
                                     ref={focus ? addFocusRef : undefined}
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
-                                    onShortClick={() => play(displayMaterialRules(type, item), { local: true })}>
+                                    onShortClick={() => play(displayMaterialHelp(type, item), { local: true })}>
             <LocationsMask locations={innerLocations.filter(l => l.focus).map(l => l.location)}/>
             {innerLocations.map(({ focus, location }) =>
               <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={focus}
@@ -98,7 +98,7 @@ export const GameMaterialDisplay = () => {
         })
       }
     )}
-    <MaterialRulesDialog open={!!game?.rulesDisplay} close={() => play(closeRulesDisplay, { local: true })}/>
+    <MaterialRulesDialog open={!!game?.helpDisplay} close={() => play(closeHelpDisplay, { local: true })}/>
     {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}
   </>
 }

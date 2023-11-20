@@ -1,30 +1,30 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { closeRulesDisplay, MaterialRulesDisplay } from '@gamepark/rules-api'
+import { closeHelpDisplay, MaterialHelpDisplay } from '@gamepark/rules-api'
 import { fontSizeCss, transformCss } from '../../../css'
 import { useMaterialContext, useMaterialDescription, usePlay } from '../../../hooks'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
 
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
-  rulesDisplay: MaterialRulesDisplay<Player, MaterialType, LocationType>
+  helpDisplay: MaterialHelpDisplay<Player, MaterialType, LocationType>
 }
 
 export const MaterialRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
-  { rulesDisplay }: MaterialRulesDialogContentProps<P, M, L>
+  { helpDisplay }: MaterialRulesDialogContentProps<P, M, L>
 ) => {
   const play = usePlay()
   const context = useMaterialContext<P, M, L>()
-  const description = useMaterialDescription<P, M, L>(rulesDisplay.itemType)
+  const description = useMaterialDescription<P, M, L>(helpDisplay.itemType)
   if (!description) return null
-  const item = rulesDisplay.item
+  const item = helpDisplay.item
   const { width, height } = description.getSize(item.id, context)
   return <div css={flex}>
-    <MaterialComponent type={rulesDisplay.itemType} itemId={item.id} css={[
+    <MaterialComponent type={helpDisplay.itemType} itemId={item.id} css={[
       noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
       isFlatMaterialDescription(description) && description.isFlipped(item, context) && transformCss('rotateY(180deg)')
     ]}/>
     <div css={rulesStyle}>
-      <description.rules {...rulesDisplay} closeDialog={() => play(closeRulesDisplay, { local: true })}/>
+      {description.help && <description.help {...helpDisplay} closeDialog={() => play(closeHelpDisplay, { local: true })}/>}
     </div>
   </div>
 }
