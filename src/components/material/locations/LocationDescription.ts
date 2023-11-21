@@ -1,13 +1,13 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Coordinates, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
-import { FC } from 'react'
-import { ItemContext, LocationContext, LocationRulesProps, MaterialContext } from '../../../locators'
+import { ComponentType } from 'react'
+import { ItemContext, LocationContext, LocationHelpProps, MaterialContext } from '../../../locators'
 import { ComponentSize } from '../MaterialDescription'
 import { isLocationSubset } from '../utils'
 
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any> {
-  rules?: FC<LocationRulesProps<P, L>>
+  help?: ComponentType<LocationHelpProps<P, L>>
   height?: number
   width?: number
   ratio?: number
@@ -34,10 +34,10 @@ export class LocationDescription<P extends number = number, M extends number = n
     return this.images?.[location.id] ?? this.image
   }
 
-  rulesImage?: string
+  helpImage?: string
 
-  getRulesImage(location: Location<P, L>, context: MaterialContext<P, M, L>): string | undefined {
-    return this.rulesImage ?? this.getImage(location, context)
+  getHelpImage(location: Location<P, L>, context: MaterialContext<P, M, L>): string | undefined {
+    return this.helpImage ?? this.getImage(location, context)
   }
 
   borderRadius?: number

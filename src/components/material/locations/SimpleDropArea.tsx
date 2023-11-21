@@ -35,9 +35,9 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     onLongClick = () => play(longClickMoves[0], { delayed: rules?.isUnpredictableMove(longClickMoves[0], player) })
   }
 
-  if (!onShortClick && (locator?.locationDescription?.rules || locator?.parentItemType !== undefined)) {
+  if (!onShortClick && (locator?.locationDescription?.help || locator?.parentItemType !== undefined)) {
     onShortClick = () => {
-      if (locator?.locationDescription?.rules) {
+      if (locator?.locationDescription?.help) {
         play(displayLocationHelp(location), { local: true })
       } else {
         const itemType = locator!.parentItemType!

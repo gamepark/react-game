@@ -139,7 +139,7 @@ export type LocationContext<P extends number = number, M extends number = number
   canDrop?: boolean
 }
 
-export type LocationRulesProps<P extends number = number, L extends number = number> = {
+export type LocationHelpProps<P extends number = number, L extends number = number> = {
   location: Location<P, L>
   closeDialog: () => void
 }
