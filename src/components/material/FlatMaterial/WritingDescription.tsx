@@ -1,11 +1,51 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
+import { MaterialItem } from '@gamepark/rules-api'
+import { ReactNode } from 'react'
 import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss } from '../../../css'
-import { MaterialContentProps } from '../MaterialDescription'
-import { FlatMaterialDescription } from './FlatMaterial'
+import { ItemContext, MaterialContext } from '../../../locators'
+import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
 
 export abstract class WritingDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
-  extends FlatMaterialDescription<P, M, L, ItemId> {
+  extends MaterialDescription<P, M, L, ItemId> {
+
+  image?: string
+  images?: Record<ItemId extends keyof any ? ItemId : never, string>
+
+  getImage(itemId: ItemId, context: MaterialContext<P, M, L>): string | undefined {
+    return this.images?.[this.getFrontId(itemId, context)] ?? this.image
+  }
+
+  getImages(): string[] {
+    const images: string[] = []
+    if (this.image) images.push(this.image)
+    if (this.images) images.push(...Object.values(this.images) as string[])
+    return images
+  }
+
+  protected getFrontId(itemId: ItemId, _context: MaterialContext<P, M, L>) {
+    return typeof itemId === 'object' ? (itemId as any).front : itemId as keyof any
+  }
+
+  getFrontContent(_itemId: ItemId, _context: MaterialContext<P, M, L>): ReactNode | undefined {
+    return
+  }
+
+  getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    const rotations: string[] = []
+    const rotateZ = this.getRotateZ(item, context)
+    if (rotateZ) rotations.push(`rotateZ(${rotateZ}deg)`)
+    if (this.isFlipped(item, context)) rotations.push('rotateY(180deg)')
+    return rotations
+  }
+
+  getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+    return 0
+  }
+
+  isFlipped(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
+    return this.getFrontId(item.id, context) === undefined
+  }
 
   content = ({ itemId, context, highlight, playDown }: MaterialContentProps<P, M, L, ItemId>) => {
     const image = this.getImage(itemId, context)
