@@ -35,16 +35,11 @@ export abstract class WritingDescription<P extends number = number, M extends nu
     const rotations: string[] = []
     const rotateZ = this.getRotateZ(item, context)
     if (rotateZ) rotations.push(`rotateZ(${rotateZ}deg)`)
-    if (this.isFlipped(item, context)) rotations.push('rotateY(180deg)')
     return rotations
   }
 
   getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return 0
-  }
-
-  isFlipped(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
-    return this.getFrontId(item.id, context) === undefined
   }
 
   content = ({ itemId, context, highlight, playDown }: MaterialContentProps<P, M, L, ItemId>) => {
