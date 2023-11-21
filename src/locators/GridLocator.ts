@@ -10,7 +10,7 @@ export abstract class GridLocator<P extends number = number, M extends number = 
   maxLinesGap?: Partial<Coordinates>
 
   getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
-    const { x, y, z } = this.coordinates
+    const { x, y, z } = this.getCoordinates(item, context)
     const index = this.getItemIndex(item, context)
     const itemIndex = index % this.itemsPerLine
     const lineIndex = Math.floor(index / this.itemsPerLine)
@@ -20,6 +20,10 @@ export abstract class GridLocator<P extends number = number, M extends number = 
       y: y + itemIndex * (this.itemsGap.y ?? 0) + lineIndex * (lineGap.y ?? 0),
       z: z + itemIndex * (this.itemsGap.z ?? 0) + lineIndex * (lineGap.z ?? 0)
     }
+  }
+
+  getCoordinates(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): Coordinates {
+    return this.coordinates
   }
 
   getLinesGap(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {

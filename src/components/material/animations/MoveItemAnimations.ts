@@ -47,9 +47,11 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const targetLocator = locators[futureItem.location.type] ?? centerLocator as unknown as ItemLocator<P, M, L>
     const futureContext = { ...context, index: futureIndex, displayIndex: futureDisplayIndex }
-    const targetTransforms = targetLocator.transformItem(futureItem, futureContext)
-    const targetTransform = adjustRotation(targetTransforms, transformItem(context)).join(' ')
-    const animationKeyframes = this.getKeyframesToDestination(targetTransform, animation, context)
+    const sourceTransforms = transformItem(context)
+    const sourceTransform = sourceTransforms.join(' ')
+    const futureTransforms = targetLocator.transformItem(futureItem, futureContext)
+    const futureTransform = adjustRotation(futureTransforms, sourceTransforms).join(' ')
+    const animationKeyframes = this.getKeyframes(sourceTransform, futureTransform, animation, context)
     return movementAnimationCss(animationKeyframes, animation.duration)
   }
 
@@ -60,14 +62,19 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     futureRules.play(animation.move)
     const targetLocator = locators[item.location.type] ?? centerLocator as unknown as ItemLocator<P, M, L>
     const futureContext = { ...context, rules: futureRules }
+    const sourceTransforms = transformItem(context)
+    const sourceTransform = sourceTransforms.join(' ')
     const targetTransforms = targetLocator.transformItem(item, futureContext)
-    const targetTransform = adjustRotation(targetTransforms, transformItem(context)).join(' ')
-    const animationKeyframes = this.getKeyframesToDestination(targetTransform, animation, context)
+    const targetTransform = adjustRotation(targetTransforms, sourceTransforms).join(' ')
+    const animationKeyframes = this.getKeyframes(sourceTransform, targetTransform, animation, context)
     return movementAnimationCss(animationKeyframes, animation.duration)
   }
 
-  protected getKeyframesToDestination(destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
+  protected getKeyframes(origin: string, destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
     return keyframes`
+      from {
+        transform: ${origin};
+      }
       to {
         transform: ${destination};
       }

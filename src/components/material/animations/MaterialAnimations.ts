@@ -8,6 +8,7 @@ import { DeleteItemAnimations } from './DeleteItemAnimations'
 import { ItemAnimations } from './ItemAnimations'
 import { MaterialAnimationContext } from './MaterialGameAnimations'
 import { MoveItemAnimations } from './MoveItemAnimations'
+import { RollItemAnimations } from './RollItemAnimations'
 import { ShuffleAnimations } from './ShuffleAnimations'
 
 export class MaterialAnimations<P extends number = number, M extends number = number, L extends number = number>
@@ -21,7 +22,8 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
       [ItemMoveType.Create]: new CreateItemAnimations(duration),
       [ItemMoveType.Move]: new MoveItemAnimations(duration, droppedItemDuration),
       [ItemMoveType.Delete]: new DeleteItemAnimations(duration, droppedItemDuration),
-      [ItemMoveType.Shuffle]: new ShuffleAnimations(0)
+      [ItemMoveType.Shuffle]: new ShuffleAnimations(0),
+      [ItemMoveType.Roll]: new RollItemAnimations(duration)
     }
   }
 

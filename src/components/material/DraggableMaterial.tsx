@@ -3,7 +3,7 @@ import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd
 import { css, Interpolation, Theme } from '@emotion/react'
 import {
   DisplayedItem,
-  displayMaterialRules,
+  displayMaterialHelp,
   isMoveItemType,
   isSelectItem,
   ItemMove,
@@ -55,7 +55,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const [onShortClick, onLongClick, canClickToMove] = useMemo(() => {
     const shortClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canShortClick(move, itemContext))
     const longClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
-    const openRules = () => play(displayMaterialRules(type, item, index), { local: true })
+    const openRules = () => play(displayMaterialHelp(type, item, index), { local: true })
     const onShortClick = undoSelectItem ?? (shortClickMoves.length === 1 ? () => play(shortClickMoves[0]) : openRules)
     const onLongClick = (undoSelectItem || shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0]) : undefined
     return [onShortClick, onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]
@@ -103,10 +103,10 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     transformRef.current = `translate3d(${Math.round(x / scale)}px, ${y ? Math.round(y / scale) : 0}px, 20em)`
   }
 
-  const animation = useItemAnimation(displayedItem)
   const isDropped = useMemo(() => isDroppedItem(itemContext), [itemContext])
   const applyTransform = isDropped || isDraggingParent || (!disabled && !ignoreTransform)
   if (!applyTransform) transformRef.current = undefined
+  const animation = useItemAnimation(displayedItem, transformRef.current)
 
   // Firefox bugs when the animation is immediately followed by the transition: we need to delay by 1 rerender putting back the transition
   const [animating, setAnimating] = useState(!!animation)
@@ -176,7 +176,7 @@ const useRevealedItem = <P extends number = number, M extends number = number, L
 }
 
 const useItemAnimation = <P extends number = number, M extends number = number, L extends number = number>(
-  displayedItem: DisplayedItem<M>
+  displayedItem: DisplayedItem<M>, dragTransform?: string
 ): Interpolation<Theme> => {
   const { type, index } = displayedItem
   const context = useMaterialContext<P, M, L>()
@@ -185,7 +185,7 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
   const item = context.rules.material(type).getItem(index)
   if (!item || !materialAnimations) return
   for (const animation of animations) {
-    const itemAnimation = materialAnimations.getItemAnimation({ ...context, ...displayedItem }, animation)
+    const itemAnimation = materialAnimations.getItemAnimation({ ...context, ...displayedItem, dragTransform }, animation)
     if (itemAnimation) return itemAnimation
   }
   return

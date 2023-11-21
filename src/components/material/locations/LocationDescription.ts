@@ -1,10 +1,10 @@
+import { Interpolation, Theme } from '@emotion/react'
+import { Coordinates, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
+import equal from 'fast-deep-equal'
 import { FC } from 'react'
 import { ItemContext, LocationContext, LocationRulesProps, MaterialContext } from '../../../locators'
 import { ComponentSize } from '../MaterialDescription'
-import { Coordinates, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
-import { Interpolation, Theme } from '@emotion/react'
 import { isLocationSubset } from '../utils'
-import equal from 'fast-deep-equal'
 
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any> {
   rules?: FC<LocationRulesProps<P, L>>
@@ -52,13 +52,34 @@ export class LocationDescription<P extends number = number, M extends number = n
     return this.extraCss
   }
 
+  transformLocation(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
+    return ['translate(-50%, -50%)'].concat(this.transformOwnLocation(location, context))
+  }
+
+  transformOwnLocation(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
+    const transform: string[] = []
+    const coordinates = this.getCoordinates(location, context)
+    if (coordinates) {
+      transform.push(`translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`)
+    }
+    const rotateZ = this.getRotateZ(location, context)
+    if (rotateZ) {
+      transform.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
+    }
+    return transform
+  }
+
   coordinates?: Coordinates
 
   getCoordinates(_location: Location<P, L>, _context: LocationContext<P, M, L>): Coordinates | undefined {
     return this.coordinates
   }
 
-  getRotation?(location: Location<P, L>, context: LocationContext<P, M, L>): number
+  rotateZ: number = 0
+
+  getRotateZ(_location: Location<P, L>, _context: LocationContext<P, M, L>): number {
+    return this.rotateZ
+  }
 
   alwaysVisible?: boolean
 
@@ -72,7 +93,7 @@ export class LocationDescription<P extends number = number, M extends number = n
   }
 
   canDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: ItemContext<P, M, L>): boolean {
-    return this.isMoveToLocation(move, location, context)
+    return this.couldDrop(move, location, context)
   }
 
   canLongClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
@@ -80,9 +101,12 @@ export class LocationDescription<P extends number = number, M extends number = n
   }
 
   protected isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
-    return (isMoveItem(move) && isLocationSubset(move.location, location))
-      || (isDeleteItem(move) && equal(location, context.material[move.itemType]?.getStockLocation(
+    return (isMoveItem(move) && isLocationSubset(move.location, location)
+      && !isLocationSubset(context.rules.material(move.itemType).getItem(move.itemIndex)!.location, location)
+    ) || (
+      isDeleteItem(move) && equal(location, context.material[move.itemType]?.getStockLocation(
         context.rules.material(move.itemType).getItem(move.itemIndex)!, context)
-      ))
+      )
+    )
   }
 }

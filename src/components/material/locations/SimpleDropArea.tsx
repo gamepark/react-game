@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useDroppable } from '@dnd-kit/core'
 import { css, keyframes } from '@emotion/react'
-import { displayLocationRules, Location, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
+import { displayLocationHelp, Location, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
@@ -36,7 +36,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   }
 
   if (!onShortClick && locator?.locationDescription?.rules) {
-    onShortClick = () => play(displayLocationRules(location), { local: true })
+    onShortClick = () => play(displayLocationHelp(location), { local: true })
   }
 
   const { isOver, active, setNodeRef } = useDroppable({
@@ -89,17 +89,12 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const { width, height } = description.getSize(location, context)
   const image = description.getImage(location, context)
   const borderRadius = description.getBorderRadius(location, context)
-  const coordinates = description.getCoordinates(location, locationContext)
 
   return <div ref={mergeRefs([ref, setNodeRef])}
               css={[
                 absolute, (onShortClick || onLongClick) && pointerCursorCss,
                 locator?.parentItemType !== undefined && positionOnParentCss(locator.getPositionOnParent(location, context)),
-                transformCss(
-                  'translate(-50%, -50%)',
-                  coordinates && `translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`,
-                  description.getRotation && `rotate(${description.getRotation(location, locationContext)}${description.rotationUnit})`
-                ),
+                transformCss(...description.transformLocation(location, locationContext)),
                 sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
                 description.getExtraCss(location, locationContext),
                 !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,

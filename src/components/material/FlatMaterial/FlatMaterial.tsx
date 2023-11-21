@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
+import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
@@ -48,12 +48,20 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return !!this.backImage || !!this.backImages
   }
 
-  isHidden(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
+  isFlipped(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
     return this.hasBackFace() && this.getFrontId(item.id, context) === undefined
   }
 
-  getRotation(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string {
-    return item.location.rotation ? 'rotateY(180deg)' : ''
+  getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    const rotations: string[] = []
+    const rotateZ = this.getRotateZ(item, context)
+    if (rotateZ) rotations.push(`rotateZ(${rotateZ}deg)`)
+    if (this.isFlipped(item, context)) rotations.push('rotateY(180deg)')
+    return rotations
+  }
+
+  getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+    return 0
   }
 
   content = ({ itemId, context, highlight, playDown, children }: MaterialContentProps<P, M, L, ItemId>) => {
@@ -64,6 +72,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return <>
       <div css={[
         faceCss,
+        this.getFrontExtraCss(itemId, context),
         sizeCss(size.width, size.height),
         image && [backgroundCss(image), shadowCss(image)],
         borderRadius && borderRadiusCss(borderRadius),
@@ -74,6 +83,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
       </div>
       {backImage && <div css={[
         faceCss,
+        this.getBackExtraCss(itemId, context),
         sizeCss(size.width, size.height),
         backgroundCss(backImage), shadowCss(backImage),
         borderRadius && borderRadiusCss(borderRadius),
@@ -82,11 +92,19 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
       ]}/>}
     </>
   }
+
+  getFrontExtraCss(_itemId: ItemId, _context: MaterialContext<P, M, L>): Interpolation<Theme> {
+    return
+  }
+
+  getBackExtraCss(_itemId: ItemId, _context: MaterialContext<P, M, L>): Interpolation<Theme> {
+    return
+  }
 }
 
 export function isFlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
 (description: MaterialDescription<P, M, L, ItemId>): description is FlatMaterialDescription<P, M, L, ItemId> {
-  return typeof (description as FlatMaterialDescription<P, M, L, ItemId>).isHidden === 'function'
+  return typeof (description as FlatMaterialDescription<P, M, L, ItemId>).isFlipped === 'function'
 }
 
 const faceCss = css`

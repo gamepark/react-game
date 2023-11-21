@@ -6,7 +6,6 @@ import { LocationDescription, MaterialDescriptionRecord } from '../components'
 
 export class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
-  rotationUnit = 'deg'
   limit?: number
   locationDescription?: LocationDescription<P, M, L>
 
@@ -33,7 +32,7 @@ export class ItemLocator<P extends number = number, M extends number = number, L
     return ['translate(-50%, -50%)', ...this.transformItemLocation(item, context)]
   }
 
-  protected transformItemLocation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+  transformItemLocation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     return this.transformParentItemLocation(item.location, context).concat(...this.transformOwnItemLocation(item, context))
   }
 
@@ -86,31 +85,7 @@ export class ItemLocator<P extends number = number, M extends number = number, L
   }
 
   getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    const rotations = []
-    const rotateZ = this.getRotateZ(item, context)
-    if (rotateZ) {
-      rotations.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
-    }
-    const rotation = context.material[context.type]?.getRotation(item, context)
-    if (rotation) {
-      rotations.push(rotation)
-    }
-    if (this.isHidden(item, context)) {
-      rotations.push(`rotateY(180deg)`)
-    }
-    return rotations
-  }
-
-  rotateZ?: number
-
-  getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number | undefined {
-    return this.rotateZ
-  }
-
-  hidden = false
-
-  isHidden(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): boolean {
-    return this.hidden
+    return context.material[context.type]?.getRotations(item, context) ?? []
   }
 
   protected transformParentItemLocation(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
@@ -156,7 +131,9 @@ export type MaterialContext<P extends number = number, M extends number = number
   player?: P
 }
 
-export type ItemContext<P extends number = number, M extends number = number, L extends number = number> = MaterialContext<P, M, L> & DisplayedItem<M>
+export type ItemContext<P extends number = number, M extends number = number, L extends number = number> = MaterialContext<P, M, L> & DisplayedItem<M> & {
+  dragTransform?: string
+}
 
 export type LocationContext<P extends number = number, M extends number = number, L extends number = number> = MaterialContext<P, M, L> & {
   canDrop?: boolean

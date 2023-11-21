@@ -8,16 +8,16 @@ import {
   Location,
   MaterialItem,
   MaterialMove,
-  MaterialRulesDisplay,
+  MaterialHelpDisplay,
   MoveItem
 } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
-import { FC, HTMLAttributes } from 'react'
+import { ComponentType, FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
 
-export type MaterialRulesProps<P extends number = number, M extends number = number, L extends number = number> = {
+export type MaterialHelpProps<P extends number = number, M extends number = number, L extends number = number> = {
   closeDialog: () => void
-} & Omit<MaterialRulesDisplay<P, M, L>, 'type'>
+} & Omit<MaterialHelpDisplay<P, M, L>, 'type'>
 
 export type ComponentSize = {
   width: number
@@ -32,7 +32,7 @@ export type MaterialContentProps<P extends number = number, M extends number = n
 } & HTMLAttributes<HTMLElement>
 
 export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> {
-  rules: FC<MaterialRulesProps<P, M, L>> = () => <></>
+  help?: ComponentType<MaterialHelpProps<P, M, L>>
   abstract content: FC<MaterialContentProps<P, M, L, ItemId>>
 
   staticItem?: MaterialItem<P, L>
@@ -107,8 +107,8 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return this.thickness
   }
 
-  getRotation(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string {
-    return ''
+  getRotations(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
+    return []
   }
 }
 
