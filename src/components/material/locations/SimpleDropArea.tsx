@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useDroppable } from '@dnd-kit/core'
 import { css, keyframes } from '@emotion/react'
-import { displayLocationHelp, Location, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
+import { displayLocationHelp, displayMaterialHelp, Location, MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
@@ -35,8 +35,15 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     onLongClick = () => play(longClickMoves[0], { delayed: rules?.isUnpredictableMove(longClickMoves[0], player) })
   }
 
-  if (!onShortClick && locator?.locationDescription?.rules) {
-    onShortClick = () => play(displayLocationHelp(location), { local: true })
+  if (!onShortClick && (locator?.locationDescription?.rules || locator?.parentItemType !== undefined)) {
+    onShortClick = () => {
+      if (locator?.locationDescription?.rules) {
+        play(displayLocationHelp(location), { local: true })
+      } else {
+        const itemType = locator!.parentItemType!
+        play(displayMaterialHelp(itemType, rules?.material(itemType).getItem(location.parent!), location.parent), { local: true })
+      }
+    }
   }
 
   const { isOver, active, setNodeRef } = useDroppable({
