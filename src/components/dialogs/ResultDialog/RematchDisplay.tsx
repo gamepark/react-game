@@ -16,7 +16,7 @@ export const RematchDisplay = ({ rematch }: Props) => {
   const me = useMe()
   const [acceptRematch] = useMutation(ACCEPT_REMATCH)
   const [refuseRematch] = useMutation(REFUSE_REMATCH)
-  const player = me && rematch.players.find(p => p.userId === me.user.id)
+  const player = me?.user && rematch.players.find(p => p.userId === me.user.id)
   const channel = useChannel('game-state=' + rematch.id)
   useEvent(channel, 'game-started', () => {
     if (player) {
