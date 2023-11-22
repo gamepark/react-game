@@ -28,7 +28,7 @@ export abstract class PileLocator<P extends number = number, M extends number = 
   getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     const rotateZ = this.getRotateZ(item, context)
     const rotations = super.getRotations(item, context)
-    return rotateZ ? [`rotateZ(${rotateZ})deg`, ...rotations] : rotations
+    return rotateZ ? [`rotateZ(${rotateZ}deg)`, ...rotations] : rotations
   }
 
   getRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
