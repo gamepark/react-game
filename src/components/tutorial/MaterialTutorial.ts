@@ -7,13 +7,14 @@ import {
   MaterialGameSetup,
   MaterialItem,
   MaterialMove,
+  MaterialMoveRandomized,
   MaterialRules,
   XYCoordinates
 } from '@gamepark/rules-api'
-import { TFunction } from 'i18next'
-import { ReactNode } from 'react'
 import equal from 'fast-deep-equal'
+import { TFunction } from 'i18next'
 import sumBy from 'lodash/sumBy'
+import { ReactNode } from 'react'
 
 export abstract class MaterialTutorial<P extends number = number, M extends number = number, L extends number = number>
   implements TutorialDescription<MaterialGame<P, M, L>, MaterialMove<P, M, L>> {
@@ -59,6 +60,7 @@ export type TutorialStep<P extends number = number, M extends number = number, L
   move?: {
     player?: P
     filter?: (move: MaterialMove<P, M, L>, game: MaterialGame<P, M, L>) => boolean
+    randomize?: (move: MaterialMoveRandomized) => void
   }
 }
 

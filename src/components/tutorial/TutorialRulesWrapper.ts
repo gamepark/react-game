@@ -6,6 +6,7 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
   const getLegalMoves = Rules.prototype.getLegalMoves
   const isTurnToPlay = Rules.prototype.isTurnToPlay
   const canUndo = Rules.prototype.canUndo
+  const randomize = Rules.prototype.randomize
 
   Rules.prototype.getTutorialStep = function (): TutorialStep | undefined {
     return this.game.tutorialStep !== undefined ? tutorial.steps[this.game.tutorialStep] : undefined
@@ -76,5 +77,17 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
       return false
     }
     return canUndo.bind(this)(action, consecutiveActions)
+  }
+
+  Rules.prototype.randomize = function (move: MaterialMove) {
+    const game = this.game as MaterialGame
+    const moveRandomized = randomize.bind(this)(move)
+    if (game.tutorialStep !== undefined && game.tutorialStep < tutorial.steps.length) {
+      const tutorialStep = tutorial.steps[game.tutorialStep]
+      if (tutorialStep.move?.randomize) {
+        tutorialStep.move?.randomize(moveRandomized)
+      }
+    }
+    return moveRandomized
   }
 }
