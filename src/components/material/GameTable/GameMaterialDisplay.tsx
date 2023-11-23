@@ -41,7 +41,7 @@ export const GameMaterialDisplay = () => {
     focusRefs.current.add(ref)
     if (countTutorialFocusRefs(tutorialFocus) === focusRefs.current.size) {
       const elements = Array.from(focusRefs.current)
-      setTimeout(() => zoomToElements(elements, undefined, 1000))
+      setTimeout(() => zoomToElements(elements, undefined, 1000), 50)
     }
   }, [tutorialFocus])
 
