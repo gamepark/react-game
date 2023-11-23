@@ -1,9 +1,9 @@
 import { GamePageState, useMe } from '@gamepark/react-client'
-import { useSelector } from 'react-redux'
-import { useContext } from 'react'
-import { gameContext } from '../components'
 import { isWithPlayerIdOptions } from '@gamepark/rules-api'
+import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSelector } from 'react-redux'
+import { gameContext } from '../components'
 import { usePlayerId } from './usePlayerId'
 
 export function usePlayerName<PlayerId = any>(playerId: PlayerId): string {
@@ -13,7 +13,7 @@ export function usePlayerName<PlayerId = any>(playerId: PlayerId): string {
   const myId = usePlayerId()
   const { t } = useTranslation()
   if (name) return name
-  if (myId === playerId && me?.user?.name) return me.user.name
+  if (myId === playerId) return me?.user?.name ?? t('You')
   if (isWithPlayerIdOptions(optionsSpec)) return optionsSpec.players.id.valueSpec(playerId).label(t)
   return t('Player {number}', { number: playerId })
 }
