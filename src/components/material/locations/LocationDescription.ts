@@ -88,6 +88,8 @@ export class LocationDescription<P extends number = number, M extends number = n
     return context.locators[location.type]?.parentItemType !== undefined
   }
 
+  content?: ComponentType<{location: Location}>
+
   couldDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
     return this.isMoveToLocation(move, location, context)
   }
