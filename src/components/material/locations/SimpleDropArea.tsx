@@ -97,18 +97,22 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const image = description.getImage(location, context)
   const borderRadius = description.getBorderRadius(location, context)
 
-  return <div ref={mergeRefs([ref, setNodeRef])}
-              css={[
-                absolute, (onShortClick || onLongClick) && pointerCursorCss,
-                locator?.parentItemType !== undefined && positionOnParentCss(locator.getPositionOnParent(location, context)),
-                transformCss(...description.transformLocation(location, locationContext)),
-                sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
-                description.getExtraCss(location, locationContext),
-                !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
-                ((canDrop && !isOver) || (!draggedItem && longClickMoves.length && !animations.length)) && shineEffect,
-                canDrop && isOver && dropHighlight
-              ]}
-              {...props} {...combineEventListeners(listeners, props)}/>
+  return (
+      <div ref={mergeRefs([ref, setNodeRef])}
+                css={[
+                  absolute, (onShortClick || onLongClick) && pointerCursorCss,
+                  locator?.parentItemType !== undefined && positionOnParentCss(locator.getPositionOnParent(location, context)),
+                  transformCss(...description.transformLocation(location, locationContext)),
+                  sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
+                  description.getExtraCss(location, locationContext),
+                  !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
+                  ((canDrop && !isOver) || (!draggedItem && longClickMoves.length && !animations.length)) && shineEffect,
+                  canDrop && isOver && dropHighlight
+                ]}
+                {...props} {...combineEventListeners(listeners, props)}>
+        {description.content && <description.content location={location} />}
+      </div>
+  )
 })
 
 const absolute = css`
