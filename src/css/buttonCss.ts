@@ -31,6 +31,7 @@ export const buttonCss = (color: string, focus: string, active: string) => css`
     border-color: #555555;
     background: transparent;
     cursor: auto;
+    opacity: 0.5;
   }
 `
 
