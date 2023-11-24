@@ -111,7 +111,7 @@ const navigationArrow = (theme: Theme) => css`
 `
 
 const previousAnimation = keyframes`
-  50% {
+  70% {
     left: -2.4em
   }
   100% {
@@ -123,11 +123,11 @@ const previousArrow = css`
   padding: 0.7em 3em 0.7em 0.7em;
   left: -1.7em;
   &:focus:not(:active) {
-    animation: ${previousAnimation} 0.3s forwards;
+    animation: ${previousAnimation} 0.2s forwards;
   }
 `
 const nextAnimation = keyframes`
-  50% {
+  70% {
     right: -2.4em
   }
   100% {
@@ -139,7 +139,7 @@ const nextArrow = css`
   padding: 0.7em 0.7em 0.7em 3em;
   right: -1.7em;
   &:focus:not(:active) {
-    animation: ${nextAnimation} 0.3s forwards;
+    animation: ${nextAnimation} 0.2s forwards;
   }
 `
 
