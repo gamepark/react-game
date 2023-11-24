@@ -85,14 +85,14 @@ type PreviousArrowProps = {
 const PreviousArrow: FC<PreviousArrowProps> = (props) => {
   const { onPrevious } = props
   return (
-    <a tabIndex={1} css={[navigationArrow, previousArrow]} onClick={onPrevious}>
+    <div tabIndex={1} css={[navigationArrow, previousArrow]} onClick={onPrevious}>
       <FontAwesomeIcon icon={faChevronLeft}/>
-    </a>
+    </div>
   )
 }
 
 const navigationArrow = css`
-  position: fixed;
+  position: absolute;
   top: 50%;
   z-index: -1;
   transform: translateY(-50%);
@@ -109,35 +109,34 @@ const navigationArrow = css`
 
 const previousAnimation = keyframes`
   50% {
-    left: 1%
+    left: -2.5em
   }
   100% {
-    left: 1.5%;
+    left: -1.7em;
   }
 `
 
 const previousArrow = css`
-  transition: 0.4s left;
   padding: 0.7em 3em 0.7em 0.7em;
-  left: 1.5%;
+  left: -1.7em;
   &:focus:not(:active) {
-    animation: ${previousAnimation} 0.4s forwards;
+    animation: ${previousAnimation} 0.3s forwards;
   }
 `
 const nextAnimation = keyframes`
   50% {
-    right: 1%
+    right: -2.5em
   }
   100% {
-    right: 1.5%;
+    right: -1.7em;
   }
 `
 
 const nextArrow = css`
   padding: 0.7em 0.7em 0.7em 3em;
-  right: 1.5%;
+  right: -1.7em;
   &:focus:not(:active) {
-    animation: ${nextAnimation} 0.4s forwards;
+    animation: ${nextAnimation} 0.3s forwards;
   }
 `
 
