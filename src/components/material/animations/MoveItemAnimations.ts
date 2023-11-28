@@ -1,6 +1,6 @@
 import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
-import { ItemMove, MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
+import { ItemMove, itemsCanMerge, MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
 import { centerLocator, ItemContext, ItemLocator } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
@@ -39,9 +39,9 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   getMovedItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
     const { type, rules, locators, player } = context
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
+    const futureIndex = this.getItemIndexAfterMove(context, animation.move)
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
-    const mutator = futureRules.mutator(type)
-    const futureIndex = mutator.move(animation.move)
+    futureRules.play(animation.move)
     const futureItem = futureRules.material(type).getItem(futureIndex)!
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
@@ -53,6 +53,20 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const futureTransform = adjustRotation(futureTransforms, sourceTransforms).join(' ')
     const animationKeyframes = this.getKeyframes(sourceTransform, futureTransform, animation, context)
     return movementAnimationCss(animationKeyframes, animation.duration)
+  }
+
+  getItemIndexAfterMove({ rules }: ItemContext<P, M, L>, move: MoveItem<P, M, L>): number {
+    const items = rules.game.items[move.itemType]!
+    const itemAfterMove = rules.mutator(move.itemType).getItemAfterMove(move)
+    const mergeIndex = items.findIndex(item => itemsCanMerge(item, itemAfterMove))
+    if (mergeIndex !== -1) {
+      return mergeIndex
+    } else if ((items[move.itemIndex].quantity ?? 1) > (move.quantity ?? 1)) {
+      const availableIndex = items.findIndex(item => item.quantity === 0)
+      return availableIndex !== -1 ? availableIndex : items.length
+    } else {
+      return move.itemIndex
+    }
   }
 
   getChildItemAnimation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
