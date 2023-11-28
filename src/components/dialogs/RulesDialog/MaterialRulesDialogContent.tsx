@@ -8,6 +8,7 @@ import { FC, useMemo } from 'react'
 import { fontSizeCss, transformCss } from '../../../css'
 import { useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
+import { helpDialogContentCss } from './RulesHelpDialogContent'
 
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   helpDisplay: MaterialHelpDisplay<Player, MaterialType, LocationType>
@@ -57,12 +58,12 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
         noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
         isFlatMaterialDescription(description) && description.isFlipped(item, context) && transformCss('rotateY(180deg)')
       ]}/>
-      <div css={rulesStyle}>
+      <div css={helpDialogContentCss}>
         {description.help && <description.help {...helpDisplay} closeDialog={() => play(closeHelpDisplay, { local: true })}/>}
       </div>
     </div>
-    { previous && <PreviousArrow onPrevious={() => play(previous, { local: true })} />}
-    { next && <NextArrow onNext={() => play(next, { local: true })} />}
+    {previous && <PreviousArrow onPrevious={() => play(previous, { local: true })}/>}
+    {next && <NextArrow onNext={() => play(next, { local: true })}/>}
   </>
 }
 
@@ -122,6 +123,7 @@ const previousAnimation = keyframes`
 const previousArrow = css`
   padding: 0.7em 3em 0.7em 0.7em;
   left: -1.7em;
+
   &:focus:not(:active) {
     animation: ${previousAnimation} 0.2s forwards;
   }
@@ -138,6 +140,7 @@ const nextAnimation = keyframes`
 const nextArrow = css`
   padding: 0.7em 0.7em 0.7em 3em;
   right: -1.7em;
+
   &:focus:not(:active) {
     animation: ${nextAnimation} 0.2s forwards;
   }
@@ -152,20 +155,4 @@ const flex = css`
 
 const noShrink = css`
   flex-shrink: 0;
-`
-
-const rulesStyle = css`
-  margin: 0 0.5em;
-  padding: 0 0.5em;
-  font-size: 3em;
-  overflow: auto;
-
-  > h2 {
-    margin: 0 1em;
-    text-align: center;
-  }
-
-  > p {
-    white-space: break-spaces;
-  }
 `
