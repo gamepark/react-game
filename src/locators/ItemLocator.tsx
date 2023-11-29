@@ -8,6 +8,7 @@ export class ItemLocator<P extends number = number, M extends number = number, L
   parentItemType?: M
   limit?: number
   locationDescription?: LocationDescription<P, M, L>
+  rotationUnit: string = 'deg'
 
   getLocationDescription(context: MaterialContext<P, M, L>): LocationDescription<P, M, L> | undefined {
     if (!this.locationDescription && this.parentItemType !== undefined) {
@@ -84,8 +85,17 @@ export class ItemLocator<P extends number = number, M extends number = number, L
     return this.positionOnParent
   }
 
+  rotateZ: number = 0
+
+  getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+    return this.rotateZ
+  }
+
   getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    return context.material[context.type]?.getRotations(item, context) ?? []
+    const rotations = context.material[context.type]?.getRotations(item, context) ?? []
+    const rotateZ = this.getRotateZ(item, context)
+    if (rotateZ) rotations.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
+    return rotations
   }
 
   protected transformParentItemLocation(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
