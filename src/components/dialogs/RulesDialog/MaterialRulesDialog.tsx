@@ -1,10 +1,11 @@
 /** @jsxImportSource @emotion/react */
+import { HelpDisplayType, MaterialGame } from '@gamepark/rules-api'
 import { FC } from 'react'
-import { RulesDialog, RulesDialogProps } from '../index'
-import { MaterialGame, HelpDisplayType } from '@gamepark/rules-api'
-import { MaterialRulesDialogContent } from './MaterialRulesDialogContent'
-import { LocationRulesDialogContent } from './LocationRulesDialogContent'
 import { useGame } from '../../../hooks'
+import { RulesDialog, RulesDialogProps } from '../index'
+import { LocationRulesDialogContent } from './LocationRulesDialogContent'
+import { MaterialRulesDialogContent } from './MaterialRulesDialogContent'
+import { RulesHelpDialogContent } from './RulesHelpDialogContent'
 
 export const MaterialRulesDialog: FC<RulesDialogProps> = (props: RulesDialogProps) => {
   const game = useGame<MaterialGame>()
@@ -16,6 +17,9 @@ export const MaterialRulesDialog: FC<RulesDialogProps> = (props: RulesDialogProp
       }
       {game.helpDisplay.type === HelpDisplayType.Location &&
         <LocationRulesDialogContent helpDisplay={game.helpDisplay}/>
+      }
+      {game.helpDisplay.type === HelpDisplayType.Rules &&
+        <RulesHelpDialogContent helpDisplay={game.helpDisplay}/>
       }
     </RulesDialog>
   )

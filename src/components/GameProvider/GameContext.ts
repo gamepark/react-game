@@ -1,6 +1,6 @@
 import { Animations, TutorialDescription } from '@gamepark/react-client'
 import { RulesCreator } from '@gamepark/rules-api'
-import React from 'react'
+import React, { ComponentType } from 'react'
 import { ItemLocatorRecord } from '../../locators'
 import { MaterialDescriptionRecord } from '../material'
 
@@ -10,6 +10,7 @@ export type GameContext<Game = any, Move = any, PlayerId extends number = number
   material?: Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType>>
   materialI18n?: Record<string, Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType>>>
   locators?: Partial<ItemLocatorRecord<PlayerId, MaterialType, LocationType>>
+  rulesHelp?: Record<number, ComponentType<{ close: () => void }>>
   optionsSpec?: any
   animations?: Animations<Game, Move, PlayerId>
   tutorial?: TutorialDescription<Game, Move, PlayerId>

@@ -3,6 +3,7 @@ import { css } from '@emotion/react'
 import { closeHelpDisplay, LocationHelpDisplay } from '@gamepark/rules-api'
 import { fontSizeCss } from '../../../css'
 import { useItemLocator, useMaterialContext, usePlay } from '../../../hooks'
+import { helpDialogContentCss } from './RulesHelpDialogContent'
 
 export type LocationRulesDialogContentProps<P extends number = number, L extends number = number> = {
   helpDisplay: LocationHelpDisplay<P, L>
@@ -22,7 +23,7 @@ export const LocationRulesDialogContent = <P extends number = number, M extends 
     {!!image &&
       <div css={[noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)), backgroundImage(image, height, width)]}/>
     }
-    <div css={rulesCss}>
+    <div css={helpDialogContentCss}>
       <description.help location={helpDisplay.location} closeDialog={() => play(closeHelpDisplay, { local: true })}/>
     </div>
   </div>
@@ -37,22 +38,6 @@ const flex = css`
 
 const noShrink = css`
   flex-shrink: 0;
-`
-
-const rulesCss = css`
-  margin: 0 0.5em;
-  padding: 0 0.5em;
-  font-size: 3em;
-  overflow: auto;
-
-  > h2 {
-    margin: 0 1em;
-    text-align: center;
-  }
-
-  > p {
-    white-space: break-spaces;
-  }
 `
 
 const backgroundImage = (image: string, height: number, width: number) => css`
