@@ -2,13 +2,14 @@
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons/faCircleQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GamePageState } from '@gamepark/react-client'
-import { MaterialGame } from '@gamepark/rules-api'
-import { ComponentType, useState } from 'react'
+import { displayRulesHelp, MaterialGame } from '@gamepark/rules-api'
+import { ComponentType, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { pointerCursorCss } from '../../css'
-import { useGame, usePlayerId, usePlayerName, useResultText } from '../../hooks'
+import { useGame, usePlay, usePlayerId, usePlayerName, useResultText } from '../../hooks'
 import { RulesDialog } from '../dialogs'
+import { gameContext } from '../GameProvider'
 import { Header, HeaderProps } from './Header'
 
 export type MaterialHeaderProps<RulesStep extends number = number> = {
@@ -23,6 +24,8 @@ export const MaterialHeader = <RulesStep extends number = number>(
 ) => {
   const { t } = useTranslation()
   const game = useGame<MaterialGame>()
+  const play = usePlay()
+  const context = useContext(gameContext)
   const cancelled = useSelector<GamePageState, boolean>(state => state.players.every(player => player.quit))
   const gameOver = useSelector<GamePageState, boolean>(state =>
     state.actions?.every(action => !action.animation) === true && state.gameOver === true
@@ -38,7 +41,12 @@ export const MaterialHeader = <RulesStep extends number = number>(
               : victoryClaim ? <ShowVictoryClaim/>
                 : GameOver ? <GameOver/>
                   : <GameOverHeader GameOverRule={GameOverRule}/>
-          ) : RulesStepsHeader ? <RulesStepsHeader/>
+          ) : RulesStepsHeader ? <>
+              <RulesStepsHeader/>
+              {context.rulesHelp?.hasOwnProperty(game.rule!.id) && <>
+                &nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => play(displayRulesHelp(game.rule!.id), { local: true })} css={pointerCursorCss}/>
+              </>}
+            </>
             : t(`TODO: header for rule id ${game?.rule?.id}`)
       }
     </Header>
