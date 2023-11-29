@@ -14,12 +14,6 @@ export abstract class HandLocator<P extends number = number, M extends number = 
     return { x, y, z: coordinates.z + index * deltaZ }
   }
 
-  getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    const rotateZ = this.getRotateZ(item, context)
-    const rotations = super.getRotations(item, context)
-    return rotateZ ? [`rotateZ(${rotateZ}deg)`, ...rotations] : rotations
-  }
-
   getRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
     const index = this.getItemIndex(item, context)
     const size = this.countItems(item.location, context)
