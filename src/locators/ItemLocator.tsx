@@ -94,7 +94,7 @@ export class ItemLocator<P extends number = number, M extends number = number, L
   getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     const rotateZ = this.getRotateZ(item, context)
     const rotations = context.material[context.type]?.getRotations(item, context) ?? []
-    return rotateZ ? [`rotateZ(${rotateZ}deg)`, ...rotations] : rotations
+    return rotateZ ? [`rotateZ(${rotateZ}${this.rotationUnit})`, ...rotations] : rotations
   }
 
   protected transformParentItemLocation(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
