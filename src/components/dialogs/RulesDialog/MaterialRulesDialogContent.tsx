@@ -18,7 +18,7 @@ export type MaterialRulesDialogContentProps<Player extends number = number, Mate
 const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
   const rules = useRules<MaterialRules>()!
   const helpItem = helpDisplay.item
-  const material = useMemo(() => rules
+  const material = useMemo(() => helpItem.location && rules
       .material(helpDisplay.itemType)
       .location((location) => isSameLocationArea(location, helpItem.location!))
       .sort(
@@ -28,7 +28,9 @@ const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
       ),
     [rules.game])
 
-  const materialIndexes = useMemo(() => material.getIndexes(), [material])
+  const materialIndexes = useMemo(() => material?.getIndexes(), [material])
+
+  if (!material || !materialIndexes) return { previous: undefined, next: undefined }
 
   const currentIndex = materialIndexes.indexOf(helpDisplay.itemIndex!)
   const previous = material.index(materialIndexes[currentIndex - 1])
