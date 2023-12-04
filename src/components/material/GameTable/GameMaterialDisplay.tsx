@@ -61,7 +61,7 @@ export const GameMaterialDisplay = () => {
                                     playDown={tutorialPopup && !focus && !innerLocations.some(location => location.focus)}
                                     ref={focus ? addFocusRef : undefined}
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
-                                    onShortClick={() => play(displayMaterialHelp(type, item), { local: true })}>
+                                    onShortClick={() => play(displayMaterialHelp(type, item, index, displayIndex), { local: true })}>
             <LocationsMask locations={innerLocations.filter(l => l.focus).map(l => l.location)}/>
             {innerLocations.map(({ focus, location }) =>
               <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={focus}

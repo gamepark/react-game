@@ -7,6 +7,7 @@ import { closeHelpDisplay, displayMaterialHelp, isSameLocationArea, MaterialHelp
 import { FC, useMemo } from 'react'
 import { fontSizeCss, transformCss } from '../../../css'
 import { useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
+import { ItemContext } from '../../../locators'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
 
@@ -53,12 +54,13 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const item = helpDisplay.item
   const { width, height } = description.getSize(item.id, context)
   const { previous, next } = useMaterialNavigation(helpDisplay)
+  const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
 
   return <>
     <div css={flex}>
       <MaterialComponent type={helpDisplay.itemType} itemId={item.id} css={[
         noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-        isFlatMaterialDescription(description) && description.isFlipped(item, context) && transformCss('rotateY(180deg)')
+        isFlatMaterialDescription(description) && description.isFlipped(item, itemContext) && transformCss('rotateY(180deg)')
       ]}/>
       <div css={helpDialogContentCss}>
         {description.help && <description.help {...helpDisplay} closeDialog={() => play(closeHelpDisplay, { local: true })}/>}
