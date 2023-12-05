@@ -1,4 +1,4 @@
-import { Coordinates, MaterialItem } from '@gamepark/rules-api'
+import { Coordinates, MaterialItem, XYCoordinates } from '@gamepark/rules-api'
 import { ItemContext, ItemLocator } from './ItemLocator'
 
 export abstract class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
@@ -17,8 +17,8 @@ export abstract class PileLocator<P extends number = number, M extends number = 
       const distance = Math.random()
       const direction = Math.random() * 2 * Math.PI
       pilePositions.set(index, {
-        x: coordinates.x + Math.cos(direction) * Math.sqrt(distance) * radius,
-        y: coordinates.y + Math.sin(direction) * Math.sqrt(distance) * radius,
+        x: coordinates.x + Math.cos(direction) * Math.sqrt(distance) * (typeof radius === 'number' ? radius : radius.x),
+        y: coordinates.y + Math.sin(direction) * Math.sqrt(distance) * (typeof radius === 'number' ? radius : radius.y),
         z: coordinates.z
       })
     }
@@ -44,9 +44,9 @@ export abstract class PileLocator<P extends number = number, M extends number = 
     return this.coordinates
   }
 
-  radius = 0
+  radius: number | XYCoordinates = 0
 
-  getRadius(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+  getRadius(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number | XYCoordinates {
     return this.radius
   }
 
