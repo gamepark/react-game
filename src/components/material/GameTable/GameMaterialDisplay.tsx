@@ -2,6 +2,7 @@
 import { closeHelpDisplay, displayMaterialHelp, Location, MaterialItem, MaterialRules } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
 import { useCallback, useMemo, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useControls } from 'react-zoom-pan-pinch'
 import { pointerCursorCss, transformCss } from '../../../css'
 import { useMaterialContext, usePlay, useRules, useZoomToElements } from '../../../hooks'
@@ -20,6 +21,7 @@ export const GameMaterialDisplay = () => {
   const locators = context.locators
   const rules = useRules<MaterialRules>()
   const play = usePlay()
+  const { t } = useTranslation()
 
   const zoomToElements = useZoomToElements()
   const { resetTransform } = useControls()
@@ -83,7 +85,8 @@ export const GameMaterialDisplay = () => {
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} index={index} displayIndex={displayIndex}
                                     playDown={tutorialPopup && !focus && !innerLocations.some(location => location.focus)}
-                                    ref={focus ? addFocusRef : undefined}>
+                                    ref={focus ? addFocusRef : undefined}
+                                    title={item.quantity !== undefined ? t('quantity.tooltip', { n: item.quantity })! : undefined}>
             <LocationsMask locations={innerLocations.filter(l => l.focus).map(l => l.location)}/>
             {innerLocations.map(({ focus, location }) =>
               <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={focus} ref={focus ? addFocusRef : undefined}/>)}
