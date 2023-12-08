@@ -55,15 +55,15 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const { width, height } = description.getSize(item.id, context)
   const { previous, next } = useMaterialNavigation(helpDisplay)
   const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
-
+  const hasNavigation = previous || next
   return <>
-    <div css={flex}>
+    <div css={[flex, hasNavigation && fullSize]}>
       <MaterialComponent type={helpDisplay.itemType} itemId={item.id} css={[
         noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
         isFlatMaterialDescription(description) && description.isFlipped(item, itemContext) && transformCss('rotateY(180deg)')
       ]}/>
       <div css={helpDialogContentCss}>
-        {description.help && <description.help {...helpDisplay} closeDialog={() => play(closeHelpDisplay, { local: true })}/>}
+        {description.help && <description.help {...helpDisplay} closeDialog={() => play(closeHelpDisplay, { local: true })} />}
       </div>
     </div>
     {previous && <PreviousArrow onPrevious={() => play(previous, { local: true })}/>}
@@ -160,3 +160,7 @@ const flex = css`
 const noShrink = css`
   flex-shrink: 0;
 `
+
+const fullSize = css`
+  width: 90dvw`
+
