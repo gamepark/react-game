@@ -40,6 +40,7 @@ export const helpDialogContentCss = css`
   padding: 0 0.5em;
   font-size: 3em;
   overflow: auto;
+  flex: 1;
 
   > h2 {
     margin: 0 1em;
