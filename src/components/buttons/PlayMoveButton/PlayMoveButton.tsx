@@ -111,6 +111,10 @@ const content = css`
   font-size: 3em;
   display: flex;
   flex-direction: column;
+  
+  p {
+    white-space: break-spaces;
+  }
 `
 
 const confirmationDialogCss = css`
