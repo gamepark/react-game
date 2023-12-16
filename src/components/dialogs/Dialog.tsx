@@ -68,8 +68,8 @@ const fadeOut = keyframes`
 const backdropStyle = (transitionDelay: number) => css`
   position: fixed;
   top: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
   background: rgba(0, 0, 0, 0.5);
   z-index: 1100;
   transition: opacity ${transitionDelay}s;
