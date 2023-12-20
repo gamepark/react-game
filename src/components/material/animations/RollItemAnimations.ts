@@ -1,6 +1,6 @@
 import { Interpolation, keyframes, Theme } from '@emotion/react'
+import { Animation } from '@gamepark/react-client'
 import { CreateItem, ItemMove, MaterialRulesCreator, RollItem } from '@gamepark/rules-api'
-import { Animation } from '../../../../../workshop/packages/react-client'
 import { centerLocator, ItemContext, ItemLocator } from '../../../locators'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
