@@ -40,7 +40,7 @@ export const TimeStatsButton = () => {
           {players.map((player, index) =>
             <Fragment key={index}>
               <div key={index} css={[relative, borderLeft]}>
-                <Avatar playerId={player.id} css={avatarCss}/>
+                <Avatar playerId={player.id} css={avatarCss} />
                 <span><PlayerName playerId={player.id}/></span>
               </div>
               <div css={[borderLeft, borderTop, orangeBackground]}>
