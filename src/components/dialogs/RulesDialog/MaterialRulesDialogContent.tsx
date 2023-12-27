@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { closeHelpDisplay, displayMaterialHelp, isSameLocationArea, MaterialHelpDisplay, MaterialRules } from '@gamepark/rules-api'
 import { FC, useMemo } from 'react'
 import { fontSizeCss, transformCss } from '../../../css'
-import { useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
+import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
 import { ItemContext } from '../../../locators'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
@@ -18,6 +18,7 @@ export type MaterialRulesDialogContentProps<Player extends number = number, Mate
 
 const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
   const rules = useRules<MaterialRules>()!
+  const play = usePlay()
   const helpItem = helpDisplay.item
   const material = useMemo(() => helpItem.location && rules
       .material(helpDisplay.itemType)
@@ -25,7 +26,7 @@ const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
       .sort(
         (item) => item.location.x ?? 0,
         (item) => item.location.y ?? 0,
-        (item) => item.location.z ?? 0
+        (item) => item.location.z ?? 0,
       ),
     [rules.game])
 
@@ -36,16 +37,20 @@ const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
   const currentIndex = materialIndexes.indexOf(helpDisplay.itemIndex!)
   const previous = material.index(materialIndexes[currentIndex - 1])
   const next = material.index(materialIndexes[currentIndex + 1])
+  const previousMove = previous.length ? displayMaterialHelp(helpDisplay.itemType, previous.getItem(), previous.getIndex()) : undefined
+  const nextMove = next.length ? displayMaterialHelp(helpDisplay.itemType, next.getItem(), next.getIndex()) : undefined
+  useKeyDown('ArrowRight', () => nextMove ? play(nextMove, { local: true }) : undefined)
+  useKeyDown('ArrowLeft', () => previousMove ? play(previousMove, { local: true }) : undefined)
 
   return {
     previous: previous.length ? displayMaterialHelp(helpDisplay.itemType, previous.getItem(), previous.getIndex()) : undefined,
-    next: next.length ? displayMaterialHelp(helpDisplay.itemType, next.getItem(), next.getIndex()) : undefined
+    next: next.length ? displayMaterialHelp(helpDisplay.itemType, next.getItem(), next.getIndex()) : undefined,
   }
 
 }
 
 export const MaterialRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
-  { helpDisplay }: MaterialRulesDialogContentProps<P, M, L>
+  { helpDisplay }: MaterialRulesDialogContentProps<P, M, L>,
 ) => {
   const play = usePlay()
   const context = useMaterialContext<P, M, L>()
@@ -60,10 +65,10 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
     <div css={[flex, hasNavigation && fullSize]}>
       <MaterialComponent type={helpDisplay.itemType} itemId={item.id} css={[
         noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-        isFlatMaterialDescription(description) && description.isFlipped(item, itemContext) && transformCss('rotateY(180deg)')
+        isFlatMaterialDescription(description) && description.isFlipped(item, itemContext) && transformCss('rotateY(180deg)'),
       ]}/>
       <div css={helpDialogContentCss}>
-        {description.help && <description.help {...helpDisplay} closeDialog={() => play(closeHelpDisplay, { local: true })} />}
+        {description.help && <description.help {...helpDisplay} closeDialog={() => play(closeHelpDisplay, { local: true })}/>}
       </div>
     </div>
     {previous && <PreviousArrow onPrevious={() => play(previous, { local: true })}/>}
