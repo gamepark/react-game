@@ -56,8 +56,9 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   canDrag(move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): boolean {
+
     if (isMoveItem(move)) {
-      return move.itemType === context.type && move.itemIndex === context.index && this.canDragToMove(move, context)
+      return move.location?.type !== undefined && move.itemType === context.type && move.itemIndex === context.index && this.canDragToMove(move, context)
     } else if (isDeleteItem(move)) {
       return move.itemType === context.type && move.itemIndex === context.index && this.canDragToDelete(move, context)
     } else {
