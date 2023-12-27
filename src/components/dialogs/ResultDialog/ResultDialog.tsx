@@ -99,7 +99,7 @@ const PlayerDisplay = ({ gameMode, player, rank, border }: { gameMode?: GameMode
   return <>
     <div css={[relative, border && borderLeft]}>
       <div css={avatarContainer}>
-        <Avatar playerId={player.id} css={avatarCss}/>
+        <Avatar playerId={player.id} css={avatarCss} />
         {rank !== undefined && <Medal rank={rank} css={medalCss}/>}
       </div>
       <span>{playerName}</span>
