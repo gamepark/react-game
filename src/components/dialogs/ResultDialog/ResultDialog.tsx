@@ -1,23 +1,23 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
+import { faChessPawn } from '@fortawesome/free-solid-svg-icons'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GameMode, GamePageState, PLATFORM_URI, Player } from '@gamepark/react-client'
-import { isCompetitive, rankPlayers } from '@gamepark/rules-api'
+import { GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
+import { isCompetitive } from '@gamepark/rules-api'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { Dialog, DialogProps } from '../Dialog'
-import { usePlayerName, usePlayers, useResultText, useRules } from '../../../hooks'
+import { usePlayerName, useRankedPlayers, useResultText, useRules } from '../../../hooks'
 import { Avatar } from '../../Avatar'
-import { RematchSection } from './RematchSection'
-import { NavButton } from '../../menus/Menu/NavButton'
 import { GamePoints } from '../../GamePoints'
-import { Medal } from '../../menus'
 import { gameContext } from '../../GameProvider'
-import { faChessPawn } from '@fortawesome/free-solid-svg-icons'
+import { Medal } from '../../menus'
+import { NavButton } from '../../menus/Menu/NavButton'
 import { RestartTutorialButton } from '../../menus/RestartTutorialButton'
+import { Dialog, DialogProps } from '../Dialog'
+import { RematchSection } from './RematchSection'
 
 type Props = DialogProps & {
   openDialog: () => void
@@ -30,29 +30,11 @@ const gameId = query.get('game')
 
 export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const { t } = useTranslation()
-  const players = [...usePlayers()]
+  const rankedPlayers = useRankedPlayers()
   const context = useContext(gameContext)
   const rules = useRules()!
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const tournament = useSelector((state: GamePageState) => state.tournament)
-  const ranks = players.map(_ => 1)
-  if (isCompetitive(rules) && players.length > 1) {
-    players.sort((playerA, playerB) => {
-      if (playerA.quit || playerB.quit) {
-        return playerA.quit ? playerB.quit ? 0 : 1 : -1
-      }
-      return rankPlayers(rules, playerA.id, playerB.id)
-    })
-    for (let i = 1; i < players.length; i++) {
-      if (players[i - 1].quit) {
-        ranks[i] = ranks[i - 1]
-      } else if (players[i].quit) {
-        ranks[i] = ranks[i - 1] + 1
-      } else {
-        ranks[i] = rankPlayers(rules, players[i - 1].id, players[i].id) === 0 ? ranks[i - 1] : ranks[i - 1] + 1
-      }
-    }
-  }
   const rows = gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1
   const resultText = useResultText()
   return (
@@ -69,13 +51,13 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
           {t('Play again')}
         </NavButton>
       }
-      <div css={[gridCss, rows > 1 ? multiRows(players.length, rows) : singleRow(players.length)]}>
+      <div css={[gridCss, rows > 1 ? multiRows(rankedPlayers.length, rows) : singleRow(rankedPlayers.length)]}>
         {rows > 1 && <div/>}
         {gameMode === GameMode.TOURNAMENT && <div css={borderTop}>{t('Tournament')}</div>}
         {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={borderTop}>{t('Ranking')}</div>}
-        {players.map((player, index) =>
-          <PlayerDisplay key={index} player={player} gameMode={gameMode}
-                         rank={isCompetitive(rules) && ranks[index] <= 3 ? ranks[index] : undefined} border={rows > 1}/>)
+        {rankedPlayers.map((player, index) =>
+          <PlayerDisplay key={index} playerId={player.id} gameMode={gameMode}
+                         rank={isCompetitive(rules) && player.rank <= 3 ? player.rank : undefined} border={rows > 1}/>)
         }
       </div>
       {gameMode === GameMode.TUTORIAL &&
@@ -94,24 +76,25 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   )
 }
 
-const PlayerDisplay = ({ gameMode, player, rank, border }: { gameMode?: GameMode, player: Player, rank?: number, border: boolean }) => {
-  const playerName = usePlayerName(player.id)
+const PlayerDisplay = ({ gameMode, playerId, rank, border }: { gameMode?: GameMode, playerId: any, rank?: number, border: boolean }) => {
+  const playerName = usePlayerName(playerId)
+  const tournamentPoints = useSelector((state: GamePageState) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
   return <>
     <div css={[relative, border && borderLeft]}>
       <div css={avatarContainer}>
-        <Avatar playerId={player.id} css={avatarCss} />
+        <Avatar playerId={playerId} css={avatarCss} />
         {rank !== undefined && <Medal rank={rank} css={medalCss}/>}
       </div>
       <span>{playerName}</span>
     </div>
     {gameMode === GameMode.TOURNAMENT &&
       <div css={[borderLeft, borderTop]}>
-        {!!player.tournamentPoints && <><FontAwesomeIcon icon={faTrophy} css={trophyIcon}/><span>+{player.tournamentPoints}</span></>}
+        {tournamentPoints !== undefined && <><FontAwesomeIcon icon={faTrophy} css={trophyIcon}/><span>+{tournamentPoints}</span></>}
       </div>
     }
     {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) &&
       <div css={[borderLeft, borderTop]}>
-        <GamePoints playerId={player.id}/>
+        <GamePoints playerId={playerId}/>
       </div>
     }
   </>
