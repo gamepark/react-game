@@ -111,6 +111,7 @@ const loadingScreenStyle = (theme: Theme) => css`
   transition: opacity ${fadeOutDuration}ms;
   pointer-events: none;
   ${backgroundCss(theme.root.background)};
+  z-index: 1500;
 
   > * {
     z-index: 1;
