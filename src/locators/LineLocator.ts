@@ -10,7 +10,7 @@ export abstract class LineLocator<P extends number = number, M extends number = 
       const count = this.countItems(item.location, context)
       if (count > 1) {
         const deltaMax = this.getDeltaMax(item, context)
-        delta = { ...delta }
+        delta = { ...delta, z: delta.z === undefined? context.material[context.type]?.thickness ?? 0.05: delta.z }
         delta.x = this.getDeltaValue(delta.x, deltaMax.x, count)
         delta.y = this.getDeltaValue(delta.y, deltaMax.y, count)
         delta.z = this.getDeltaValue(delta.z, deltaMax.z, count)
