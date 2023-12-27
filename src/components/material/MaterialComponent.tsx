@@ -17,7 +17,7 @@ export type MaterialComponentProps<M extends number = number, ItemId = any> = {
 } & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
-  { type, itemId, onShortClick, onLongClick = onShortClick, highlight, playDown, ...props }, ref
+  { type, itemId, onShortClick, onLongClick, highlight, playDown, ...props }, ref
 ) => {
   const game = useGame<MaterialGame>()
   const description = useMaterialDescription(type)
