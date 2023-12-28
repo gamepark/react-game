@@ -10,6 +10,7 @@ import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/bounds.util'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
+import { GameTableNavigation } from './GameTableNavigation'
 
 export type GameTableProps = {
   collisionAlgorithm?: CollisionDetection
@@ -75,6 +76,8 @@ export const GameTable: FC<GameTableProps> = (
   const vm = margin.top + margin.bottom
   const tableFontSize = 5
   const minScale = (100 - vm) / tableFontSize / (yMax - yMin)
+  const maxScale = Math.max(1, minScale)
+
   const ratio = (xMax - xMin) / (yMax - yMin)
   const ratioWithMargins = ((100 - vm) * ratio + hm) / 100
   const panning = useMemo(() => ({ disabled: dragging }), [dragging])
@@ -86,13 +89,15 @@ export const GameTable: FC<GameTableProps> = (
     width: `calc(100dvw - ${hm}em)`,
     overflow: 'visible'
   }), [margin, vm, hm, ratio])
+
   return (
     <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
                 modifiers={[snapCenterToCursor]} sensors={sensors}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
       <Global styles={ratioFontSize(ratioWithMargins)}/>
-      <TransformWrapper ref={ref} minScale={minScale} maxScale={Math.max(1, minScale)} initialScale={minScale}
+      <TransformWrapper ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
                         centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
+        <GameTableNavigation minScale={minScale} maxScale={maxScale} />
         <TransformComponent wrapperStyle={wrapperStyle}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
             <GameMaterialDisplay/>

@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { closeHelpDisplay, displayMaterialHelp, Location, MaterialItem, MaterialRules } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
-import { useCallback, useMemo, useRef } from 'react'
+import { FC, useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useControls } from 'react-zoom-pan-pinch'
 import { pointerCursorCss, transformCss } from '../../../css'
@@ -15,7 +15,7 @@ import { DraggableMaterial } from '../DraggableMaterial'
 import { LocationsMask, SimpleDropArea } from '../locations'
 import { MaterialComponent } from '../MaterialComponent'
 
-export const GameMaterialDisplay = () => {
+export const GameMaterialDisplay: FC = () => {
   const context = useMaterialContext()
   const material = context.material
   const locators = context.locators
@@ -24,7 +24,7 @@ export const GameMaterialDisplay = () => {
   const { t } = useTranslation()
 
   const zoomToElements = useZoomToElements()
-  const { resetTransform } = useControls()
+  const { resetTransform,  } = useControls()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
   const tutorialStep = useTutorialStep()
   const tutorialPopup = !rules?.game.tutorialPopupClosed && tutorialStep?.popup
