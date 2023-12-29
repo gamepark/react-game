@@ -3,14 +3,13 @@ import { CollisionDetection, DndContext, DragEndEvent, getClientRect, PointerSen
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { css, Global } from '@emotion/react'
 import { dropItemMove, Location } from '@gamepark/rules-api'
-import React, { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { FC, HTMLAttributes, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/bounds.util'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
-import { GameTableNavigation } from './GameTableNavigation'
 
 export type GameTableProps = {
   collisionAlgorithm?: CollisionDetection
@@ -18,6 +17,7 @@ export type GameTableProps = {
   xMax: number
   yMin: number
   yMax: number
+  navigation?: ReactNode
   perspective?: number
   margin?: { left: number, top: number, right: number, bottom: number }
 } & HTMLAttributes<HTMLDivElement>
@@ -26,9 +26,8 @@ const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 const pointerSensorOptions = { activationConstraint: { distance: 2 } }
 export const GameTable: FC<GameTableProps> = (
-  { collisionAlgorithm, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, children, ...props }
+  { collisionAlgorithm, navigation, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, children, ...props }
 ) => {
-
   const [dragging, setDragging] = useState(false)
   const sensors = useSensors(
     useSensor(PointerSensor, pointerSensorOptions)
@@ -97,13 +96,13 @@ export const GameTable: FC<GameTableProps> = (
       <Global styles={ratioFontSize(ratioWithMargins)}/>
       <TransformWrapper ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
                         centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
-        <GameTableNavigation minScale={minScale} maxScale={maxScale} />
         <TransformComponent wrapperStyle={wrapperStyle}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
             <GameMaterialDisplay/>
             {children}
           </div>
         </TransformComponent>
+        {navigation}
       </TransformWrapper>
     </DndContext>
   )

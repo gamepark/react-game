@@ -1,62 +1,49 @@
 /** @jsxImportSource @emotion/react */
-import { FC } from 'react'
+import { FC, HTMLAttributes } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
-import { faMinus } from '@fortawesome/free-solid-svg-icons/faMinus'
+import { faSearchPlus } from '@fortawesome/free-solid-svg-icons/faSearchPlus'
+import { faSearchMinus } from '@fortawesome/free-solid-svg-icons/faSearchMinus'
 import { css } from '@emotion/react'
 import { useControls } from 'react-zoom-pan-pinch'
 
 type GameTableNavigationProps = {
-  minScale: number
-  maxScale: number
-}
+} & HTMLAttributes<HTMLDivElement>
 
-export const GameTableNavigation: FC<GameTableNavigationProps> = () => {
+export const GameTableNavigation: FC<GameTableNavigationProps> = (props) => {
   const { zoomIn, zoomOut } = useControls()
   return (
-    <>
-      { !!zoomIn && <FontAwesomeIcon icon={faPlus} css={zoomInStyle} onClick={() => zoomIn(0.3)} />}
-      { !!zoomOut && <FontAwesomeIcon icon={faMinus} css={zoomOutStyle} onClick={() => zoomOut(0.3)} />}
-    </>
+    <div css={navigationContainer} {...props} >
+      { !!zoomIn && <FontAwesomeIcon icon={faSearchPlus} css={[button]} onClick={() => zoomIn(0.3)} />}
+      { !!zoomOut && <FontAwesomeIcon icon={faSearchMinus} css={[button, zoomOutStyle]} onClick={() => zoomOut(0.3)} />}
+    </div>
   )
 }
 
-const zoomInStyle = css`
+const navigationContainer = css`
   position: fixed;
-  top: 2em;
+  top: 8em;
   left: 1em;
-  font-size: 3em;
-  color: black;
-  padding: 0.2em;
-  border: 0.2em solid white;
-  background-color: white;
+  transform: translateZ(100em);
+`
+
+const button = css`
+  font-size: 2.5em;
+  padding: 0.5em;
+  color: #28B8CE;
+  border: 0.1em solid #28B8CE;
   border-radius: 5em;
+  background-color: #f0fbfc;
   height: 1em;
   width: 1em;
-  z-index: 1;
   cursor: pointer;
+
   &:active {
+    color: black;
     background-color: lightgray;
-    border-color: lightgray;
   }
 `
 
 const zoomOutStyle = css`
-  position: fixed;
-  top: 2em;
-  left: 3.5em;
-  font-size: 3em;
-  color: black;
-  padding: 0.2em;
-  border: 0.2em solid white;
-  background-color: white;
-  border-radius: 5em;
-  height: 1em;
-  width: 1em;
-  z-index: 1;
-  cursor: pointer;
-  &:active {
-    background-color: lightgray;
-    border-color: lightgray;
-  }
+  position: absolute;
+  left: 2.5em;
 `
