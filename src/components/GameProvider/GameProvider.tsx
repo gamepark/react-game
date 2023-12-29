@@ -101,6 +101,8 @@ const globalCss = (theme: Theme) => css`
     user-select: none;
     overflow: hidden;
     color: #eee;
+    // Disable native zoom
+    touch-action: none;
     ${backgroundCss(theme.root.background)};
   }
   
