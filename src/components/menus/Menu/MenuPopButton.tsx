@@ -8,18 +8,17 @@ type Props = {
   popPosition?: number
 } & HTMLAttributes<HTMLButtonElement>
 
-export const MenuPopButton = ({ children, pop, popPosition = 1, ...props }: Props) => {
-  const [popAfterCreation, setPopAfterCreation] = useState<boolean>()
+export const MenuPopButton = ({ pop, popPosition = 1, ...props }: Props) => {
+  const [doPop, setDoPop] = useState<boolean>()
   useEffect(() => {
-    if (popAfterCreation === undefined) {
-      setTimeout(() => setPopAfterCreation(pop), 100)
+    if (!pop || doPop === undefined) {
+      const timeout = setTimeout(() => setDoPop(pop), 200)
+      return () => clearTimeout(timeout)
     } else {
-      setPopAfterCreation(pop)
+      setDoPop(pop)
     }
   }, [pop])
-  return (
-    <button css={[style, popAfterCreation && popStyle(popPosition)]} {...props}>{children}</button>
-  )
+  return <button css={[style, doPop && popStyle(popPosition)]} disabled={!pop} {...props}/>
 }
 
 const style = css`

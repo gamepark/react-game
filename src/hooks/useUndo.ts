@@ -1,8 +1,8 @@
-import { DisplayedAction, GamePageState, moveUndone } from '@gamepark/react-client'
-import { hasUndo, replayActions } from '@gamepark/rules-api'
+import { DisplayedAction, GamePageState, isActionToAnimate, moveUndone } from '@gamepark/react-client'
+import { hasUndo } from '@gamepark/rules-api'
+import findLastIndex from 'lodash/findLastIndex'
 import { useCallback, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import findLastIndex from 'lodash/findLastIndex'
 import { gameContext } from '../components'
 
 export type UndoOptions = { delayed?: boolean }
@@ -12,7 +12,7 @@ export type UndoFunction<Move> = ((arg?: string | number | MovePredicate<Move> |
 
 export const useUndo = <Move = any, PlayerId extends number = number, Game = any>(): [UndoFunction<Move>, CanUndo<Move>] => {
   const actions = useSelector<GamePageState<Game, Move, PlayerId>, DisplayedAction<Move, PlayerId>[] | undefined>(state => state.actions)
-  const setup = useSelector<GamePageState<Game, Move, PlayerId>, Game | undefined>(state => state.setup)
+  const game = useSelector<GamePageState<Game, Move, PlayerId>, Game | undefined>(state => state.state)
   const playerId = useSelector<GamePageState<Game, Move, PlayerId>, PlayerId | undefined>(state => state.playerId)
   const dispatch = useDispatch()
   const Rules = useContext(gameContext)?.Rules
@@ -38,17 +38,21 @@ export const useUndo = <Move = any, PlayerId extends number = number, Game = any
   }, [actions, playerId, dispatch])
 
   const canUndo: CanUndo<Move> = useCallback((movePredicate?: MovePredicate<Move>) => {
-    if (!setup || !actions) return false
-    const index = findLastIndex(actions, action => action.playerId === playerId && !action.cancelled && (!movePredicate || movePredicate(action.move)))
+    if (!game || !actions) return false
+    if (actions.some(action =>
+      action.playerId === playerId && (isActionToAnimate(action) || action.animation !== undefined)
+    )) return false
+    const index = findLastIndex(actions, action =>
+      action.playerId === playerId && !action.cancelled && (!movePredicate || movePredicate(action.move))
+    )
     if (index === -1) return false
     const action = actions[index]
     if (action.pending) return false
     const consecutiveActions = actions.slice(index + 1).filter(action => !action.cancelled)
-    const rules = new Rules(JSON.parse(JSON.stringify(setup)), { player: playerId })
+    const rules = new Rules(game, { player: playerId })
     if (!hasUndo(rules)) return false
-    replayActions(rules, actions.filter(action => !action.delayed && !action.cancelled))
     return rules.canUndo(action, consecutiveActions)
-  }, [setup, actions, playerId, Rules])
+  }, [game, actions, playerId, Rules])
 
   return [undo, canUndo]
 }
