@@ -1,49 +1,70 @@
 /** @jsxImportSource @emotion/react */
-import { FC, HTMLAttributes } from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSearchPlus } from '@fortawesome/free-solid-svg-icons/faSearchPlus'
-import { faSearchMinus } from '@fortawesome/free-solid-svg-icons/faSearchMinus'
 import { css } from '@emotion/react'
-import { useControls } from 'react-zoom-pan-pinch'
+import { faSearchMinus } from '@fortawesome/free-solid-svg-icons/faSearchMinus'
+import { faSearchPlus } from '@fortawesome/free-solid-svg-icons/faSearchPlus'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FC, HTMLAttributes, useState } from 'react'
+import { useControls, useTransformEffect } from 'react-zoom-pan-pinch'
+import { buttonResetCss } from '../../../css'
 
-type GameTableNavigationProps = {
-} & HTMLAttributes<HTMLDivElement>
-
-export const GameTableNavigation: FC<GameTableNavigationProps> = (props) => {
+export const GameTableNavigation: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
   const { zoomIn, zoomOut } = useControls()
+  const [isMin, setIsMin] = useState(false)
+  const [isMax, setIsMax] = useState(false)
+  useTransformEffect(({ state, instance }) => {
+    setIsMin(state.scale === instance.props.minScale)
+    setIsMax(state.scale === instance.props.maxScale)
+  })
   return (
-    <div css={navigationContainer} {...props} >
-      { !!zoomIn && <FontAwesomeIcon icon={faSearchPlus} css={[button]} onClick={() => zoomIn(0.3)} />}
-      { !!zoomOut && <FontAwesomeIcon icon={faSearchMinus} css={[button, zoomOutStyle]} onClick={() => zoomOut(0.3)} />}
+    <div css={navigationContainer} {...props}>
+      <button css={button} onClick={() => zoomIn(0.1)} disabled={isMax}>
+        <FontAwesomeIcon icon={faSearchPlus} css={iconCss}/>
+      </button>
+      <button css={button} onClick={() => zoomOut(0.1)} disabled={isMin}>
+        <FontAwesomeIcon icon={faSearchMinus} css={iconCss}/>
+      </button>
     </div>
   )
 }
 
 const navigationContainer = css`
   position: fixed;
+  display: flex;
+  gap: 1em;
   top: 8em;
   left: 1em;
+  color: white;
   transform: translateZ(100em);
 `
 
-const button = css`
-  font-size: 2.5em;
-  padding: 0.5em;
-  color: #28B8CE;
-  border: 0.1em solid #28B8CE;
-  border-radius: 5em;
-  background-color: #f0fbfc;
-  height: 1em;
-  width: 1em;
-  cursor: pointer;
+const button = [buttonResetCss, css`
+  font-size: 3em;
+  height: 2em;
+  width: 2em;
+  border-radius: 2em;
+  transition: transform 0.1s ease-in-out;
+  border: 0.1em solid white;
+  color: inherit;
+  background: transparent;
 
-  &:active {
-    color: black;
-    background-color: lightgray;
+  &:disabled {
+    color: #a0a0a0;
+    border-color: #a0a0a0;
   }
-`
 
-const zoomOutStyle = css`
-  position: absolute;
-  left: 2.5em;
+  &:not(:disabled) {
+    &:focus, &:hover {
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(1.05);
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+  }
+  
+`]
+
+const iconCss = css`
+  color: inherit;
 `
