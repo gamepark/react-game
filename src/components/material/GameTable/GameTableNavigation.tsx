@@ -4,6 +4,7 @@ import { faSearchMinus } from '@fortawesome/free-solid-svg-icons/faSearchMinus'
 import { faSearchPlus } from '@fortawesome/free-solid-svg-icons/faSearchPlus'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, HTMLAttributes, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useControls, useTransformEffect } from 'react-zoom-pan-pinch'
 import { buttonResetCss } from '../../../css'
 
@@ -15,7 +16,7 @@ export const GameTableNavigation: FC<HTMLAttributes<HTMLDivElement>> = (props) =
     setIsMin(state.scale === instance.props.minScale)
     setIsMax(state.scale === instance.props.maxScale)
   })
-  return (
+  return createPortal(
     <div css={navigationContainer} {...props}>
       <button css={button} onClick={() => zoomIn(0.1)} disabled={isMax}>
         <FontAwesomeIcon icon={faSearchPlus} css={iconCss}/>
@@ -23,7 +24,8 @@ export const GameTableNavigation: FC<HTMLAttributes<HTMLDivElement>> = (props) =
       <button css={button} onClick={() => zoomOut(0.1)} disabled={isMin}>
         <FontAwesomeIcon icon={faSearchMinus} css={iconCss}/>
       </button>
-    </div>
+    </div>,
+    document.getElementById('root')!
   )
 }
 
@@ -62,7 +64,7 @@ const button = [buttonResetCss, css`
       background-color: rgba(0, 0, 0, 0.5);
     }
   }
-  
+
 `]
 
 const iconCss = css`
