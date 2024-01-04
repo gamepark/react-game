@@ -60,6 +60,10 @@ export abstract class WritingDescription<P extends number = number, M extends nu
   }
 }
 
+export const isWritingDescription = <P extends number = number, M extends number = number, L extends number = number, ItemId = any>(description: MaterialDescription<P, M, L, ItemId>): description is WritingDescription<P, M, L, ItemId> => {
+  return typeof (description as WritingDescription<P, M, L, ItemId>).getFrontContent === 'function'
+}
+
 const faceCss = css`
   position: absolute;
   transform-style: preserve-3d;

@@ -1,10 +1,11 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { Coordinates, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
+import { Coordinates, isCreateItem, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
 import { ComponentType } from 'react'
 import { ItemContext, LocationContext, LocationHelpProps, MaterialContext } from '../../../locators'
 import { ComponentSize } from '../MaterialDescription'
 import { isLocationSubset } from '../utils'
+import { isWritingDescription } from '../Writing'
 
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any> {
   help?: ComponentType<LocationHelpProps<P, L>>
@@ -100,6 +101,12 @@ export class LocationDescription<P extends number = number, M extends number = n
 
   canLongClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
     return this.isMoveToLocation(move, location, context)
+  }
+
+  canShortClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
+    return isCreateItem(move)
+      && isLocationSubset(move.item.location, location)
+      && context.material[move.itemType] && isWritingDescription(context.material[move.itemType]!)
   }
 
   protected isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
