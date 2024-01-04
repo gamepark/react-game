@@ -3,7 +3,7 @@ import { CollisionDetection, DndContext, DragEndEvent, getClientRect, PointerSen
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { css, Global } from '@emotion/react'
 import { dropItemMove, Location } from '@gamepark/rules-api'
-import React, { FC, HTMLAttributes, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
@@ -17,7 +17,6 @@ export type GameTableProps = {
   xMax: number
   yMin: number
   yMax: number
-  navigation?: ReactNode
   perspective?: number
   margin?: { left: number, top: number, right: number, bottom: number }
 } & HTMLAttributes<HTMLDivElement>
@@ -26,8 +25,9 @@ const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 const pointerSensorOptions = { activationConstraint: { distance: 2 } }
 export const GameTable: FC<GameTableProps> = (
-  { collisionAlgorithm, navigation, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, children, ...props }
+  { collisionAlgorithm, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, children, ...props }
 ) => {
+
   const [dragging, setDragging] = useState(false)
   const sensors = useSensors(
     useSensor(PointerSensor, pointerSensorOptions)
@@ -75,8 +75,6 @@ export const GameTable: FC<GameTableProps> = (
   const vm = margin.top + margin.bottom
   const tableFontSize = 5
   const minScale = (100 - vm) / tableFontSize / (yMax - yMin)
-  const maxScale = Math.max(1, minScale)
-
   const ratio = (xMax - xMin) / (yMax - yMin)
   const ratioWithMargins = ((100 - vm) * ratio + hm) / 100
   const panning = useMemo(() => ({ disabled: dragging }), [dragging])
@@ -88,13 +86,12 @@ export const GameTable: FC<GameTableProps> = (
     width: `calc(100dvw - ${hm}em)`,
     overflow: 'visible'
   }), [margin, vm, hm, ratio])
-
   return (
     <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
                 modifiers={[snapCenterToCursor]} sensors={sensors}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
       <Global styles={ratioFontSize(ratioWithMargins)}/>
-      <TransformWrapper ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
+      <TransformWrapper ref={ref} minScale={minScale} maxScale={Math.max(1, minScale)} initialScale={minScale}
                         centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
         <TransformComponent wrapperStyle={wrapperStyle}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
@@ -102,7 +99,6 @@ export const GameTable: FC<GameTableProps> = (
             {children}
           </div>
         </TransformComponent>
-        {navigation}
       </TransformWrapper>
     </DndContext>
   )
