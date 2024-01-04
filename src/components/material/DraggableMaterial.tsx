@@ -14,13 +14,15 @@ import {
   XYCoordinates
 } from '@gamepark/rules-api'
 import merge from 'lodash/merge'
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
-import { useAnimation, useAnimations, useLegalMoves, useMaterialAnimations, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
+import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
 import { centerLocator, ItemContext } from '../../locators'
 import { combineEventListeners } from '../../utilities'
+import { gameContext } from '../GameProvider'
+import { MaterialGameAnimations } from './animations'
 import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
 import { isDroppedItem } from './utils/isDroppedItem'
 import { isPlacedOnItem } from './utils/isPlacedOnItem'
@@ -180,14 +182,15 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
 ): Interpolation<Theme> => {
   const { type, index } = displayedItem
   const context = useMaterialContext<P, M, L>()
-  const materialAnimations = useMaterialAnimations<P, M, L>(type)
-  const animations = useAnimations<ItemMove<P, M, L>>()
+  const animationsConfig = useContext(gameContext).animations as MaterialGameAnimations<P, M, L>
+  const animations = useAnimations<ItemMove<P, M, L>, P>()
   const item = context.rules.material(type).getItem(index)
-  if (!item || !materialAnimations) return
+  if (!item || !animationsConfig) return
+  const itemContext: ItemContext<P, M, L> = { ...context, ...displayedItem, dragTransform }
   for (const animation of animations) {
-    const itemAnimation = materialAnimations.getItemAnimation({ ...context, ...displayedItem, dragTransform }, animation)
+    const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
+    const itemAnimation = config.getItemAnimation(itemContext, animation)
     if (itemAnimation) return itemAnimation
   }
   return
 }
-
