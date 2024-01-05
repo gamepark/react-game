@@ -18,7 +18,7 @@ export type SimpleDropAreaProps<P extends number = number, L extends number = nu
 } & HTMLAttributes<HTMLDivElement>
 
 export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
-  { location, onShortClick, onLongClick, alwaysVisible, ...props }, ref
+  { location, onShortClick: shortClick, onLongClick: longClick, alwaysVisible, ...props }, ref
 ) => {
   const context = useMaterialContext()
   const material = context.material
@@ -29,22 +29,28 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const player = usePlayerId()
   const legalMoves = useLegalMoves()
   const disabled = useMemo(() => !legalMoves.some(move => description?.couldDrop(move, location, context)), [legalMoves, location, context])
-  const longClickMoves = useMemo(() => legalMoves.filter(move => description?.canLongClick(move, location, context)), [legalMoves, location, context])
-
-  if (!onLongClick && longClickMoves.length === 1) {
-    onLongClick = () => play(longClickMoves[0], { delayed: rules?.isUnpredictableMove(longClickMoves[0], player) })
-  }
-
-  if (!onShortClick && (locator?.locationDescription?.help || locator?.parentItemType !== undefined)) {
-    onShortClick = () => {
+  const openRules = useMemo(() => {
+    if ((locator?.locationDescription?.help || locator?.parentItemType !== undefined)) {
       if (locator?.locationDescription?.help) {
-        play(displayLocationHelp(location), { local: true })
+        return () => play(displayLocationHelp(location), { local: true })
       } else {
         const itemType = locator!.parentItemType!
-        play(displayMaterialHelp(itemType, rules?.material(itemType).getItem(location.parent!), location.parent), { local: true })
+        return () => play(displayMaterialHelp(itemType, rules?.material(itemType).getItem(location.parent!), location.parent), { local: true })
       }
     }
-  }
+
+    return undefined
+  }, [locator, rules, play])
+
+
+  const [onShortClick, onLongClick, canClickToMove] = useMemo(() => {
+    const shortClickMoves = legalMoves.filter(move => description?.canShortClick(move, location, context))
+    const longClickMoves = legalMoves.filter(move => description?.canLongClick(move, location, context))
+
+    const onShortClick = (shortClickMoves.length === 1 ? () => play(shortClickMoves[0], { delayed: rules?.isUnpredictableMove(shortClickMoves[0], player) }) : openRules)
+    const onLongClick = (shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0], { delayed: rules?.isUnpredictableMove(longClickMoves[0], player) }) : undefined
+    return [shortClick? shortClick: onShortClick, longClick? longClick: onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]
+  }, [legalMoves, location, context, play, rules])
 
   const { isOver, active, setNodeRef } = useDroppable({
     id: JSON.stringify(location),
@@ -106,7 +112,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
                   sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
                   description.getExtraCss(location, locationContext),
                   !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
-                  ((canDrop && !isOver) || (!draggedItem && longClickMoves.length && !animations.length)) && shineEffect,
+                  ((canDrop && !isOver) || (!draggedItem && canClickToMove && !animations.length)) && shineEffect,
                   canDrop && isOver && dropHighlight
                 ]}
                 {...props} {...combineEventListeners(listeners, props)}>
