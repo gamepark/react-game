@@ -31,7 +31,7 @@ export const GameTable: FC<GameTableProps> = (
   const [dragging, setDragging] = useState(false)
   const sensors = useSensors(
     useSensor(PointerSensor, pointerSensorOptions)
-  );
+  )
 
   const context = useMaterialContext()
   const play = usePlay()
@@ -75,6 +75,7 @@ export const GameTable: FC<GameTableProps> = (
   const vm = margin.top + margin.bottom
   const tableFontSize = 5
   const minScale = (100 - vm) / tableFontSize / (yMax - yMin)
+  const maxScale = minScale > 0.9 ? minScale : 1
   const ratio = (xMax - xMin) / (yMax - yMin)
   const ratioWithMargins = ((100 - vm) * ratio + hm) / 100
   const panning = useMemo(() => ({ disabled: dragging }), [dragging])
@@ -91,7 +92,7 @@ export const GameTable: FC<GameTableProps> = (
                 modifiers={[snapCenterToCursor]} sensors={sensors}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
       <Global styles={ratioFontSize(ratioWithMargins)}/>
-      <TransformWrapper ref={ref} minScale={minScale} maxScale={Math.max(1, minScale)} initialScale={minScale}
+      <TransformWrapper ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
                         centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
         <TransformComponent wrapperStyle={wrapperStyle}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
