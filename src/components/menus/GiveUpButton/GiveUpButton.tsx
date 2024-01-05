@@ -23,7 +23,8 @@ export const GiveUpButton = () => {
   }
   const gameMode = useSelector<GamePageState, GameMode | undefined>(state => state.gameMode)
   const playerIsLast = useSelector<GamePageState, boolean>(state =>
-    state.playerId !== undefined && state.players.every(player => player.quit || player.id === state.playerId)
+    state.playerId !== undefined && state.players.length > 1
+    && state.players.every(player => player.quit || player.id === state.playerId)
   )
   useEffect(() => {
     if (playerIsLast) setDisplayPopup(true)
