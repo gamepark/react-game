@@ -1,6 +1,6 @@
-import { ItemAnimations } from './ItemAnimations'
 import { CreateItem } from '@gamepark/rules-api'
-import { MaterialAnimationContext } from './MaterialGameAnimations'
+import { ItemAnimations } from './ItemAnimations'
+import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 
 export class ShuffleAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
@@ -9,7 +9,7 @@ export class ShuffleAnimations<P extends number = number, M extends number = num
     super()
   }
 
-  override getPostDuration(_move: CreateItem<P, M, L>, _context: MaterialAnimationContext<P, M, L>): number {
+  override getPostDuration(_move: CreateItem<P, M, L>, _context: MaterialGameAnimationContext<P, M, L>): number {
     return this.duration
   }
 
