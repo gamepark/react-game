@@ -1,28 +1,86 @@
-import { AnimationContext, Animations } from '@gamepark/react-client'
-import { MaterialGame, MaterialMove, MoveKind } from '@gamepark/rules-api'
-import { MaterialAnimations } from './MaterialAnimations'
+import { Interpolation, Theme } from '@emotion/react'
+import { Animation, AnimationContext, Animations, DisplayedAction } from '@gamepark/react-client'
+import { MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
+import { ItemContext, MaterialContext } from '../../../locators'
 import { GameContext } from '../../GameProvider'
+import { ItemAnimations } from './ItemAnimations'
+import { MaterialAnimations } from './MaterialAnimations'
 
-export type MaterialAnimationContext<P extends number = number, M extends number = number, L extends number = number> =
+export type MaterialGameAnimationContext<P extends number = number, M extends number = number, L extends number = number> =
   AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>
   & Omit<GameContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P, M, L>, 'game'>
+
+export type MaterialAnimationContext<P extends number = number, M extends number = number, L extends number = number> =
+  MaterialContext<P, M, L> & { action: DisplayedAction<MaterialMove<P, M, L>, P> }
 
 export class MaterialGameAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends Animations<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P> {
 
-  readonly itemsAnimations: Partial<Record<M, MaterialAnimations<P, M, L>>>
+  readonly animationConfigs: AnimationConfig<P, M, L>[] = []
+  defaultAnimationConfig = new AnimationConfig<P, M, L>()
 
-  constructor(itemsAnimations: Partial<Record<M, MaterialAnimations<P, M, L>>> = {}) {
-    super()
-    this.itemsAnimations = itemsAnimations
+  when(): AnimationConfig<P, M, L> {
+    const animationConfig = new AnimationConfig<P, M, L>()
+    this.animationConfigs.push(animationConfig)
+    return animationConfig
   }
 
-  getMaterialAnimations(materialType: M): MaterialAnimations<P, M, L> {
-    return this.itemsAnimations[materialType] ?? new MaterialAnimations()
+  override getDuration(move: MaterialMove<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
+    const materialContext: MaterialAnimationContext<P, M, L> = {
+      rules: new context.Rules(context.game) as MaterialRules<P, M, L>,
+      material: context.material!,
+      locators: context.locators!,
+      player: context.playerId,
+      action: context.action
+    }
+    return this.getAnimationConfig(move, materialContext).getDuration(move, context)
   }
 
-  override getDuration(move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>): number {
+  getAnimationConfig(move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>): AnimationConfig<P, M, L> {
+    for (const animationConfig of this.animationConfigs) {
+      if (animationConfig.filters.every(filter => filter(move, context))) {
+        return animationConfig
+      }
+    }
+    return this.defaultAnimationConfig
+  }
+}
+
+class AnimationConfig<P extends number = number, M extends number = number, L extends number = number>
+  extends ItemAnimations<P, M, L> {
+  filters: ((move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>) => boolean)[] = []
+  d: number = 1
+
+  rule<RuleId extends number>(ruleId: RuleId): this {
+    this.filters.push((_, context) => context.rules.game.rule?.id === ruleId)
+    return this
+  }
+
+  move(predicate: (move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>) => boolean): this {
+    this.filters.push((move, context) => predicate(move, context))
+    return this
+  }
+
+  mine(): this {
+    this.filters.push((_, context) => context.player === context.action.playerId)
+    return this
+  }
+
+  duration(duration: number): this {
+    this.d = duration
+    return this
+  }
+
+  none() {
+    return this.duration(0)
+  }
+
+  getDuration(move: MaterialMove<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
     if (move.kind !== MoveKind.ItemMove) return 0
-    return this.getMaterialAnimations(move.itemType).getDuration(move, context)
+    return new MaterialAnimations<P, M, L>(this.d).getDuration(move, context)
+  }
+
+  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>): Interpolation<Theme> {
+    return new MaterialAnimations<P, M, L>(this.d).getItemAnimation(context, animation)
   }
 }
