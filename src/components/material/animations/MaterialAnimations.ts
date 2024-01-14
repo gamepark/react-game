@@ -6,7 +6,7 @@ import { MaterialDescription } from '../MaterialDescription'
 import { CreateItemAnimations } from './CreateItemAnimations'
 import { DeleteItemAnimations } from './DeleteItemAnimations'
 import { ItemAnimations } from './ItemAnimations'
-import { MaterialAnimationContext } from './MaterialGameAnimations'
+import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { MoveItemAnimations } from './MoveItemAnimations'
 import { RollItemAnimations } from './RollItemAnimations'
 import { ShuffleAnimations } from './ShuffleAnimations'
@@ -27,7 +27,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     }
   }
 
-  getDuration(move: ItemMove<P, M, L>, context: MaterialAnimationContext<P, M, L>): number {
+  getDuration(move: ItemMove<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
     return this.animations[move.type]?.getDuration(move, context) ?? 0
   }
 

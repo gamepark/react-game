@@ -8,7 +8,7 @@ import { adjustRotation } from './adjustRotation'
 import { isMovedOrDeletedItem } from './isMovedOrDeletedItem.util'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
-import { MaterialAnimationContext } from './MaterialGameAnimations'
+import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { transformItem } from './transformItem.util'
 
 export class MoveItemAnimations<P extends number = number, M extends number = number, L extends number = number>
@@ -18,7 +18,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     super()
   }
 
-  override getPreDuration(move: MoveItem<P, M, L>, context: MaterialAnimationContext<P, M, L>): number {
+  override getPreDuration(move: MoveItem<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
     const potentialDroppedItem = { type: move.itemType, index: move.itemIndex, displayIndex: context.game.droppedItem?.displayIndex ?? 0 }
     if (isDroppedItem(this.getItemContext(context, potentialDroppedItem))) {
       return this.droppedItemDuration

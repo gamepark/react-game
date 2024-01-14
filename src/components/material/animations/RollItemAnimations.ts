@@ -4,7 +4,7 @@ import { CreateItem, ItemMove, MaterialRulesCreator, RollItem } from '@gamepark/
 import { centerLocator, ItemContext, ItemLocator } from '../../../locators'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
-import { MaterialAnimationContext } from './MaterialGameAnimations'
+import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { transformItem } from './transformItem.util'
 
 export class RollItemAnimations<P extends number = number, M extends number = number, L extends number = number>
@@ -14,7 +14,7 @@ export class RollItemAnimations<P extends number = number, M extends number = nu
     super()
   }
 
-  override getPreDuration(_move: CreateItem<P, M, L>, _context: MaterialAnimationContext<P, M, L>): number {
+  override getPreDuration(_move: CreateItem<P, M, L>, _context: MaterialGameAnimationContext<P, M, L>): number {
     return this.duration
   }
 
