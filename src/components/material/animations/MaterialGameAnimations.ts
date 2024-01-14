@@ -56,8 +56,8 @@ class AnimationConfig<P extends number = number, M extends number = number, L ex
     return this
   }
 
-  move(predicate: (move: MaterialMove<P, M, L>) => boolean): this {
-    this.filters.push(move => predicate(move))
+  move(predicate: (move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>) => boolean): this {
+    this.filters.push((move, context) => predicate(move, context))
     return this
   }
 
