@@ -31,6 +31,7 @@ export const GameTableNavigation: FC<HTMLAttributes<HTMLDivElement>> = (props) =
 
 const navigationContainer = css`
   position: fixed;
+  z-index: 1;
   display: flex;
   gap: 1em;
   top: 8em;
