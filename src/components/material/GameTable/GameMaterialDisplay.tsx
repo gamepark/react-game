@@ -27,16 +27,16 @@ export const GameMaterialDisplay = () => {
   const { resetTransform } = useControls()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
   const tutorialStep = useTutorialStep()
-  const tutorialPopup = !rules?.game.tutorialPopupClosed && tutorialStep?.popup
+  const showTutorialPopup = rules?.game !== undefined && !rules?.game.tutorialPopupClosed && tutorialStep?.popup !== undefined
 
   const tutorialFocus = useMemo(() => {
     focusRefs.current = new Set()
-    const tutorialFocus = rules?.game ? tutorialStep?.focus?.(rules.game) : undefined
+    const tutorialFocus = showTutorialPopup ? tutorialStep?.focus?.(rules.game) : undefined
     if (!tutorialFocus) {
       resetTransform(1000)
     }
     return tutorialFocus
-  }, [tutorialStep])
+  }, [tutorialStep, showTutorialPopup, rules?.game])
 
   const addFocusRef = useCallback((ref: HTMLElement | null) => {
     if (!ref || focusRefs.current.has(ref)) return
@@ -57,10 +57,10 @@ export const GameMaterialDisplay = () => {
         const locator = locators[item.location.type] ?? centerLocator
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
-          const innerLocations = getInnerLocations(item, itemContext, tutorialPopup, tutorialFocus)
+          const innerLocations = getInnerLocations(item, itemContext, tutorialFocus)
           const focus = isStaticItemFocus(type, item, tutorialFocus)
           return <MaterialComponent key={`${type}_${index}_${displayIndex}`} type={type} itemId={item.id}
-                                    playDown={tutorialPopup && !focus && !innerLocations.some(location => location.focus)}
+                                    playDown={showTutorialPopup && !focus && !innerLocations.some(location => location.focus)}
                                     ref={focus ? addFocusRef : undefined}
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
                                     onShortClick={() => play(displayMaterialHelp(type, item, index, displayIndex), { local: true })}>
@@ -80,11 +80,11 @@ export const GameMaterialDisplay = () => {
         return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
           const itemContext: ItemContext = { ...context, type, index, displayIndex }
           if (locator?.hide(item, itemContext)) return null
-          const innerLocations = getInnerLocations(item, itemContext, tutorialPopup, tutorialFocus)
+          const innerLocations = getInnerLocations(item, itemContext, tutorialFocus)
           const focus = isItemFocus(type, index, tutorialFocus)
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} index={index} displayIndex={displayIndex}
-                                    playDown={tutorialPopup && !focus && !innerLocations.some(location => location.focus)}
+                                    playDown={showTutorialPopup && !focus && !innerLocations.some(location => location.focus)}
                                     ref={focus ? addFocusRef : undefined}
                                     title={item.quantity !== undefined ? t('quantity.tooltip', { n: item.quantity })! : undefined}>
             <LocationsMask locations={innerLocations.filter(l => l.focus).map(l => l.location)}/>
