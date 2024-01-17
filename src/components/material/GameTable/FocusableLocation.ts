@@ -1,0 +1,35 @@
+import { Location, MaterialItem } from '@gamepark/rules-api'
+import equal from 'fast-deep-equal'
+import { ItemContext } from '../../../locators'
+import { isLocationBuilder, TutorialFocus, TutorialPopup } from '../../tutorial'
+
+export type FocusableLocation = {
+  location: Location
+  focus?: true
+}
+
+export const getInnerLocations = (
+  item: MaterialItem, context: ItemContext, tutorialPopup?: TutorialPopup | false, tutorialFocus?: TutorialFocus | TutorialFocus[]
+): FocusableLocation[] => {
+  const locationsFocus = tutorialPopup ? getLocationsFocus(tutorialFocus).filter(location =>
+    context.locators[location.type]?.parentItemType === context.type && (location.parent ?? 0) === context.index
+  ) : []
+  const result: FocusableLocation[] = context.material[context.type]?.getLocations(item, context).map(location => ({ location })) ?? []
+  for (const locationFocus of locationsFocus) {
+    const focusableLocation = result.find(focusableLocation => equal(focusableLocation.location, locationFocus))
+    if (focusableLocation) {
+      focusableLocation.focus = true
+    } else {
+      result.push({ location: locationFocus, focus: true })
+    }
+  }
+  return result
+}
+
+const getLocationsFocus = (focus?: TutorialFocus | TutorialFocus[]): Location[] => {
+  if (!focus) return []
+  if (Array.isArray(focus)) {
+    return focus.filter(isLocationBuilder).map(builder => builder.location)
+  }
+  return isLocationBuilder(focus) ? [focus.location] : []
+}
