@@ -31,8 +31,8 @@ export const GameMaterialDisplay = () => {
 
   const tutorialFocus = useMemo(() => {
     focusRefs.current = new Set()
-    const tutorialFocus = showTutorialPopup ? tutorialStep?.focus?.(rules.game) : undefined
-    if (!tutorialFocus) {
+    const tutorialFocus = showTutorialPopup ? tutorialStep?.focus?.(rules.game) ?? [] : undefined
+    if (!tutorialFocus || (Array.isArray(tutorialFocus) && !tutorialFocus.length)) {
       resetTransform(1000)
     }
     return tutorialFocus
@@ -60,7 +60,7 @@ export const GameMaterialDisplay = () => {
           const innerLocations = getInnerLocations(item, itemContext, tutorialFocus)
           const focus = isStaticItemFocus(type, item, tutorialFocus)
           return <MaterialComponent key={`${type}_${index}_${displayIndex}`} type={type} itemId={item.id}
-                                    playDown={showTutorialPopup && !focus && !innerLocations.some(location => location.focus)}
+                                    playDown={tutorialFocus && !focus && !innerLocations.some(location => location.focus)}
                                     ref={focus ? addFocusRef : undefined}
                                     css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
                                     onShortClick={() => play(displayMaterialHelp(type, item, index, displayIndex), { local: true })}>
@@ -84,7 +84,7 @@ export const GameMaterialDisplay = () => {
           const focus = isItemFocus(type, index, tutorialFocus)
           return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                     type={type} index={index} displayIndex={displayIndex}
-                                    playDown={showTutorialPopup && !focus && !innerLocations.some(location => location.focus)}
+                                    playDown={tutorialFocus && !focus && !innerLocations.some(location => location.focus)}
                                     ref={focus ? addFocusRef : undefined}
                                     title={item.quantity !== undefined ? t('quantity.tooltip', { n: item.quantity })! : undefined}>
             <LocationsMask locations={innerLocations.filter(l => l.focus).map(l => l.location)}/>
