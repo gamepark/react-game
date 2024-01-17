@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css, Interpolation, Theme } from '@emotion/react'
+import { css } from '@emotion/react'
 import { forwardRef, HTMLAttributes, MouseEvent, useMemo } from 'react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { sizeCss } from '../../css'
@@ -13,11 +13,10 @@ export type MaterialComponentProps<M extends number = number, ItemId = any> = {
   onLongClick?: () => void
   highlight?: boolean
   playDown?: boolean
-  css?: Interpolation<Theme>
 } & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
-  { type, itemId, onShortClick, onLongClick, highlight, playDown, css , ...props }, ref
+  { type, itemId, onShortClick, onLongClick, highlight, playDown , ...props }, ref
 ) => {
   const description = useMaterialDescription(type)
   const context = useMaterialContext()
@@ -38,7 +37,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
 
   const { width, height } = description.getSize(itemId, context)
 
-  const componentCss = useMemo(() => [materialCss, sizeCss(width, height), css], [width, height, css])
+  const componentCss = useMemo(() => [materialCss, sizeCss(width, height)], [width, height])
 
   return (
     <div ref={ref} css={componentCss} {...props} {...combineEventListeners(listeners, props)}>
