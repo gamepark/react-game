@@ -125,15 +125,19 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const locatorTransform = useMemo(() => locator.transformItem(item, itemContext), [locator, item, itemContext])
   const transformStyle = (applyTransform ? [transformRef.current, ...locatorTransform] : locatorTransform).join(' ')
 
+  const componentCss = useMemo(() => [
+    !applyTransform && !animating && transformTransition,
+    !disabled && noTouchAction,
+    disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
+    canDropToSameLocation && noPointerEvents
+  ], [applyTransform, animating, disabled, transform, canDropToSameLocation])
+
+  const wrapperCss = useMemo(() => [animationWrapperCss, animation], [animation])
+
   return (
-    <div css={[animationWrapperCss, animation]}>
+    <div css={wrapperCss}>
       <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item?.id}
-                         css={[
-                           !applyTransform && !animating && transformTransition,
-                           !disabled && noTouchAction,
-                           disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
-                           canDropToSameLocation && noPointerEvents
-                         ]}
+                         css={componentCss}
                          style={{ transform: transformStyle }}
                          highlight={highlight ?? (!draggedItem && (!disabled || canClickToMove))}
                          {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
@@ -184,6 +188,7 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
   const context = useMaterialContext<P, M, L>()
   const animationsConfig = useContext(gameContext).animations as MaterialGameAnimations<P, M, L>
   const animations = useAnimations<ItemMove<P, M, L>, P>()
+  if (!animations.length) return
   const item = context.rules.material(type).getItem(index)
   if (!item || !animationsConfig) return
   const itemContext: ItemContext<P, M, L> = { ...context, ...displayedItem, dragTransform }
