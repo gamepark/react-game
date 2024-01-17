@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import {FC, HTMLAttributes} from 'react'
-import {usePlayerName, useRules} from '../../hooks'
-import {GamePoints} from '../GamePoints'
-import {Avatar, SpeechBubbleDirection} from '../Avatar'
-import {PlayerTimer} from '../PlayerTimer'
-import {css, keyframes} from '@emotion/react'
-import {MaterialRules} from "@gamepark/rules-api";
+import { css, keyframes } from '@emotion/react'
+import { MaterialRules } from '@gamepark/rules-api'
+import { FC, HTMLAttributes } from 'react'
+import { usePlayerName, useRules } from '../../hooks'
+import { Avatar, SpeechBubbleDirection } from '../Avatar'
+import { GamePoints } from '../GamePoints'
+import { PlayerTimer } from '../PlayerTimer'
 
 export type PlayerPanelProps<PlayerId extends number = number> = {
   playerId: PlayerId
@@ -14,15 +14,15 @@ export type PlayerPanelProps<PlayerId extends number = number> = {
 } & HTMLAttributes<HTMLDivElement>
 
 export const PlayerPanel: FC<PlayerPanelProps> = (p) => {
-  const {playerId, activeRing, color = '#28B8CE', children, ...props} = p
+  const { playerId, activeRing, color = '#28B8CE', children, ...props } = p
   const playerName = usePlayerName(playerId)
   const rules = useRules<MaterialRules>()
   const isTurnToPlay = rules?.isTurnToPlay(playerId) ?? false
   return (
     <div css={panelPlayerStyle(color, isTurnToPlay)} {...props}>
-      <Avatar css={avatarStyle} playerId={playerId} speechBubbleProps={{direction: SpeechBubbleDirection.BOTTOM_LEFT}}/>
+      <Avatar css={avatarStyle} playerId={playerId} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
-          <div css={isTurnToPlay && circle}/>
+        <div css={isTurnToPlay && circle}/>
       </div>}
       <h2 css={nameStyle}>{playerName}</h2>
       {!rules?.isOver() && <PlayerTimer playerId={playerId} css={timerStyle}/>}
