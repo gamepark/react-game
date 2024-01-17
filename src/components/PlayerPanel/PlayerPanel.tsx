@@ -33,81 +33,81 @@ export const PlayerPanel: FC<PlayerPanelProps> = (p) => {
 }
 
 const panelPlayerStyle = (color: string, active?: boolean) => css`
-    background-color: ${active ? '#f0fbfc' : '#dddddd'};
-    color: black;
-    border: 0.5em solid ${color};
-    border-radius: 3em 1.5em 1.5em 1.5em;
-    box-shadow: 0 0 0.5em black, 0 0 0.5em black;
+  background-color: ${active ? '#f0fbfc' : '#dddddd'};
+  color: black;
+  border: 0.5em solid ${color};
+  border-radius: 3em 1.5em 1.5em 1.5em;
+  box-shadow: 0 0 0.5em black, 0 0 0.5em black;
 `
 
 const avatarStyle = css`
-    position: absolute;
-    top: -0.1em;
-    left: 0;
-    border-radius: 100%;
-    height: 6em;
-    width: 6em;
-    color: black;
-    z-index: 1;
+  position: absolute;
+  top: -0.1em;
+  left: 0;
+  border-radius: 100%;
+  height: 6em;
+  width: 6em;
+  color: black;
+  z-index: 1;
 `
 
 const isPlaying = css`
-    position: absolute;
-    top: -0.1em;
-    left: 0;
-    border-radius: 50%;
-    height: 6em;
-    width: 6em;
-    color: black;
-    z-index: 0;
+  position: absolute;
+  top: -0.1em;
+  left: 0;
+  border-radius: 50%;
+  height: 6em;
+  width: 6em;
+  color: black;
+  z-index: 0;
 `
 
 const circleAnimation = keyframes`
-    to {
-        transform: rotateZ(0);
-    }
-    from {
-        transform: rotateZ(360deg);
-    }
+  to {
+    transform: rotateZ(0);
+  }
+  from {
+    transform: rotateZ(360deg);
+  }
 `
 
 const inset = 0.8
 const circle = css`
-    background-image: linear-gradient(
-            to bottom, gold 0%,
-            rgb(40, 184, 206) 100%);
-    position: absolute;
-    top: -${inset}em;
-    bottom: -${inset}em;
-    right: -${inset}em;
-    left: -${inset}em;
-    border-radius: inherit;
-    animation: ${circleAnimation} 1s infinite linear;
+  background-image: linear-gradient(
+          to bottom, gold 0%,
+          rgb(40, 184, 206) 100%);
+  position: absolute;
+  top: -${inset}em;
+  bottom: -${inset}em;
+  right: -${inset}em;
+  left: -${inset}em;
+  border-radius: inherit;
+  animation: ${circleAnimation} 1s infinite linear;
 `
 
 
 const nameStyle = css`
-    position: absolute;
-    top: 0.3em;
-    left: 3.1em;
-    max-width: 7.3em;
-    font-size: 2.4em;
-    margin: 0;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+  position: absolute;
+  top: 0.3em;
+  left: 3.1em;
+  max-width: 7.3em;
+  font-size: 2.4em;
+  margin: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `
 
 const timerStyle = css`
-    position: absolute;
-    top: 1.6em;
-    left: 3.1em;
-    font-size: 2.5em;
+  position: absolute;
+  top: 1.6em;
+  left: 3.1em;
+  font-size: 2.5em;
 `
 
 const gamePointCss = css`
-    position: absolute;
-    top: 1.6em;
-    left: 3.1em;
-    font-size: 2.5em;
+  position: absolute;
+  top: 1.6em;
+  left: 3.1em;
+  font-size: 2.5em;
 `
