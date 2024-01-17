@@ -33,7 +33,7 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
 
-  if (!description) return null
+  if (!description) return null // TODO: parent should never include a material component which description is missing at all
 
   const { width, height } = description.getSize(itemId, context)
 
