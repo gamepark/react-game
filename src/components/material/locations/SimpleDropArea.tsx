@@ -93,11 +93,10 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
 
-  if (!description) {
+  if (!description) { // TODO: parent should never include a simple drop area which description is missing at all
     console.warn('You must provide a LocationDescription to create drop locations with an ItemLocator')
     return null
   }
-  if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
 
   const { width, height } = description.getSize(location, context)
   const image = description.getImage(location, context)
@@ -116,6 +115,8 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     ((canDrop && !isOver) || (!draggedItem && canClickToMove && !animations.length)) && shineEffect,
     canDrop && isOver && dropHighlight
   ], [!onShortClick, !onLongClick, positionOnParent?.x, positionOnParent?.y, descriptionTransformLocation, width, height, image, borderRadius, extraCss, draggedItem, clicking, canDrop, isOver, canClickToMove, animations.length])
+
+  if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
 
   return (
       <div ref={mergeRefs([ref, setNodeRef])}
