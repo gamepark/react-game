@@ -8,11 +8,11 @@ import { useMaterialContext, usePlay, useRules, useZoomToElements } from '../../
 import { useTutorialStep } from '../../../hooks/useTutorialStep'
 import { centerLocator, ItemContext } from '../../../locators'
 import { MaterialRulesDialog } from '../../dialogs'
-import { countTutorialFocusRefs, isItemFocus, isLocationFocus, isStaticItemFocus } from '../../tutorial'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { DraggableMaterial } from '../DraggableMaterial'
 import { LocationsMask, SimpleDropArea } from '../locations'
 import { MaterialComponent } from '../MaterialComponent'
+import { countTutorialFocusRefs, isItemFocus, isLocationFocus, isStaticItemFocus } from './FocusableElement'
 import { getInnerLocations } from './FocusableLocation'
 
 export const GameMaterialDisplay = () => {
