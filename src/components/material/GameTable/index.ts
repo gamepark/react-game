@@ -1,3 +1,4 @@
+export * from './focus'
 export * from './GameTable'
 export * from './GameTableNavigation'
-export * from './FocusableElement'
+export * from './focus/FocusableElement'

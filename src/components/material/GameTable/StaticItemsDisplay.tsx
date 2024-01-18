@@ -5,8 +5,7 @@ import { useMaterialContext, usePlay } from '../../../hooks'
 import { centerLocator, ItemContext } from '../../../locators'
 import { LocationsMask, SimpleDropArea } from '../locations'
 import { MaterialComponent } from '../MaterialComponent'
-import { FocusableElement, isStaticItemFocus } from './FocusableElement'
-import { getInnerLocations } from './FocusableLocation'
+import { FocusableElement, getInnerLocations, isStaticItemFocus } from './focus'
 
 type StaticItemsDisplayProps = {
   tutorialFocus?: FocusableElement | FocusableElement[]

@@ -3,8 +3,7 @@ import { useMaterialContext } from '../../../hooks'
 import { ItemContext } from '../../../locators'
 import { DraggableMaterial } from '../DraggableMaterial'
 import { LocationsMask, SimpleDropArea } from '../locations'
-import { FocusableElement, isItemFocus } from './FocusableElement'
-import { getInnerLocations } from './FocusableLocation'
+import { FocusableElement, getInnerLocations, isItemFocus } from './focus'
 
 type DynamicItemsDisplayProps = {
   tutorialFocus?: FocusableElement | FocusableElement[]

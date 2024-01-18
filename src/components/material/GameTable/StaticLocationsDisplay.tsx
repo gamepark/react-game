@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useMaterialContext } from '../../../hooks'
 import { SimpleDropArea } from '../locations'
-import { FocusableElement, isLocationFocus } from './FocusableElement'
+import { FocusableElement, isLocationFocus } from './focus'
 
 type StaticLocationsDisplayProps = {
   tutorialFocus?: FocusableElement | FocusableElement[]

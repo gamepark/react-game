@@ -7,7 +7,7 @@ import { useTutorialStep } from '../../../hooks/useTutorialStep'
 import { MaterialRulesDialog } from '../../dialogs'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { DynamicItemsDisplay } from './DynamicItemsDisplay'
-import { countTutorialFocusRefs } from './FocusableElement'
+import { countTutorialFocusRefs } from './focus'
 import { StaticItemsDisplay } from './StaticItemsDisplay'
 import { StaticLocationsDisplay } from './StaticLocationsDisplay'
 
