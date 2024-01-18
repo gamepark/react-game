@@ -2,18 +2,16 @@
 import { closeHelpDisplay, MaterialRules } from '@gamepark/rules-api'
 import { useCallback, useMemo, useRef } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
-import { useMaterialContext, usePlay, useRules, useZoomToElements } from '../../../hooks'
+import { usePlay, useRules, useZoomToElements } from '../../../hooks'
 import { useTutorialStep } from '../../../hooks/useTutorialStep'
 import { MaterialRulesDialog } from '../../dialogs'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
-import { SimpleDropArea } from '../locations'
 import { DynamicItemsDisplay } from './DynamicItemsDisplay'
-import { countTutorialFocusRefs, isLocationFocus } from './FocusableElement'
+import { countTutorialFocusRefs } from './FocusableElement'
 import { StaticItemsDisplay } from './StaticItemsDisplay'
+import { StaticLocationsDisplay } from './StaticLocationsDisplay'
 
 export const GameMaterialDisplay = () => {
-  const context = useMaterialContext()
-  const locators = context.locators
   const rules = useRules<MaterialRules>()
   const play = usePlay()
 
@@ -47,13 +45,7 @@ export const GameMaterialDisplay = () => {
   return <>
     <StaticItemsDisplay tutorialFocus={tutorialFocus} addFocusRef={addFocusRef}/>
     <DynamicItemsDisplay tutorialFocus={tutorialFocus} addFocusRef={addFocusRef}/>
-    {Object.values(locators).map(locator => {
-        return locator?.getLocationDescription(context)?.getLocations(context).map(location => {
-          const isFocus = isLocationFocus(location, tutorialFocus)
-          return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={isFocus} ref={isFocus ? addFocusRef : undefined}/>
-        })
-      }
-    )}
+    <StaticLocationsDisplay tutorialFocus={tutorialFocus} addFocusRef={addFocusRef}/>
     <MaterialRulesDialog open={!!game?.helpDisplay} close={() => play(closeHelpDisplay, { local: true })}/>
     {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}
   </>
