@@ -1,23 +1,21 @@
 /** @jsxImportSource @emotion/react */
-import { closeHelpDisplay, displayMaterialHelp, MaterialRules } from '@gamepark/rules-api'
+import { closeHelpDisplay, MaterialRules } from '@gamepark/rules-api'
 import { useCallback, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useControls } from 'react-zoom-pan-pinch'
-import { pointerCursorCss, transformCss } from '../../../css'
 import { useMaterialContext, usePlay, useRules, useZoomToElements } from '../../../hooks'
 import { useTutorialStep } from '../../../hooks/useTutorialStep'
-import { centerLocator, ItemContext } from '../../../locators'
+import { ItemContext } from '../../../locators'
 import { MaterialRulesDialog } from '../../dialogs'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { DraggableMaterial } from '../DraggableMaterial'
 import { LocationsMask, SimpleDropArea } from '../locations'
-import { MaterialComponent } from '../MaterialComponent'
-import { countTutorialFocusRefs, isItemFocus, isLocationFocus, isStaticItemFocus } from './FocusableElement'
+import { countTutorialFocusRefs, isItemFocus, isLocationFocus } from './FocusableElement'
 import { getInnerLocations } from './FocusableLocation'
+import { StaticItemsDisplay } from './StaticItemsDisplay'
 
 export const GameMaterialDisplay = () => {
   const context = useMaterialContext()
-  const material = context.material
   const locators = context.locators
   const rules = useRules<MaterialRules>()
   const play = usePlay()
@@ -51,27 +49,7 @@ export const GameMaterialDisplay = () => {
   const game = rules?.game
 
   return <>
-    {Object.entries(material).map(([stringType, description]) => {
-      const type = parseInt(stringType)
-      return description?.getStaticItems(context).map((item, index) => {
-        const locator = locators[item.location.type] ?? centerLocator
-        return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
-          const itemContext: ItemContext = { ...context, type, index, displayIndex }
-          const innerLocations = getInnerLocations(item, itemContext, tutorialFocus)
-          const focus = isStaticItemFocus(type, item, tutorialFocus)
-          return <MaterialComponent key={`${type}_${index}_${displayIndex}`} type={type} itemId={item.id}
-                                    playDown={tutorialFocus && !focus && !innerLocations.some(location => location.focus)}
-                                    ref={focus ? addFocusRef : undefined}
-                                    css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
-                                    onShortClick={() => play(displayMaterialHelp(type, item, index, displayIndex), { local: true })}>
-            <LocationsMask locations={innerLocations.filter(l => l.focus).map(l => l.location)}/>
-            {innerLocations.map(({ focus, location }) =>
-              <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={focus}
-                              ref={focus ? addFocusRef : undefined}/>)}
-          </MaterialComponent>
-        })
-      })
-    })}
+    <StaticItemsDisplay tutorialFocus={tutorialFocus} addFocusRef={addFocusRef}/>
     {rules && game && Object.entries(game.items).map(([stringType, items]) => {
       if (!items) return null
       const type = parseInt(stringType)
