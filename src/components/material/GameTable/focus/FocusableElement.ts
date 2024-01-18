@@ -1,4 +1,4 @@
-import { Location, LocationBuilder, Material, MaterialItem } from '../workshop/packages/rules-api'
+import { Location, LocationBuilder, Material, MaterialItem } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
 import sumBy from 'lodash/sumBy'
 

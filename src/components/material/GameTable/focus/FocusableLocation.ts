@@ -1,4 +1,4 @@
-import { Location, MaterialItem } from '../workshop/packages/rules-api'
+import { Location, MaterialItem } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
 import { ItemContext } from '../../../../locators'
 import { FocusableElement, isLocationBuilder } from './FocusableElement'
