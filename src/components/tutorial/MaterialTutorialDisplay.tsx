@@ -1,22 +1,23 @@
 /** @jsxImportSource @emotion/react */
-import { Dialog } from '../dialogs'
-import { useGame, useLegalMoves, useUndo } from '../../hooks'
-import { CloseTutorialPopup, isSetTutorialStep, LocalMoveType, MaterialGame, MoveKind, SetTutorialStep } from '@gamepark/rules-api'
-import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import { css, ThemeProvider } from '@emotion/react'
-import { PlayMoveButton, ThemeButton } from '../buttons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
-import { buttonCss, transformCss } from '../../css'
-import minBy from 'lodash/minBy'
-import maxBy from 'lodash/maxBy'
 import { faBackward } from '@fortawesome/free-solid-svg-icons/faBackward'
 import { faForward } from '@fortawesome/free-solid-svg-icons/faForward'
-import { useTutorialStep } from '../../hooks/useTutorialStep'
+import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay'
-import { useDispatch } from 'react-redux'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { playTutorialMovesAction } from '@gamepark/react-client'
+import { CloseTutorialPopup, isSetTutorialStep, LocalMoveType, MaterialGame, MoveKind, SetTutorialStep } from '@gamepark/rules-api'
+import maxBy from 'lodash/maxBy'
+import minBy from 'lodash/minBy'
+import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
+import { buttonCss, transformCss } from '../../css'
+import { useGame, useLegalMoves, useUndo } from '../../hooks'
+import { useTutorialStep } from '../../hooks/useTutorialStep'
+import { PlayMoveButton, ThemeButton } from '../buttons'
+import { Dialog } from '../dialogs'
+import { useFocusContext } from '../material'
 
 export const MaterialTutorialDisplay = () => {
   const { t } = useTranslation()
@@ -36,6 +37,14 @@ export const MaterialTutorialDisplay = () => {
 
   const [undo, canUndo] = useUndo()
   const canUndoLastMove = canUndo()
+
+  const { setFocus } = useFocusContext()
+
+  useEffect(() => {
+    if (tutorialStep?.popup !== undefined) {
+      setFocus(tutorialStep.focus?.(game!) ?? [])
+    }
+  }, [tutorialStep])
 
   return (
     <Dialog open={popup !== undefined && !game?.tutorialPopupClosed}
