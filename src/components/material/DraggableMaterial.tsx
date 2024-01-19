@@ -23,7 +23,8 @@ import { centerLocator, ItemContext } from '../../locators'
 import { combineEventListeners } from '../../utilities'
 import { gameContext } from '../GameProvider'
 import { MaterialGameAnimations } from './animations'
-import { MaterialComponent, MaterialComponentProps } from './MaterialComponent'
+import { ItemDisplay } from './GameTable/ItemDisplay'
+import { MaterialComponentProps } from './MaterialComponent'
 import { isDroppedItem } from './utils/isDroppedItem'
 import { isPlacedOnItem } from './utils/isPlacedOnItem'
 import { useIsAnimatingPlayerAction } from './utils/useIsAnimatingPlayerAction'
@@ -31,10 +32,11 @@ import { useIsAnimatingPlayerAction } from './utils/useIsAnimatingPlayerAction'
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
   displayIndex: number
+  isFocused: boolean
 } & MaterialComponentProps<M>
 
 export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialProps>((
-  { highlight, type, index, displayIndex, ...props }, ref
+  { highlight, type, index, displayIndex, isFocused, ...props }, ref
 ) => {
 
   const context = useMaterialContext()
@@ -136,12 +138,13 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
 
   return (
     <div css={wrapperCss}>
-      <MaterialComponent ref={mergeRefs([ref, setNodeRef])} type={type} itemId={item?.id}
-                         css={componentCss}
-                         style={{ transform: transformStyle }}
-                         highlight={highlight ?? (!draggedItem && (!disabled || canClickToMove))}
-                         {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
-                         onShortClick={onShortClick} onLongClick={onLongClick}/>
+      <ItemDisplay ref={mergeRefs([ref, setNodeRef])} type={type} index={index} displayIndex={displayIndex} item={item}
+                   isFocused={isFocused}
+                   css={componentCss}
+                   style={{ transform: transformStyle }}
+                   highlight={highlight ?? (!draggedItem && (!disabled || canClickToMove))}
+                   {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
+                   onShortClick={onShortClick} onLongClick={onLongClick}/>
     </div>
   )
 })
