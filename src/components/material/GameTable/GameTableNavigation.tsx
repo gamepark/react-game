@@ -49,6 +49,7 @@ const button = [buttonResetCss, css`
   border: 0.1em solid white;
   color: inherit;
   background: transparent;
+  padding: 0;
 
   &:disabled {
     color: #a0a0a0;
