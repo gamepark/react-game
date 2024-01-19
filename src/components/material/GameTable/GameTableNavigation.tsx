@@ -50,6 +50,7 @@ const button = [buttonResetCss, css`
   color: inherit;
   background: transparent;
   padding: 0;
+  filter: drop-shadow(0.1em 0.1em 0.05em black);
 
   &:disabled {
     color: #a0a0a0;
