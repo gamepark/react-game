@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import sumBy from 'lodash/sumBy'
-import { createContext, FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { createContext, FC, useCallback, useContext, useRef, useState } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
 import { useZoomToElements } from '../../../../hooks'
 import { FocusableElement, isLocationBuilder, isMaterialFocus, isStaticItem } from './FocusableElement'
@@ -22,15 +22,21 @@ export const useFocusContext = (): FocusContextType => {
 }
 
 export const FocusProvider: FC = ({ children }) => {
-  const [focus, setFocus] = useState<FocusableElement | FocusableElement[]>()
-
   const zoomToElements = useZoomToElements()
-
   const { resetTransform } = useControls()
 
+  const [focus, doSetFocus] = useState<FocusableElement | FocusableElement[]>()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
+  const countFocusRef = useRef<number>(0)
 
-  const focusCount = useMemo(() => countFocusRefs(focus), [focus])
+  const setFocus = useCallback((focus?: FocusableElement | FocusableElement[]) => {
+    if (Array.isArray(focus) && focus.length === 0) {
+      setTimeout(() => resetTransform(1000), 50)
+    }
+    focusRefs.current = new Set()
+    countFocusRef.current = countFocusRefs(focus)
+    doSetFocus(focus)
+  }, [])
 
   const doFocus = useCallback(() => {
     const elements = Array.from(focusRefs.current)
@@ -40,17 +46,10 @@ export const FocusProvider: FC = ({ children }) => {
   const addFocusRef = useCallback((ref: HTMLElement | null) => {
     if (!ref || focusRefs.current.has(ref)) return
     focusRefs.current.add(ref)
-    if (focusCount === focusRefs.current.size) {
+    if (countFocusRef.current === focusRefs.current.size) {
       doFocus()
     }
   }, [doFocus])
-
-  useEffect(() => {
-    if (Array.isArray(focus) && focus.length === 0) {
-      setTimeout(() => resetTransform(1000), 50)
-    }
-    focusRefs.current = new Set()
-  }, [focus])
 
   return (
     <FocusContext.Provider value={{ focus, setFocus, addFocusRef }}>
