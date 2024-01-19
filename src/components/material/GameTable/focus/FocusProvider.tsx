@@ -50,7 +50,7 @@ export const FocusProvider: FC = ({ children }) => {
       setTimeout(() => resetTransform(1000), 50)
     }
     focusRefs.current = new Set()
-  }, [focus, resetTransform])
+  }, [focus])
 
   return (
     <FocusContext.Provider value={{ focus, setFocus, addFocusRef }}>
