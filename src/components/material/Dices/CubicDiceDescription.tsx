@@ -4,10 +4,11 @@ import { MaterialItem } from '@gamepark/rules-api'
 import range from 'lodash/range'
 import { backgroundCss, borderRadiusCss, shadowEffect, shineEffect, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
-import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
+import { MaterialContentProps } from '../MaterialDescription'
+import { MobileMaterialDescription } from '../MobileMaterialDescription'
 
 export abstract class CubicDiceDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
-  extends MaterialDescription<P, M, L, ItemId> {
+  extends MobileMaterialDescription<P, M, L, ItemId> {
   width = 1.6
   ratio = 1
   borderRadius = 0.3

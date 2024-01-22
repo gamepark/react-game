@@ -1,17 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import {
-  DeleteItem,
-  isDeleteItem,
-  isMoveItem,
-  isRoll,
-  isSelectItem,
-  Location,
-  MaterialItem,
-  MaterialMove,
-  MaterialHelpDisplay,
-  MoveItem
-} from '@gamepark/rules-api'
-import equal from 'fast-deep-equal'
+import { isDeleteItem, isMoveItem, isRoll, isSelectItem, Location, MaterialHelpDisplay, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { ComponentType, FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
 
@@ -34,6 +22,7 @@ export type MaterialContentProps<P extends number = number, M extends number = n
 export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> {
   help?: ComponentType<MaterialHelpProps<P, M, L>>
   abstract content: FC<MaterialContentProps<P, M, L, ItemId>>
+  isMobile = false
 
   staticItem?: MaterialItem<P, L>
   staticItems: MaterialItem<P, L>[] = []
@@ -55,25 +44,8 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return this.location ? [this.location] : this.locations
   }
 
-  canDrag(move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): boolean {
-
-    if (isMoveItem(move)) {
-      return move.location?.type !== undefined && move.itemType === context.type && move.itemIndex === context.index && this.canDragToMove(move, context)
-    } else if (isDeleteItem(move)) {
-      return move.itemType === context.type && move.itemIndex === context.index && this.canDragToDelete(move, context)
-    } else {
-      return false
-    }
-  }
-
-  protected canDragToMove(move: MoveItem<P, M, L>, { type, index, rules }: ItemContext<P, M, L>): boolean {
-    const { rotation, ...actualLocation } = rules.material(type).getItem(index)?.location!
-    const { rotation: nextRotation, ...nextLocation } = move.location
-    return !equal(actualLocation, nextLocation)
-  }
-
-  protected canDragToDelete(_move: DeleteItem<M>, _context: ItemContext<P, M, L>): boolean {
-    return this.stockLocation !== undefined
+  canDrag(_move: MaterialMove<P, M, L>, _context: ItemContext<P, M, L>): boolean {
+    return false
   }
 
   canLongClick(move: MaterialMove<P, M, L>, { type, index }: ItemContext<P, M, L>): boolean {
