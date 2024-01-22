@@ -46,17 +46,15 @@ export abstract class WritingDescription<P extends number = number, M extends nu
     const image = this.getImage(itemId, context)
     const size = this.getSize(itemId, context)
     const borderRadius = this.getBorderRadius(itemId, context)
-    return <>
-      <div css={[
-        faceCss,
-        sizeCss(size.width, size.height),
-        image && [backgroundCss(image), shadowCss(image)],
-        borderRadius && borderRadiusCss(borderRadius),
-        highlight ? shineEffect : playDown && playDownCss(image)
-      ]}>
-        {this.getFrontContent(itemId, context)}
-      </div>
-    </>
+    return <div css={[
+      faceCss,
+      sizeCss(size.width, size.height),
+      image && [backgroundCss(image), shadowCss(image)],
+      borderRadius && borderRadiusCss(borderRadius),
+      highlight ? shineEffect : playDown && playDownCss(image)
+    ]}>
+      {this.getFrontContent(itemId, context)}
+    </div>
   }
 }
 
