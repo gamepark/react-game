@@ -8,7 +8,12 @@ import { createPortal } from 'react-dom'
 import { useControls, useTransformEffect } from 'react-zoom-pan-pinch'
 import { buttonResetCss } from '../../../css'
 
-export const GameTableNavigation: FC<HTMLAttributes<HTMLDivElement>> = (props) => {
+type GameTableNavigationProps = {
+  scaleStep?: number
+} & HTMLAttributes<HTMLDivElement>
+
+export const GameTableNavigation: FC<GameTableNavigationProps> = (props) => {
+  const { scaleStep = 0.1 } = props
   const { zoomIn, zoomOut } = useControls()
   const [isMin, setIsMin] = useState(false)
   const [isMax, setIsMax] = useState(false)
@@ -18,10 +23,10 @@ export const GameTableNavigation: FC<HTMLAttributes<HTMLDivElement>> = (props) =
   })
   return createPortal(
     <div css={navigationContainer} {...props}>
-      <button css={button} onClick={() => zoomIn(0.1)} disabled={isMax}>
+      <button css={button} onClick={() => zoomIn(scaleStep)} disabled={isMax}>
         <FontAwesomeIcon icon={faSearchPlus} css={iconCss}/>
       </button>
-      <button css={button} onClick={() => zoomOut(0.1)} disabled={isMin}>
+      <button css={button} onClick={() => zoomOut(scaleStep)} disabled={isMin}>
         <FontAwesomeIcon icon={faSearchMinus} css={iconCss}/>
       </button>
     </div>,
