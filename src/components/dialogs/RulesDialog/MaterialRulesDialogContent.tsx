@@ -30,6 +30,9 @@ const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
       ),
     [rules.game])
 
+  useKeyDown('ArrowRight', () => nextMove ? play(nextMove, { local: true }) : undefined)
+  useKeyDown('ArrowLeft', () => previousMove ? play(previousMove, { local: true }) : undefined)
+
   const materialIndexes = useMemo(() => material?.getIndexes(), [material])
 
   if (!material || !materialIndexes) return { previous: undefined, next: undefined }
@@ -39,8 +42,6 @@ const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
   const next = material.index(materialIndexes[currentIndex + 1])
   const previousMove = previous.length ? displayMaterialHelp(helpDisplay.itemType, previous.getItem(), previous.getIndex()) : undefined
   const nextMove = next.length ? displayMaterialHelp(helpDisplay.itemType, next.getItem(), next.getIndex()) : undefined
-  useKeyDown('ArrowRight', () => nextMove ? play(nextMove, { local: true }) : undefined)
-  useKeyDown('ArrowLeft', () => previousMove ? play(previousMove, { local: true }) : undefined)
 
   return {
     previous: previous.length ? displayMaterialHelp(helpDisplay.itemType, previous.getItem(), previous.getIndex()) : undefined,
@@ -55,10 +56,10 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const play = usePlay()
   const context = useMaterialContext<P, M, L>()
   const description = useMaterialDescription<P, M, L>(helpDisplay.itemType)
+  const { previous, next } = useMaterialNavigation(helpDisplay)
   if (!description) return null
   const item = helpDisplay.item
   const { width, height } = description.getSize(item.id, context)
-  const { previous, next } = useMaterialNavigation(helpDisplay)
   const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
   const hasNavigation = previous || next
   return <>
