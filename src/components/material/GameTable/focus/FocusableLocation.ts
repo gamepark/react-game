@@ -8,19 +8,20 @@ export type FocusableLocation = {
   focus?: true
 }
 
-export const getInnerLocations = (
+export const getLocationsWithFocus = (
   item: MaterialItem, context: ItemContext, focus?: FocusableElement | FocusableElement[]
-): FocusableLocation[] => {
+): [Location[], number[]] => {
   const locationsFocus = getLocationsFocus(focus).filter(location =>
     context.locators[location.type]?.parentItemType === context.type && (location.parent ?? 0) === context.index
   )
-  const result: FocusableLocation[] = context.material[context.type]?.getLocations(item, context).map(location => ({ location })) ?? []
+  const result: [Location[], number[]] = [context.material[context.type]?.getLocations(item, context) ?? [], []]
   for (const locationFocus of locationsFocus) {
-    const focusableLocation = result.find(focusableLocation => equal(focusableLocation.location, locationFocus))
-    if (focusableLocation) {
-      focusableLocation.focus = true
+    const index = result[0].findIndex(location => equal(location, locationFocus))
+    if (index !== -1) {
+      result[1].push(index)
     } else {
-      result.push({ location: locationFocus, focus: true })
+      result[1].push(result[0].length)
+      result[0].push(locationFocus)
     }
   }
   return result
