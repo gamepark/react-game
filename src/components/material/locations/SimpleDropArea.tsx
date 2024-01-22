@@ -4,9 +4,11 @@ import { css, keyframes } from '@emotion/react'
 import { displayLocationHelp, displayMaterialHelp, Location, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
+import { useSelector } from 'react-redux'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
+import { GamePageState } from '../../../../../workshop/packages/react-client'
 import { backgroundCss, borderRadiusCss, pointerCursorCss, shineEffect, sizeCss, transformCss } from '../../../css'
-import { useAnimations, useLegalMoves, useMaterialContext, usePlay, usePlayerId } from '../../../hooks'
+import { useLegalMoves, useMaterialContext, usePlay, usePlayerId } from '../../../hooks'
 import { combineEventListeners } from '../../../utilities'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 
@@ -49,7 +51,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
 
     const onShortClick = (shortClickMoves.length === 1 ? () => play(shortClickMoves[0], { delayed: rules?.isUnpredictableMove(shortClickMoves[0], player) }) : openRules)
     const onLongClick = (shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0], { delayed: rules?.isUnpredictableMove(longClickMoves[0], player) }) : undefined
-    return [shortClick? shortClick: onShortClick, longClick? longClick: onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]
+    return [shortClick ? shortClick : onShortClick, longClick ? longClick : onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]
   }, [legalMoves, location, context, play])
 
   const { isOver, active, setNodeRef } = useDroppable({
@@ -66,8 +68,9 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     , [draggedItemContext, legalMoves])
   const locationContext = useMemo(() => ({ ...context, canDrop }), [context, canDrop])
 
-  const animations = useAnimations<MaterialMove>(animation => animation.action.playerId === player)
-
+  const isAnimatingPlayerAction = useSelector((state: GamePageState) =>
+    state.actions?.some(action => action.playerId === state.playerId && action.animation !== undefined)
+  )
   const [clicking, setClicking] = useState(false)
 
   const listeners = useLongPress(() => {
@@ -101,7 +104,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const { width, height } = description.getSize(location, context)
   const image = description.getImage(location, context)
   const borderRadius = description.getBorderRadius(location, context)
-  const positionOnParent = useMemo(() => locator?.parentItemType !== undefined? locator.getPositionOnParent(location, context): undefined, [location, context, location])
+  const positionOnParent = useMemo(() => locator?.parentItemType !== undefined ? locator.getPositionOnParent(location, context) : undefined, [location, context, location])
   const descriptionTransformLocation = useMemo(() => transformCss(...description.transformLocation(location, locationContext)), [location, locationContext, description])
   const extraCss = useMemo(() => description.getExtraCss(location, locationContext), [description, location, locationContext])
 
@@ -112,18 +115,19 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
     extraCss,
     !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
-    ((canDrop && !isOver) || (!draggedItem && canClickToMove && !animations.length)) && shineEffect,
+    ((canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)) && shineEffect,
     canDrop && isOver && dropHighlight
-  ], [!onShortClick, !onLongClick, positionOnParent?.x, positionOnParent?.y, descriptionTransformLocation, width, height, image, borderRadius, extraCss, draggedItem, clicking, canDrop, isOver, canClickToMove, animations.length])
+  ], [!onShortClick, !onLongClick, positionOnParent?.x, positionOnParent?.y, descriptionTransformLocation, width, height, image,
+    borderRadius, extraCss, draggedItem, clicking, canDrop, isOver, canClickToMove, isAnimatingPlayerAction])
 
   if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
 
   return (
-      <div ref={mergeRefs([ref, setNodeRef])}
-                css={componentCss}
-                {...props} {...combineEventListeners(listeners, props)}>
-        {description.content && <description.content location={location} />}
-      </div>
+    <div ref={mergeRefs([ref, setNodeRef])}
+         css={componentCss}
+         {...props} {...combineEventListeners(listeners, props)}>
+      {description.content && <description.content location={location}/>}
+    </div>
   )
 })
 
