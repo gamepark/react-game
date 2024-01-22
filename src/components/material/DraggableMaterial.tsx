@@ -149,6 +149,8 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   )
 })
 
+DraggableMaterial.displayName = 'DraggableMaterial'
+
 const animationWrapperCss = css`
   transform-style: preserve-3d;
 

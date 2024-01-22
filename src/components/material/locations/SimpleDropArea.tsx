@@ -131,6 +131,8 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   )
 })
 
+SimpleDropArea.displayName = 'SimpleDropArea'
+
 const absolute = css`
   position: absolute;
 `

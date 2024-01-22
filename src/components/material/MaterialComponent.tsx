@@ -46,6 +46,8 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
   )
 })
 
+MaterialComponent.displayName = 'MaterialComponent'
+
 const materialCss = css`
   transform-style: preserve-3d;
   -webkit-tap-highlight-color: transparent;

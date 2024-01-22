@@ -14,3 +14,5 @@ export const Picture = forwardRef<HTMLImageElement, PictureAttributes>(({ pictur
     </picture>
   )
 })
+
+Picture.displayName = 'Picture'

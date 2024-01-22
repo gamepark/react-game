@@ -35,3 +35,5 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
     )}
   </MaterialComponent>
 })
+
+ItemDisplay.displayName = 'ItemDisplay'
