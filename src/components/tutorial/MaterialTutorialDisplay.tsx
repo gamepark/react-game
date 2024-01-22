@@ -41,10 +41,12 @@ export const MaterialTutorialDisplay = () => {
   const { setFocus } = useFocusContext()
 
   useEffect(() => {
-    if (tutorialStep?.popup !== undefined) {
+    if (!game?.tutorialPopupClosed && tutorialStep?.popup !== undefined) {
       setFocus(tutorialStep.focus?.(game!) ?? [])
+    } else {
+      setFocus(undefined)
     }
-  }, [tutorialStep])
+  }, [tutorialStep, game?.tutorialPopupClosed])
 
   return (
     <Dialog open={popup !== undefined && !game?.tutorialPopupClosed}
