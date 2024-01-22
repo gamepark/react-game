@@ -1,3 +1,3 @@
 export * from './FocusableElement'
-export * from './FocusableLocation'
+export * from './LocationsWithFocus'
 export * from './FocusProvider'

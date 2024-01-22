@@ -3,28 +3,29 @@ import equal from 'fast-deep-equal'
 import { ItemContext } from '../../../../locators'
 import { FocusableElement, isLocationBuilder } from './FocusableElement'
 
-export type FocusableLocation = {
-  location: Location
-  focus?: true
+export type LocationsWithFocus = {
+  locations: Location[]
+  focusedIndexes: number[]
 }
 
 export const getLocationsWithFocus = (
   item: MaterialItem, context: ItemContext, focus?: FocusableElement | FocusableElement[]
-): [Location[], number[]] => {
+): LocationsWithFocus => {
   const locationsFocus = getLocationsFocus(focus).filter(location =>
     context.locators[location.type]?.parentItemType === context.type && (location.parent ?? 0) === context.index
   )
-  const result: [Location[], number[]] = [context.material[context.type]?.getLocations(item, context) ?? [], []]
+  const locations = context.material[context.type]?.getLocations(item, context) ?? []
+  const focusedIndexes = []
   for (const locationFocus of locationsFocus) {
-    const index = result[0].findIndex(location => equal(location, locationFocus))
+    const index = locations.findIndex(location => equal(location, locationFocus))
     if (index !== -1) {
-      result[1].push(index)
+      focusedIndexes.push(index)
     } else {
-      result[1].push(result[0].length)
-      result[0].push(locationFocus)
+      focusedIndexes.push(locations.length)
+      locations.push(locationFocus)
     }
   }
-  return result
+  return { locations, focusedIndexes }
 }
 
 const getLocationsFocus = (focus?: FocusableElement | FocusableElement[]): Location[] => {
