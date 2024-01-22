@@ -4,9 +4,10 @@ import { MaterialItem } from '@gamepark/rules-api'
 import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
+import { MobileMaterialDescription } from '../MobileMaterialDescription'
 
 export abstract class FlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
-  extends MaterialDescription<P, M, L, ItemId> {
+  extends MobileMaterialDescription<P, M, L, ItemId> {
 
   image?: string
   images?: Record<ItemId extends keyof any ? ItemId : never, string>
