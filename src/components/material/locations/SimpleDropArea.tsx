@@ -115,7 +115,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     descriptionTransformLocation,
     sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
     extraCss,
-    !draggedItem && (onShortClick || onLongClick) && hoverHighlight(theme), clicking && clickingAnimation(theme),
+    !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation(theme),
     ((canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)) && shineEffect,
     canDrop && isOver && dropHighlight
   ], [!onShortClick, !onLongClick, positionOnParent?.x, positionOnParent?.y, descriptionTransformLocation, width, height, image,
@@ -143,9 +143,9 @@ const positionOnParentCss = ({ x, y }: XYCoordinates) => css`
   top: ${y}%;
 `
 
-const hoverHighlight = (theme: Theme) => css`
+const hoverHighlight = css`
   &:hover {
-    background-color: ${theme.dropArea?.backgroundColor};
+    background-color: rgba(255, 255, 255, 0.2);
   }
 `
 
