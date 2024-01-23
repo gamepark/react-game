@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import { Interpolation, Theme } from '@emotion/react'
 import { isDeleteItem, isMoveItem, isRoll, isSelectItem, Location, MaterialHelpDisplay, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { ComponentType, FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
@@ -12,16 +13,15 @@ export type ComponentSize = {
   height: number
 }
 
-export type MaterialContentProps<P extends number = number, M extends number = number, L extends number = number, ItemId = any> = {
+export type MaterialContentProps<ItemId = any> = {
   itemId: ItemId,
-  context: MaterialContext<P, M, L>,
   highlight?: boolean
   playDown?: boolean
 } & HTMLAttributes<HTMLElement>
 
 export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> {
   help?: ComponentType<MaterialHelpProps<P, M, L>>
-  abstract content: FC<MaterialContentProps<P, M, L, ItemId>>
+  abstract content: FC<MaterialContentProps<ItemId>>
   isMobile = false
 
   staticItem?: MaterialItem<P, L>
@@ -61,14 +61,14 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   ratio?: number
   borderRadius?: number
 
-  getSize(_itemId: ItemId, _context: MaterialContext<P, M, L>): ComponentSize {
+  getSize(_itemId: ItemId): ComponentSize {
     if (this.width && this.height) return { width: this.width, height: this.height }
     if (this.ratio && this.width) return { width: this.width, height: this.width / this.ratio }
     if (this.ratio && this.height) return { width: this.height * this.ratio, height: this.height }
     throw new Error('You must implement 2 of "width", "height" & "ratio" in any Material description')
   }
 
-  getBorderRadius(_itemId: ItemId, _context: MaterialContext<P, M, L>): number | undefined {
+  getBorderRadius(_itemId: ItemId): number | undefined {
     return this.borderRadius
   }
 
@@ -82,6 +82,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
 
   getRotations(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
     return []
+  }
+
+  getItemExtraCss(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): Interpolation<Theme> {
+    return
   }
 }
 

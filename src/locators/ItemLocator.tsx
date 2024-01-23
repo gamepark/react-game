@@ -46,7 +46,7 @@ export class ItemLocator<P extends number = number, M extends number = number, L
     const parentMaterial = this.parentItemType ? context.material[this.parentItemType] : undefined
     if (parentMaterial) {
       const positionOnParent = this.getPositionOnParent(item.location, context)
-      const { width, height } = parentMaterial.getSize(this.getParentItemId(item.location), context)
+      const { width, height } = parentMaterial.getSize(this.getParentItemId(item.location))
       x += width * (positionOnParent.x - 50) / 100
       y += height * (positionOnParent.y - 50) / 100
     }

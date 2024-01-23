@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { forwardRef, HTMLAttributes, MouseEvent, useMemo } from 'react'
+import { forwardRef, HTMLAttributes, memo, MouseEvent, useMemo } from 'react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { sizeCss } from '../../css'
-import { useMaterialContext, useMaterialDescription } from '../../hooks'
+import { useMaterialDescription } from '../../hooks'
 import { combineEventListeners } from '../../utilities'
 
 export type MaterialComponentProps<M extends number = number, ItemId = any> = {
@@ -15,11 +15,10 @@ export type MaterialComponentProps<M extends number = number, ItemId = any> = {
   playDown?: boolean
 } & HTMLAttributes<HTMLElement>
 
-export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentProps>((
-  { type, itemId, onShortClick, onLongClick, highlight, playDown , ...props }, ref
+export const MaterialComponent = memo(forwardRef<HTMLDivElement, MaterialComponentProps>((
+  { type, itemId, onShortClick, onLongClick, highlight, playDown, ...props }, ref
 ) => {
   const description = useMaterialDescription(type)
-  const context = useMaterialContext()
 
   const listeners = useLongPress(() => onLongClick && onLongClick(), {
     detect: LongPressEventType.Pointer,
@@ -33,18 +32,18 @@ export const MaterialComponent = forwardRef<HTMLDivElement, MaterialComponentPro
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
 
-  if (!description) return null // TODO: parent should never include a material component which description is missing at all
+  if (!description) return null
 
-  const { width, height } = description.getSize(itemId, context)
+  const { width, height } = description.getSize(itemId)
 
   const componentCss = useMemo(() => [materialCss, sizeCss(width, height)], [width, height])
 
   return (
     <div ref={ref} css={componentCss} {...props} {...combineEventListeners(listeners, props)}>
-      {description.content({ itemId, context, highlight, playDown, ...props })}
+      {description.content({ itemId, highlight, playDown, ...props })}
     </div>
   )
-})
+}))
 
 MaterialComponent.displayName = 'MaterialComponent'
 
