@@ -1,13 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { MaterialItem } from '@gamepark/rules-api'
-import { forwardRef } from 'react'
+import { forwardRef, useMemo } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { pointerCursorCss, transformCss } from '../../../css'
 import { useMaterialContext } from '../../../hooks'
 import { centerLocator, ItemContext } from '../../../locators'
 import { LocationsMask, SimpleDropArea } from '../locations'
 import { MaterialComponent, MaterialComponentProps } from '../MaterialComponent'
-import { getInnerLocations, useFocusContext } from './focus'
+import { getLocationsWithFocus, useFocusContext } from './focus'
 
 type ItemDisplayProps = MaterialComponentProps & {
   index: number
@@ -22,16 +22,19 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const context = useMaterialContext()
   const { focus, addFocusRef } = useFocusContext()
   const itemContext: ItemContext = { ...context, type, index, displayIndex }
-  const innerLocations = getInnerLocations(item, itemContext, focus)
+  const { locations, focusedIndexes } = getLocationsWithFocus(item, itemContext, focus)
+  const focusedLocations = useMemo(() => focusedIndexes.map(index => locations[index]), [locations, focusedIndexes])
   const locator = context.locators[item.location.type] ?? centerLocator
   return <MaterialComponent ref={mergeRefs([ref, isFocused ? addFocusRef : undefined])}
                             type={type} itemId={item.id}
-                            playDown={focus && !isFocused && !innerLocations.some(location => location.focus)}
+                            playDown={focus && !isFocused && !focusedIndexes.length}
                             css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
                             {...props}>
-    <LocationsMask locations={innerLocations.filter(l => l.focus).map(l => l.location)}/>
-    {innerLocations.map(({ focus, location }) =>
-      <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={focus} ref={focus ? addFocusRef : undefined}/>
+    {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
+    {locations.map((location, index) => {
+        const hasFocus = focusedIndexes.includes(index)
+        return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={hasFocus} ref={hasFocus ? addFocusRef : undefined}/>
+      }
     )}
   </MaterialComponent>
 })
