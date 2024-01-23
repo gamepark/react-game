@@ -6,7 +6,12 @@ addStylesheetUrl('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,30
 export interface GameTheme {
   root: RootTheme
   dialog: DialogTheme
-  buttons?: Interpolation<GameTheme>
+  buttons?: Interpolation<GameTheme>,
+  dropArea?: DropAreaTheme
+}
+
+export interface DropAreaTheme {
+  backgroundColor: string
 }
 
 export interface RootTheme {
@@ -35,5 +40,8 @@ export const defaultTheme: GameTheme = {
   dialog: {
     backgroundColor: '#f0fbfc',
     color: '#002448'
+  },
+  dropArea: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2'
   }
 }
