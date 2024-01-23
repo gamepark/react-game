@@ -3,7 +3,7 @@ import { css } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { ReactNode } from 'react'
 import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss } from '../../../css'
-import { ItemContext, MaterialContext } from '../../../locators'
+import { ItemContext } from '../../../locators'
 import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
 
 export abstract class WritingDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
@@ -12,8 +12,8 @@ export abstract class WritingDescription<P extends number = number, M extends nu
   image?: string
   images?: Record<ItemId extends keyof any ? ItemId : never, string>
 
-  getImage(itemId: ItemId, context: MaterialContext<P, M, L>): string | undefined {
-    return this.images?.[this.getFrontId(itemId, context)] ?? this.image
+  getImage(itemId: ItemId): string | undefined {
+    return this.images?.[this.getFrontId(itemId)] ?? this.image
   }
 
   getImages(): string[] {
@@ -23,11 +23,11 @@ export abstract class WritingDescription<P extends number = number, M extends nu
     return images
   }
 
-  protected getFrontId(itemId: ItemId, _context: MaterialContext<P, M, L>) {
+  protected getFrontId(itemId: ItemId) {
     return typeof itemId === 'object' ? (itemId as any).front : itemId as keyof any
   }
 
-  getFrontContent(_itemId: ItemId, _context: MaterialContext<P, M, L>): ReactNode | undefined {
+  getFrontContent(_itemId: ItemId): ReactNode | undefined {
     return
   }
 
@@ -42,10 +42,10 @@ export abstract class WritingDescription<P extends number = number, M extends nu
     return 0
   }
 
-  content = ({ itemId, context, highlight, playDown }: MaterialContentProps<P, M, L, ItemId>) => {
-    const image = this.getImage(itemId, context)
-    const size = this.getSize(itemId, context)
-    const borderRadius = this.getBorderRadius(itemId, context)
+  content = ({ itemId, highlight, playDown }: MaterialContentProps<ItemId>) => {
+    const image = this.getImage(itemId)
+    const size = this.getSize(itemId)
+    const borderRadius = this.getBorderRadius(itemId)
     return <div css={[
       faceCss,
       sizeCss(size.width, size.height),
@@ -53,7 +53,7 @@ export abstract class WritingDescription<P extends number = number, M extends nu
       borderRadius && borderRadiusCss(borderRadius),
       highlight ? shineEffect : playDown && playDownCss(image)
     ]}>
-      {this.getFrontContent(itemId, context)}
+      {this.getFrontContent(itemId)}
     </div>
   }
 }

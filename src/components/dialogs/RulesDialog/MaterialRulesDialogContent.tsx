@@ -59,7 +59,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const { previous, next } = useMaterialNavigation(helpDisplay)
   if (!description) return null
   const item = helpDisplay.item
-  const { width, height } = description.getSize(item.id, context)
+  const { width, height } = description.getSize(item.id)
   const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
   const hasNavigation = previous || next
   return <>

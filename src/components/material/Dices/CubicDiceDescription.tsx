@@ -23,7 +23,7 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
     return Array.isArray(this.images) ? this.images : this.images[itemId]
   }
 
-  getColor(_itemId: ItemId, _context: MaterialContext<P, M, L>) {
+  getColor(_itemId: ItemId) {
     return this.color
   }
 
@@ -31,14 +31,14 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
     return index
   }
 
-  content = ({ itemId, context, highlight, playDown }: MaterialContentProps<P, M, L, ItemId>) => {
+  content = ({ itemId, highlight, playDown }: MaterialContentProps<ItemId>) => {
     const internalMask = css`
       position: absolute;
       top: 1px;
       left: 1px;
       width: calc(${this.width}em - 2px);
       height: calc(${this.width}em - 2px);
-      background-color: ${this.getColor(itemId, context)};
+      background-color: ${this.getColor(itemId)};
       border-radius: ${this.borderRadius / 2}em;
     `
     return <>

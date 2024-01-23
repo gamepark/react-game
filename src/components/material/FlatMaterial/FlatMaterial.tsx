@@ -12,15 +12,15 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
   image?: string
   images?: Record<ItemId extends keyof any ? ItemId : never, string>
 
-  getImage(itemId: ItemId, context: MaterialContext<P, M, L>): string | undefined {
-    return this.images?.[this.getFrontId(itemId, context)] ?? this.image
+  getImage(itemId: ItemId): string | undefined {
+    return this.images?.[this.getFrontId(itemId)] ?? this.image
   }
 
   backImage?: string
   backImages?: Record<ItemId extends keyof any ? ItemId : never, string>
 
-  getBackImage(itemId: ItemId, context: MaterialContext<P, M, L>): string | undefined {
-    return this.backImages?.[this.getBackId(itemId, context)] ?? this.backImage
+  getBackImage(itemId: ItemId): string | undefined {
+    return this.backImages?.[this.getBackId(itemId)] ?? this.backImage
   }
 
   getImages(): string[] {
@@ -32,11 +32,11 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return images
   }
 
-  protected getFrontId(itemId: ItemId, _context: MaterialContext<P, M, L>) {
+  protected getFrontId(itemId: ItemId) {
     return typeof itemId === 'object' ? (itemId as any).front : itemId as keyof any
   }
 
-  protected getBackId(itemId: ItemId, _context: MaterialContext<P, M, L>) {
+  protected getBackId(itemId: ItemId) {
     return typeof itemId === 'object' ? (itemId as any).back : itemId as keyof any
   }
 
@@ -44,8 +44,8 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return !!this.backImage || !!this.backImages
   }
 
-  isFlipped(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
-    return this.hasBackFace() && this.getFrontId(item.id, context) === undefined
+  isFlipped(item: Partial<MaterialItem<P, L>>, _context: MaterialContext<P, M, L>): boolean {
+    return this.hasBackFace() && this.getFrontId(item.id) === undefined
   }
 
   getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
@@ -60,15 +60,15 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return 0
   }
 
-  content = ({ itemId, context, highlight, playDown, children }: MaterialContentProps<P, M, L, ItemId>) => {
-    const image = this.getImage(itemId, context)
-    const backImage = this.getBackImage(itemId, context)
-    const size = this.getSize(itemId, context)
-    const borderRadius = this.getBorderRadius(itemId, context)
+  content = ({ itemId, highlight, playDown, children }: MaterialContentProps<ItemId>) => {
+    const image = this.getImage(itemId)
+    const backImage = this.getBackImage(itemId)
+    const size = this.getSize(itemId)
+    const borderRadius = this.getBorderRadius(itemId)
     return <>
       <div css={[
         faceCss,
-        this.getFrontExtraCss(itemId, context),
+        this.getFrontExtraCss(itemId),
         sizeCss(size.width, size.height),
         image && [backgroundCss(image), shadowCss(image)],
         borderRadius && borderRadiusCss(borderRadius),
@@ -78,7 +78,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
       </div>
       {backImage && <div css={[
         faceCss,
-        this.getBackExtraCss(itemId, context),
+        this.getBackExtraCss(itemId),
         sizeCss(size.width, size.height),
         backgroundCss(backImage), shadowCss(backImage),
         borderRadius && borderRadiusCss(borderRadius),
@@ -88,11 +88,11 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     </>
   }
 
-  getFrontExtraCss(_itemId: ItemId, _context: MaterialContext<P, M, L>): Interpolation<Theme> {
+  getFrontExtraCss(_itemId: ItemId): Interpolation<Theme> {
     return
   }
 
-  getBackExtraCss(_itemId: ItemId, _context: MaterialContext<P, M, L>): Interpolation<Theme> {
+  getBackExtraCss(_itemId: ItemId): Interpolation<Theme> {
     return
   }
 }

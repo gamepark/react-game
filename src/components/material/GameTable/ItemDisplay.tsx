@@ -25,17 +25,20 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const { locations, focusedIndexes } = getLocationsWithFocus(item, itemContext, focus)
   const focusedLocations = useMemo(() => focusedIndexes.map(index => locations[index]), [locations, focusedIndexes])
   const locator = context.locators[item.location.type] ?? centerLocator
-  return <MaterialComponent ref={mergeRefs([ref, isFocused ? addFocusRef : undefined])}
+  const description = context.material[type]
+  return <MaterialComponent ref={isFocused ? mergeRefs([ref, addFocusRef]) : ref}
                             type={type} itemId={item.id}
                             playDown={focus && !isFocused && !focusedIndexes.length}
-                            css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext))]}
+                            css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext)), description?.getItemExtraCss(item, itemContext)]}
                             {...props}>
-    {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
-    {locations.map((location, index) => {
-        const hasFocus = focusedIndexes.includes(index)
-        return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={hasFocus} ref={hasFocus ? addFocusRef : undefined}/>
-      }
-    )}
+    {locations.length > 0 && <>
+      {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
+      {locations.map((location, index) => {
+          const hasFocus = focusedIndexes.includes(index)
+          return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={hasFocus} ref={hasFocus ? addFocusRef : undefined}/>
+        }
+      )}
+    </>}
   </MaterialComponent>
 })
 
