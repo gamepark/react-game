@@ -56,10 +56,12 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     return () => undo(predicate)
   }, [item, canUndo])
 
+  const openRules = useCallback(() => play(displayMaterialHelp(type, item, index, displayIndex), { local: true }),
+    [type, item, index, displayIndex])
+
   const [onShortClick, onLongClick, canClickToMove] = useMemo(() => {
     const shortClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canShortClick(move, itemContext))
     const longClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
-    const openRules = () => play(displayMaterialHelp(type, item, index, displayIndex), { local: true })
     const onShortClick = undoSelectItem ?? (shortClickMoves.length === 1 ? () => play(shortClickMoves[0]) : openRules)
     const onLongClick = (undoSelectItem || shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0]) : undefined
     return [onShortClick, onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]
@@ -135,13 +137,14 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   ], [applyTransform, animating, disabled, transform, canDropToSameLocation])
 
   const wrapperCss = useMemo(() => [animationWrapperCss, animation], [animation])
+  const style = useMemo(() => ({ transform: transformStyle }), [transformStyle])
 
   return (
     <div css={wrapperCss}>
-      <ItemDisplay ref={mergeRefs([ref, setNodeRef])} type={type} index={index} displayIndex={displayIndex} item={item}
+      <ItemDisplay ref={ref ? mergeRefs([ref, setNodeRef]) : setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
                    isFocused={isFocused}
                    css={componentCss}
-                   style={{ transform: transformStyle }}
+                   style={style}
                    highlight={highlight ?? (!draggedItem && (!disabled || canClickToMove))}
                    {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
                    onShortClick={onShortClick} onLongClick={onLongClick}/>
