@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { MaterialItem } from '../../../../../workshop/packages/rules-api'
-import { useMaterialContext, usePlayerId } from '../../../hooks'
+import { useMaterialContext } from '../../../hooks'
 import { ItemContext } from '../../../locators'
 import { DraggableMaterial } from '../DraggableMaterial'
 import { isItemFocus, useFocusContext } from './focus'
@@ -25,7 +25,6 @@ const DynamicItemsTypeDisplay = ({ type, items }: DynamicItemsTypeDisplayProps) 
   const context = useMaterialContext()
   const { focus } = useFocusContext()
   const locators = context.locators
-  const playerId = usePlayerId()
   const { t } = useTranslation()
   const description = context.material[type]
   if (!description) return null
@@ -34,7 +33,7 @@ const DynamicItemsTypeDisplay = ({ type, items }: DynamicItemsTypeDisplayProps) 
     return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
       const itemContext: ItemContext = { ...context, type, index, displayIndex }
       if (locator?.hide(item, itemContext)) return null
-      if (playerId === undefined || !description.isMobile) {
+      if (!description.isMobile) {
         return <ItemDisplay key={`${type}_${index}_${displayIndex}`}
                             type={type} index={index} displayIndex={displayIndex} item={item}
                             isFocused={isItemFocus(type, index, focus)}/>
