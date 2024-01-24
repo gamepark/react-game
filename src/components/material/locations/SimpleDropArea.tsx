@@ -6,7 +6,7 @@ import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react
 import { mergeRefs } from 'react-merge-refs'
 import { useSelector } from 'react-redux'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { GamePageState } from '../../../../../workshop/packages/react-client'
+import { GamePageState } from '@gamepark/react-client'
 import { backgroundCss, borderRadiusCss, pointerCursorCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { useLegalMoves, useMaterialContext, usePlay, usePlayerId } from '../../../hooks'
 import { combineEventListeners } from '../../../utilities'
