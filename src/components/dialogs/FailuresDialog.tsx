@@ -27,7 +27,7 @@ export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
       <button css={[menuButtonCss, inDialogButton]} onClick={() => clearFailures()}>{t('OK')}</button>
       {displayedFailure === Failure.MOVE_FORBIDDEN && <p>
         <Trans defaults="failure.dialog.play2"
-               components={[<button onClick={() => window.location.reload()}/>]}/>
+               components={[<button css={[menuButtonCss, css`display: inline-block`]} onClick={() => window.location.reload()}/>]}/>
       </p>}
     </Dialog>
   )
