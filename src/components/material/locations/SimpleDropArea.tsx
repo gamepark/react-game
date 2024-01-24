@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { useDroppable } from '@dnd-kit/core'
-import { css, keyframes } from '@emotion/react'
+import { css, keyframes, Theme } from '@emotion/react'
 import { displayLocationHelp, displayMaterialHelp, Location, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { useSelector } from 'react-redux'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { GamePageState } from '../../../../../workshop/packages/react-client'
+import { GamePageState } from '@gamepark/react-client'
 import { backgroundCss, borderRadiusCss, pointerCursorCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { useLegalMoves, useMaterialContext, usePlay, usePlayerId } from '../../../hooks'
 import { combineEventListeners } from '../../../utilities'
@@ -148,21 +148,21 @@ const hoverHighlight = css`
   }
 `
 
-const clickingKeyframes = keyframes`
+const clickingKeyframes = (theme: Theme) => keyframes`
   from {
     background-color: rgba(255, 255, 255, 0.2);
   }
   to {
-    background-color: rgba(0, 255, 0, 0.5);
+    background-color: ${theme.dropArea?.backgroundColor};
   }
 `
 
 const longClickThreshold = 600
 
-const clickingAnimation = css`
-  animation: ${clickingKeyframes} ${longClickThreshold}ms ease-in-out;
+const clickingAnimation = (theme: Theme) => css`
+  animation: ${clickingKeyframes(theme)} ${longClickThreshold}ms ease-in-out;
 `
 
-const dropHighlight = css`
-  background-color: rgba(0, 255, 0, 0.5);
+const dropHighlight = (theme: Theme) => css`
+  background-color: ${theme.dropArea?.backgroundColor};
 `
