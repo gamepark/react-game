@@ -41,16 +41,25 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
     <Dialog onBackdropClick={close} css={style} {...props}>
       <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={close}/>
       <h2>{resultText}</h2>
-      {gameMode === GameMode.TOURNAMENT && tournament &&
-        <NavButton css={autoMargin} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
+      <div css={buttonLine}>
+      {gameMode === GameMode.TOURNAMENT && tournament ?
+        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
           {t('result.tournament.link')}
         </NavButton>
+        :
+        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}`}>{t('Back to Game Park')}</NavButton>
       }
       {gameMode === GameMode.COMPETITIVE &&
-        <NavButton css={autoMargin} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play?mode=matchmaking`}>
+        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play?mode=matchmaking`}>
           {t('Play again')}
         </NavButton>
       }
+      {gameMode === GameMode.COMPETITIVE &&
+        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/ranking`}>
+          {t('See overall ranking')}
+        </NavButton>
+      }
+      </div>
       <div css={[gridCss, rows > 1 ? multiRows(rankedPlayers.length, rows) : singleRow(rankedPlayers.length)]}>
         {rows > 1 && <div/>}
         {gameMode === GameMode.TOURNAMENT && <div css={borderTop}>{t('Tournament')}</div>}
@@ -82,7 +91,7 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border }: { gameMode?: GameMo
   return <>
     <div css={[relative, border && borderLeft]}>
       <div css={avatarContainer}>
-        <Avatar playerId={playerId} css={avatarCss} />
+        <Avatar playerId={playerId} css={avatarCss}/>
         {rank !== undefined && <Medal rank={rank} css={medalCss}/>}
       </div>
       <span>{playerName}</span>
@@ -117,9 +126,9 @@ const closeIcon = css`
   cursor: pointer;
 `
 
-const autoMargin = css`
-  margin-left: auto;
-  margin-right: auto;
+const buttonLine = css`
+  display: flex;
+  justify-content: space-between;
 `
 
 const gridCss = css`
