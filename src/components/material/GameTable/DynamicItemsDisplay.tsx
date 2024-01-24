@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { MaterialItem } from '../../../../../workshop/packages/rules-api'
-import { useMaterialContext } from '../../../hooks'
+import { displayMaterialHelp, MaterialItem } from '../../../../../workshop/packages/rules-api'
+import { useMaterialContext, usePlay } from '../../../hooks'
 import { ItemContext } from '../../../locators'
 import { DraggableMaterial } from '../DraggableMaterial'
 import { isItemFocus, useFocusContext } from './focus'
@@ -26,6 +26,7 @@ const DynamicItemsTypeDisplay = ({ type, items }: DynamicItemsTypeDisplayProps) 
   const { focus } = useFocusContext()
   const locators = context.locators
   const { t } = useTranslation()
+  const play = usePlay()
   const description = context.material[type]
   if (!description) return null
   return <>{items.map((item, index) => {
@@ -36,7 +37,8 @@ const DynamicItemsTypeDisplay = ({ type, items }: DynamicItemsTypeDisplayProps) 
       if (!description.isMobile) {
         return <ItemDisplay key={`${type}_${index}_${displayIndex}`}
                             type={type} index={index} displayIndex={displayIndex} item={item}
-                            isFocused={isItemFocus(type, index, focus)}/>
+                            isFocused={isItemFocus(type, index, focus)}
+                            onShortClick={() => play(displayMaterialHelp(type, item, index, displayIndex), { local: true })}/>
       } else {
         return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                   type={type} index={index} displayIndex={displayIndex} isFocused={isItemFocus(type, index, focus)}
