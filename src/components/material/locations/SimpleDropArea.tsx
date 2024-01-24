@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { useDroppable } from '@dnd-kit/core'
-import { css, keyframes, Theme, useTheme } from '@emotion/react'
+import { css, keyframes, Theme } from '@emotion/react'
 import { displayLocationHelp, displayMaterialHelp, Location, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
@@ -23,7 +23,6 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   { location, onShortClick: shortClick, onLongClick: longClick, alwaysVisible, ...props }, ref
 ) => {
   const context = useMaterialContext()
-  const theme = useTheme()
   const material = context.material
   const locator = context.locators[location.type]
   const description = locator?.getLocationDescription(context)
@@ -115,7 +114,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     descriptionTransformLocation,
     sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
     extraCss,
-    !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation(theme),
+    !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
     ((canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)) && shineEffect,
     canDrop && isOver && dropHighlight
   ], [!onShortClick, !onLongClick, positionOnParent?.x, positionOnParent?.y, descriptionTransformLocation, width, height, image,
