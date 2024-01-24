@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { displayMaterialHelp } from '../../../../../workshop/packages/rules-api'
+import { displayMaterialHelp } from '@gamepark/rules-api'
 import { useMaterialContext, usePlay } from '../../../hooks'
 import { MaterialDescription } from '../MaterialDescription'
 import { isStaticItemFocus, useFocusContext } from './focus'

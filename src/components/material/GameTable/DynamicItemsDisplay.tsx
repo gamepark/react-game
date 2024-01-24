@@ -1,5 +1,5 @@
+import { displayMaterialHelp, MaterialItem } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
-import { displayMaterialHelp, MaterialItem } from '../../../../../workshop/packages/rules-api'
 import { useMaterialContext, usePlay } from '../../../hooks'
 import { ItemContext } from '../../../locators'
 import { DraggableMaterial } from '../DraggableMaterial'

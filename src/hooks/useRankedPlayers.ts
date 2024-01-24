@@ -1,6 +1,6 @@
+import { GamePageState } from '@gamepark/react-client'
 import { isCompetitive, rankPlayers } from '@gamepark/rules-api'
 import { shallowEqual, useSelector } from 'react-redux'
-import { GamePageState } from '../../../workshop/packages/react-client'
 import { usePlayerIds } from './usePlayerId'
 import { useRules } from './useRules'
 
