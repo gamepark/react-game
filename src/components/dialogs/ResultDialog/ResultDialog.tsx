@@ -128,7 +128,7 @@ const closeIcon = css`
 
 const buttonLine = css`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
 `
 
 const gridCss = css`
