@@ -42,6 +42,6 @@ export const defaultTheme: GameTheme = {
     color: '#002448'
   },
   dropArea: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)'
+    backgroundColor: 'rgba(0, 255, 0, 0.5)'
   }
 }
