@@ -7,18 +7,19 @@ import { FC, FormEvent, RefObject, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { buttonResetCss } from '../../css'
 
-type DevChatTextInputProps = {
+type LocalChatTextInputProps = {
   channel: string
   onMessageSent: (message: Message) => void
   inputRef: RefObject<HTMLInputElement>
+  messages: number
 }
 
 
-export const LocalChatTextInput: FC<DevChatTextInputProps> = (props) => {
-  const { onMessageSent, inputRef } = props
+export const LocalChatTextInput: FC<LocalChatTextInputProps> = (props) => {
+  const { onMessageSent, messages, inputRef } = props
 
   const onSubmit = (t: string) => {
-    onMessageSent({ id: `${Math.random()}`, text: t, date: new Date().toISOString(), userId: 'dev'})
+    onMessageSent({ id: `${messages}`, text: t, date: new Date().toISOString(), userId: 'dev'})
   }
 
   return <ChatInput onSubmit={onSubmit} inputRef={inputRef} />
