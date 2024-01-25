@@ -30,7 +30,7 @@ export const Menu = () => {
   const [isOpen, setOpen] = useState(false)
   const game = useContext(gameContext)?.game ?? ''
   const query = new URLSearchParams(window.location.search)
-  const gameId = query.get('game')
+  const gameId = query.get('game') ?? undefined
   const locale = query.get('locale') || 'en'
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const options = useSelector((state: GamePageState) => state.options)
@@ -42,7 +42,7 @@ export const Menu = () => {
   const canGiveUp = !gameOver && playerId !== undefined && gameMode !== GameMode.TUTORIAL
   const canPlayAgain = gameOver && playerId !== undefined && gameMode === GameMode.COMPETITIVE
   const goToRanking = gameOver && gameMode === GameMode.COMPETITIVE
-  const chatEnable = gameMode === GameMode.FRIENDLY || gameMode === GameMode.TOURNAMENT
+  const chatEnable = gameMode !== GameMode.COMPETITIVE && gameMode !== GameMode.TUTORIAL
   const [ejectPlayerDialogOpen, setEjectPlayerDialogOpen] = useState(false)
   const [resultDialogOpen, setResultDialogOpen] = useState(false)
   const [resultDialogAutoOpen, setResultDialogAutoOpen] = useState(false)
@@ -93,7 +93,7 @@ export const Menu = () => {
       {gameOver && <ResultDialog open={resultDialogOpen}
                                  openDialog={() => setResultDialogOpen(true)}
                                  close={() => setResultDialogOpen(false)}/>}
-      {chatEnable && gameId && <Chat gameId={gameId}/>}
+      {chatEnable && <Chat gameId={gameId}/>}
     </>
   )
 }

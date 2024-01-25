@@ -2,27 +2,58 @@
 import { css } from '@emotion/react'
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useSendMessage } from '@gamepark/react-client'
-import { FormEvent, RefObject, useState } from 'react'
+import { Message, useSendMessage } from '@gamepark/react-client'
+import { FC, FormEvent, RefObject, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { buttonResetCss } from '../../css'
 
-type Props = {
+type DevChatTextInputProps = {
+  channel: string
+  onMessageSent: (message: Message) => void
+  inputRef: RefObject<HTMLInputElement>
+}
+
+
+export const LocalChatTextInput: FC<DevChatTextInputProps> = (props) => {
+  const { onMessageSent, inputRef } = props
+
+  const onSubmit = (t: string) => {
+    onMessageSent({ id: `${Math.random()}`, text: t, date: new Date().toISOString(), userId: 'dev'})
+  }
+
+  return <ChatInput onSubmit={onSubmit} inputRef={inputRef} />
+}
+
+
+type RemoteChatTextInputProps = {
   channel: string
   inputRef: RefObject<HTMLInputElement>
 }
 
-export const ChatTextInput = ({ channel, inputRef }: Props) => {
-  const { t } = useTranslation()
-  const [text, setText] = useState('')
+export const RemoteChatTextInput: FC<RemoteChatTextInputProps> = ({ channel, inputRef }) => {
   const [sendMessage] = useSendMessage()
-  const onSubmit = (event: FormEvent<HTMLElement>) => {
-    event.preventDefault()
+  const onSubmit = (text: string) => {
     sendMessage({ variables: { channel, text } }).catch(console.error)
+  }
+
+  return <ChatInput onSubmit={onSubmit} inputRef={inputRef} />
+}
+
+type ChatInputProps = {
+  onSubmit: (text: string) => void
+  inputRef: RefObject<HTMLInputElement>
+}
+
+export const ChatInput: FC<ChatInputProps> = ({ onSubmit, inputRef }) => {
+  const [text, setText] = useState('')
+  const { t } = useTranslation()
+  const doSubmit = (event: FormEvent<HTMLElement>) => {
+    event.preventDefault()
+    onSubmit(text)
     setText('')
   }
   return (
-    <form css={messageBar} onSubmit={onSubmit}>
+    <form css={messageBar} onSubmit={doSubmit}>
       <input ref={inputRef} type="text" placeholder={t('Type a message')!} css={textInputCss} value={text} onChange={event => setText(event.target.value)}/>
       <button aria-label={t('Send')!} title={t('Send')!} css={[buttonResetCss, sendButtonStyle]}><FontAwesomeIcon icon={faPaperPlane}/></button>
     </form>
@@ -40,7 +71,7 @@ const textInputCss = css`
   flex-grow: 1;
   border: none;
   border-radius: 1em;
-  padding: 0.2em 0.5em;
+  padding: 0.5em 0.8em;
 
   &:focus-visible {
     outline: none;
