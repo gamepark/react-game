@@ -9,28 +9,28 @@ import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { ResultDialog } from '../../dialogs'
-import { TrackPlayersQuit } from '../PlayerQuit'
-import { TimeStatsButton } from '../TimeStatsButton'
-import { ResultButton, ResultPopButton } from '../Result'
-import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
-import { GiveUpButton } from '../GiveUpButton'
-import { EjectPlayerButton, EjectPlayerDialog, EjectPlayerPopButton } from '../EjectPlayer'
-import { RestartTutorialButton } from '../RestartTutorialButton'
-import { SoundButton } from '../SoundButton'
-import { UndoButton, UndoPopButton } from '../UndoButton'
-import { Chat } from '../../Chat'
-import { menuBaseCss, menuFloatingButtonCss, menuFontSize } from '../menuCss'
-import { NavButton } from './NavButton'
-import { LogoIcon } from './LogoIcon'
 import { GamePointIcon } from '../../GamePoints'
 import { gameContext } from '../../GameProvider'
+import { JournalTabs } from '../../JournalTabs/JournalTabs'
+import { EjectPlayerButton, EjectPlayerDialog, EjectPlayerPopButton } from '../EjectPlayer'
+import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
+import { GiveUpButton } from '../GiveUpButton'
+import { menuBaseCss, menuFloatingButtonCss, menuFontSize } from '../menuCss'
+import { TrackPlayersQuit } from '../PlayerQuit'
+import { RestartTutorialButton } from '../RestartTutorialButton'
+import { ResultButton, ResultPopButton } from '../Result'
+import { SoundButton } from '../SoundButton'
+import { TimeStatsButton } from '../TimeStatsButton'
+import { UndoButton, UndoPopButton } from '../UndoButton'
+import { LogoIcon } from './LogoIcon'
+import { NavButton } from './NavButton'
 
 export const Menu = () => {
   const { t } = useTranslation()
   const [isOpen, setOpen] = useState(false)
   const game = useContext(gameContext)?.game ?? ''
   const query = new URLSearchParams(window.location.search)
-  const gameId = query.get('game')
+  const gameId = query.get('game') ?? undefined
   const locale = query.get('locale') || 'en'
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const options = useSelector((state: GamePageState) => state.options)
@@ -42,7 +42,6 @@ export const Menu = () => {
   const canGiveUp = !gameOver && playerId !== undefined && gameMode !== GameMode.TUTORIAL
   const canPlayAgain = gameOver && playerId !== undefined && gameMode === GameMode.COMPETITIVE
   const goToRanking = gameOver && gameMode === GameMode.COMPETITIVE
-  const chatEnable = gameMode === GameMode.FRIENDLY || gameMode === GameMode.TOURNAMENT
   const [ejectPlayerDialogOpen, setEjectPlayerDialogOpen] = useState(false)
   const [resultDialogOpen, setResultDialogOpen] = useState(false)
   const [resultDialogAutoOpen, setResultDialogAutoOpen] = useState(false)
@@ -93,7 +92,7 @@ export const Menu = () => {
       {gameOver && <ResultDialog open={resultDialogOpen}
                                  openDialog={() => setResultDialogOpen(true)}
                                  close={() => setResultDialogOpen(false)}/>}
-      {chatEnable && gameId && <Chat gameId={gameId}/>}
+      <JournalTabs gameId={gameId} />
     </>
   )
 }

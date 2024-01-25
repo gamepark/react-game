@@ -2,7 +2,7 @@
 import { css } from '@emotion/react'
 import { PLATFORM_URI } from '@gamepark/react-client'
 import { useTranslation } from 'react-i18next'
-import { buttonResetCss } from '../../css'
+import { buttonResetCss } from '../../../css'
 
 export const SignInToChat = () => {
   const { t } = useTranslation()
