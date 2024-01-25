@@ -1,22 +1,25 @@
 /** @jsxImportSource @emotion/react */
 import { Message } from '@gamepark/react-client'
-import { FC, useRef, useState } from 'react'
+import { FC, HTMLAttributes, useRef, useState } from 'react'
 import { LocalChatTextInput } from './ChatTextInput'
 import { CommonChat } from './CommonChat'
 
-type RemoteChatProps = {}
+type RemoteChatProps = {
+  open: boolean
+} & HTMLAttributes<HTMLDivElement>
 
-export const LocalChat: FC<RemoteChatProps> = () => {
+export const LocalChat: FC<RemoteChatProps> = (props) => {
+  const { open, ...rest } = props
   const scrollRef = useRef<HTMLDivElement>(null)
   const shouldScroll = useRef(false)
-  const inputRef = useRef<HTMLInputElement>(null)
   const [messages, setMessages] = useState<Message[]>([])
 
   return <CommonChat
     messages={messages}
     scrollRef={scrollRef}
     shouldScroll={shouldScroll}
-    Input={<LocalChatTextInput messages={messages.length} onMessageSent={(m: Message) => setMessages((messages) => [...messages, m])} inputRef={inputRef}/>}
+    Input={<LocalChatTextInput open={open} messages={messages.length} onMessageSent={(m: Message) => setMessages((messages) => [...messages, m])} { ...rest }/>}
+    { ...rest }
   >
   </CommonChat>
 }

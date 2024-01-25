@@ -16,4 +16,5 @@ export const ChatMessage = ({ message, showAuthor }: Props) => <>
 const textCss = css`
   line-height: 1.5;
   margin: 0;
+  word-break: break-word;
 `

@@ -3,62 +3,76 @@ import { css } from '@emotion/react'
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Message, useSendMessage } from '@gamepark/react-client'
-import { FC, FormEvent, RefObject, useState } from 'react'
+import { FC, FormEvent, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { buttonResetCss } from '../../css'
+import { buttonResetCss } from '../../../css'
 
 type LocalChatTextInputProps = {
   onMessageSent: (message: Message) => void
-  inputRef: RefObject<HTMLInputElement>
   messages: number
+  open: boolean
 }
 
 
 export const LocalChatTextInput: FC<LocalChatTextInputProps> = (props) => {
-  const { onMessageSent, messages, inputRef } = props
+  const { onMessageSent, messages, open } = props
 
   const onSubmit = (t: string) => {
     onMessageSent({ id: `${messages}`, text: t, date: new Date().toISOString(), userId: 'dev'})
   }
 
-  return <ChatInput onSubmit={onSubmit} inputRef={inputRef} />
+  return <ChatInput open={open} onSubmit={onSubmit} />
 }
 
 
 type RemoteChatTextInputProps = {
   channel: string
-  inputRef: RefObject<HTMLInputElement>
+  open: boolean
 }
 
-export const RemoteChatTextInput: FC<RemoteChatTextInputProps> = ({ channel, inputRef }) => {
+export const RemoteChatTextInput: FC<RemoteChatTextInputProps> = (props) => {
+  const { channel, open } = props
   const [sendMessage] = useSendMessage()
   const onSubmit = (text: string) => {
     sendMessage({ variables: { channel, text } }).catch(console.error)
   }
 
-  return <ChatInput onSubmit={onSubmit} inputRef={inputRef} />
+  return <ChatInput open={open} onSubmit={onSubmit} />
 }
 
 type ChatInputProps = {
   onSubmit: (text: string) => void
-  inputRef: RefObject<HTMLInputElement>
+  open: boolean
 }
 
-export const ChatInput: FC<ChatInputProps> = ({ onSubmit, inputRef }) => {
+export const ChatInput: FC<ChatInputProps> = (props) => {
+  const { open, onSubmit } = props
   const [text, setText] = useState('')
   const { t } = useTranslation()
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (open && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [open])
+
   const doSubmit = (event: FormEvent<HTMLElement>) => {
     event.preventDefault()
     onSubmit(text)
     setText('')
   }
   return (
-    <form css={messageBar} onSubmit={doSubmit}>
+    <form css={[messageBar, !open && hidden]} onSubmit={doSubmit}>
       <input ref={inputRef} type="text" placeholder={t('Type a message')!} css={textInputCss} value={text} onChange={event => setText(event.target.value)}/>
       <button aria-label={t('Send')!} title={t('Send')!} css={[buttonResetCss, sendButtonStyle]}><FontAwesomeIcon icon={faPaperPlane}/></button>
     </form>
   )
 }
+
+const hidden = css`
+  display: none;
+`
 
 const messageBar = css`
   width: 100%;
@@ -81,4 +95,5 @@ const textInputCss = css`
 const sendButtonStyle = css`
   background: none;
   color: white;
+  font-size: 1.5em;
 `
