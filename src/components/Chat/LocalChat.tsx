@@ -16,7 +16,7 @@ export const LocalChat: FC<RemoteChatProps> = () => {
     messages={messages}
     scrollRef={scrollRef}
     shouldScroll={shouldScroll}
-    Input={<LocalChatTextInput messages={messages.length} onMessageSent={(m: Message) => setMessages((messages) => [...messages, m])} channel={`game=development`} inputRef={inputRef}/>}
+    Input={<LocalChatTextInput messages={messages.length} onMessageSent={(m: Message) => setMessages((messages) => [...messages, m])} inputRef={inputRef}/>}
   >
   </CommonChat>
 }

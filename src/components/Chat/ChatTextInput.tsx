@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next'
 import { buttonResetCss } from '../../css'
 
 type LocalChatTextInputProps = {
-  channel: string
   onMessageSent: (message: Message) => void
   inputRef: RefObject<HTMLInputElement>
   messages: number
