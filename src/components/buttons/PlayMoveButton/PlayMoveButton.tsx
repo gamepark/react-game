@@ -1,12 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import { ButtonHTMLAttributes, FC, useCallback, useEffect, useState } from 'react'
-import { PlayOptions, usePlay } from '../../../hooks'
-import { ThemeButton } from '../ThemeButton'
-import { Dialog } from '../../dialogs'
 import { css, ThemeProvider } from '@emotion/react'
-import { buttonCss } from '../../../css'
+import { ButtonHTMLAttributes, FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useIsAnimatingPlayerAction } from '../../material/utils/useIsAnimatingPlayerAction'
+import { buttonCss } from '../../../css'
+import { PlayOptions, usePlay } from '../../../hooks'
+import { Dialog } from '../../dialogs'
+import { ThemeButton } from '../ThemeButton'
 
 export type PlayMoveButtonConfirmation = {
   text?: string
@@ -26,8 +25,7 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
   const { t } = useTranslation()
   const [showDialog, setShowDialog] = useState<boolean>(false)
   const [displayedLongEnough, setDisplayedLongEnough] = useState(false)
-  const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
-  const disabled = move === undefined || (isAnimatingPlayerAction && !local)
+  const disabled = move === undefined
   useEffect(() => {
     if (disabled) {
       setDisplayedLongEnough(false)
@@ -111,7 +109,7 @@ const content = css`
   font-size: 3em;
   display: flex;
   flex-direction: column;
-  
+
   p {
     white-space: break-spaces;
   }
