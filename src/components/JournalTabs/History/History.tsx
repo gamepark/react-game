@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { FC, HTMLAttributes, ReactElement, useEffect, useRef } from 'react'
+import { FC, HTMLAttributes, memo, ReactElement, useEffect, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import { useHistory } from '../../../hooks/useHistory'
 
@@ -38,14 +38,14 @@ export const History: FC<HistoryProps> = (props) => {
 type HistoryEntryProps = {
 }
 
-export const HistoryEntry: FC<HistoryEntryProps> = ({ children }) => {
+export const HistoryEntry: FC<HistoryEntryProps> = memo(({ children }) => {
   return (
     <div css={historyEntryStyle}>
       {children}
     </div>
   )
 
-}
+})
 
 const historyEntryStyle = css`
   width: 100%;
