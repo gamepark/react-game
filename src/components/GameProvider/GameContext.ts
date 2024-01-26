@@ -1,4 +1,5 @@
 import { Animations, TutorialDescription } from '@gamepark/react-client'
+import { HistoryDescription } from '@gamepark/react-client/dist/History/HistoryDescription'
 import { RulesCreator } from '@gamepark/rules-api'
 import React, { ComponentType } from 'react'
 import { ItemLocatorRecord } from '../../locators'
@@ -14,6 +15,7 @@ export type GameContext<Game = any, Move = any, PlayerId extends number = number
   optionsSpec?: any
   animations?: Animations<Game, Move, PlayerId>
   tutorial?: TutorialDescription<Game, Move, PlayerId>
+  history?: HistoryDescription<Game, Move>
   hasSounds?: boolean
 }
 
