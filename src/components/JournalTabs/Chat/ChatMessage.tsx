@@ -17,4 +17,5 @@ const textCss = css`
   line-height: 1.5;
   margin: 0;
   word-break: break-word;
+  font-size: 0.7em
 `

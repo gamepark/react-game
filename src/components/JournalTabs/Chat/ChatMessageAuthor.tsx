@@ -9,7 +9,7 @@ export const ChatMessageAuthor = ({ author }: { author: string }) => {
   const { avatar, name } = useMessageAuthor(author)
 
   return <>
-    <Avatar style={{ width: '48px', height: '48px', position: 'absolute', left: '-3px' }} circle {...avatar}/>
+    <Avatar style={{ width: '2.25em', height: '2.25em', position: 'absolute', left: '0' }} circle {...avatar}/>
     {name && <p css={[authorCss]}>{name}</p>}
     {!name && <p css={[authorCss, anonymous]}>{t('Anonymous')}</p>}
   </>
@@ -19,6 +19,7 @@ const authorCss = css`
   font-weight: bold;
   line-height: 1.5;
   margin: 4px 0 0;
+  font-size: 0.7em
 `
 
 const anonymous = css`

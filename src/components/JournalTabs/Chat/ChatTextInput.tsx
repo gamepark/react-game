@@ -79,6 +79,7 @@ const messageBar = css`
   padding: 0.5em;
   background: #28B8CE;
   display: flex;
+  font-size: 0.8em;
 `
 
 const textInputCss = css`

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { FC, MutableRefObject, ReactElement, useEffect } from 'react'
+import { FC, MutableRefObject, ReactElement, useEffect, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import { ChatMessage } from './ChatMessage'
 
@@ -8,21 +8,24 @@ type CommonChatProps = {
   gameId?: string
   loading?: boolean
   hasMoreMessages?: boolean
-  messages: any[],
-  scrollRef: MutableRefObject<HTMLDivElement | null>
-  shouldScroll: MutableRefObject<boolean>
+  messages: any[]
   fetchMore?: () => void
-  Input: ReactElement
+  Input: ReactElement,
+  shouldScroll: MutableRefObject<boolean>
 }
 
 export const CommonChat: FC<CommonChatProps> = (props) => {
-  const { loading, hasMoreMessages, messages, shouldScroll, Input, scrollRef, fetchMore, ...rest } = props
+  const { loading, hasMoreMessages, messages, shouldScroll, Input, fetchMore, ...rest } = props
+  const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!scrollRef.current || !shouldScroll.current) return
+    if (!scrollRef.current) return
     const { scrollHeight, clientHeight } = scrollRef.current
-    scrollRef.current.scrollTo({ top: scrollHeight - clientHeight, behavior: 'smooth' })
-    shouldScroll.current = false
+    if (shouldScroll.current) {
+      scrollRef.current.scrollTo({ top: scrollHeight - clientHeight, behavior: 'smooth' })
+      shouldScroll.current = false
+    }
   }, [messages])
+
   return (
     <>
       <div ref={scrollRef} id="fui" css={scrollCss} { ...rest }>
@@ -39,12 +42,13 @@ export const CommonChat: FC<CommonChatProps> = (props) => {
   )
 }
 
+
 const scrollCss = css`
   overflow-x: hidden;
   overflow-y: scroll;
   scrollbar-color: rgba(74, 74, 74, 0.3) transparent;
   scrollbar-width: thin;
-  margin-left: 16px;
+  margin-left: 0.5em;
   margin-right: 8px;
 
   &::-webkit-scrollbar {
@@ -63,7 +67,7 @@ const scrollCss = css`
 
 const scrollContentCss = css`
   position: relative;
-  padding-left: 3em;
+  padding-left: 2.5em;
   padding-right: 1em;
   padding-bottom: 0.5em;
 `

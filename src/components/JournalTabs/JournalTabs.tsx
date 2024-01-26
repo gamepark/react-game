@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 
 import { css } from '@emotion/react'
-import { faComments } from '@fortawesome/free-regular-svg-icons'
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faCommentDots } from '@fortawesome/free-regular-svg-icons/faCommentDots'
+import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameMode, GamePageState } from '@gamepark/react-client'
 import { FC, useState } from 'react'
@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useKeyDown } from '../../hooks'
 import { backdrop, displayBackdrop } from '../menus'
-import { floatingButtonCss, hide, menuBaseCss } from '../menus/menuCss'
-import { ActionLog } from './ActionLog'
+import { hide, menuBaseCss, menuFloatingButtonCss, menuFontSize } from '../menus/menuCss'
+import { History } from './History'
 import { Chat } from './Chat'
 
 export type JournalTabsProps = {
@@ -41,23 +41,27 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
   return (
     <>
       <div css={[backdrop, isOpen && displayBackdrop]} onClick={() => setOpen(false)}/>
-      <div css={[menuBaseCss, journalMenu, !isOpen && hide]}>
+      <div css={[menuFontSize, menuBaseCss, journalMenu, !isOpen && hide]}>
         <div css={css`display: flex;
           flex-direction: row;
           inset: 0;
-          height: 7.5dvh;
           width: 100%;
-          padding: 0.5em 1em 0.5em 4em;`}>
-          <button css={[button, chatButton, isChatOpened && selected]} disabled={tab === JournalTab.CHAT} onClick={() => setTab(JournalTab.CHAT)}>Chat</button>
-          <button css={[button, logButton, isLogOpened && selected]} disabled={tab === JournalTab.LOG} onClick={() => setTab(JournalTab.LOG)}>Journal</button>
+          align-self: flex-start;
+          padding-left: 3em;
+          padding-top: 0.3em;
+          padding-right: 0.5em;
+          flex: 0;
+        `}>
+          <button css={[button, chatButton, isChatOpened && selected]} disabled={tab === JournalTab.CHAT} onClick={() => setTab(JournalTab.CHAT)}><div>{t('Chat')}</div></button>
+          <button css={[button, logButton, isLogOpened && selected]} disabled={tab === JournalTab.LOG} onClick={() => setTab(JournalTab.LOG)}><div>{t('History')}</div></button>
         </div>
-        <div css={css`height: 92.5dvh; width: 100%; display: flex; flex-direction: column; align-items: flex-end`}>
+        <div css={css`width: 100%; display: flex; flex-direction: column; justify-content: flex-end; flex: 1; overflow: hidden`}>
           {chatEnabled && <Chat css={[!isChatOpened && closed]} open={isChatOpened} gameId={gameId}/>}
-          {logEnabled && <ActionLog css={[!isLogOpened && closed]} open={isLogOpened}/>}
+          {logEnabled && <History css={[!isLogOpened && closed]} open={isLogOpened}/>}
         </div>
       </div>
-      <button aria-label={t('Discuss')!} title={t('Discuss')!} css={[floatingButtonCss, journalButtonCss]} onClick={() => setOpen(!isOpen)}>
-        <FontAwesomeIcon icon={isOpen ? faTimes : faComments} css={iconStyle}/>
+      <button aria-label={t('Discuss')!} title={t('Discuss')!} css={[journalButtonCss]} onClick={() => setOpen(!isOpen)}>
+        <FontAwesomeIcon icon={isOpen ? faTimes : faCommentDots} css={iconStyle}/>
       </button>
     </>
   )
@@ -68,8 +72,8 @@ const button = css`
   border: 0.01em solid #28B8CE;
   color: black;
   cursor: pointer;
-  font-weight: bold;
   background: white;
+  height: 2em;
 `
 
 const selected = css`
@@ -92,15 +96,15 @@ const closed = css`
 `
 
 const journalButtonCss = css`
+  ${menuFloatingButtonCss};
   z-index: 1000;
   top: 0;
   left: 0;
   border-bottom-right-radius: 25%;
+  border-bottom-left-radius: 0;
   background: #28B8CE;
   height: 2.5em;
   width: 2.5em;
-  min-width: 38px;
-  min-height: 38px;
 
   &:focus, &:hover {
     background: #24a5b9;
@@ -127,13 +131,13 @@ const iconStyle = css`
 
 
 const journalMenu = css`
-  font-size: 16px;
+  padding: 0;
+  border-bottom-right-radius: 0.5em;
+  transform-origin: top left;
   left: 0;
   height: 100dvh;
   width: 40dvw;
   max-width: 100vw;
-  border-bottom-right-radius: 0.5em;
-  transform-origin: top left;
   justify-content: flex-end;
   display: flex;
   flex-direction: column;

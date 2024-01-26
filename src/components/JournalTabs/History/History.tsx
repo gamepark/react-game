@@ -1,10 +1,10 @@
 import { FC, HTMLAttributes } from 'react'
 
-type ActionLogProps = {
+type HistoryProps = {
   open: boolean
 } & HTMLAttributes<HTMLDivElement>
 
-export const ActionLog: FC<ActionLogProps> = () => {
+export const History: FC<HistoryProps> = () => {
 
   return (
     <div>
