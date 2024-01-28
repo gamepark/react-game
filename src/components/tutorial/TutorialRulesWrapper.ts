@@ -53,11 +53,24 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
 
   Rules.prototype.play = function (move: MaterialMove) {
     const game = this.game as MaterialGame
-    const step = game.tutorialStep
-    if (move.kind !== MoveKind.LocalMove && step !== undefined && step < tutorial.steps.length && tutorial.steps[step].move) {
-      game.tutorialStepComplete = true
+    const stepIndex = game.tutorialStep
+    const consequences = play.bind(this)(move)
+    if (move.kind !== MoveKind.LocalMove && stepIndex !== undefined && stepIndex < tutorial.steps.length) {
+      const step = tutorial.steps[stepIndex]
+      if (step.move) {
+        game.tutorialStepComplete = true
+        if (step.move.interrupt) {
+          const interruptIndex = consequences.findIndex(step.move.interrupt)
+          if (interruptIndex !== -1) {
+            this.game.tutorialInterrupt = consequences.slice(interruptIndex)
+            consequences.splice(interruptIndex, consequences.length - interruptIndex)
+          }
+        }
+      }
+    } else if (move.kind === MoveKind.LocalMove && move.type === LocalMoveType.CloseTutorialPopup) {
+      return this.game.tutorialInterrupt ?? []
     }
-    return play.bind(this)(move)
+    return consequences
   }
 
   const getAutomaticMoves = Rules.prototype.getAutomaticMoves
