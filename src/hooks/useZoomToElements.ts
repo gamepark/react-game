@@ -1,33 +1,34 @@
 import { ReactZoomPanPinchContext, ReactZoomPanPinchState, useTransformContext } from 'react-zoom-pan-pinch'
 import { animations } from '../utilities/animations.constants'
+import { animate, handleCancelAnimation } from '../utilities/animations.util'
 import { calculateBounds, getMouseBoundedPosition } from '../utilities/bounds.util'
 import { checkZoomBounds } from '../utilities/zoom.util'
-import { animate, handleCancelAnimation } from '../utilities/animations.util'
 
 /**
  * react-zoom-pan-pinch only has "zoomToElement". This code is the equivalent to zoom to display multiple elements at once.
  */
-export function useZoomToElements(): (elements: HTMLElement[], scale?: number, animationTime?: number, animationType?: keyof typeof animations) => void {
+export function useZoomToElements(): (elements: HTMLElement[], options?: ZoomToElementsOptions) => void {
   const libraryContext = useTransformContext()
   return zoomToElements(libraryContext)
 }
 
+type ZoomToElementsOptions = { scale?: number, animationTime?: number, animationType?: keyof typeof animations }
+
 const zoomToElements = (contextInstance: ReactZoomPanPinchContext) => (
   nodes: (HTMLElement | string)[],
-  scale?: number,
-  animationTime = 600,
-  animationType: keyof typeof animations = 'easeOut'
+  options: ZoomToElementsOptions = {}
 ): void => {
   handleCancelAnimation(contextInstance)
 
   const { wrapperComponent } = contextInstance
+  const { scale, animationTime = 600, animationType = 'easeOut' } = options
 
   const targets: HTMLElement[] = nodes.map(node =>
     typeof node === 'string' ? document.getElementById(node)! : node
   )
 
   if (wrapperComponent && targets.length && targets.every(target => wrapperComponent.contains(target))) {
-    const targetState = calculateZoomToNodes(contextInstance, targets, scale)
+    const targetState = calculateZoomToNodes(contextInstance, targets, { customZoom: scale })
     animate(contextInstance, targetState, animationTime, animationType)
   }
 }
@@ -35,13 +36,14 @@ const zoomToElements = (contextInstance: ReactZoomPanPinchContext) => (
 function calculateZoomToNodes(
   contextInstance: ReactZoomPanPinchContext,
   nodes: HTMLElement[],
-  customZoom?: number
+  options: { customZoom?: number } = {}
 ): { positionX: number; positionY: number; scale: number } {
   const { wrapperComponent, contentComponent, transformState } =
     contextInstance
   const { limitToBounds, minScale, maxScale } = contextInstance.setup
   if (!wrapperComponent || !contentComponent) return transformState
 
+  const { customZoom } = options
   const wrapperRect = wrapperComponent.getBoundingClientRect()
   const nodesRect = nodes.map(node => node.getBoundingClientRect())
   const nodesWidth = Math.max(...nodesRect.map(rect => rect.x + rect.width)) - Math.min(...nodesRect.map(rect => rect.x))
@@ -49,7 +51,7 @@ function calculateZoomToNodes(
   const nodesOffset = nodes.map(node => getOffset(node, wrapperComponent, contentComponent, transformState))
 
   const nodeLeft = Math.min(...nodesOffset.map(offset => offset.x))
-  const nodeTop = Math.min(...nodesOffset.map(offset => offset.y))
+  const nodeTop = Math.min(...nodesOffset.map(offset => offset.y)) - 100
   const nodeWidth = nodesWidth / transformState.scale
   const nodeHeight = nodesHeight / transformState.scale
 
