@@ -27,7 +27,6 @@ import { ItemDisplay } from './GameTable/ItemDisplay'
 import { MaterialComponentProps } from './MaterialComponent'
 import { isDroppedItem } from './utils/isDroppedItem'
 import { isPlacedOnItem } from './utils/isPlacedOnItem'
-import { useIsAnimatingPlayerAction } from './utils/useIsAnimatingPlayerAction'
 
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
@@ -46,29 +45,47 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const locator = context.locators[item.location.type] ?? centerLocator
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const play = usePlay()
-  const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
   const legalMoves = useLegalMoves<MaterialMove>()
   const [undo, canUndo] = useUndo()
-  const undoSelectItem = useMemo(() => {
-    if (!item.selected) return
-    const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
-    if (!canUndo(predicate)) return
-    return () => undo(predicate)
-  }, [item, canUndo])
 
-  const openRules = useCallback(() => play(displayMaterialHelp(type, item, index, displayIndex), { local: true }),
-    [type, item, index, displayIndex])
+  const lastShortClick = useRef(new Date().getTime())
+  const onShortClick = useCallback(() => {
+    const time = new Date().getTime()
+    if (time - lastShortClick.current < 300) return
+    lastShortClick.current = time
+    const shortClickMoves = legalMoves.filter(move => material[type]?.canShortClick(move, itemContext))
+    if (shortClickMoves.length === 1) return play(shortClickMoves[0])
+    if (item.selected) {
+      const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
+      if (canUndo(predicate)) return undo(predicate)
+    }
+    return play(displayMaterialHelp(type, item, index, displayIndex), { local: true })
+  }, [type, item, index, displayIndex, play, canUndo, undo, legalMoves])
 
-  const [onShortClick, onLongClick, canClickToMove] = useMemo(() => {
-    const shortClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canShortClick(move, itemContext))
-    const longClickMoves = isAnimatingPlayerAction ? [] : legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
-    const onShortClick = undoSelectItem ?? (shortClickMoves.length === 1 ? () => play(shortClickMoves[0]) : openRules)
-    const onLongClick = (undoSelectItem || shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0]) : undefined
-    return [onShortClick, onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]
-  }, [legalMoves, itemContext, isAnimatingPlayerAction, play])
+  const onLongClick = useCallback(() => {
+    if (item.selected) {
+      const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
+      if (canUndo(predicate)) return play(displayMaterialHelp(type, item, index, displayIndex), { local: true })
+    }
+    const shortClickMoves = legalMoves.filter(move => material[type]?.canShortClick(move, itemContext))
+    if (shortClickMoves.length === 1) return play(displayMaterialHelp(type, item, index, displayIndex), { local: true })
+    const longClickMoves = legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
+    if (longClickMoves.length === 1) return play(longClickMoves[0])
+    return
+  }, [type, item, index, displayIndex, play, canUndo, undo, legalMoves])
 
-  const disabled = useMemo(() => isAnimatingPlayerAction || !legalMoves.some(move => material[type]?.canDrag(move, itemContext))
-    , [legalMoves, itemContext, isAnimatingPlayerAction])
+  const canClickToMove = useMemo(() => {
+    let short = 0, long = 0
+    for (const move of legalMoves) {
+      if (material[type]?.canShortClick(move, itemContext)) short++
+      if (material[type]?.canLongClick(move, itemContext)) long++
+      if (short > 1 && long > 1) return false
+    }
+    return short === 1 || long === 1
+  }, [legalMoves])
+
+  const disabled = useMemo(() => !legalMoves.some(move => material[type]?.canDrag(move, itemContext))
+    , [legalMoves, itemContext])
 
   const { attributes, listeners, transform: selfTransform, setNodeRef } = useDraggable({
     id: `${type}_${index}_${displayIndex}`,
