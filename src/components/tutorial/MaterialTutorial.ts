@@ -58,6 +58,7 @@ export type TutorialStep<P extends number = number, M extends number = number, L
     player?: P
     filter?: (move: MaterialMove<P, M, L>, game: MaterialGame<P, M, L>) => boolean
     randomize?: (move: MaterialMoveRandomized) => void
+    interrupt?: (move: MaterialMove) => boolean
   }
 }
 
