@@ -1,14 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import { useDroppable } from '@dnd-kit/core'
 import { css, keyframes, Theme } from '@emotion/react'
+import { GamePageState } from '@gamepark/react-client'
 import { displayLocationHelp, displayMaterialHelp, Location, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { useSelector } from 'react-redux'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { GamePageState } from '@gamepark/react-client'
 import { backgroundCss, borderRadiusCss, pointerCursorCss, shineEffect, sizeCss, transformCss } from '../../../css'
-import { useLegalMoves, useMaterialContext, usePlay, usePlayerId } from '../../../hooks'
+import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { combineEventListeners } from '../../../utilities'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 
@@ -28,7 +28,6 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const description = locator?.getLocationDescription(context)
   const rules = context.rules
   const play = usePlay<MaterialMove>()
-  const player = usePlayerId()
   const legalMoves = useLegalMoves()
   const disabled = useMemo(() => !legalMoves.some(move => description?.couldDrop(move, location, context)), [legalMoves, location, context])
   const openRules = useMemo(() => {
@@ -49,8 +48,8 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     const shortClickMoves = legalMoves.filter(move => description?.canShortClick(move, location, context))
     const longClickMoves = legalMoves.filter(move => description?.canLongClick(move, location, context))
 
-    const onShortClick = (shortClickMoves.length === 1 ? () => play(shortClickMoves[0], { delayed: rules?.isUnpredictableMove(shortClickMoves[0], player) }) : openRules)
-    const onLongClick = (shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0], { delayed: rules?.isUnpredictableMove(longClickMoves[0], player) }) : undefined
+    const onShortClick = (shortClickMoves.length === 1 ? () => play(shortClickMoves[0]) : openRules)
+    const onLongClick = (shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0]) : undefined
     return [shortClick ? shortClick : onShortClick, longClick ? longClick : onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]
   }, [legalMoves, location, context, play])
 
