@@ -13,7 +13,7 @@ type GameTableNavigationProps = {
 } & HTMLAttributes<HTMLDivElement>
 
 export const GameTableNavigation: FC<GameTableNavigationProps> = (props) => {
-  const { scaleStep = 0.1 } = props
+  const { scaleStep = 0.1, ...rest } = props
   const { zoomIn, zoomOut } = useControls()
   const [isMin, setIsMin] = useState(false)
   const [isMax, setIsMax] = useState(false)
@@ -22,7 +22,7 @@ export const GameTableNavigation: FC<GameTableNavigationProps> = (props) => {
     setIsMax(state.scale === instance.props.maxScale)
   })
   return createPortal(
-    <div css={navigationContainer} {...props}>
+    <div css={navigationContainer} {...rest}>
       <button css={button} onClick={() => zoomIn(scaleStep)} disabled={isMax}>
         <FontAwesomeIcon icon={faSearchPlus} css={iconCss}/>
       </button>
