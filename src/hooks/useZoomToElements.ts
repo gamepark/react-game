@@ -36,27 +36,28 @@ const zoomToElements = (contextInstance: ReactZoomPanPinchContext) => (
 function calculateZoomToNodes(
   contextInstance: ReactZoomPanPinchContext,
   nodes: HTMLElement[],
-  options: { customZoom?: number } = {}
+  options: { customZoom?: number, marginLeft?: number, marginRight?: number, marginTop?: number, marginBottom?: number } = {}
 ): { positionX: number; positionY: number; scale: number } {
   const { wrapperComponent, contentComponent, transformState } =
     contextInstance
   const { limitToBounds, minScale, maxScale } = contextInstance.setup
   if (!wrapperComponent || !contentComponent) return transformState
 
-  const { customZoom } = options
+  const { customZoom, marginLeft = 0, marginRight = 0, marginTop = 0, marginBottom = 0 } = options
   const wrapperRect = wrapperComponent.getBoundingClientRect()
+  const fontSize = parseFloat(window.getComputedStyle(contentComponent.firstElementChild!, null).getPropertyValue('font-size'))
   const nodesRect = nodes.map(node => node.getBoundingClientRect())
   const nodesWidth = Math.max(...nodesRect.map(rect => rect.x + rect.width)) - Math.min(...nodesRect.map(rect => rect.x))
   const nodesHeight = Math.max(...nodesRect.map(rect => rect.y + rect.height)) - Math.min(...nodesRect.map(rect => rect.y))
   const nodesOffset = nodes.map(node => getOffset(node, wrapperComponent, contentComponent, transformState))
 
-  const nodeLeft = Math.min(...nodesOffset.map(offset => offset.x))
-  const nodeTop = Math.min(...nodesOffset.map(offset => offset.y)) - 100
-  const nodeWidth = nodesWidth / transformState.scale
-  const nodeHeight = nodesHeight / transformState.scale
+  const focusLeft = Math.min(...nodesOffset.map(offset => offset.x)) - marginLeft * fontSize
+  const focusTop = Math.min(...nodesOffset.map(offset => offset.y)) - marginTop * fontSize
+  const focusWidth = nodesWidth / transformState.scale + (marginLeft + marginRight) * fontSize
+  const focusHeight = nodesHeight / transformState.scale + (marginTop + marginBottom) * fontSize
 
-  const scaleX = wrapperComponent.offsetWidth / nodeWidth
-  const scaleY = wrapperComponent.offsetHeight / nodeHeight
+  const scaleX = wrapperComponent.offsetWidth / focusWidth
+  const scaleY = wrapperComponent.offsetHeight / focusHeight
 
   const newScale = checkZoomBounds(
     customZoom || Math.min(scaleX, scaleY),
@@ -66,11 +67,11 @@ function calculateZoomToNodes(
     false
   )
 
-  const offsetX = (wrapperRect.width - nodeWidth * newScale) / 2
-  const offsetY = (wrapperRect.height - nodeHeight * newScale) / 2
+  const offsetX = (wrapperRect.width - focusWidth * newScale) / 2
+  const offsetY = (wrapperRect.height - focusHeight * newScale) / 2
 
-  const newPositionX = (wrapperRect.left - nodeLeft) * newScale + offsetX
-  const newPositionY = (wrapperRect.top - nodeTop) * newScale + offsetY
+  const newPositionX = (wrapperRect.left - focusLeft) * newScale + offsetX
+  const newPositionY = (wrapperRect.top - focusTop) * newScale + offsetY
 
   const bounds = calculateBounds(contextInstance, newScale)
 
