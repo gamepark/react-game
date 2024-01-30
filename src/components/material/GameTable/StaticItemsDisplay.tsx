@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { displayMaterialHelp } from '@gamepark/rules-api'
+import equal from 'fast-deep-equal'
 import { useMaterialContext, usePlay } from '../../../hooks'
 import { MaterialDescription } from '../MaterialDescription'
-import { isStaticItemFocus, useFocusContext } from './focus'
+import { useFocusContext } from './focus'
 import { ItemDisplay } from './ItemDisplay'
 
 export const StaticItemsDisplay = () => {
@@ -25,9 +26,12 @@ const StaticItemsTypeDisplay = ({ type, description }: StaticItemsTypeDisplayPro
   const play = usePlay()
   return <>{description.getStaticItems(context).map((item, index) => {
     return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
+      const isFocused = focus?.staticItems.some(focusedItem =>
+        focusedItem.type === type && equal(focusedItem.item, item)
+      )
       return <ItemDisplay key={`${type}_${index}_${displayIndex}`}
                           type={type} index={index} displayIndex={displayIndex} item={item}
-                          isFocused={isStaticItemFocus(type, item, focus)}
+                          isFocused={isFocused}
                           onShortClick={() => play(displayMaterialHelp(type, item, index, displayIndex), { local: true })}/>
     })
   })}</>

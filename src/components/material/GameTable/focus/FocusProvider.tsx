@@ -3,11 +3,11 @@ import sumBy from 'lodash/sumBy'
 import { createContext, FC, useCallback, useContext, useRef, useState } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
 import { useZoomToElements } from '../../../../hooks'
-import { FocusableElement, isLocationBuilder, isMaterialFocus, isStaticItem } from './FocusableElement'
+import { MaterialFocus } from './MaterialFocus'
 
 export type FocusContextType = {
-  focus?: FocusableElement | FocusableElement[]
-  setFocus: (focus?: FocusableElement | FocusableElement[]) => void
+  focus?: MaterialFocus
+  setFocus: (focus?: MaterialFocus) => void
   addFocusRef: (ref: HTMLElement | null) => void
 }
 
@@ -25,12 +25,12 @@ export const FocusProvider: FC = ({ children }) => {
   const zoomToElements = useZoomToElements()
   const { resetTransform } = useControls()
 
-  const [focus, doSetFocus] = useState<FocusableElement | FocusableElement[]>()
+  const [focus, doSetFocus] = useState<MaterialFocus>()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
   const countFocusRef = useRef<number>(0)
 
-  const setFocus = useCallback((focus?: FocusableElement | FocusableElement[]) => {
-    if (Array.isArray(focus) && focus.length === 0) {
+  const setFocus = useCallback((focus?: MaterialFocus) => {
+    if (!focus) {
       setTimeout(() => resetTransform(1000), 50)
     }
     focusRefs.current = new Set()
@@ -40,7 +40,7 @@ export const FocusProvider: FC = ({ children }) => {
 
   const doFocus = useCallback(() => {
     const elements = Array.from(focusRefs.current)
-    setTimeout(() => zoomToElements(elements, { animationTime: 1000 }), 50)
+    setTimeout(() => zoomToElements(elements, { animationTime: 1000, margin: focus?.margin, scale: focus?.scale }), 50)
   }, [zoomToElements])
 
   const addFocusRef = useCallback((ref: HTMLElement | null) => {
@@ -58,18 +58,9 @@ export const FocusProvider: FC = ({ children }) => {
   )
 }
 
-function countFocusRefs(focus?: FocusableElement | FocusableElement[]): number {
+function countFocusRefs(focus?: MaterialFocus): number {
   if (!focus) return 0
-  if (Array.isArray(focus)) {
-    return sumBy(focus, focus => countFocusRefs(focus))
-  }
-  if (isMaterialFocus(focus)) {
-    return sumBy(focus.getItems(), item => item.quantity ?? 1)
-  } else if (isStaticItem(focus)) {
-    return focus.item.quantity ?? 1
-  } else if (isLocationBuilder(focus)) {
-    return 1
-  } else {
-    return 0
-  }
+  return sumBy(focus.materials, material =>
+    sumBy(material.getItems(), item => item.quantity ?? 1)
+  ) + focus.staticItems.length + focus.locations.length
 }

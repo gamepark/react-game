@@ -31,7 +31,7 @@ import { isPlacedOnItem } from './utils/isPlacedOnItem'
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
   displayIndex: number
-  isFocused: boolean
+  isFocused?: boolean
 } & MaterialComponentProps<M>
 
 export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialProps>((
