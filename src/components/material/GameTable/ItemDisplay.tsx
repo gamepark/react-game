@@ -13,7 +13,7 @@ type ItemDisplayProps = MaterialComponentProps & {
   index: number
   displayIndex: number
   item: MaterialItem
-  isFocused: boolean
+  isFocused?: boolean
 }
 
 export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
@@ -32,12 +32,12 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
                             css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext)), description?.getItemExtraCss(item, itemContext)]}
                             {...props}>
     {locations.length > 0 && <>
-      {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
       {locations.map((location, index) => {
           const hasFocus = focusedIndexes.includes(index)
           return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={hasFocus} ref={hasFocus ? addFocusRef : undefined}/>
         }
       )}
+      {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
     </>}
   </MaterialComponent>
 })
