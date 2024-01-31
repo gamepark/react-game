@@ -7,7 +7,7 @@ import { MaterialFocus } from './MaterialFocus'
 
 export type FocusContextType = {
   focus?: MaterialFocus
-  setFocus: (focus?: MaterialFocus) => void
+  setFocus: (focus?: MaterialFocus, reset?: boolean) => void
   addFocusRef: (ref: HTMLElement | null) => void
 }
 
@@ -29,8 +29,8 @@ export const FocusProvider: FC = ({ children }) => {
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
   const countFocusRef = useRef<number>(0)
 
-  const setFocus = useCallback((focus?: MaterialFocus) => {
-    if (!focus) {
+  const setFocus = useCallback((focus?: MaterialFocus, reset: boolean = true) => {
+    if (!focus && reset) {
       setTimeout(() => resetTransform(1000), 50)
     }
     focusRefs.current = new Set()
