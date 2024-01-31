@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import createCache, { StylisPlugin } from '@emotion/cache'
 import { CacheProvider, css, Global, Theme, ThemeProvider } from '@emotion/react'
-import { PropsWithChildren, useMemo } from 'react'
+import { PropsWithChildren, useEffect, useMemo } from 'react'
 import { DECLARATION, Element, Middleware, prefixer } from 'stylis'
 import { datadogLogs, StatusType } from '@datadog/browser-logs'
 import { ApolloProvider } from '@apollo/client'
@@ -27,9 +27,12 @@ export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveVi
 export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId extends number = number>(
   { materialI18n, theme = {}, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
-  if (isMaterialTutorial(props.tutorial)) {
-    wrapRulesWithTutorial(props.tutorial, props.Rules)
-  }
+  useEffect(() => {
+    if (isMaterialTutorial(props.tutorial)) {
+      wrapRulesWithTutorial(props.tutorial, props.Rules)
+    }
+  }, [props.tutorial, props.Rules])
+
   const webP = useWebP()
   const emotionCache = useMemo(() => createCache({
     key: 'css', stylisPlugins: (webP ? [webPReplace, prefixer] : [prefixer]) as Array<StylisPlugin>
