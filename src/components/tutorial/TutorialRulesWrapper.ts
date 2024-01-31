@@ -31,6 +31,9 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
       const player = tutorialStep.move.player ?? this.game.players[0]
       if (playerId !== player) return []
       let legalMoves = getLegalMoves.bind(this)(playerId)
+      if (game.tutorialInterrupt?.length) {
+        legalMoves = []
+      }
       const filter = tutorialStep.move.filter
       if (filter) {
         legalMoves = legalMoves.filter((move: MaterialMove) => filter(move, game))
@@ -68,7 +71,9 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
         }
       }
     } else if (move.kind === MoveKind.LocalMove && move.type === LocalMoveType.CloseTutorialPopup) {
-      return this.game.tutorialInterrupt ?? []
+      const moves = this.game.tutorialInterrupt ?? []
+      delete this.game.tutorialInterrupt
+      return moves
     }
     return consequences
   }
