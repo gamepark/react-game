@@ -47,6 +47,8 @@ export const MaterialTutorialDisplay = () => {
       } else {
         setFocus(undefined)
       }
+    } else {
+      setFocus(undefined, false)
     }
   }, [tutorialStep, game?.tutorialPopupClosed])
 
