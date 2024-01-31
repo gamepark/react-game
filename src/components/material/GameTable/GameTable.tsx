@@ -13,6 +13,7 @@ import { GameMaterialDisplay } from './GameMaterialDisplay'
 
 export type GameTableProps = {
   collisionAlgorithm?: CollisionDetection
+  snapToCenter?: boolean
   xMin: number
   xMax: number
   yMin: number
@@ -25,7 +26,7 @@ const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 const pointerSensorOptions = { activationConstraint: { distance: 2 } }
 export const GameTable: FC<GameTableProps> = (
-  { collisionAlgorithm, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, children, ...props }
+  { collisionAlgorithm, snapToCenter = true, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, children, ...props }
 ) => {
 
   const [dragging, setDragging] = useState(false)
@@ -87,9 +88,12 @@ export const GameTable: FC<GameTableProps> = (
     width: `calc(100dvw - ${hm}em)`,
     overflow: 'visible'
   }), [margin, vm, hm, ratio])
+
+  const modifiers = useMemo(() => snapToCenter? [snapCenterToCursor]: undefined, [snapToCenter])
+
   return (
     <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
-                modifiers={[snapCenterToCursor]} sensors={sensors}
+                modifiers={modifiers} sensors={sensors}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
       <Global styles={ratioFontSize(ratioWithMargins)}/>
       <TransformWrapper ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
