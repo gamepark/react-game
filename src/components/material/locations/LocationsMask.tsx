@@ -10,7 +10,7 @@ export type LocationsMaskProps = {
 export const LocationsMask = ({ locations }: LocationsMaskProps) => {
   const id = useMemo(() => uniqueId('mask'), [])
   return (
-    <svg width="100%" height="100%">
+    <svg width="100%" height="100%" style={{ position: 'absolute' }}>
       <defs>
         <mask id={id}>
           <rect width="100%" height="100%" fill="white"/>

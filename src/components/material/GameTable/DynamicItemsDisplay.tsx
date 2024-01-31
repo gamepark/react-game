@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useMaterialContext } from '../../../hooks'
 import { ItemContext } from '../../../locators'
 import { DraggableMaterial } from '../DraggableMaterial'
-import { isItemFocus, useFocusContext } from './focus'
+import { useFocusContext } from './focus'
 
 export const DynamicItemsDisplay = () => {
   const context = useMaterialContext()
@@ -32,8 +32,11 @@ const DynamicItemsTypeDisplay = ({ type, items }: DynamicItemsTypeDisplayProps) 
     return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
       const itemContext: ItemContext = { ...context, type, index, displayIndex }
       if (locator?.hide(item, itemContext)) return null
+      const isFocused = focus?.materials.some(material =>
+        material.type === type && material.getIndexes().includes(index)
+      )
       return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
-                                type={type} index={index} displayIndex={displayIndex} isFocused={isItemFocus(type, index, focus)}
+                                type={type} index={index} displayIndex={displayIndex} isFocused={isFocused}
                                 title={item.quantity !== undefined ? t('quantity.tooltip', { n: item.quantity })! : undefined}/>
     })
   })}</>

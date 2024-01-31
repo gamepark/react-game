@@ -1,7 +1,7 @@
 import { Location, MaterialItem } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
 import { ItemContext } from '../../../../locators'
-import { FocusableElement, isLocationBuilder } from './FocusableElement'
+import { MaterialFocus } from './MaterialFocus'
 
 export type LocationsWithFocus = {
   locations: Location[]
@@ -9,11 +9,11 @@ export type LocationsWithFocus = {
 }
 
 export const getLocationsWithFocus = (
-  item: MaterialItem, context: ItemContext, focus?: FocusableElement | FocusableElement[]
+  item: MaterialItem, context: ItemContext, focus?: MaterialFocus
 ): LocationsWithFocus => {
-  const locationsFocus = getLocationsFocus(focus).filter(location =>
+  const locationsFocus = focus?.locations?.filter(location =>
     context.locators[location.type]?.parentItemType === context.type && (location.parent ?? 0) === context.index
-  )
+  ) ?? []
   const locations = context.material[context.type]?.getLocations(item, context) ?? []
   const focusedIndexes = []
   for (const locationFocus of locationsFocus) {
@@ -26,12 +26,4 @@ export const getLocationsWithFocus = (
     }
   }
   return { locations, focusedIndexes }
-}
-
-const getLocationsFocus = (focus?: FocusableElement | FocusableElement[]): Location[] => {
-  if (!focus) return []
-  if (Array.isArray(focus)) {
-    return focus.filter(isLocationBuilder).map(builder => builder.location)
-  }
-  return isLocationBuilder(focus) ? [focus.location] : []
 }
