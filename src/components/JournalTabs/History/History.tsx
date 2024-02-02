@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { FC, HTMLAttributes, memo, ReactElement, useEffect, useRef } from 'react'
+import { FC, HTMLAttributes, memo, ReactElement, useEffect, useMemo, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import { useHistory } from '../../../hooks/useHistory'
 
@@ -10,21 +10,32 @@ type HistoryProps = {
 
 export const History: FC<HistoryProps> = (props) => {
 
-  const histories = useHistory()
+  const { histories, size } = useHistory()
+  const { open } = props
   const scrollRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    // TOTO: prefer to add indicator that tells "new actions"
+    //if (!scrollRef.current) return
+    //const { scrollHeight, clientHeight } = scrollRef.current
+    //scrollRef.current.scrollTo({ top: scrollHeight - clientHeight, behavior: 'smooth' })
+  }, [size])
+
   useEffect(() => {
     if (!scrollRef.current) return
     const { scrollHeight, clientHeight } = scrollRef.current
-    scrollRef.current.scrollTo({ top: scrollHeight - clientHeight, behavior: 'smooth' })
-  }, [histories])
+    //scrollRef.current.scrollTo({ top: scrollHeight - clientHeight, behavior: 'smooth' })
+    scrollRef.current.scrollTo({ top: scrollHeight - clientHeight })
+  }, [open])
+
+  const entries = useMemo(() => [...histories.entries()], [size])
 
   return (
     <div ref={scrollRef} css={[historyContainer, scrollCss]} { ...props }>
       <InfiniteScroll css={scrollContentCss} useWindow={false} isReverse getScrollParent={() => scrollRef.current}
                       loadMore={() => undefined}>
-        {Object.keys(histories).flatMap((actionId) => {
-            if (!histories[actionId]) return []
-            return (histories[actionId] as ReactElement[]).map((h: ReactElement, index: number) => (
+        {entries.map(([actionId, actions]) => {
+            if (!actions) return []
+            return actions.map((h: ReactElement, index: number) => (
               <HistoryEntry key={`${actionId}_${index}`}>{h}</HistoryEntry>
             ))
           }
@@ -49,9 +60,10 @@ export const HistoryEntry: FC<HistoryEntryProps> = memo(({ children }) => {
 
 const historyEntryStyle = css`
   width: 100%;
-  padding: 0.7em 0.5em 0.7em 0.5em;
+  padding: 0.7em 0.5em 0.7em 0.7em;
   font-size: 0.7em;
-  border-bottom: 0.1em solid gray;
+  border-bottom: 0.05em solid lightgray;
+  user-select: text;
   
   &:last-of-type {
     border-bottom: 0;

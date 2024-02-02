@@ -1,1 +1,2 @@
-export { History } from './History'
+export * from './History'
+export * from './PlayerActionHistory'

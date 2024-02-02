@@ -140,7 +140,7 @@ const journalMenu = css`
   transform-origin: top left;
   left: 0;
   height: 100dvh;
-  width: 40dvw;
+  width: 35dvw;
   max-width: 100vw;
   justify-content: flex-end;
   display: flex;
