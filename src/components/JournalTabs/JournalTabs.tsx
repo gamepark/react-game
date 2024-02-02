@@ -12,8 +12,8 @@ import { useKeyDown } from '../../hooks'
 import { gameContext } from '../GameProvider'
 import { backdrop, displayBackdrop } from '../menus'
 import { hide, menuBaseCss, menuFloatingButtonCss, menuFontSize } from '../menus/menuCss'
-import { History } from './History'
 import { Chat } from './Chat'
+import { History } from './History'
 
 export type JournalTabsProps = {
   gameId?: string
@@ -28,16 +28,15 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
   const { t } = useTranslation()
   const { gameId } = props
   const history = useContext(gameContext).history
-  const [tab, setTab] = useState<JournalTab>(JournalTab.CHAT)
+  const logEnabled = history !== undefined
+  const gameMode = useSelector((state: GamePageState) => state.gameMode)
+  const chatEnabled = gameMode !== undefined && gameMode !== GameMode.COMPETITIVE && gameMode !== GameMode.TUTORIAL
+  const [tab, setTab] = useState<JournalTab>(chatEnabled ? JournalTab.CHAT : JournalTab.LOG)
   const [isOpen, setOpen] = useState(false)
   useKeyDown('Enter', () => setOpen(true))
   useKeyDown('Escape', () => setOpen(false))
 
 
-  const gameMode = useSelector((state: GamePageState) => state.gameMode)
-  const chatEnabled = gameMode !== GameMode.COMPETITIVE && gameMode !== GameMode.TUTORIAL
-
-  const logEnabled = history !== undefined
   if (!logEnabled && !chatEnabled) return null
   const isChatOpened = isOpen && tab === JournalTab.CHAT
   const isLogOpened = isOpen && tab === JournalTab.LOG
@@ -46,23 +45,28 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
     <>
       <div css={[backdrop, isOpen && displayBackdrop]} onClick={() => setOpen(false)}/>
       <div css={[menuFontSize, menuBaseCss, journalMenu, !isOpen && hide]}>
-        <div css={css`display: flex;
-          flex-direction: row;
-          inset: 0;
-          width: 100%;
-          align-self: flex-start;
-          padding-left: 3em;
-          padding-top: 0.3em;
-          padding-right: 0.5em;
-          flex: 0;
-        `}>
-          <button css={[button, chatButton, isChatOpened && selected]} disabled={tab === JournalTab.CHAT} onClick={() => setTab(JournalTab.CHAT)}><div>{t('Chat')}</div></button>
-          <button css={[button, logButton, isLogOpened && selected]} disabled={tab === JournalTab.LOG} onClick={() => setTab(JournalTab.LOG)}><div>{t('History')}</div></button>
+        <div css={buttonContainer}>
+          {chatEnabled && logEnabled && (
+            <>
+              <button css={[button, chatButton, isChatOpened && selected]} disabled={tab === JournalTab.CHAT} onClick={() => setTab(JournalTab.CHAT)}>
+                <div>{t('Chat')}</div>
+              </button>
+              <button css={[button, logButton, isLogOpened && selected]} disabled={tab === JournalTab.LOG} onClick={() => setTab(JournalTab.LOG)}>
+                <div>{t('History')}</div>
+              </button>
+            </>
+          )}
         </div>
-        <div css={css`width: 100%; display: flex; flex-direction: column; justify-content: flex-end; flex: 1; overflow: hidden`}>
-          {chatEnabled && <Chat css={[!isChatOpened && closed]} open={isChatOpened} gameId={gameId}/>}
-          {logEnabled && <History css={[!isLogOpened && closed]} open={isLogOpened}/>}
-        </div>
+        {chatEnabled && (
+          <div css={[container, flexEnd]}>
+            <Chat css={[!isChatOpened && closed]} open={isChatOpened} gameId={gameId}/>
+          </div>
+        )}
+        {logEnabled && (
+          <div css={container}>
+            <History css={[!isLogOpened && closed]} open={isLogOpened}/>
+          </div>
+        )}
       </div>
       <button aria-label={t('Discuss')!} title={t('Discuss')!} css={[journalButtonCss]} onClick={() => setOpen(!isOpen)}>
         <FontAwesomeIcon icon={isOpen ? faTimes : faCommentDots} css={iconStyle}/>
@@ -70,6 +74,31 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
     </>
   )
 }
+
+const buttonContainer = css`
+  display: flex;
+  flex-direction: row;
+  inset: 0;
+  width: 100%;
+  align-self: flex-start;
+  padding-left: 3em;
+  padding-top: 0.3em;
+  padding-right: 0.5em;
+  flex: 0;
+  min-height: 2em;
+`
+
+const container = css`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden
+`
+
+const flexEnd = css`
+  justify-content: flex-end;
+`
 
 const button = css`
   flex: 1;
@@ -91,7 +120,7 @@ const chatButton = css`
 `
 
 const logButton = css`
-  border-top-right-radius: 0.5em; 
+  border-top-right-radius: 0.5em;
   border-bottom-right-radius: 0.5em
 `
 

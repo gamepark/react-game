@@ -31,7 +31,7 @@ export const History: FC<HistoryProps> = (props) => {
 
   return (
     <div ref={scrollRef} css={[historyContainer, scrollCss]} { ...props }>
-      <InfiniteScroll css={scrollContentCss} useWindow={false} isReverse getScrollParent={() => scrollRef.current}
+      <InfiniteScroll css={scrollContentCss} useWindow={false} getScrollParent={() => scrollRef.current}
                       loadMore={() => undefined}>
         {entries.map(([actionId, actions]) => {
             if (!actions) return []
