@@ -57,16 +57,14 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
             </>
           )}
         </div>
-        {chatEnabled && (
-          <div css={[container, flexEnd]}>
+        <div css={[container, flexEnd]}>
+          {chatEnabled && (
             <Chat css={[!isChatOpened && closed]} open={isChatOpened} gameId={gameId}/>
-          </div>
-        )}
-        {logEnabled && (
-          <div css={container}>
-            <History css={[!isLogOpened && closed]} open={isLogOpened}/>
-          </div>
-        )}
+          )}
+          {logEnabled && (
+            <History css={[css`justify-self: flex-start`, !isLogOpened && closed]} open={isLogOpened}/>
+          )}
+        </div>
       </div>
       <button aria-label={t('Discuss')!} title={t('Discuss')!} css={[journalButtonCss]} onClick={() => setOpen(!isOpen)}>
         <FontAwesomeIcon icon={isOpen ? faTimes : faCommentDots} css={iconStyle}/>
