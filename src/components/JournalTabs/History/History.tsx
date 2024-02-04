@@ -3,6 +3,8 @@ import { css } from '@emotion/react'
 import { FC, HTMLAttributes, memo, ReactElement, useEffect, useMemo, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import { useHistory } from '../../../hooks/useHistory'
+import { HistoryEntry } from './HistoryEntry'
+import { StartGameHistory } from './StartHistory'
 
 type HistoryProps = {
   open: boolean
@@ -33,6 +35,7 @@ export const History: FC<HistoryProps> = (props) => {
     <div ref={scrollRef} css={[historyContainer, scrollCss]} { ...props }>
       <InfiniteScroll css={scrollContentCss} useWindow={false} getScrollParent={() => scrollRef.current}
                       loadMore={() => undefined}>
+        <StartGameHistory />
         {entries.map(([actionId, actions]) => {
             if (!actions) return []
             return actions.map((h: ReactElement, index: number) => (
@@ -45,33 +48,6 @@ export const History: FC<HistoryProps> = (props) => {
     </div>
   )
 }
-
-type HistoryEntryProps = {
-}
-
-export const HistoryEntry: FC<HistoryEntryProps> = memo(({ children }) => {
-  return (
-    <div css={historyEntryStyle}>
-      {children}
-    </div>
-  )
-
-})
-
-const historyEntryStyle = css`
-  width: 100%;
-  padding: 0.7em 0.5em 0.7em 0.7em;
-  font-size: 0.7em;
-  border-bottom: 0.05em solid lightgray;
-  user-select: text;
-  
-  &:last-of-type {
-    border-bottom: 0;
-  }
-`
-
-const historyContainer = css`
-`
 
 
 const scrollCss = css`
