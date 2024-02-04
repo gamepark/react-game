@@ -18,6 +18,7 @@ export const LocalChatTextInput: FC<LocalChatTextInputProps> = (props) => {
   const { onMessageSent, messages, open } = props
 
   const onSubmit = (t: string) => {
+    if (!t) return
     onMessageSent({ id: `${messages}`, text: t, date: new Date().toISOString(), userId: 'dev'})
   }
 
@@ -65,10 +66,18 @@ export const ChatInput: FC<ChatInputProps> = (props) => {
   return (
     <form css={[messageBar, !open && hidden]} onSubmit={doSubmit}>
       <input ref={inputRef} type="text" placeholder={t('Type a message')!} css={textInputCss} value={text} onChange={event => setText(event.target.value)}/>
-      <button aria-label={t('Send')!} title={t('Send')!} css={[buttonResetCss, sendButtonStyle]}><FontAwesomeIcon icon={faPaperPlane}/></button>
+      <button disabled={!text} aria-label={t('Send')!} title={t('Send')!} css={[buttonResetCss, sendButtonStyle, !text && disableSubmit]}><FontAwesomeIcon css={!text && transparent} icon={faPaperPlane}/></button>
     </form>
   )
 }
+
+const disableSubmit = css`
+  cursor: not-allowed;
+`
+
+const transparent = css`
+  opacity: 0.4;
+`
 
 const hidden = css`
   display: none;
