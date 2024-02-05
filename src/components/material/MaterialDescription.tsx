@@ -87,6 +87,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   getItemExtraCss(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): Interpolation<Theme> {
     return
   }
+
+  highlight(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): boolean | undefined {
+    return
+  }
 }
 
 export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number> = Record<M, MaterialDescription<P, M, L>>

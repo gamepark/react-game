@@ -35,7 +35,7 @@ const DynamicItemsTypeDisplay = ({ type, items }: DynamicItemsTypeDisplayProps) 
       const isFocused = focus?.materials.some(material =>
         material.type === type && material.getIndexes().includes(index)
       )
-      return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
+      return <DraggableMaterial key={`${type}_${index}_${displayIndex}`} highlight={description.highlight(item, itemContext)}
                                 type={type} index={index} displayIndex={displayIndex} isFocused={isFocused}
                                 title={item.quantity !== undefined ? t('quantity.tooltip', { n: item.quantity })! : undefined}/>
     })
