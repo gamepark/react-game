@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { FC, HTMLAttributes, memo, ReactElement, useEffect, useMemo, useRef } from 'react'
+import { FC, HTMLAttributes, ReactElement, useEffect, useMemo, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import { useHistory } from '../../../hooks/useHistory'
 import { HistoryEntry } from './HistoryEntry'
@@ -32,7 +32,7 @@ export const History: FC<HistoryProps> = (props) => {
   const entries = useMemo(() => [...histories.entries()], [size])
 
   return (
-    <div ref={scrollRef} css={[historyContainer, scrollCss]} { ...props }>
+    <div ref={scrollRef} css={scrollCss} { ...props }>
       <InfiniteScroll css={scrollContentCss} useWindow={false} getScrollParent={() => scrollRef.current}
                       loadMore={() => undefined}>
         <StartGameHistory />

@@ -18,7 +18,7 @@ export const PlayerActionHistory: FC<PlayerActionHistoryProps> = (props) => {
     <div css={container} {...rest}>
       {!!player && (
         <div>
-          <Avatar css={avatarStyle} playerId={playerId}/>
+          <Avatar css={avatarStyle} playerId={player}/>
         </div>
       )}
       <div>
