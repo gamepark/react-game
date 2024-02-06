@@ -48,6 +48,7 @@ const scrollCss = css`
   overflow-y: scroll;
   scrollbar-color: rgba(74, 74, 74, 0.3) transparent;
   scrollbar-width: thin;
+  margin-top: 0.5em;
   margin-left: 0.5em;
   margin-right: 8px;
 

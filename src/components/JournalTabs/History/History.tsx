@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { FC, HTMLAttributes, ReactElement, useEffect, useMemo, useRef } from 'react'
-import InfiniteScroll from 'react-infinite-scroller'
 import { useHistory } from '../../../hooks/useHistory'
 import { HistoryEntry } from './HistoryEntry'
 import { StartGameHistory } from './StartHistory'
@@ -32,9 +31,8 @@ export const History: FC<HistoryProps> = (props) => {
   const entries = useMemo(() => [...histories.entries()], [size])
 
   return (
-    <div ref={scrollRef} css={scrollCss} { ...props }>
-      <InfiniteScroll css={scrollContentCss} useWindow={false} getScrollParent={() => scrollRef.current}
-                      loadMore={() => undefined}>
+    <div css={scrollCss} { ...props }>
+      <div css={scrollContentCss} ref={scrollRef}>
         <StartGameHistory />
         {entries.map(([actionId, actions]) => {
             if (!actions) return []
@@ -43,8 +41,7 @@ export const History: FC<HistoryProps> = (props) => {
             ))
           }
         )}
-      </InfiniteScroll>
-
+      </div>
     </div>
   )
 }
@@ -55,7 +52,7 @@ const scrollCss = css`
   overflow-y: scroll;
   scrollbar-color: rgba(74, 74, 74, 0.3) transparent;
   scrollbar-width: thin;
-  padding-top: 0.5em;
+  margin-top: 0.5em;
   margin-right: 8px;
 
   &::-webkit-scrollbar {
