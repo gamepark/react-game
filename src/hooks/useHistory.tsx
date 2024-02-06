@@ -49,7 +49,6 @@ export const useHistory = () => {
   }, [rules])
 
   useEffect(() => {
-    if (!historyRef.current) return
     const histories = historyRef.current
     const actualSize = histories.size
     if (actualSize < filteredActions.length) {
@@ -60,7 +59,7 @@ export const useHistory = () => {
 
       setHistorySize(histories.size)
       historyRef.current = histories
-    } else {
+    } else if (actualSize > filteredActions.length) {
       const actionsById = keyBy(filteredActions, (a) => a.id!)
       for (const key of histories.keys()) {
         if (!(key in actionsById)) histories.delete(key)
@@ -69,19 +68,7 @@ export const useHistory = () => {
       setHistorySize(histories.size)
       historyRef.current = histories
     }
-
-
   }, [filteredActions.length])
-
-  useEffect(() => {
-    const histories: Histories = new Map()
-    for (const action of filteredActions) {
-      addActionEntries(histories, action)
-    }
-
-    setHistorySize(histories.size)
-    historyRef.current = histories
-  }, [])
 
   return {
     histories: historyRef.current,

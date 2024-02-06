@@ -12,6 +12,7 @@ type HistoryProps = {
 export const History: FC<HistoryProps> = (props) => {
 
   const { histories, size } = useHistory()
+  console.log(histories)
   const { open } = props
   const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
