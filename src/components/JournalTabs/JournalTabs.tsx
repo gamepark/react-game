@@ -5,7 +5,7 @@ import { faCommentDots } from '@fortawesome/free-regular-svg-icons/faCommentDots
 import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameMode, GamePageState } from '@gamepark/react-client'
-import { FC, useContext, useState } from 'react'
+import { FC, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useKeyDown } from '../../hooks'
@@ -30,14 +30,18 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
   const history = useContext(gameContext).history
   const logEnabled = history !== undefined
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
-  const chatEnabled = gameMode !== undefined && gameMode !== GameMode.COMPETITIVE && gameMode !== GameMode.TUTORIAL
-  const [tab, setTab] = useState<JournalTab>(chatEnabled ? JournalTab.CHAT : JournalTab.LOG)
+  const chatEnabled = gameMode !== GameMode.COMPETITIVE && gameMode !== GameMode.TUTORIAL
+  const [tab, setTab] = useState<JournalTab | undefined>()
   const [isOpen, setOpen] = useState(false)
   useKeyDown('Enter', () => setOpen(true))
   useKeyDown('Escape', () => setOpen(false))
+  useEffect(() => {
+    if (!tab) {
+      setTab(chatEnabled ? JournalTab.CHAT : JournalTab.LOG)
+    }
+  }, [gameMode])
 
-
-  if (!logEnabled && !chatEnabled) return null
+  if (!gameMode && !logEnabled && !chatEnabled) return null
   const isChatOpened = isOpen && tab === JournalTab.CHAT
   const isLogOpened = isOpen && tab === JournalTab.LOG
 
