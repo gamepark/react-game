@@ -12,20 +12,13 @@ type HistoryProps = {
 export const History: FC<HistoryProps> = (props) => {
 
   const { histories, size } = useHistory()
-  console.log(histories)
   const { open } = props
   const scrollRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    // TOTO: prefer to add indicator that tells "new actions"
-    //if (!scrollRef.current) return
-    //const { scrollHeight, clientHeight } = scrollRef.current
-    //scrollRef.current.scrollTo({ top: scrollHeight - clientHeight, behavior: 'smooth' })
-  }, [size])
+  // TOTO: Add an icon to tell "there is more to see"
 
   useEffect(() => {
     if (!scrollRef.current) return
     const { scrollHeight, clientHeight } = scrollRef.current
-    //scrollRef.current.scrollTo({ top: scrollHeight - clientHeight, behavior: 'smooth' })
     scrollRef.current.scrollTo({ top: scrollHeight - clientHeight })
   }, [open])
 
