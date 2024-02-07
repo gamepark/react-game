@@ -1,8 +1,8 @@
 import { Animations, TutorialDescription } from '@gamepark/react-client'
-import { HistoryDescription } from '@gamepark/react-client/dist/History/HistoryDescription'
 import { RulesCreator } from '@gamepark/rules-api'
 import React, { ComponentType } from 'react'
 import { ItemLocatorRecord } from '../../locators'
+import { MaterialHistoryProps } from '../JournalTabs/History/MaterialHistory'
 import { MaterialDescriptionRecord } from '../material'
 
 export type GameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
@@ -15,7 +15,7 @@ export type GameContext<Game = any, Move = any, PlayerId extends number = number
   optionsSpec?: any
   animations?: Animations<Game, Move, PlayerId>
   tutorial?: TutorialDescription<Game, Move, PlayerId>
-  history?: HistoryDescription<Game, Move>
+  MaterialHistory?: ComponentType<MaterialHistoryProps<Game, Move, PlayerId>>
   hasSounds?: boolean
 }
 

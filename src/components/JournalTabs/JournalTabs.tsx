@@ -27,7 +27,7 @@ enum JournalTab {
 export const JournalTabs: FC<JournalTabsProps> = (props) => {
   const { t } = useTranslation()
   const { gameId } = props
-  const history = useContext(gameContext).history
+  const history = useContext(gameContext).MaterialHistory
   const logEnabled = history !== undefined
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const chatEnabled = gameMode !== GameMode.COMPETITIVE && gameMode !== GameMode.TUTORIAL
@@ -36,7 +36,7 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
   useKeyDown('Enter', () => setOpen(true))
   useKeyDown('Escape', () => setOpen(false))
   useEffect(() => {
-    if (!tab) {
+    if (!tab && gameMode) {
       setTab(chatEnabled ? JournalTab.CHAT : JournalTab.LOG)
     }
   }, [gameMode])
@@ -126,6 +126,7 @@ const logButton = css`
   border-bottom-right-radius: 0.5em
 `
 
+//TODO: display: none cause a lag on opening
 const closed = css`
   display: none;
 `

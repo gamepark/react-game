@@ -1,8 +1,8 @@
-import { DisplayedAction, GamePageState, HistoryEntryOptions } from '@gamepark/react-client'
+import { DisplayedAction, GamePageState } from '@gamepark/react-client'
 import keyBy from 'lodash/keyBy'
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { gameContext } from '../components'
+import { gameContext, HistoryEntryContext } from '../components'
 import { useActions } from './useActions'
 
 export type Histories = Map<string, ReactElement[] | undefined>
@@ -14,37 +14,29 @@ export const useHistory = () => {
   const filteredActions = useMemo(() => (actions ?? []).filter((a) => !a.pending && a.id !== undefined), [actions])
   const historyRef = useRef<Histories>(new Map<string, ReactElement[] | undefined>())
   const [historySize, setHistorySize] = useState(0)
-  const rules = new context.Rules(JSON.parse(JSON.stringify(setup)))
-  const history = context.history!
+  const rules = useMemo(() => new context.Rules(JSON.parse(JSON.stringify(setup))), [setup])
+  const MaterialHistory = context.MaterialHistory!
   const getMoveEntry = useCallback((action, move, consequenceIndex, rules) => {
-    const getGameAfter = () => {
-      const rulesCopy = new context.Rules(JSON.parse(JSON.stringify(rules.game)))
-      rulesCopy.play(move)
-      return rulesCopy.game
-    }
-
-    const historyContext: HistoryEntryOptions = {
+    const historyContext: HistoryEntryContext = {
       consequenceIndex: consequenceIndex,
       action: action,
-      getGameBefore: () => JSON.parse(JSON.stringify(rules.game)),
-      getGameAfter
+      game: JSON.parse(JSON.stringify(rules.game))
     }
 
-    return history.getHistoryEntry(move, historyContext)
+    return <MaterialHistory move={move} context={historyContext} />
   }, [context])
 
   const addActionEntries = useCallback((histories: Histories, action: DisplayedAction) => {
     histories.set(action.id!, [])
     const actionEntry = getMoveEntry(action, action.move, undefined, rules)
     rules.play(action.move)
-    if (actionEntry) histories.get(action.id!)!.push(actionEntry)
+    histories.get(action.id!)!.push(actionEntry)
 
     for (let index = 0; index < action.consequences.length; index++) {
       const consequence = action.consequences[index]
       const consequenceEntry = getMoveEntry(action, consequence, index, rules)
       rules.play(consequence)
-
-      if (consequenceEntry) histories.get(action.id!)!.push(consequenceEntry)
+      histories.get(action.id!)!.push(consequenceEntry)
     }
   }, [rules])
 
@@ -53,7 +45,7 @@ export const useHistory = () => {
     const actualSize = histories.size
     if (actualSize < filteredActions.length) {
       for (const action of filteredActions) {
-        if (action.id! in histories) continue
+        if (histories.has(action.id!)) continue
         addActionEntries(histories, action)
       }
 

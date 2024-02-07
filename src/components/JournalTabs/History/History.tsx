@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { FC, HTMLAttributes, ReactElement, useEffect, useMemo, useRef } from 'react'
+import { FC, Fragment, HTMLAttributes, useEffect, useRef } from 'react'
 import { useHistory } from '../../../hooks/useHistory'
-import { HistoryEntry } from './HistoryEntry'
 import { StartGameHistory } from './StartHistory'
 
 type HistoryProps = {
@@ -11,7 +10,7 @@ type HistoryProps = {
 
 export const History: FC<HistoryProps> = (props) => {
 
-  const { histories, size } = useHistory()
+  const { histories } = useHistory()
   const { open } = props
   const scrollRef = useRef<HTMLDivElement>(null)
   // TOTO: Add an icon to tell "there is more to see"
@@ -22,19 +21,17 @@ export const History: FC<HistoryProps> = (props) => {
     scrollRef.current.scrollTo({ top: scrollHeight - clientHeight })
   }, [open])
 
-  const entries = useMemo(() => [...histories.entries()], [size])
-
   return (
     <div css={scrollCss} { ...props }>
       <div css={scrollContentCss} ref={scrollRef}>
         <StartGameHistory />
-        {entries.map(([actionId, actions]) => {
-            if (!actions) return []
-            return actions.map((h: ReactElement, index: number) => (
-              <HistoryEntry key={`${actionId}_${index}`}>{h}</HistoryEntry>
-            ))
-          }
-        )}
+        {[...histories.entries()].map(([id, actions = []]) => (
+          actions.map((action, index) => (
+            <Fragment key={`${id}_${index}`}>
+              {action}
+            </Fragment>
+          ))
+        ))}
       </div>
     </div>
   )
@@ -66,4 +63,5 @@ const scrollCss = css`
 const scrollContentCss = css`
   position: relative;
   padding-bottom: 0.5em;
+  font-size: 0.6em;
 `
