@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { faUserSlash } from '@fortawesome/free-solid-svg-icons'
+import { faUserSlash } from '@fortawesome/free-solid-svg-icons/faUserSlash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
