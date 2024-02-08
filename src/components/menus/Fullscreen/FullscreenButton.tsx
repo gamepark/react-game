@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
-import { faCompress, faExpand } from '@fortawesome/free-solid-svg-icons'
+import { faCompress } from '@fortawesome/free-solid-svg-icons/faCompress'
+import { faExpand } from '@fortawesome/free-solid-svg-icons/faExpand'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useTranslation } from 'react-i18next'
 import { useFullscreen } from '../../../hooks'

@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { faChessPawn, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes'
+import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
 import { GameSpeed } from '@gamepark/rules-api'
