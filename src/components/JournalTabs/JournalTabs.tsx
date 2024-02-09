@@ -41,7 +41,7 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
     }
   }, [gameMode])
 
-  if (!gameMode && !logEnabled && !chatEnabled) return null
+  if (!gameMode || (!logEnabled && !chatEnabled)) return null
   const isChatOpened = isOpen && tab === JournalTab.CHAT
   const isLogOpened = isOpen && tab === JournalTab.LOG
 
