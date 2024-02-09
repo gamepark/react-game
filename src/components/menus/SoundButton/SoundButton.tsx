@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
-import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
+import { faVolumeMute } from '@fortawesome/free-solid-svg-icons/faVolumeMute'
+import { faVolumeUp } from '@fortawesome/free-solid-svg-icons/faVolumeUp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useSoundControls } from '@gamepark/react-client'
 import { useContext } from 'react'

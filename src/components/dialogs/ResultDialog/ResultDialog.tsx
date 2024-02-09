@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { faChessPawn } from '@fortawesome/free-solid-svg-icons'
+import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
