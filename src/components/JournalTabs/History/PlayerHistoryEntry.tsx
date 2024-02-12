@@ -23,7 +23,7 @@ export const PlayerHistoryEntry: FC<PlayerHistoryEntryProps> = (props) => {
             <Avatar css={avatarStyle} playerId={player}/>
           </div>
         )}
-        <div>
+        <div css={growth}>
           {children}
         </div>
       </div>
@@ -34,7 +34,12 @@ export const PlayerHistoryEntry: FC<PlayerHistoryEntryProps> = (props) => {
 const container = css`
   display: flex;
   flex-direction: row;
-  align-items: center
+  align-items: center;
+  flex: 1;
+`
+
+const growth = css`
+  flex-grow: 1;
 `
 
 const avatarStyle = css`
