@@ -7,13 +7,13 @@ import { buttonCss } from '../../../css'
 import { Dialog, DialogProps } from '../index'
 
 export type RulesDialogProps = {
-  close: () => void
+  close?: () => void
 } & DialogProps
 
 export const RulesDialog: FC<RulesDialogProps> = ({ close, children, ...props }: RulesDialogProps) => {
   return (
     <Dialog onBackdropClick={close} css={dialogCss} {...props}>
-      <FontAwesomeIcon icon={faXmark} css={dialogCloseIcon} onClick={close}/>
+      {close && <FontAwesomeIcon icon={faXmark} css={dialogCloseIcon} onClick={close}/>}
       <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
         {children}
       </ThemeProvider>
