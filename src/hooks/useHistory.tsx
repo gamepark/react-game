@@ -53,7 +53,7 @@ export const useHistory = () => {
       historyRef.current = histories
     } else if (actualSize > filteredActions.length) {
       const actionsById = keyBy(filteredActions, (a) => a.id!)
-      for (const key of histories.keys()) {
+      for (const key of Array.from(histories.keys())) {
         if (!(key in actionsById)) histories.delete(key)
       }
 

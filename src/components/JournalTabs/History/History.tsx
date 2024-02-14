@@ -25,7 +25,7 @@ export const History: FC<HistoryProps> = (props) => {
     <div css={scrollCss} ref={scrollRef} { ...rest }>
       <div css={scrollContentCss}>
         <StartGameHistory />
-        {[...histories.entries()].map(([id, actions = []]) => (
+        {Array.from(histories.entries()).map(([id, actions = []]) => (
           actions.map((action, index) => (
             <Fragment key={`${id}_${index}`}>
               {action}

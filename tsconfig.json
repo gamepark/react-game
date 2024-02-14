@@ -26,8 +26,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "removeComments": true,
-    "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src"],
   "exclude": [
