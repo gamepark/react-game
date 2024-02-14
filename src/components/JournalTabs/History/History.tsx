@@ -13,7 +13,7 @@ export const History: FC<HistoryProps> = (props) => {
   const { histories } = useHistory()
   const { open, ...rest } = props
   const scrollRef = useRef<HTMLDivElement>(null)
-  // TOTO: Add an icon to tell "there is more to see"
+  // TODO: Add an icon to tell "there is more to see"
 
   useEffect(() => {
     if (!scrollRef.current) return
