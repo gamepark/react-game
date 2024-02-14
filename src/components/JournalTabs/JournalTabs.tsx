@@ -37,7 +37,7 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
   useKeyDown('Escape', () => setOpen(false))
   useEffect(() => {
     if (!tab && gameMode) {
-      setTab(logEnabled ? JournalTab.LOG : JournalTab.CHAT)
+      setTab(chatEnabled ? JournalTab.CHAT : JournalTab.LOG)
     }
   }, [gameMode])
 
