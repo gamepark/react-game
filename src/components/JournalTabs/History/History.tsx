@@ -63,5 +63,5 @@ const scrollCss = css`
 const scrollContentCss = css`
   position: relative;
   padding-bottom: 0.5em;
-  font-size: 0.6em;
+  font-size: 0.5em;
 `
