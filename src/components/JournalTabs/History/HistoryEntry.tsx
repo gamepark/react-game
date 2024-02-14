@@ -1,14 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { FC, HTMLAttributes } from 'react'
+import { HistoryEntryContext } from './MaterialHistory'
 
 export type HistoryEntryProps = {
+  context?: HistoryEntryContext
   border?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
-export const HistoryEntry: FC<HistoryEntryProps> = ({ border, children, ...props }) => {
+export const HistoryEntry: FC<HistoryEntryProps> = (props) => {
+  const { border, children, context, ...rest} = props
   return (
-    <div css={[historyEntryStyle, border && borderBottom]} {...props}>
+    <div css={[historyEntryStyle, border && borderBottom]} {...rest}>
       {children}
     </div>
   )
