@@ -11,7 +11,7 @@ type HistoryProps = {
 export const History: FC<HistoryProps> = (props) => {
 
   const { histories } = useHistory()
-  const { open } = props
+  const { open, ...rest } = props
   const scrollRef = useRef<HTMLDivElement>(null)
   // TOTO: Add an icon to tell "there is more to see"
 
@@ -22,8 +22,8 @@ export const History: FC<HistoryProps> = (props) => {
   }, [open])
 
   return (
-    <div css={scrollCss} { ...props }>
-      <div css={scrollContentCss} ref={scrollRef}>
+    <div css={scrollCss} ref={scrollRef} { ...rest }>
+      <div css={scrollContentCss}>
         <StartGameHistory />
         {[...histories.entries()].map(([id, actions = []]) => (
           actions.map((action, index) => (

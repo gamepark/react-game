@@ -16,8 +16,8 @@ export const PlayerHistoryEntry: FC<PlayerHistoryEntryProps> = (props) => {
   const player = playerId ?? context.action.playerId
 
   return (
-    <HistoryEntry border={border}>
-      <div css={container} {...rest}>
+    <HistoryEntry border={border} {...rest}>
+      <div css={container}>
         {!!player && (
           <div>
             <Avatar css={avatarStyle} playerId={player}/>
