@@ -71,4 +71,5 @@ const scrollContentCss = css`
   padding-left: 2.5em;
   padding-right: 1em;
   padding-bottom: 0.5em;
+  font-size: 0.7em;
 `
