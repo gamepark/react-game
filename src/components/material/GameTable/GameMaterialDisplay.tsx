@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react'
 import { closeHelpDisplay, MaterialRules } from '@gamepark/rules-api'
 import { usePlay, useRules } from '../../../hooks'
 import { MaterialRulesDialog } from '../../dialogs'
@@ -8,18 +9,31 @@ import { FocusProvider } from './focus'
 import { StaticItemsDisplay } from './StaticItemsDisplay'
 import { StaticLocationsDisplay } from './StaticLocationsDisplay'
 
-export const GameMaterialDisplay = () => {
+type GameMaterialDisplayProps = {
+  left: number
+  top: number
+}
+
+export const GameMaterialDisplay = ({ left, top }: GameMaterialDisplayProps) => {
   const rules = useRules<MaterialRules>()
   const play = usePlay()
 
   if (!rules || !rules.game) return <></>
   const game = rules.game
 
+  const position = defaultPosition(left, top)
   return <FocusProvider>
-    <StaticItemsDisplay/>
-    <DynamicItemsDisplay/>
-    <StaticLocationsDisplay/>
+    <StaticItemsDisplay css={position}/>
+    <DynamicItemsDisplay css={position}/>
+    <StaticLocationsDisplay css={position}/>
     <MaterialRulesDialog open={!!game?.helpDisplay} close={() => play(closeHelpDisplay, { local: true })}/>
     {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}
   </FocusProvider>
 }
+
+const defaultPosition = (left: number, top: number) => css`
+  position: absolute;
+  left: ${left}em;
+  top: ${top}em;
+  transform-style: preserve-3d;
+`

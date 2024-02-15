@@ -1,3 +1,4 @@
+import { Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
 import { useMaterialContext } from '../../../hooks'
@@ -5,12 +6,12 @@ import { ItemContext } from '../../../locators'
 import { DraggableMaterial } from '../DraggableMaterial'
 import { useFocusContext } from './focus'
 
-export const DynamicItemsDisplay = () => {
+export const DynamicItemsDisplay = (props: { css?: Interpolation<Theme> }) => {
   const context = useMaterialContext()
   const items = context.rules.game.items
   return <>
     {Object.entries(items).map(([stringType, items]) =>
-      items && <DynamicItemsTypeDisplay key={stringType} type={parseInt(stringType)} items={items}/>
+      items && <DynamicItemsTypeDisplay key={stringType} type={parseInt(stringType)} items={items} {...props}/>
     )}
   </>
 }
@@ -18,9 +19,10 @@ export const DynamicItemsDisplay = () => {
 type DynamicItemsTypeDisplayProps = {
   type: number
   items: MaterialItem[]
+  css?: Interpolation<Theme>
 }
 
-const DynamicItemsTypeDisplay = ({ type, items }: DynamicItemsTypeDisplayProps) => {
+const DynamicItemsTypeDisplay = ({ type, items, ...props }: DynamicItemsTypeDisplayProps) => {
   const context = useMaterialContext()
   const { focus } = useFocusContext()
   const locators = context.locators
@@ -37,7 +39,8 @@ const DynamicItemsTypeDisplay = ({ type, items }: DynamicItemsTypeDisplayProps) 
       )
       return <DraggableMaterial key={`${type}_${index}_${displayIndex}`} highlight={description.highlight(item, itemContext)}
                                 type={type} index={index} displayIndex={displayIndex} isFocused={isFocused}
-                                title={item.quantity !== undefined ? t('quantity.tooltip', { n: item.quantity })! : undefined}/>
+                                title={item.quantity !== undefined ? t('quantity.tooltip', { n: item.quantity })! : undefined}
+                                {...props}/>
     })
   })}</>
 }
