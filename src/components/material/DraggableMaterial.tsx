@@ -20,7 +20,7 @@ import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
 import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
 import { centerLocator, ItemContext } from '../../locators'
-import { combineEventListeners } from '../../utilities'
+import { combineEventListeners, findIfUnique } from '../../utilities'
 import { gameContext } from '../GameProvider'
 import { MaterialGameAnimations } from './animations'
 import { ItemDisplay } from './GameTable/ItemDisplay'
@@ -40,6 +40,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
 
   const context = useMaterialContext()
   const { material } = context
+  const description = material[type]!
   const item = useRevealedItem(type, index)
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
   const locator = context.locators[item.location.type] ?? centerLocator
@@ -53,8 +54,8 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     const time = new Date().getTime()
     if (time - lastShortClick.current < 300) return
     lastShortClick.current = time
-    const shortClickMoves = legalMoves.filter(move => material[type]?.canShortClick(move, itemContext))
-    if (shortClickMoves.length === 1) return play(shortClickMoves[0])
+    const move = findIfUnique(legalMoves, move => description.canShortClick(move, itemContext))
+    if (move !== undefined) return play(move)
     if (item.selected) {
       const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
       if (canUndo(predicate)) return undo(predicate)
@@ -67,24 +68,24 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
       const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
       if (canUndo(predicate)) return play(displayMaterialHelp(type, item, index, displayIndex), { local: true })
     }
-    const shortClickMoves = legalMoves.filter(move => material[type]?.canShortClick(move, itemContext))
-    if (shortClickMoves.length === 1) return play(displayMaterialHelp(type, item, index, displayIndex), { local: true })
-    const longClickMoves = legalMoves.filter(move => material[type]?.canLongClick(move, itemContext))
-    if (longClickMoves.length === 1) return play(longClickMoves[0])
+    const shortClickMove = findIfUnique(legalMoves, move => description.canShortClick(move, itemContext))
+    if (shortClickMove !== undefined) return play(displayMaterialHelp(type, item, index, displayIndex), { local: true })
+    const move = findIfUnique(legalMoves, move => description.canLongClick(move, itemContext))
+    if (move !== undefined) return play(move)
     return
   }, [type, item, index, displayIndex, play, canUndo, undo, legalMoves])
 
   const canClickToMove = useMemo(() => {
     let short = 0, long = 0
     for (const move of legalMoves) {
-      if (material[type]?.canShortClick(move, itemContext)) short++
-      if (material[type]?.canLongClick(move, itemContext)) long++
+      if (description.canShortClick(move, itemContext)) short++
+      if (description.canLongClick(move, itemContext)) long++
       if (short > 1 && long > 1) return false
     }
     return short === 1 || long === 1
   }, [legalMoves])
 
-  const disabled = useMemo(() => !legalMoves.some(move => material[type]?.canDrag(move, itemContext))
+  const disabled = useMemo(() => !legalMoves.some(move => description.canDrag(move, itemContext))
     , [legalMoves, itemContext])
 
   const { attributes, listeners, transform: selfTransform, setNodeRef } = useDraggable({

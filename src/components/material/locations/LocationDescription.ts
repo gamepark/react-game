@@ -91,12 +91,8 @@ export class LocationDescription<P extends number = number, M extends number = n
 
   content?: ComponentType<{location: Location}>
 
-  couldDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
-    return this.isMoveToLocation(move, location, context)
-  }
-
   canDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: ItemContext<P, M, L>): boolean {
-    return this.couldDrop(move, location, context)
+    return this.isMoveToLocation(move, location, context)
   }
 
   canLongClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
@@ -109,7 +105,7 @@ export class LocationDescription<P extends number = number, M extends number = n
       && context.material[move.itemType] && isWritingDescription(context.material[move.itemType]!)
   }
 
-  protected isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
+  isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
     return (isMoveItem(move) && isLocationSubset(move.location, location)
       && !isLocationSubset(context.rules.material(move.itemType).getItem(move.itemIndex)!.location, location)
     ) || (

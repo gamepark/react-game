@@ -3,13 +3,13 @@ import { useDroppable } from '@dnd-kit/core'
 import { css, keyframes, Theme } from '@emotion/react'
 import { GamePageState } from '@gamepark/react-client'
 import { displayLocationHelp, displayMaterialHelp, Location, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
-import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
+import { forwardRef, HTMLAttributes, MouseEvent, useCallback, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { useSelector } from 'react-redux'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { backgroundCss, borderRadiusCss, pointerCursorCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
-import { combineEventListeners } from '../../../utilities'
+import { combineEventListeners, findIfUnique } from '../../../utilities'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 
 export type SimpleDropAreaProps<P extends number = number, L extends number = number> = {
@@ -29,42 +29,59 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const rules = context.rules
   const play = usePlay<MaterialMove>()
   const legalMoves = useLegalMoves()
-  const disabled = useMemo(() => !legalMoves.some(move => description?.couldDrop(move, location, context)), [legalMoves, location, context])
-  const openRules = useMemo(() => {
+  const dropMoves = useMemo(() => legalMoves.filter(move => description?.isMoveToLocation(move, location, context)), [legalMoves, context])
+
+  const openRules = useCallback(() => {
     if ((locator?.locationDescription?.help || locator?.parentItemType !== undefined)) {
       if (locator?.locationDescription?.help) {
-        return () => play(displayLocationHelp(location), { local: true })
+        return play(displayLocationHelp(location), { local: true })
       } else {
         const itemType = locator!.parentItemType!
-        return () => play(displayMaterialHelp(itemType, rules?.material(itemType).getItem(location.parent!), location.parent), { local: true })
+        return play(displayMaterialHelp(itemType, rules?.material(itemType).getItem(location.parent!), location.parent), { local: true })
       }
     }
+  }, [locator])
 
-    return undefined
-  }, [locator, rules.game.items, play])
+  const onShortClick = useCallback(() => {
+    const move = description ? findIfUnique(legalMoves, move => description.canShortClick(move, location, context)) : undefined
+    if (move !== undefined) play(move)
+    else openRules()
+  }, [legalMoves, context])
 
+  const onLongClick = useCallback(() => {
+    const shortClickMove = description ? findIfUnique(legalMoves, move => description.canShortClick(move, location, context)) : undefined
+    if (shortClickMove !== undefined) {
+      openRules()
+    } else {
+      const move = description ? findIfUnique(legalMoves, move => description.canLongClick(move, location, context)) : undefined
+      if (move !== undefined) play(move)
+      else openRules()
+    }
 
-  const [onShortClick, onLongClick, canClickToMove] = useMemo(() => {
-    const shortClickMoves = legalMoves.filter(move => description?.canShortClick(move, location, context))
-    const longClickMoves = legalMoves.filter(move => description?.canLongClick(move, location, context))
+  }, [legalMoves, context])
 
-    const onShortClick = (shortClickMoves.length === 1 ? () => play(shortClickMoves[0]) : openRules)
-    const onLongClick = (shortClickMoves.length === 1) ? openRules : longClickMoves.length === 1 ? () => play(longClickMoves[0]) : undefined
-    return [shortClick ? shortClick : onShortClick, longClick ? longClick : onLongClick, shortClickMoves.length === 1 || longClickMoves.length === 1]
-  }, [legalMoves, location, context, play])
+  const canClickToMove = useMemo(() => {
+    let short = 0, long = 0
+    for (const move of legalMoves) {
+      if (description?.canShortClick(move, location, context)) short++
+      if (description?.canLongClick(move, location, context)) long++
+      if (short > 1 && long > 1) return false
+    }
+    return short === 1 || long === 1
+  }, [legalMoves, context])
 
   const { isOver, active, setNodeRef } = useDroppable({
     id: JSON.stringify(location),
-    disabled,
+    disabled: !dropMoves.length,
     data: location
   })
 
   const draggedItem = dataIsDisplayedItem(active?.data.current) ? active?.data.current : undefined
   const draggedItemContext = useMemo(() => draggedItem ? { ...context, ...draggedItem } : undefined, [draggedItem, context])
-  const canDrop = useMemo(() => !!draggedItemContext && !!description && !!material && legalMoves.filter(move =>
+  const canDrop = useMemo(() => !!draggedItemContext && !!description && !!material && dropMoves.filter(move =>
       material[draggedItemContext.type]?.canDrag(move, draggedItemContext) && description.canDrop(move, location, draggedItemContext)
     ).length === 1
-    , [draggedItemContext, legalMoves])
+    , [draggedItemContext, dropMoves])
   const locationContext = useMemo(() => ({ ...context, canDrop }), [context, canDrop])
 
   const isAnimatingPlayerAction = useSelector((state: GamePageState) =>
@@ -80,10 +97,8 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     cancelOnMovement: 5,
     threshold: 600,
     onStart: event => {
-      if (onShortClick || onLongClick) {
-        setClicking(true)
-        event.stopPropagation()
-      }
+      setClicking(true)
+      event.stopPropagation()
     },
     onFinish: () => setClicking(false),
     onCancel: (_, { reason }) => {
@@ -104,26 +119,21 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const image = description.getImage(location, context)
   const borderRadius = description.getBorderRadius(location, context)
   const positionOnParent = useMemo(() => locator?.parentItemType !== undefined ? locator.getPositionOnParent(location, context) : undefined, [location, context, location])
-  const descriptionTransformLocation = useMemo(() => transformCss(...description.transformLocation(location, locationContext)), [location, locationContext, description])
-  const extraCss = useMemo(() => description.getExtraCss(location, locationContext), [description, location, locationContext])
-
-  const componentCss = useMemo(() => [
-    absolute, (onShortClick || onLongClick) && pointerCursorCss,
-    positionOnParent && positionOnParentCss(positionOnParent),
-    descriptionTransformLocation,
-    sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
-    extraCss,
-    !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
-    ((canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)) && shineEffect,
-    canDrop && isOver && dropHighlight
-  ], [!onShortClick, !onLongClick, positionOnParent?.x, positionOnParent?.y, descriptionTransformLocation, width, height, image,
-    borderRadius, extraCss, draggedItem, clicking, canDrop, isOver, canClickToMove, isAnimatingPlayerAction])
 
   if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
 
   return (
     <div ref={mergeRefs([ref, setNodeRef])}
-         css={componentCss}
+         css={[
+           absolute, (onShortClick || onLongClick) && pointerCursorCss,
+           positionOnParent && positionOnParentCss(positionOnParent),
+           transformCss(...description.transformLocation(location, locationContext)),
+           sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
+           description.getExtraCss(location, locationContext),
+           !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
+           ((canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)) && shineEffect,
+           canDrop && isOver && dropHighlight
+         ]}
          {...props} {...combineEventListeners(listeners, props)}>
       {description.content && <description.content location={location}/>}
     </div>
