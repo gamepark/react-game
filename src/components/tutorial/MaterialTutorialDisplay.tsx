@@ -6,14 +6,14 @@ import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { playTutorialMovesAction } from '@gamepark/react-client'
-import { CloseTutorialPopup, isSetTutorialStep, LocalMoveType, MaterialGame, MoveKind, SetTutorialStep } from '@gamepark/rules-api'
+import { isCloseTutorialPopup, isSetTutorialStep, MaterialGame, SetTutorialStep } from '@gamepark/rules-api'
 import maxBy from 'lodash/maxBy'
 import minBy from 'lodash/minBy'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { buttonCss, transformCss } from '../../css'
-import { useGame, useLegalMoves, useUndo } from '../../hooks'
+import { useGame, useLegalMove, useLegalMoves, useUndo } from '../../hooks'
 import { useTutorialStep } from '../../hooks/useTutorialStep'
 import { PlayMoveButton, ThemeButton } from '../buttons'
 import { Dialog } from '../dialogs'
@@ -24,6 +24,7 @@ export const MaterialTutorialDisplay = () => {
   const game = useGame<MaterialGame>()
   const tutorialStep = useTutorialStep()
   const tutorialMoves = useLegalMoves<SetTutorialStep>(isSetTutorialStep)
+  const closeTutorialPopup = useLegalMove(isCloseTutorialPopup)
 
   const popup = tutorialStep?.popup
 
@@ -66,9 +67,9 @@ export const MaterialTutorialDisplay = () => {
             <p>{popup.text(t)}</p>
             <p css={buttonsLine}>
               <ThemeButton disabled={!canUndoLastMove} onClick={() => undo()}><FontAwesomeIcon icon={faBackward}/>&nbsp;{t('Previous')}</ThemeButton>
-              {nextStepMove ?
-                <PlayMoveButton move={nextStepMove} disabled={!nextStepMove}>{t('Next')}&nbsp;<FontAwesomeIcon icon={faForward}/></PlayMoveButton>
-                : <PlayMoveButton move={closeTutorialPopup}>{t('OK')}&nbsp;<FontAwesomeIcon icon={faPlay}/></PlayMoveButton>
+              {closeTutorialPopup ?
+                <PlayMoveButton move={closeTutorialPopup}>{t('OK')}&nbsp;<FontAwesomeIcon icon={faPlay}/></PlayMoveButton>
+                : <PlayMoveButton move={nextStepMove} disabled={!nextStepMove}>{t('Next')}&nbsp;<FontAwesomeIcon icon={faForward}/></PlayMoveButton>
               }
             </p>
           </div>
@@ -116,5 +117,3 @@ const tutorialDialogCss = css`
   pointer-events: auto;
   transition: transform 0.1s ease-in-out;
 `
-
-const closeTutorialPopup: CloseTutorialPopup = { kind: MoveKind.LocalMove, type: LocalMoveType.CloseTutorialPopup }
