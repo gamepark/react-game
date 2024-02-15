@@ -100,7 +100,7 @@ export const GameTable: FC<GameTableProps> = (
                         centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
         <TransformComponent wrapperStyle={wrapperStyle}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
-            <GameMaterialDisplay/>
+            <GameMaterialDisplay left={-xMin} top={-yMin}/>
             {children}
           </div>
         </TransformComponent>
@@ -126,11 +126,4 @@ const tableCss = (xMin: number, xMax: number, yMin: number, yMax: number) => css
   transform-style: preserve-3d;
   width: ${xMax - xMin}em;
   height: ${yMax - yMin}em;
-
-  > * {
-    position: absolute;
-    top: ${-yMin}em;
-    left: ${-xMin}em;
-    transform-style: preserve-3d;
-  }
 `
