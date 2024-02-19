@@ -3,8 +3,7 @@ import { css } from '@emotion/react'
 import { FC } from 'react'
 import { Picture } from '../../Picture'
 import { HistoryEntry } from './HistoryEntry'
-import { HistoryEntryContext } from './MaterialHistory'
-import { PlayerHistoryEntry } from './PlayerHistoryEntry'
+import { PlayerHistoryEntry, PlayerHistoryEntryProps } from './PlayerHistoryEntry'
 
 export type ActionHistoryEntryProps = {
   consequence?: boolean
@@ -12,15 +11,15 @@ export type ActionHistoryEntryProps = {
   picture?: string
   pictureCss?: any
   getColor?: (playerId: number) => string
-  context: HistoryEntryContext
-}
+  playerId?: number
+} & PlayerHistoryEntryProps
 
 
 export const ActionHistoryEntry: FC<ActionHistoryEntryProps> = (props) => {
-  const { consequence, getColor, depth, picture, pictureCss, context, children } = props
+  const { consequence, getColor, depth, picture, pictureCss, context, children, ...rest } = props
   const Component = consequence? HistoryEntry: PlayerHistoryEntry
   return (
-    <Component context={context} css={[color(getColor?.(context.action.playerId) ?? 'white')]}>
+    <Component context={context} css={[color(getColor?.(props.playerId ?? context.action.playerId) ?? 'white')]} {...rest}>
       <div css={flex}>
         {consequence && (
           <div css={consequenceIcon(depth)}>⤷</div>

@@ -1,15 +1,14 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { FC, HTMLAttributes } from 'react'
+import { FC } from 'react'
 import { Avatar } from '../../Avatar'
-import { HistoryEntry } from './HistoryEntry'
+import { HistoryEntry, HistoryEntryProps } from './HistoryEntry'
 import { HistoryEntryContext } from './MaterialHistory'
 
-type PlayerHistoryEntryProps = {
+export type PlayerHistoryEntryProps = {
   context: HistoryEntryContext
-  border?: boolean
   playerId?: number
-} & HTMLAttributes<HTMLDivElement>
+} & HistoryEntryProps
 
 export const PlayerHistoryEntry: FC<PlayerHistoryEntryProps> = (props) => {
   const { border, playerId, children, context, ...rest } = props
