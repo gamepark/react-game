@@ -16,10 +16,10 @@ export type ActionHistoryEntryProps = {
 
 
 export const ActionHistoryEntry: FC<ActionHistoryEntryProps> = (props) => {
-  const { consequence, getColor, depth, picture, pictureCss, context, children, ...rest } = props
-  const Component = consequence? HistoryEntry: PlayerHistoryEntry
+  const { playerId, consequence, getColor, depth, picture, pictureCss, context, children, ...rest } = props
+  const Component = (consequence || !playerId) ? HistoryEntry: PlayerHistoryEntry
   return (
-    <Component context={context} css={[color(getColor?.(props.playerId ?? context.action.playerId) ?? 'white')]} {...rest}>
+    <Component context={context} css={[color(getColor?.(playerId ?? context.action.playerId) ?? 'white')]} {...rest}>
       <div css={flex}>
         {consequence && (
           <div css={consequenceIcon(depth)}>⤷</div>

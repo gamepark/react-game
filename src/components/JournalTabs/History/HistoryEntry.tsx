@@ -6,10 +6,11 @@ import { HistoryEntryContext } from './MaterialHistory'
 export type HistoryEntryProps = {
   context?: HistoryEntryContext
   border?: { top?: boolean, bottom?: boolean } | boolean
+  playerId?: number
 } & HTMLAttributes<HTMLDivElement>
 
 export const HistoryEntry: FC<HistoryEntryProps> = (props) => {
-  const { border, children, context, ...rest} = props
+  const { playerId, border, children, context, ...rest} = props
   return (
     <div css={[historyEntryStyle, border && borderStyle(typeof border === 'boolean'? { bottom: true }: border)]} {...rest}>
       {children}
