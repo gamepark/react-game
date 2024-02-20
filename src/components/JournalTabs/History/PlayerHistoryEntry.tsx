@@ -12,7 +12,7 @@ export type PlayerHistoryEntryProps = {
 
 export const PlayerHistoryEntry: FC<PlayerHistoryEntryProps> = (props) => {
   const { border, playerId, children, context, ...rest } = props
-  const player = playerId ?? context.action.playerId
+  const player = playerId
 
   return (
     <HistoryEntry border={border} {...rest}>

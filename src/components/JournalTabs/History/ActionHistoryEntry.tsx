@@ -7,6 +7,7 @@ import { PlayerHistoryEntry, PlayerHistoryEntryProps } from './PlayerHistoryEntr
 
 export type ActionHistoryEntryProps = {
   consequence?: boolean
+  noPlayer?: boolean
   depth?: number
   picture?: string
   pictureCss?: any
@@ -16,24 +17,42 @@ export type ActionHistoryEntryProps = {
 
 
 export const ActionHistoryEntry: FC<ActionHistoryEntryProps> = (props) => {
-  const { playerId, consequence, getColor, depth, picture, pictureCss, context, children, ...rest } = props
-  const Component = (consequence || !playerId) ? HistoryEntry: PlayerHistoryEntry
+  const { noPlayer, playerId, consequence, getColor, depth, picture, pictureCss, context, children, ...rest } = props
+  const noPlayerEntry = consequence || !!noPlayer
+  const player = playerId ?? context.action.playerId
+
+  if (noPlayerEntry) {
+    return (
+      <HistoryEntry context={context} css={playerId && color(getColor?.(playerId) ?? 'white')} {...rest}>
+        <ActionHistoryContent {...props} />
+      </HistoryEntry>
+    )
+  }
+
+  if (!player) return null
   return (
-    <Component context={context} css={[color(getColor?.(playerId ?? context.action.playerId) ?? 'white')]} {...rest}>
-      <div css={flex}>
-        {consequence && (
-          <div css={consequenceIcon(depth)}>⤷</div>
-        )}
-        <div css={growth}>
-          {children}
-        </div>
-        {picture && (
-          <div css={actionPicture}>
-            <Picture css={[pictureStyle, pictureCss]} src={picture}/>
-          </div>
-        )}
+    <PlayerHistoryEntry context={context} playerId={player} css={[color(getColor?.(player) ?? 'white')]} {...rest}>
+      <ActionHistoryContent {...props} />
+    </PlayerHistoryEntry>
+  )
+}
+
+const ActionHistoryContent: FC<ActionHistoryEntryProps> = (props) => {
+  const { consequence, depth, picture, pictureCss, children } = props
+  return (
+    <div css={flex}>
+      {consequence && (
+        <div css={consequenceIcon(depth)}>⤷</div>
+      )}
+      <div css={growth}>
+        {children}
       </div>
-    </Component>
+      {picture && (
+        <div css={actionPicture}>
+          <Picture css={[pictureStyle, pictureCss]} src={picture}/>
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -48,8 +67,8 @@ const growth = css`
 `
 
 const pictureStyle = css`
-  height: 2.2em; 
-  border-radius: 0.5em; 
+  height: 2.2em;
+  border-radius: 0.5em;
   border: 0.1em solid black
 `
 
