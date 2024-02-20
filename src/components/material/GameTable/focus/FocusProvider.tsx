@@ -3,6 +3,8 @@ import sumBy from 'lodash/sumBy'
 import { createContext, FC, useCallback, useContext, useRef, useState } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
 import { useZoomToElements } from '../../../../hooks'
+import { useLocators } from '../../../../hooks/useLocators'
+import { ItemLocatorRecord } from '../../../../locators'
 import { MaterialFocus } from './MaterialFocus'
 
 export type FocusContextType = {
@@ -24,6 +26,7 @@ export const useFocusContext = (): FocusContextType => {
 export const FocusProvider: FC = ({ children }) => {
   const zoomToElements = useZoomToElements()
   const { resetTransform } = useControls()
+  const locators = useLocators()
 
   const [focus, doSetFocus] = useState<MaterialFocus>()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
@@ -34,7 +37,7 @@ export const FocusProvider: FC = ({ children }) => {
       setTimeout(() => resetTransform(1000), 50)
     }
     focusRefs.current = new Set()
-    countFocusRef.current = countFocusRefs(focus)
+    countFocusRef.current = countFocusRefs(focus, locators)
     doSetFocus(focus)
   }, [])
 
@@ -58,9 +61,15 @@ export const FocusProvider: FC = ({ children }) => {
   )
 }
 
-function countFocusRefs(focus?: MaterialFocus): number {
+function countFocusRefs(focus?: MaterialFocus, locators?: Partial<ItemLocatorRecord>): number {
   if (!focus) return 0
   return sumBy(focus.materials, material =>
-    sumBy(material.getItems(), item => item.quantity ?? 1)
-  ) + focus.staticItems.length + focus.locations.length
+      sumBy(material.getItems(), item =>
+        Math.min(item.quantity ?? 1, locators?.[item.location.type]?.limit ?? Infinity)
+      )
+    )
+    + sumBy(focus.staticItems, ({ item }) =>
+      Math.min(item.quantity ?? 1, locators?.[item.location.type]?.limit ?? Infinity)
+    )
+    + focus.locations.length
 }
