@@ -23,7 +23,7 @@ export const ActionHistoryEntry: FC<ActionHistoryEntryProps> = (props) => {
 
   if (noPlayerEntry) {
     return (
-      <HistoryEntry context={context} css={playerId && color(getColor?.(playerId) ?? 'white')} {...rest}>
+      <HistoryEntry context={context} css={player && color(getColor?.(player) ?? 'white')} {...rest}>
         <ActionHistoryContent {...props} />
       </HistoryEntry>
     )
