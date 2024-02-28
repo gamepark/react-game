@@ -1,4 +1,5 @@
 import { DisplayedAction, GamePageState } from '@gamepark/react-client'
+import { replayActions, Rules } from '@gamepark/rules-api'
 import keyBy from 'lodash/keyBy'
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -14,7 +15,13 @@ export const useHistory = () => {
   const filteredActions = useMemo(() => (actions ?? []).filter((a) => !a.pending && a.id !== undefined), [actions])
   const historyRef = useRef<Histories>(new Map<string, ReactElement[] | undefined>())
   const [historySize, setHistorySize] = useState(0)
-  const rules = useMemo(() => new context.Rules(JSON.parse(JSON.stringify(setup))), [setup])
+  const rules = useRef<Rules>()
+  useEffect(() => {
+    if (!rules.current && setup) {
+      rules.current = new context.Rules(JSON.parse(JSON.stringify(setup)))
+    }
+  }, [setup])
+
   const MaterialHistory = context.MaterialHistory!
   const getMoveEntry = useCallback((action, move, consequenceIndex, rules) => {
     const historyContext: HistoryEntryContext = {
@@ -28,17 +35,17 @@ export const useHistory = () => {
 
   const addActionEntries = useCallback((histories: Histories, action: DisplayedAction) => {
     histories.set(action.id!, [])
-    const actionEntry = getMoveEntry(action, action.move, undefined, rules)
-    rules.play(action.move)
+    const actionEntry = getMoveEntry(action, action.move, undefined, rules.current)
+    rules.current?.play(action.move)
     histories.get(action.id!)!.push(actionEntry)
 
     for (let index = 0; index < action.consequences.length; index++) {
       const consequence = action.consequences[index]
-      const consequenceEntry = getMoveEntry(action, consequence, index, rules)
-      rules.play(consequence)
+      const consequenceEntry = getMoveEntry(action, consequence, index, rules.current)
+      rules.current?.play(consequence)
       histories.get(action.id!)!.push(consequenceEntry)
     }
-  }, [rules])
+  }, [])
 
   useEffect(() => {
     const histories = historyRef.current
@@ -57,6 +64,8 @@ export const useHistory = () => {
         if (!(key in actionsById)) histories.delete(key)
       }
 
+      rules.current = new context.Rules(JSON.parse(JSON.stringify(setup)))
+      replayActions(rules.current!, filteredActions)
       setHistorySize(histories.size)
       historyRef.current = histories
     }
