@@ -168,5 +168,5 @@ const noShrink = css`
 `
 
 const fullSize = css`
-  width: 90dvw`
+  width: 80dvw`
 
