@@ -1,6 +1,6 @@
 import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
-import { CreateItem, ItemMove, itemsCanMerge } from '@gamepark/rules-api'
+import { CreateItem, ItemMove, MaterialRules } from '@gamepark/rules-api'
 import { fadeIn } from '../../../css'
 import { ItemContext } from '../../../locators'
 import { adjustRotation } from './adjustRotation'
@@ -10,6 +10,8 @@ import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { transformItem } from './transformItem.util'
 
+const lastCreatedItemsIndexes: Record<string, number> = {}
+
 export class CreateItemAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
 
@@ -17,7 +19,14 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     super()
   }
 
-  override getPostDuration(_move: CreateItem<P, M, L>, _context: MaterialGameAnimationContext<P, M, L>): number {
+  override getPreDuration(move: CreateItem<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
+    const rules = new context.Rules(context.game, { player: context.playerId }) as MaterialRules<P, M, L>
+    lastCreatedItemsIndexes[JSON.stringify(move)] = rules.mutator(move.itemType).getItemCreationIndex(move.item)
+    return 0
+  }
+
+  override getPostDuration(move: CreateItem<P, M, L>, _context: MaterialGameAnimationContext<P, M, L>): number {
+    setTimeout(() => delete lastCreatedItemsIndexes[JSON.stringify(move)], this.duration * 2000)
     return this.duration
   }
 
@@ -35,7 +44,7 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
 
   isItemToAnimate({ rules, type, index, displayIndex }: ItemContext<P, M, L>, animation: Animation<CreateItem<P, M, L>>): boolean {
     const item = rules.material(type).getItem(index)!
-    if (animation.move.itemType !== type || !itemsCanMerge(item, animation.move.item)) return false
+    if (animation.move.itemType !== type || lastCreatedItemsIndexes[JSON.stringify(animation.move)] !== index) return false
     const quantity = item.quantity ?? 1
     const createdQuantity = animation.move.item.quantity ?? 1
     return displayIndex >= quantity - createdQuantity
