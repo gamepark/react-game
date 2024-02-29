@@ -26,7 +26,8 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
   }
 
   override getPostDuration(move: CreateItem<P, M, L>, _context: MaterialGameAnimationContext<P, M, L>): number {
-    setTimeout(() => delete lastCreatedItemsIndexes[JSON.stringify(move)], this.duration * 2000)
+    const stringMove = JSON.stringify(move)
+    setTimeout(() => delete lastCreatedItemsIndexes[stringMove], this.duration * 2000)
     return this.duration
   }
 
