@@ -46,7 +46,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const targetLocator = locators[futureItem.location.type] ?? centerLocator as unknown as ItemLocator<P, M, L>
-    const futureContext = { ...context, index: futureIndex, displayIndex: futureDisplayIndex }
+    const futureContext = { ...context, rules: futureRules, index: futureIndex, displayIndex: futureDisplayIndex }
     const sourceTransforms = transformItem(context)
     const sourceTransform = sourceTransforms.join(' ')
     const futureTransforms = targetLocator.transformItem(futureItem, futureContext)
