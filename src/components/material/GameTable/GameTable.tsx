@@ -20,13 +20,14 @@ export type GameTableProps = {
   yMax: number
   perspective?: number
   margin?: { left: number, top: number, right: number, bottom: number }
+  verticalCenter?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 const pointerSensorOptions = { activationConstraint: { distance: 2 } }
 export const GameTable: FC<GameTableProps> = (
-  { collisionAlgorithm, snapToCenter = true, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, children, ...props }
+  { collisionAlgorithm, snapToCenter = true, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, verticalCenter, children, ...props }
 ) => {
 
   const [dragging, setDragging] = useState(false)
@@ -84,9 +85,9 @@ export const GameTable: FC<GameTableProps> = (
     position: 'absolute',
     margin: `${margin.top}em ${margin.right}em ${margin.bottom}em ${margin.left}em`,
     transformStyle: 'preserve-3d',
-    height: `min(100% - ${vm}em, (100dvw - ${hm}em) / ${ratio})`,
+    height: verticalCenter? `calc(100% - ${vm}em)`: `min(100% - ${vm}em, (100dvw - ${hm}em) / ${ratio})`,
     width: `calc(100dvw - ${hm}em)`,
-    overflow: 'visible'
+    overflow: 'visible',
   }), [margin, vm, hm, ratio])
 
   const modifiers = useMemo(() => snapToCenter? [snapCenterToCursor]: undefined, [snapToCenter])
@@ -96,7 +97,7 @@ export const GameTable: FC<GameTableProps> = (
                 modifiers={modifiers} sensors={sensors}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
       <Global styles={ratioFontSize(ratioWithMargins)}/>
-      <TransformWrapper ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
+      <TransformWrapper  ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
                         centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
         <TransformComponent wrapperStyle={wrapperStyle}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
