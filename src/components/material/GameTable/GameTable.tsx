@@ -101,8 +101,9 @@ export const GameTable: FC<GameTableProps> = (
                         centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
         <TransformComponent wrapperStyle={wrapperStyle}>
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
-            <GameMaterialDisplay left={-xMin} top={-yMin}/>
-            {children}
+            <GameMaterialDisplay left={-xMin} top={-yMin}>
+              {children}
+            </GameMaterialDisplay>
           </div>
         </TransformComponent>
       </TransformWrapper>

@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { closeHelpDisplay, MaterialRules } from '@gamepark/rules-api'
+import { PropsWithChildren } from 'react'
 import { usePlay, useRules } from '../../../hooks'
 import { MaterialRulesDialog } from '../../dialogs'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
@@ -9,12 +10,12 @@ import { FocusProvider } from './focus'
 import { StaticItemsDisplay } from './StaticItemsDisplay'
 import { StaticLocationsDisplay } from './StaticLocationsDisplay'
 
-type GameMaterialDisplayProps = {
+type GameMaterialDisplayProps = PropsWithChildren<{
   left: number
   top: number
-}
+}>
 
-export const GameMaterialDisplay = ({ left, top }: GameMaterialDisplayProps) => {
+export const GameMaterialDisplay = ({ left, top, children }: GameMaterialDisplayProps) => {
   const rules = useRules<MaterialRules>()
   const play = usePlay()
 
@@ -28,6 +29,7 @@ export const GameMaterialDisplay = ({ left, top }: GameMaterialDisplayProps) => 
     <StaticLocationsDisplay css={position}/>
     <MaterialRulesDialog open={!!game?.helpDisplay} close={() => play(closeHelpDisplay, { local: true })}/>
     {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}
+    {children}
   </FocusProvider>
 }
 
