@@ -43,7 +43,7 @@ export const FocusProvider: FC = ({ children }) => {
 
   const doFocus = useCallback(() => {
     const elements = Array.from(focusRefs.current)
-    setTimeout(() => zoomToElements(elements, { animationTime: 1000, margin: focus?.margin, scale: focus?.scale }), 50)
+    setTimeout(() => zoomToElements(elements, { animationTime: focus?.animationTime ?? 1000, margin: focus?.margin, scale: focus?.scale }), 50)
   }, [zoomToElements])
 
   const addFocusRef = useCallback((ref: HTMLElement | null) => {

@@ -7,6 +7,7 @@ export type MaterialFocus<P extends number = number, M extends number = number, 
   margin?: Margin
   scale?: number
   highlight?: true
+  animationTime?: number
 }
 
 export type Margin = {
