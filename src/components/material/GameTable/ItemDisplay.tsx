@@ -28,7 +28,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const description = context.material[type]
   return <MaterialComponent ref={isFocused ? mergeRefs([ref, addFocusRef]) : ref}
                             type={type} itemId={item.id}
-                            playDown={focus && !isFocused && !focusedIndexes.length}
+                            playDown={focus?.highlight && !isFocused && !focusedIndexes.length}
                             css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext)), description?.getItemExtraCss(item, itemContext)]}
                             {...props}>
     {locations.length > 0 && <>
