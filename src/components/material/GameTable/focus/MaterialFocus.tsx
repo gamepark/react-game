@@ -6,6 +6,7 @@ export type MaterialFocus<P extends number = number, M extends number = number, 
   locations: Location<P, L>[]
   margin?: Margin
   scale?: number
+  highlight?: true
 }
 
 export type Margin = {
