@@ -3,12 +3,13 @@ import { css, keyframes, Theme, useTheme } from '@emotion/react'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { closeHelpDisplay, displayMaterialHelp, isSameLocationArea, MaterialHelpDisplay, MaterialRules } from '@gamepark/rules-api'
+import { closeHelpDisplay, displayMaterialHelp, isSameLocationArea, MaterialHelpDisplay, MaterialItem, MaterialRules } from '@gamepark/rules-api'
 import { FC, useMemo } from 'react'
 import { fontSizeCss, transformCss } from '../../../css'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
 import { ItemContext } from '../../../locators'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
+import { LocationDisplay } from '../../material/locations/LocationDisplay'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
 
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
@@ -26,7 +27,7 @@ const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
       .sort(
         (item) => item.location.x ?? 0,
         (item) => item.location.y ?? 0,
-        (item) => item.location.z ?? 0,
+        (item) => item.location.z ?? 0
       ),
     [rules.game])
 
@@ -45,13 +46,13 @@ const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
 
   return {
     previous: previous.length ? displayMaterialHelp(helpDisplay.itemType, previous.getItem(), previous.getIndex()) : undefined,
-    next: next.length ? displayMaterialHelp(helpDisplay.itemType, next.getItem(), next.getIndex()) : undefined,
+    next: next.length ? displayMaterialHelp(helpDisplay.itemType, next.getItem(), next.getIndex()) : undefined
   }
 
 }
 
 export const MaterialRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
-  { helpDisplay }: MaterialRulesDialogContentProps<P, M, L>,
+  { helpDisplay }: MaterialRulesDialogContentProps<P, M, L>
 ) => {
   const play = usePlay()
   const context = useMaterialContext<P, M, L>()
@@ -62,12 +63,15 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const { width, height } = description.getSize(item.id)
   const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
   const hasNavigation = previous || next
+  const locations = item.location ? context.material[helpDisplay.itemType]?.getLocations(item as MaterialItem<P, L, any>, itemContext) ?? [] : []
   return <>
     <div css={[flex, hasNavigation && fullSize]}>
       <MaterialComponent type={helpDisplay.itemType} itemId={item.id} css={[
         noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-        isFlatMaterialDescription(description) && description.isFlipped(item, itemContext) && transformCss('rotateY(180deg)'),
-      ]}/>
+        isFlatMaterialDescription(description) && description.isFlipped(item, itemContext) && transformCss('rotateY(180deg)')
+      ]}>
+        {locations.map((location) => <LocationDisplay location={location}/>)}
+      </MaterialComponent>
       <div css={helpDialogContentCss}>
         {description.help && <description.help {...helpDisplay} closeDialog={() => play(closeHelpDisplay, { local: true })}/>}
       </div>
@@ -168,5 +172,5 @@ const noShrink = css`
 `
 
 const fullSize = css`
-  width: 80dvw`
-
+  width: 80dvw
+`
