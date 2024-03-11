@@ -114,4 +114,6 @@ export class LocationDescription<P extends number = number, M extends number = n
       )
     )
   }
+
+  displayInParentItemHelp?: boolean
 }

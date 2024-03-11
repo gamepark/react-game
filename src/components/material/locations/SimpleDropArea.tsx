@@ -2,15 +2,16 @@
 import { useDroppable } from '@dnd-kit/core'
 import { css, keyframes, Theme } from '@emotion/react'
 import { GamePageState } from '@gamepark/react-client'
-import { displayLocationHelp, displayMaterialHelp, Location, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
+import { displayLocationHelp, displayMaterialHelp, Location, MaterialMove } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, MouseEvent, useCallback, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { useSelector } from 'react-redux'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { backgroundCss, borderRadiusCss, pointerCursorCss, shineEffect, sizeCss, transformCss } from '../../../css'
+import { pointerCursorCss, shineEffect } from '../../../css'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { combineEventListeners, findIfUnique } from '../../../utilities'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
+import { LocationDisplay } from './LocationDisplay'
 
 export type SimpleDropAreaProps<P extends number = number, L extends number = number> = {
   location: Location<P, L>
@@ -82,7 +83,6 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
       material[draggedItemContext.type]?.canDrag(move, draggedItemContext) && description.canDrop(move, location, draggedItemContext)
     ).length === 1
     , [draggedItemContext, dropMoves])
-  const locationContext = useMemo(() => ({ ...context, canDrop }), [context, canDrop])
 
   const isAnimatingPlayerAction = useSelector((state: GamePageState) =>
     state.actions?.some(action => action.playerId === state.playerId && action.animation !== undefined)
@@ -115,41 +115,21 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     return null
   }
 
-  const { width, height } = description.getSize(location, context)
-  const image = description.getImage(location, context)
-  const borderRadius = description.getBorderRadius(location, context)
-  const positionOnParent = useMemo(() => locator?.parentItemType !== undefined ? locator.getPositionOnParent(location, context) : undefined, [location, context, location])
-
   if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
 
   return (
-    <div ref={mergeRefs([ref, setNodeRef])}
-         css={[
-           absolute, (onShortClick || onLongClick) && pointerCursorCss,
-           positionOnParent && positionOnParentCss(positionOnParent),
-           transformCss(...description.transformLocation(location, locationContext)),
-           sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
-           description.getExtraCss(location, locationContext),
-           !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
-           ((canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)) && shineEffect,
-           canDrop && isOver && dropHighlight
-         ]}
-         {...props} {...combineEventListeners(listeners, props)}>
-      {description.content && <description.content location={location}/>}
-    </div>
+    <LocationDisplay ref={mergeRefs([ref, setNodeRef])} location={location} canDrop={canDrop}
+                     css={[
+                       (onShortClick || onLongClick) && pointerCursorCss,
+                       !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
+                       ((canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)) && shineEffect,
+                       canDrop && isOver && dropHighlight
+                     ]}
+                     {...props} {...combineEventListeners(listeners, props)}/>
   )
 })
 
 SimpleDropArea.displayName = 'SimpleDropArea'
-
-const absolute = css`
-  position: absolute;
-`
-
-const positionOnParentCss = ({ x, y }: XYCoordinates) => css`
-  left: ${x}%;
-  top: ${y}%;
-`
 
 const hoverHighlight = css`
   &:hover {
