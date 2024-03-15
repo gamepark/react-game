@@ -53,6 +53,13 @@ export class ItemLocator<P extends number = number, M extends number = number, L
     return `translate3d(${x}em, ${y}em, ${z}em)`
   }
 
+  getParentItem(location: Location<P, L>, context: ItemContext<P, M, L>): MaterialItem<P, L> | undefined {
+    if (this.parentItemType === undefined) return undefined
+    const parentItemId = this.getParentItemId(location, context)
+    const parentMaterial = context.material[this.parentItemType]
+    return parentMaterial?.getStaticItems(context).find(item => equal(item.id, parentItemId))
+  }
+
   getParentItemId(_location: Location<P, L>, _context: ItemContext<P, M, L>): number | undefined {
     return undefined
   }
@@ -99,15 +106,13 @@ export class ItemLocator<P extends number = number, M extends number = number, L
 
   protected transformParentItemLocation(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
     if (!this.parentItemType) return []
-    const { rules, material, locators } = context
-    const parentMaterial = material[this.parentItemType]
+    const { rules, locators } = context
     if (location.parent !== undefined) {
       const parentItem = rules.material(this.parentItemType).getItem(location.parent)!
       const parentLocator = locators[parentItem.location.type]
       return parentLocator?.transformItemLocation(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 }) ?? []
     } else {
-      const parentItemId = this.getParentItemId(location, context)
-      const staticItem = parentMaterial?.getStaticItems(context).find(item => equal(item.id, parentItemId))
+      const staticItem = this.getParentItem(location, context)
       if (!staticItem) return []
       const locator = locators[staticItem.location.type]
       return locator?.transformItemLocation(staticItem, { ...context, type: this.parentItemType, displayIndex: 0 }) ?? []
