@@ -12,10 +12,10 @@ export const usePlayerTime = <PlayerId>(playerId: PlayerId) => {
   const running = options && options.speed === GameSpeed.RealTime && player?.time?.playing
 
   const getPlayerTime = useCallback(() => {
-    if (options?.speed !== GameSpeed.RealTime || !player?.time) return undefined
+    if (options?.speed !== GameSpeed.RealTime || !player?.time || player.quit) return undefined
     if (!player.time.playing) return player.time.availableTime
     return player.time.availableTime + Date.parse(player.time.lastChange) - new Date().getTime() - clientTimeDelta
-  }, [options?.speed, player?.time, clientTimeDelta])
+  }, [options?.speed, player?.time, player?.quit, clientTimeDelta])
 
   useEffect(() => {
     if (running) {
