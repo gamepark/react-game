@@ -2,7 +2,7 @@
 import { useDroppable } from '@dnd-kit/core'
 import { css, keyframes, Theme } from '@emotion/react'
 import { GamePageState } from '@gamepark/react-client'
-import { displayLocationHelp, displayMaterialHelp, Location, MaterialMove } from '@gamepark/rules-api'
+import { displayLocationHelp, Location, MaterialMove } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, MouseEvent, useCallback, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { useSelector } from 'react-redux'
@@ -33,12 +33,13 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const dropMoves = useMemo(() => legalMoves.filter(move => description?.isMoveToLocation(move, location, context)), [legalMoves, context])
 
   const openRules = useCallback(() => {
-    if ((locator?.locationDescription?.help || locator?.parentItemType !== undefined)) {
+    if (rules && (locator?.locationDescription?.help || locator?.parentItemType !== undefined)) {
       if (locator?.locationDescription?.help) {
         return play(displayLocationHelp(location), { local: true })
       } else {
         const itemType = locator!.parentItemType!
-        return play(displayMaterialHelp(itemType, rules?.material(itemType).getItem(location.parent!), location.parent), { local: true })
+        const item = rules.material(itemType).getItem(location.parent!)!
+        return play(material[itemType]!.displayHelp(item, { ...context, type: itemType, index: location.parent!, displayIndex: 0 }), { local: true })
       }
     }
   }, [locator])

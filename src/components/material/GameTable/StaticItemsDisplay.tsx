@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
-import { displayMaterialHelp } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
 import { useMaterialContext, usePlay } from '../../../hooks'
 import { MaterialDescription } from '../MaterialDescription'
@@ -34,7 +33,7 @@ const StaticItemsTypeDisplay = ({ type, description, ...props }: StaticItemsType
       return <ItemDisplay key={`${type}_${index}_${displayIndex}`}
                           type={type} index={index} displayIndex={displayIndex} item={item}
                           isFocused={isFocused}
-                          onShortClick={() => play(displayMaterialHelp(type, item, index, displayIndex), { local: true })}
+                          onShortClick={() => play(description.displayHelp(item, { ...context, type, index, displayIndex }), { local: true })}
                           {...props}/>
     })
   })}</>

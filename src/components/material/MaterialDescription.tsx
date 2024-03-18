@@ -1,6 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
-import { isDeleteItem, isMoveItem, isRoll, isSelectItem, Location, MaterialHelpDisplay, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import {
+  displayMaterialHelp,
+  isDeleteItem,
+  isMoveItem,
+  isRoll,
+  isSelectItem,
+  Location,
+  MaterialHelpDisplay,
+  MaterialItem,
+  MaterialMove
+} from '@gamepark/rules-api'
 import { ComponentType, FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
 
@@ -90,6 +100,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
 
   highlight(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): boolean | undefined {
     return
+  }
+
+  displayHelp(item: MaterialItem<P, L>, { type, index, displayIndex }: ItemContext<P, M, L>) {
+    return displayMaterialHelp(type, item, index, displayIndex)
   }
 }
 
