@@ -1,18 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
-import {
-  DisplayedItem,
-  displayMaterialHelp,
-  isMoveItemType,
-  isSelectItem,
-  ItemMove,
-  MaterialItem,
-  MaterialMove,
-  MaterialRules,
-  MoveItem,
-  XYCoordinates
-} from '@gamepark/rules-api'
+import { DisplayedItem, isMoveItemType, isSelectItem, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import merge from 'lodash/merge'
 import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
@@ -60,16 +49,16 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
       const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
       if (canUndo(predicate)) return undo(predicate)
     }
-    return play(displayMaterialHelp(type, item, index, displayIndex), { local: true })
+    return play(description.displayHelp(item, itemContext), { local: true })
   }, [type, item, index, displayIndex, play, canUndo, undo, legalMoves])
 
   const onLongClick = useCallback(() => {
     if (item.selected) {
       const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
-      if (canUndo(predicate)) return play(displayMaterialHelp(type, item, index, displayIndex), { local: true })
+      if (canUndo(predicate)) return play(description.displayHelp(item, itemContext), { local: true })
     }
     const shortClickMove = findIfUnique(legalMoves, move => description.canShortClick(move, itemContext))
-    if (shortClickMove !== undefined) return play(displayMaterialHelp(type, item, index, displayIndex), { local: true })
+    if (shortClickMove !== undefined) return play(description.displayHelp(item, itemContext), { local: true })
     const move = findIfUnique(legalMoves, move => description.canLongClick(move, itemContext))
     if (move !== undefined) return play(move)
     return
