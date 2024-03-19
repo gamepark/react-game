@@ -1,9 +1,8 @@
 import { DisplayedAction } from '@gamepark/react-client'
-import { MaterialMove } from '@gamepark/rules-api'
 
 
 export type MaterialHistoryProps<Game = any, Move = any, PlayerId = number> = {
-  move: MaterialMove
+  move: Move
   context: HistoryEntryContext<Game, Move, PlayerId>
 }
 
