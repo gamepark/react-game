@@ -13,6 +13,7 @@ export const useHistory = () => {
   const context = useContext(gameContext)
   const player = usePlayerId()
   const setup = useSelector((state: GamePageState) => state.setup) ?? {}
+  const gameOver = useSelector((state: GamePageState) => state.gameOver)
   const actions = useActions() ?? []
   const filteredActions = useMemo(() => (actions ?? []).filter((a) => !a.pending && a.id !== undefined), [actions])
   const historyRef = useRef<Histories>(new Map<string, ReactElement[] | undefined>())
@@ -20,9 +21,9 @@ export const useHistory = () => {
   const rules = useRef<Rules>()
   useEffect(() => {
     if (!rules.current && setup) {
-      rules.current = new context.Rules(JSON.parse(JSON.stringify(setup)), { player })
+      rules.current = new context.Rules(JSON.parse(JSON.stringify(setup)), gameOver ? undefined : { player })
     }
-  }, [setup])
+  }, [setup, gameOver])
 
   const MaterialHistory = context.MaterialHistory!
   const getMoveEntry = useCallback((action, move, consequenceIndex, rules) => {
