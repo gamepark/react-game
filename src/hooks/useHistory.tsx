@@ -5,11 +5,13 @@ import { ReactElement, useCallback, useContext, useEffect, useMemo, useRef, useS
 import { useSelector } from 'react-redux'
 import { gameContext, HistoryEntryContext } from '../components'
 import { useActions } from './useActions'
+import { usePlayerId } from './usePlayerId'
 
 export type Histories = Map<string, ReactElement[] | undefined>
 
 export const useHistory = () => {
   const context = useContext(gameContext)
+  const player = usePlayerId()
   const setup = useSelector((state: GamePageState) => state.setup) ?? {}
   const actions = useActions() ?? []
   const filteredActions = useMemo(() => (actions ?? []).filter((a) => !a.pending && a.id !== undefined), [actions])
@@ -18,7 +20,7 @@ export const useHistory = () => {
   const rules = useRef<Rules>()
   useEffect(() => {
     if (!rules.current && setup) {
-      rules.current = new context.Rules(JSON.parse(JSON.stringify(setup)))
+      rules.current = new context.Rules(JSON.parse(JSON.stringify(setup)), { player })
     }
   }, [setup])
 
@@ -30,7 +32,7 @@ export const useHistory = () => {
       game: JSON.parse(JSON.stringify(rules.game))
     }
 
-    return <MaterialHistory move={move} context={historyContext} />
+    return <MaterialHistory move={move} context={historyContext}/>
   }, [context])
 
   const addActionEntries = useCallback((histories: Histories, action: DisplayedAction) => {
