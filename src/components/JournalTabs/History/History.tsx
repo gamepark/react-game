@@ -3,7 +3,8 @@ import { css, ThemeProvider } from '@emotion/react'
 import { FC, Fragment, HTMLAttributes, useEffect, useRef } from 'react'
 import { linkButtonCss } from '../../../css'
 import { useHistory } from '../../../hooks/useHistory'
-import { StartGameHistory } from './StartHistory'
+import { GameOverHistory } from './GameOverHistory'
+import { StartGameHistory } from './StartGameHistory'
 
 type HistoryProps = {
   open: boolean
@@ -34,6 +35,7 @@ export const History: FC<HistoryProps> = (props) => {
               </Fragment>
             ))
           ))}
+          <GameOverHistory/>
         </div>
       </div>
     </ThemeProvider>
