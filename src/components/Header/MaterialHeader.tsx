@@ -12,45 +12,57 @@ import { RulesDialog } from '../dialogs'
 import { gameContext } from '../GameProvider'
 import { Header, HeaderProps } from './Header'
 
-export type MaterialHeaderProps<RulesStep extends number = number> = {
+
+export type MaterialHeaderProps<RulesStep extends number = number> = MaterialHeaderContentProps<RulesStep> & HeaderProps
+
+export const MaterialHeader = <RulesStep extends number = number>(
+  { loading, rulesStepsHeaders, GameOver, GameOverRule, ...props }: MaterialHeaderProps<RulesStep>
+) => {
+  return (
+    <Header {...props}>
+      <MaterialHeaderContent loading={loading} rulesStepsHeaders={rulesStepsHeaders} GameOver={GameOver} GameOverRule={GameOverRule}/>
+    </Header>
+  )
+}
+
+type MaterialHeaderContentProps<RulesStep extends number = number> = {
   loading?: boolean
   rulesStepsHeaders: Partial<Record<RulesStep, ComponentType>>
   GameOver?: ComponentType
   GameOverRule?: ComponentType
-} & HeaderProps
+}
 
-export const MaterialHeader = <RulesStep extends number = number>(
-  { loading, rulesStepsHeaders, GameOver, GameOverRule, ...props }: MaterialHeaderProps<RulesStep>
+const MaterialHeaderContent = <RulesStep extends number = number>(
+  { loading, rulesStepsHeaders, GameOver, GameOverRule }: MaterialHeaderProps<RulesStep>
 ) => {
   const { t } = useTranslation()
   const game = useGame<MaterialGame>()
   const play = usePlay()
   const context = useContext(gameContext)
   const cancelled = useSelector<GamePageState, boolean>(state => state.players.every(player => player.quit))
-  const gameOver = useSelector<GamePageState, boolean>(state =>
-    state.actions?.every(action => !action.animation) === true && state.gameOver === true
-  ) || !game?.rule
-  const victoryClaim = gameOver && game?.rule
-  const RulesStepsHeader = game?.rule ? rulesStepsHeaders[game.rule.id] : undefined
-  return (
-    <Header {...props}>
-      {
-        (loading || !game) ? t('Game loading...')
-          : gameOver ? (
-            cancelled ? t('game.cancelled')
-              : victoryClaim ? <ShowVictoryClaim/>
-                : GameOver ? <GameOver/>
-                  : <GameOverHeader GameOverRule={GameOverRule}/>
-          ) : RulesStepsHeader ? <>
-              <RulesStepsHeader/>
-              {context.rulesHelp?.hasOwnProperty(game.rule!.id) && <>
-                &nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => play(displayRulesHelp(game.rule!.id), { local: true })} css={pointerCursorCss}/>
-              </>}
-            </>
-            : t(`TODO: header for rule id ${game?.rule?.id}`)
-      }
-    </Header>
+  const victoryClaim = useSelector<GamePageState, boolean>(state =>
+    state.gameOver === true && state.players.length > 1 && state.players.filter(player => !player.quit).length === 1
   )
+  const RulesStepsHeader = game?.rule ? rulesStepsHeaders[game.rule.id] : undefined
+
+  if (loading || !game) {
+    return <>{t('Game loading...')}</>
+  } else if (cancelled) {
+    return <>{t('game.cancelled')}</>
+  } else if (victoryClaim) {
+    return <ShowVictoryClaim/>
+  } else if (!game?.rule) {
+    return GameOver ? <GameOver/> : <GameOverHeader GameOverRule={GameOverRule}/>
+  } else if (RulesStepsHeader) {
+    return <>
+      <RulesStepsHeader/>
+      {context.rulesHelp?.hasOwnProperty(game.rule!.id) && <>
+        &nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => play(displayRulesHelp(game.rule!.id), { local: true })} css={pointerCursorCss}/>
+      </>}
+    </>
+  } else {
+    return <>{t(`TODO: header for rule id ${game?.rule?.id}`)}</>
+  }
 }
 
 const GameOverHeader = ({ GameOverRule }: { GameOverRule?: ComponentType }) => {
