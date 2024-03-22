@@ -60,7 +60,7 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
     const consequences = play.bind(this)(move)
     if (move.kind !== MoveKind.LocalMove && stepIndex !== undefined && stepIndex < tutorial.steps.length) {
       const step = tutorial.steps[stepIndex]
-      if (step.move) {
+      if (step.move && this.isLegalMove(step.move.player, move)) {
         game.tutorialStepComplete = true
         if (step.move.interrupt) {
           const interruptIndex = consequences.findIndex(step.move.interrupt)
