@@ -57,24 +57,30 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
   Rules.prototype.play = function (move: MaterialMove) {
     const game = this.game as MaterialGame
     const stepIndex = game.tutorialStep
+    const step = stepIndex !== undefined && stepIndex < tutorial.steps.length ? tutorial.steps[stepIndex] : undefined
+
+    if (!game.tutorialStepComplete && step?.move !== undefined && move.kind !== MoveKind.LocalMove
+      && this.isLegalMove(step.move.player ?? game.players[0], move)) {
+      game.tutorialStepComplete = true
+    }
+
     const consequences = play.bind(this)(move)
-    if (move.kind !== MoveKind.LocalMove && stepIndex !== undefined && stepIndex < tutorial.steps.length) {
-      const step = tutorial.steps[stepIndex]
-      if (step.move && this.isLegalMove(step.move.player, move)) {
-        game.tutorialStepComplete = true
-        if (step.move.interrupt) {
-          const interruptIndex = consequences.findIndex(step.move.interrupt)
-          if (interruptIndex !== -1) {
-            this.game.tutorialInterrupt = consequences.slice(interruptIndex)
-            consequences.splice(interruptIndex, consequences.length - interruptIndex)
-          }
-        }
-      }
-    } else if (move.kind === MoveKind.LocalMove && move.type === LocalMoveType.CloseTutorialPopup) {
-      const moves = this.game.tutorialInterrupt ?? []
+
+    if (move.kind === MoveKind.LocalMove && move.type === LocalMoveType.CloseTutorialPopup && this.game.tutorialInterrupt) {
+      game.tutorialStepComplete = true
+      const moves = this.game.tutorialInterrupt
       delete this.game.tutorialInterrupt
       return moves
     }
+
+    if (step?.move?.interrupt) {
+      const interruptIndex = consequences.findIndex(step.move.interrupt)
+      if (interruptIndex !== -1) {
+        this.game.tutorialInterrupt = consequences.slice(interruptIndex)
+        consequences.splice(interruptIndex, consequences.length - interruptIndex)
+      }
+    }
+
     return consequences
   }
 
