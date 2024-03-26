@@ -40,7 +40,7 @@ export const Menu = () => {
   const tournament = useSelector((state: GamePageState) => state.tournament)
   const couldEject = !gameOver && (playerId !== undefined || tournament?.signedUp === true) && options?.speed === GameSpeed.RealTime
   const couldUndo = !gameOver && playerId !== undefined
-  const canGiveUp = !gameOver && playerId !== undefined && gameMode !== GameMode.TUTORIAL
+  const canGiveUp = !gameOver && playerId !== undefined && gameId !== undefined
   const canPlayAgain = gameOver && playerId !== undefined && gameMode === GameMode.COMPETITIVE
   const goToRanking = gameOver && gameMode === GameMode.COMPETITIVE
   const [ejectPlayerDialogOpen, setEjectPlayerDialogOpen] = useState(false)
