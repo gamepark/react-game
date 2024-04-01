@@ -13,7 +13,7 @@ export function usePlayerName<PlayerId = any>(playerId: PlayerId): string {
   const myId = usePlayerId()
   const { t } = useTranslation()
   if (name) return name
-  if (myId === playerId) return me?.user?.name ?? t('You')
+  if (myId === playerId) return me?.user?.name ?? t('anonymous')
   if (isWithPlayerIdOptions(optionsSpec)) return optionsSpec.players.id.valueSpec(playerId).label(t)
   return t('Player {number}', { number: playerId })
 }
