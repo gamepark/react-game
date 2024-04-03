@@ -57,7 +57,7 @@ export const MaterialTutorialDisplay = () => {
     <Dialog open={popup !== undefined && !game?.tutorialPopupClosed}
             css={[
               tutorialDialogCss,
-              popup?.position && transformCss(`translate(${popup.position.x}em, ${popup.position.y}em)`)
+              popup?.position && transformCss(`translate(${popup.position.x ?? 0}em, ${popup.position.y ?? 0}em)`)
             ]}
             backdropCss={backdropCss}>
       {popup &&

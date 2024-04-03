@@ -64,7 +64,7 @@ export type TutorialStep<P extends number = number, M extends number = number, L
 
 export type TutorialPopup = {
   text: (t: TFunction) => string | ReactNode
-  position?: XYCoordinates
+  position?: Partial<XYCoordinates>
 }
 
 export function isMaterialTutorial<P extends number = number, M extends number = number, L extends number = number>(
