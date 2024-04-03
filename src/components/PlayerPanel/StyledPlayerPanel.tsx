@@ -1,10 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react'
-import { GamePageState, useOptions } from '@gamepark/react-client'
+import { GamePageState, Player, useOptions } from '@gamepark/react-client'
 import { GameSpeed, MaterialRules } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, useCallback } from 'react'
 import { useSelector } from 'react-redux'
-import { usePlayer, usePlayerName, useRules } from '../../hooks'
+import { usePlayerName, useRules } from '../../hooks'
 import { Avatar, SpeechBubbleDirection } from '../Avatar'
 import { MaterialFocus, useFocusContext } from '../material'
 import { Picture } from '../Picture'
@@ -15,61 +15,60 @@ type MainCounterProps = {
   value: number | string
 }
 
-type StyledPlayerPanelProps<PlayerId extends number = number> = {
-  playerId: PlayerId
+type StyledPlayerPanelProps = {
+  player: Player
   mainCounter?: MainCounterProps
   backgroundImage?: string
-  getPlayerFocus?: (playerId?: number) => MaterialFocus
+  playerFocus?: MaterialFocus
+  color?: string
   activeRing?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
-  const { playerId, activeRing, getPlayerFocus, backgroundImage, ...rest } = props
+  const { player, activeRing, color = '#28B8CE', playerFocus, backgroundImage, mainCounter, ...rest } = props
   const { setFocus } = useFocusContext()
-  const playerName = usePlayerName(playerId)
+  const playerName = usePlayerName(player.id)
   const gameOver = useSelector((state: GamePageState) => state.gameOver)
+  const options = useOptions()
+  const speedDisabled = options?.speed !== GameSpeed.RealTime || !player?.time
   const rules = useRules<MaterialRules>()
-  const isTurnToPlay = rules?.isTurnToPlay(playerId) ?? false
+  const isTurnToPlay = rules?.isTurnToPlay(player.id) ?? false
   const focusPlayer = useCallback(() => {
-    if (!getPlayerFocus) return
-    setFocus(getPlayerFocus(playerId))
-  }, [getPlayerFocus])
+    if (!playerFocus) return
+    setFocus(playerFocus)
+  }, [playerFocus])
   return (
     <>
-      <div css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), getPlayerFocus && pointable]} onClick={focusPlayer} {...rest}>
-        <Avatar css={avatarStyle} playerId={playerId} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }}/>
+      <div css={[panelPlayerStyle, panelStyle, backgroundImage? backgroundCss(backgroundImage): noBackgroundCss(color, isTurnToPlay), playerFocus && pointable]} onClick={focusPlayer} {...rest}>
+        <Avatar css={avatarStyle} playerId={player.id} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }}/>
         {activeRing && isTurnToPlay && <div css={isPlaying}>
           <div css={isTurnToPlay && circle}/>
         </div>}
-        <h2 css={[nameStyle, data]}>{playerName}</h2>
-        {!gameOver && <PlayerTimer playerId={playerId} css={[timerStyle, data]}/>}
-        <MainIcon {...props} />
+        <h2 css={[nameStyle(!!backgroundImage), data]}>{playerName}</h2>
+        {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle(!!backgroundImage), data, !speedDisabled && rightAlignment(!!backgroundImage)]}/>}
+        {!!mainCounter && <MainIcon {...props} {...mainCounter} hasBackground={!!backgroundImage} />}
       </div>
 
     </>
   )
 }
 
-const MainIcon: FC<StyledPlayerPanelProps> = (props) => {
-  const { playerId, mainCounter } = props
-  const { image, value } = mainCounter ?? {}
-  const player = usePlayer(playerId)
+const MainIcon: FC<{ player: Player, hasBackground: boolean } & MainCounterProps> = (props) => {
+  const { player, hasBackground, image, value } = props
   const options = useOptions()
   const speedDisabled = options?.speed !== GameSpeed.RealTime || !player?.time
   if (image === undefined && value === undefined) return null
-
   return (
-    <span css={[data, counter, speedDisabled && rightAlignment]}>
+    <span css={[data, counter(hasBackground), speedDisabled && rightAlignment(hasBackground)]}>
       <Picture css={mini} src={image}/>
       <span>{value}</span>
     </span>
   )
 }
 
-const rightAlignment = css`
-  bottom: 0.2em;
+const rightAlignment = (hasBackground: boolean) => css`
   left: initial;
-  right: 0.25em;
+  right: ${hasBackground? 0.2: 0.15}em;
   font-size: 2.5em;
 `
 const mini = css`
@@ -79,21 +78,22 @@ const mini = css`
   border-radius: 5em;
 `
 
-const counter = css`
-  position: absolute;
-  width: 3.5em;
-  font-size: 2.5em;
-  bottom: 0.2em;
-  left: initial;
-  right: 0.25em;
-  display: flex;
-  height: 1.35em;
-
-  > span {
-    text-align: right;
-    width: 1.7em;
-  }
-`
+const counter = (hasBackground: boolean) =>
+  css`
+    position: absolute;
+    width: 3.5em;
+    font-size: 2.5em;
+    bottom: ${hasBackground ? 0.2 : 0.1}em;
+    left: initial;
+    right: 0.25em;
+    display: flex;
+    height: 1.3em;
+  
+    > span {
+      text-align: right;
+      width: 1.7em;
+    }
+  `
 
 const panelPlayerStyle = css`
   color: black;
@@ -111,11 +111,11 @@ const avatarStyle = css`
   color: black;
   z-index: 1;
 `
-const nameStyle = css`
+const nameStyle = (hasBackground: boolean) => css`
   position: absolute;
-  top: 0.2em;
+  top: ${hasBackground? 0.2: 0.1}em;
   left: initial;
-  right: 0.3em;
+  right: ${hasBackground? 0.2: 0.15}em;
   max-width: 7.3em;
   font-size: 2.4em;
   margin: 0;
@@ -130,12 +130,17 @@ const backgroundCss = (backgroundImage: string) => css`
   background-repeat: no-repeat;
 `
 
+const noBackgroundCss = (color: string, active?: boolean) => css`
+  background-color: ${active ? '#f0fbfc' : '#dddddd'};
+  border: 0.5em solid ${color};
+`
+
 const pointable = css`
   cursor: pointer;
 `
 
 const panelStyle = css`
-
+  background-color: white;
   &:after {
     content: '';
     position: absolute;
@@ -155,9 +160,9 @@ const data = css`
   z-index: 2;
 `
 
-const timerStyle = css`
+const timerStyle = (hasBackground: boolean) => css`
   position: absolute;
-  bottom: 0.2em;
+  bottom: ${hasBackground? 0.2: 0.1}em;
   left: initial;
   right: 4.1em;
   font-size: 2.5em;
