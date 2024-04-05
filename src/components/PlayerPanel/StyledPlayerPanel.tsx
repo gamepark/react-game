@@ -39,36 +39,36 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
   }, [playerFocus])
   return (
     <>
-      <div css={[panelPlayerStyle, panelStyle, backgroundImage? backgroundCss(backgroundImage): noBackgroundCss(color, isTurnToPlay), playerFocus && pointable]} onClick={focusPlayer} {...rest}>
+      <div css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable]} onClick={focusPlayer} {...rest}>
         <Avatar css={avatarStyle} playerId={player.id} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }}/>
         {activeRing && isTurnToPlay && <div css={isPlaying}>
           <div css={isTurnToPlay && circle}/>
         </div>}
-        <h2 css={[nameStyle(!!backgroundImage), data]}>{playerName}</h2>
-        {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle(!!backgroundImage), data, !speedDisabled && rightAlignment(!!backgroundImage)]}/>}
-        {!!mainCounter && <MainIcon {...props} {...mainCounter} hasBackground={!!backgroundImage} />}
+        <h2 css={[nameStyle, data]}>{playerName}</h2>
+        {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, !speedDisabled && rightAlignment]}/>}
+        {!!mainCounter && <MainIcon {...props} {...mainCounter}/>}
       </div>
 
     </>
   )
 }
 
-const MainIcon: FC<{ player: Player, hasBackground: boolean } & MainCounterProps> = (props) => {
-  const { player, hasBackground, image, value } = props
+const MainIcon: FC<{ player: Player } & MainCounterProps> = (props) => {
+  const { player, image, value } = props
   const options = useOptions()
   const speedDisabled = options?.speed !== GameSpeed.RealTime || !player?.time
   if (image === undefined && value === undefined) return null
   return (
-    <span css={[data, counter(hasBackground), speedDisabled && rightAlignment(hasBackground)]}>
+    <span css={[data, counter, speedDisabled && rightAlignment]}>
       <Picture css={mini} src={image}/>
       <span>{value}</span>
     </span>
   )
 }
 
-const rightAlignment = (hasBackground: boolean) => css`
+const rightAlignment = css`
   left: initial;
-  right: ${hasBackground? 0.2: 0.15}em;
+  right: 0.2em;
   font-size: 2.5em;
 `
 const mini = css`
@@ -78,27 +78,28 @@ const mini = css`
   border-radius: 5em;
 `
 
-const counter = (hasBackground: boolean) =>
-  css`
-    position: absolute;
-    width: 3.5em;
-    font-size: 2.5em;
-    bottom: ${hasBackground ? 0.2 : 0.1}em;
-    left: initial;
-    right: 0.25em;
-    display: flex;
-    height: 1.3em;
-  
-    > span {
-      text-align: right;
-      width: 1.7em;
-    }
-  `
+const counter = css`
+  position: absolute;
+  width: 3.5em;
+  font-size: 2.5em;
+  bottom: 0.2em;
+  left: initial;
+  right: 0.25em;
+  display: flex;
+  height: 1.3em;
+
+  > span {
+    text-align: right;
+    width: 1.7em;
+  }
+`
 
 const panelPlayerStyle = css`
   color: black;
   border-radius: 3em 1.5em 1.5em 1.5em;
   box-shadow: 0 0 0.5em black, 0 0 0.5em black;
+  width: 28em;
+  height: 8.3em;
 `
 
 const avatarStyle = css`
@@ -111,11 +112,11 @@ const avatarStyle = css`
   color: black;
   z-index: 1;
 `
-const nameStyle = (hasBackground: boolean) => css`
+const nameStyle = css`
   position: absolute;
-  top: ${hasBackground? 0.2: 0.1}em;
+  top: 0.2em;
   left: initial;
-  right: ${hasBackground? 0.2: 0.15}em;
+  right: 0.2em;
   max-width: 7.3em;
   font-size: 2.4em;
   margin: 0;
@@ -130,17 +131,13 @@ const backgroundCss = (backgroundImage: string) => css`
   background-repeat: no-repeat;
 `
 
-const noBackgroundCss = (color: string, active?: boolean) => css`
-  background-color: ${active ? '#f0fbfc' : '#dddddd'};
-  border: 0.5em solid ${color};
-`
-
 const pointable = css`
   cursor: pointer;
 `
 
 const panelStyle = css`
   background-color: white;
+
   &:after {
     content: '';
     position: absolute;
@@ -160,9 +157,9 @@ const data = css`
   z-index: 2;
 `
 
-const timerStyle = (hasBackground: boolean) => css`
+const timerStyle = css`
   position: absolute;
-  bottom: ${hasBackground? 0.2: 0.1}em;
+  bottom: 0.2em;
   left: initial;
   right: 4.1em;
   font-size: 2.5em;
