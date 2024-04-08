@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, Theme } from '@emotion/react'
+import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faImage } from '@fortawesome/free-solid-svg-icons/faImage'
 import { faLaptopCode } from '@fortawesome/free-solid-svg-icons/faLaptopCode'
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb'
@@ -52,49 +53,29 @@ export const LoadingScreen = ({
       {gameBox && <Picture css={gameBoxStyle} src={gameBox} alt={t('Name')!}/>}
       <h2 css={gameTitle}>{t('Name')}</h2>
       <p css={gamePeople}>
-        <FontAwesomeIcon css={iconStyle} icon={faLightbulb}/>
-        {authors.length === 1 &&
-          <Trans defaults="authors.1" values={{ author }} components={[<strong/>]}/>
-        }
-        {authors.length === 2 &&
-          <Trans defaults="authors.2" values={{ author1: authors[0], author2: authors[1] }} components={[<strong/>]}/>
-        }
-        <br/>
-        <FontAwesomeIcon css={iconStyle} icon={faPaintbrush}/>
-        {artists.length === 1 &&
-          <Trans defaults="artists.1" values={{ artist }} components={[<strong/>]}/>
-        }
-        {artists.length === 2 &&
-          <Trans defaults="artists.2" values={{ artist1: artists[0], artist2: artists[1] }} components={[<strong/>]}/>
-        }
-        <br/>
-        {graphicDesigners.length > 0 && <>
-          <FontAwesomeIcon css={iconStyle} icon={faImage}/>
-          {graphicDesigners.length === 1 &&
-            <Trans defaults="graphics.1" values={{ name: graphicDesigners[0] }} components={[<strong/>]}/>
-          }
-          <br/>
-        </>}
-        <FontAwesomeIcon css={iconStyle} icon={faWrench}/>
-        {publishers.length === 1 &&
-          <Trans defaults="publishers.1" values={{ publisher }} components={[<strong/>]}/>
-        }
-        {publishers.length === 2 &&
-          <Trans defaults="publishers.2" values={{ publisher1: publishers[0], publisher2: publishers[1] }}
-                 components={[<strong/>]}/>
-        }
-        <br/>
-        <FontAwesomeIcon css={iconStyle} icon={faLaptopCode}/>
-        {developers.length === 1 &&
-          <Trans defaults="developers.1" values={{ developer }} components={[<strong/>]}/>
-        }
-        {developers.length === 2 &&
-          <Trans defaults="developers.2" values={{ developer1: developers[0], developer2: developers[1] }}
-                 components={[<strong/>]}/>
-        }
+        <PeopleLine people={authors} icon={faLightbulb}/>
+        <PeopleLine people={artists} icon={faPaintbrush}/>
+        <PeopleLine people={graphicDesigners} icon={faImage}/>
+        <PeopleLine people={publishers} icon={faWrench}/>
+        <PeopleLine people={developers} icon={faLaptopCode}/>
       </p>
     </div>
   )
+}
+
+const PeopleLine = ({icon, people}: {icon: IconProp, people: string[]}) => {
+  if (!people.length) return null
+  return <>
+    <br/>
+    <FontAwesomeIcon css={iconStyle} icon={icon}/>
+    {people.length === 1 &&
+      <Trans defaults="developers.1" values={{ developer: people[0] }} components={[<strong/>]}/>
+    }
+    {people.length === 2 &&
+      <Trans defaults="developers.2" values={{ developer1: people[0], developer2: people[1] }}
+             components={[<strong/>]}/>
+    }
+  </>
 }
 
 const fadeOutDuration = 2000
