@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css, keyframes } from '@emotion/react'
+import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { GamePageState, Player, useOptions } from '@gamepark/react-client'
 import { GameSpeed, MaterialRules } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, useCallback } from 'react'
@@ -13,7 +13,7 @@ import { blinkOnRunningTimeout, PlayerTimer } from '../PlayerTimer'
 type MainCounterProps = {
   image: string
   value: number | string
-}
+} & { imageCss?: Interpolation<Theme>}
 
 type StyledPlayerPanelProps = {
   player: Player
@@ -46,7 +46,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
         </div>}
         <h2 css={[nameStyle, data]}>{playerName}</h2>
         {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, speedDisabled && rightAlignment]} customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>}
-        {!!mainCounter && <MainIcon {...props} {...mainCounter}/>}
+        {!!mainCounter && <MainIcon player={player.id} {...mainCounter}/>}
       </div>
 
     </>
@@ -58,13 +58,13 @@ const halfOpacityOnPause = (playing: boolean) => !playing && css`
 `
 
 const MainIcon: FC<{ player: Player } & MainCounterProps> = (props) => {
-  const { player, image, value } = props
+  const { player, image, value, imageCss } = props
   const options = useOptions()
   const speedDisabled = options?.speed !== GameSpeed.RealTime || !player?.time
   if (image === undefined && value === undefined) return null
   return (
     <span css={[data, counter, speedDisabled && rightAlignment]}>
-      <Picture css={mini} src={image}/>
+      <Picture css={[mini, imageCss]} src={image}/>
       <span>{value}</span>
     </span>
   )
@@ -76,10 +76,9 @@ const rightAlignment = css`
   font-size: 2.5em;
 `
 const mini = css`
-  height: 1.05em;
-  margin-bottom: -0.17em;
+  height: 1em;
+  margin-bottom: -0.10em;
   border: 0.01em solid white;
-  border-radius: 5em;
 `
 
 const counter = css`
