@@ -45,13 +45,17 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
           <div css={isTurnToPlay && circle}/>
         </div>}
         <h2 css={[nameStyle, data]}>{playerName}</h2>
-        {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, !speedDisabled && rightAlignment]}/>}
+        {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, speedDisabled && rightAlignment]} customStyle={[halfOpacityOnPause]}/>}
         {!!mainCounter && <MainIcon {...props} {...mainCounter}/>}
       </div>
 
     </>
   )
 }
+
+const halfOpacityOnPause = (playing: boolean) => !playing && css`
+  opacity: 0.8;
+`
 
 const MainIcon: FC<{ player: Player } & MainCounterProps> = (props) => {
   const { player, image, value } = props
