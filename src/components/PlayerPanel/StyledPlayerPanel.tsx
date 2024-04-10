@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux'
 import { usePlayerName, useRules } from '../../hooks'
 import { Avatar, SpeechBubbleDirection } from '../Avatar'
 import { MaterialFocus, useFocusContext } from '../material'
-import { Picture } from '../Picture'
 import { blinkOnRunningTimeout, PlayerTimer } from '../PlayerTimer'
 
 type MainCounterProps = {
@@ -64,11 +63,17 @@ const MainIcon: FC<{ player: Player } & MainCounterProps> = (props) => {
   if (image === undefined && value === undefined) return null
   return (
     <span css={[data, counter, speedDisabled && rightAlignment]}>
-      <Picture css={[mini, imageCss]} src={image}/>
-      <span>{value}</span>
+      <div css={[mini, mainIconBackground(image), imageCss]}/>
+      <span>{value}0</span>
     </span>
   )
 }
+
+const mainIconBackground = (image: string) => css`
+  background-image: url(${image});
+  background-repeat: no-repeat;
+  background-size: cover;
+`
 
 const rightAlignment = css`
   left: initial;
@@ -77,7 +82,8 @@ const rightAlignment = css`
 `
 const mini = css`
   height: 1em;
-  margin-bottom: -0.10em;
+  width: 1em;
+  align-self: center;
   border: 0.01em solid white;
 `
 
@@ -90,10 +96,13 @@ const counter = css`
   right: 0.25em;
   display: flex;
   height: 1.3em;
+  align-items: center;
+  justify-content: space-between;
 
   > span {
     text-align: right;
     width: 1.7em;
+    bottom: 0.2em;
   }
 `
 
