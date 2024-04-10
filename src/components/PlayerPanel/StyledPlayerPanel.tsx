@@ -64,7 +64,7 @@ const MainIcon: FC<{ player: Player } & MainCounterProps> = (props) => {
   return (
     <span css={[data, counter, speedDisabled && rightAlignment]}>
       <div css={[mini, mainIconBackground(image), imageCss]}/>
-      <span>{value}0</span>
+      <span>{value}</span>
     </span>
   )
 }
@@ -139,7 +139,7 @@ const nameStyle = css`
 
 const backgroundCss = (backgroundImage: string) => css`
   background: rgba(0, 0, 0, 0.8) url(${backgroundImage});
-  background-size: 120% auto;
+  background-size: cover;
   background-repeat: no-repeat;
 `
 
