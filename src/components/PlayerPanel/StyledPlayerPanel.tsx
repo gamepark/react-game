@@ -8,7 +8,7 @@ import { usePlayerName, useRules } from '../../hooks'
 import { Avatar, SpeechBubbleDirection } from '../Avatar'
 import { MaterialFocus, useFocusContext } from '../material'
 import { Picture } from '../Picture'
-import { PlayerTimer } from '../PlayerTimer'
+import { blinkOnRunningTimeout, PlayerTimer } from '../PlayerTimer'
 
 type MainCounterProps = {
   image: string
@@ -45,7 +45,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
           <div css={isTurnToPlay && circle}/>
         </div>}
         <h2 css={[nameStyle, data]}>{playerName}</h2>
-        {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, speedDisabled && rightAlignment]} customStyle={[halfOpacityOnPause]}/>}
+        {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, speedDisabled && rightAlignment]} customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>}
         {!!mainCounter && <MainIcon {...props} {...mainCounter}/>}
       </div>
 

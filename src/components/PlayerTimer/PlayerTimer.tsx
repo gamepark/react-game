@@ -47,7 +47,7 @@ const blinkKeyframes = keyframes`
   }
 `
 
-const blinkOnRunningTimeout = (playing: boolean, timeLeft: number) => playing && timeLeft < 0 && css`
+export const blinkOnRunningTimeout = (playing: boolean, timeLeft: number) => playing && timeLeft < 0 && css`
   animation: ${blinkKeyframes} 1s steps(8, start) infinite;
 `
 
