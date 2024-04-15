@@ -69,10 +69,10 @@ const PeopleLine = ({type, icon, people}: {type: string, icon: IconProp, people:
     <br/>
     <FontAwesomeIcon css={iconStyle} icon={icon}/>
     {people.length === 1 &&
-      <Trans defaults={`${type}.1`} values={{ developer: people[0] }} components={[<strong/>]}/>
+      <Trans defaults={`${type}.1`} values={{ name: people[0] }} components={[<strong/>]}/>
     }
     {people.length === 2 &&
-      <Trans defaults={`${type}.2`} values={{ developer1: people[0], developer2: people[1] }}
+      <Trans defaults={`${type}.2`} values={{ name1: people[0], name2: people[1] }}
              components={[<strong/>]}/>
     }
   </>
