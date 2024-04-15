@@ -53,26 +53,26 @@ export const LoadingScreen = ({
       {gameBox && <Picture css={gameBoxStyle} src={gameBox} alt={t('Name')!}/>}
       <h2 css={gameTitle}>{t('Name')}</h2>
       <p css={gamePeople}>
-        <PeopleLine people={authors} icon={faLightbulb}/>
-        <PeopleLine people={artists} icon={faPaintbrush}/>
-        <PeopleLine people={graphicDesigners} icon={faImage}/>
-        <PeopleLine people={publishers} icon={faWrench}/>
-        <PeopleLine people={developers} icon={faLaptopCode}/>
+        <PeopleLine type="authors" people={authors} icon={faLightbulb}/>
+        <PeopleLine type="artists" people={artists} icon={faPaintbrush}/>
+        <PeopleLine type="graphics" people={graphicDesigners} icon={faImage}/>
+        <PeopleLine type="publishers" people={publishers} icon={faWrench}/>
+        <PeopleLine type="developers" people={developers} icon={faLaptopCode}/>
       </p>
     </div>
   )
 }
 
-const PeopleLine = ({icon, people}: {icon: IconProp, people: string[]}) => {
+const PeopleLine = ({type, icon, people}: {type: string, icon: IconProp, people: string[]}) => {
   if (!people.length) return null
   return <>
     <br/>
     <FontAwesomeIcon css={iconStyle} icon={icon}/>
     {people.length === 1 &&
-      <Trans defaults="developers.1" values={{ developer: people[0] }} components={[<strong/>]}/>
+      <Trans defaults={`${type}.1`} values={{ developer: people[0] }} components={[<strong/>]}/>
     }
     {people.length === 2 &&
-      <Trans defaults="developers.2" values={{ developer1: people[0], developer2: people[1] }}
+      <Trans defaults={`${type}.2`} values={{ developer1: people[0], developer2: people[1] }}
              components={[<strong/>]}/>
     }
   </>
