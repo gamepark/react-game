@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
-import { GamePageState, Player, useOptions } from '@gamepark/react-client'
-import { GameSpeed, MaterialRules } from '@gamepark/rules-api'
+import { GamePageState, Player } from '@gamepark/react-client'
+import { MaterialRules } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { usePlayerName, useRules } from '../../hooks'
@@ -56,12 +56,10 @@ const halfOpacityOnPause = (playing: boolean) => !playing && css`
 `
 
 const MainIcon: FC<{ player: Player } & MainCounterProps> = (props) => {
-  const { player, image, value, imageCss } = props
-  const options = useOptions()
-  const speedDisabled = options?.speed !== GameSpeed.RealTime || !player?.time
+  const { image, value, imageCss } = props
   if (image === undefined && value === undefined) return null
   return (
-    <span css={[data, counter, speedDisabled && rightAlignment]}>
+    <span css={[data, counter, rightAlignment]}>
       <div css={[mini, mainIconBackground(image), imageCss]}/>
       <span>{value}</span>
     </span>
