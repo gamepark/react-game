@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { usePlayer } from './usePlayers'
 
+const isLocalDev = process.env.NODE_ENV !== 'production' && !new URLSearchParams(window.location.search).get('game')
+
 export const usePlayerTime = <PlayerId>(playerId: PlayerId) => {
   const [result, setResult] = useState<number>()
   const options = useSelector((state: GamePageState) => state.options)
@@ -27,6 +29,8 @@ export const usePlayerTime = <PlayerId>(playerId: PlayerId) => {
   useEffect(() => {
     setResult(getPlayerTime())
   }, [getPlayerTime])
+
+  if (isLocalDev && result === undefined) return 30000
 
   return result
 }
