@@ -21,15 +21,14 @@ type StyledPlayerPanelProps = {
   playerFocus?: MaterialFocus
   color?: string
   activeRing?: boolean
+  timerOnRight?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
-  const { player, activeRing, color = '#28B8CE', playerFocus, backgroundImage, mainCounter, ...rest } = props
+  const { player, activeRing, timerOnRight, color = '#28B8CE', playerFocus, backgroundImage, mainCounter, ...rest } = props
   const { setFocus } = useFocusContext()
   const playerName = usePlayerName(player.id)
   const gameOver = useSelector((state: GamePageState) => state.gameOver)
-  const options = useOptions()
-  const speedDisabled = options?.speed !== GameSpeed.RealTime || !player?.time
   const rules = useRules<MaterialRules>()
   const isTurnToPlay = rules?.isTurnToPlay(player.id) ?? false
   const focusPlayer = useCallback(() => {
@@ -44,7 +43,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
           <div css={isTurnToPlay && circle}/>
         </div>}
         <h2 css={[nameStyle, data]}>{playerName}</h2>
-        {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, speedDisabled && rightAlignment]} customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>}
+        {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, timerOnRight && rightAlignment]} customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>}
         {!!mainCounter && <MainIcon player={player.id} {...mainCounter}/>}
       </div>
 
