@@ -4,6 +4,7 @@ import equal from 'fast-deep-equal'
 import sumBy from 'lodash/sumBy'
 import { LocationDescription, MaterialDescriptionRecord } from '../components'
 
+export type SortFunction = ((item: MaterialItem) => number)
 export class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
   limit?: number
@@ -134,6 +135,8 @@ export class ItemLocator<P extends number = number, M extends number = number, L
   getMaterial(game: MaterialGame<P, M, L>, type: M) {
     return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
+
+  navigationSorts: SortFunction[] = [(item) => item.location.x ?? 0, (item) => item.location.y ?? 0, (item) => item.location.z ?? 0]
 }
 
 export type ItemLocatorRecord<P extends number = number, M extends number = number, L extends number = number> = Record<L, ItemLocator<P, M, L>>

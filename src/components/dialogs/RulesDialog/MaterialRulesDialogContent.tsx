@@ -7,7 +7,8 @@ import { closeHelpDisplay, displayMaterialHelp, isSameLocationArea, MaterialHelp
 import { FC, useMemo } from 'react'
 import { fontSizeCss, transformCss } from '../../../css'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
-import { ItemContext } from '../../../locators'
+import { useLocators } from '../../../hooks/useLocators'
+import { ItemContext, SortFunction } from '../../../locators'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
 import { LocationDisplay } from '../../material/locations/LocationDisplay'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
@@ -16,20 +17,24 @@ export type MaterialRulesDialogContentProps<Player extends number = number, Mate
   helpDisplay: MaterialHelpDisplay<Player, MaterialType, LocationType>
 }
 
+const defaultSort: SortFunction[] = [(item) => item.location.x ?? 0, (item) => item.location.y ?? 0, (item) => item.location.z ?? 0]
+
 
 const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
   const rules = useRules<MaterialRules>()!
   const play = usePlay()
   const helpItem = helpDisplay.item
-  const material = useMemo(() => helpItem.location && rules
+  const locators = useLocators()!
+  const material = useMemo(() => {
+    if (!helpItem.location) return undefined
+    const itemOnSameLocation = rules
       .material(helpDisplay.itemType)
       .location((location) => isSameLocationArea(location, helpItem.location!))
-      .sort(
-        (item) => item.location.x ?? 0,
-        (item) => item.location.y ?? 0,
-        (item) => item.location.z ?? 0
-      ),
-    [rules.game])
+
+    const locator = locators[helpItem.location.type]
+    const sorts: SortFunction[] = locator?.navigationSorts ?? defaultSort
+    return itemOnSameLocation.sort(...sorts)
+  }, [rules.game])
 
   useKeyDown('ArrowRight', () => nextMove ? play(nextMove, { local: true }) : undefined)
   useKeyDown('ArrowLeft', () => previousMove ? play(previousMove, { local: true }) : undefined)
