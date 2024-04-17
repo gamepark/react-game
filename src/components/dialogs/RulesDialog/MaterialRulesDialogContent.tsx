@@ -23,13 +23,14 @@ const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
   const helpItem = helpDisplay.item
   const locators = useLocators()!
   const material = useMemo(() => {
-    if (!helpItem.location) return undefined
+    if (!helpItem.location) return
     const itemOnSameLocation = rules
       .material(helpDisplay.itemType)
       .location((location) => isSameLocationArea(location, helpItem.location!))
 
     const locator = locators[helpItem.location.type]
     const sorts: SortFunction[] = locator?.navigationSorts ?? []
+    if (!sorts.length) return
     return itemOnSameLocation.sort(...sorts)
   }, [rules.game])
 
