@@ -17,9 +17,6 @@ export type MaterialRulesDialogContentProps<Player extends number = number, Mate
   helpDisplay: MaterialHelpDisplay<Player, MaterialType, LocationType>
 }
 
-const defaultSort: SortFunction[] = [(item) => item.location.x ?? 0, (item) => item.location.y ?? 0, (item) => item.location.z ?? 0]
-
-
 const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
   const rules = useRules<MaterialRules>()!
   const play = usePlay()
@@ -32,7 +29,7 @@ const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
       .location((location) => isSameLocationArea(location, helpItem.location!))
 
     const locator = locators[helpItem.location.type]
-    const sorts: SortFunction[] = locator?.navigationSorts ?? defaultSort
+    const sorts: SortFunction[] = locator?.navigationSorts ?? []
     return itemOnSameLocation.sort(...sorts)
   }, [rules.game])
 
