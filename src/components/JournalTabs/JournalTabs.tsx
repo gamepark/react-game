@@ -171,7 +171,9 @@ const journalMenu = css`
   border-bottom-right-radius: 0.5em;
   transform-origin: top left;
   left: 0;
+  height: 100vh;
   height: 100dvh;
+  width: 35vw;
   width: 35dvw;
   max-width: 100vw;
   justify-content: flex-end;

@@ -22,7 +22,9 @@ export const RulesDialog: FC<RulesDialogProps> = ({ close, children, ...props }:
 }
 
 const dialogCss = css`
+  max-width: 90vw;
   max-width: 90dvw;
+  max-height: 90vh;
   max-height: 90dvh;
   padding: 0;
 `
