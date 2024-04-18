@@ -35,9 +35,10 @@ export const getLocationsWithFocus = (
 export const getStaticLocationsWithFocus = (
   context: LocationContext, focus?: MaterialFocus
 ): Location[] => {
-  return Object.entries(context.locators).flatMap(([type]) => {
+  return Object.keys(context.locators).flatMap((type) => {
+    const locator = context.locators[type]
     const locationsFocus = focus?.locations.filter(l => l.type === +type) ?? []
-    const locations = context.locators[type]?.getLocationDescription(context)?.getLocations(context) ?? []
+    const locations = locator.getLocationDescription(context)?.getLocations(context) ?? []
     return getFocusedLocations(locationsFocus, locations).locations
   })
 
