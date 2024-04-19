@@ -116,7 +116,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     return null
   }
 
-  if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
+  if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop && !canClickToMove) return null
 
   return (
     <LocationDisplay ref={mergeRefs([ref, setNodeRef])} location={location} canDrop={canDrop}
