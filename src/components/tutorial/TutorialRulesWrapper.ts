@@ -71,12 +71,12 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
         }
       }
     } else if (move.kind === MoveKind.LocalMove && move.type === LocalMoveType.CloseTutorialPopup) {
-      const consequences = this.game.tutorialInterrupt ?? []
+      const consequences: MaterialMove[] = this.game.tutorialInterrupt ?? []
       delete this.game.tutorialInterrupt
       if (stepIndex !== undefined) {
-        const step = tutorial.steps[stepIndex]
-        if (step?.move?.interrupt) {
-          const interruptIndex = consequences.findIndex(step.move.interrupt)
+        const interrupt = tutorial.steps[stepIndex]?.move?.interrupt
+        if (interrupt) {
+          const interruptIndex = consequences.findIndex((move, index) => index !== 0 && interrupt(move))
           if (interruptIndex !== -1) {
             this.game.tutorialInterrupt = consequences.slice(interruptIndex)
             consequences.splice(interruptIndex, consequences.length - interruptIndex)
