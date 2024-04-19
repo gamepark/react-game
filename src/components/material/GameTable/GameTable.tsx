@@ -3,7 +3,7 @@ import { CollisionDetection, DndContext, DragEndEvent, getClientRect, PointerSen
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { css, Global } from '@emotion/react'
 import { dropItemMove, Location } from '@gamepark/rules-api'
-import React, { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
@@ -81,14 +81,7 @@ export const GameTable: FC<GameTableProps> = (
   const ratio = (xMax - xMin) / (yMax - yMin)
   const ratioWithMargins = ((100 - vm) * ratio + hm) / 100
   const panning = useMemo(() => ({ disabled: dragging }), [dragging])
-  const wrapperStyle: React.CSSProperties = useMemo(() => ({
-    position: 'absolute',
-    margin: `${margin.top}em ${margin.right}em ${margin.bottom}em ${margin.left}em`,
-    transformStyle: 'preserve-3d',
-    height: verticalCenter? `calc(100% - ${vm}em)`: `min(100% - ${vm}em, (100dvw - ${hm}em) / ${ratio})`,
-    width: `calc(100dvw - ${hm}em)`,
-    overflow: 'visible',
-  }), [margin, vm, hm, ratio])
+  const wrapperStyle = useMemo(() => computedWrapperClass(margin, vm, hm, ratio, verticalCenter), [margin, vm, hm, ratio])
 
   const modifiers = useMemo(() => snapToCenter? [snapCenterToCursor]: undefined, [snapToCenter])
 
@@ -96,10 +89,10 @@ export const GameTable: FC<GameTableProps> = (
     <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
                 modifiers={modifiers} sensors={sensors}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
-      <Global styles={ratioFontSize(ratioWithMargins)}/>
+      <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle]}/>
       <TransformWrapper  ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
                         centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
-        <TransformComponent wrapperStyle={wrapperStyle}>
+        <TransformComponent wrapperClass="wrapperClass">
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
             <GameMaterialDisplay left={-xMin} top={-yMin}>
               {children}
@@ -115,10 +108,25 @@ function dataIsLocation<P extends number = number, L extends number = number>(da
   return typeof data?.type === 'number'
 }
 
+const computedWrapperClass = (margin: any, vm: number, hm: number, ratio: number, verticalCenter?: boolean) => css`
+  .wrapperClass {
+    position: absolute;
+    margin: ${margin.top}em ${margin.right}em ${margin.bottom}em ${margin.left}em;
+    transform-style: preserve-3d;
+    height: ${verticalCenter ? `calc(100% - ${vm}em)` : `min(100% - ${vm}em, (100vw - ${hm}em) / ${ratio})`};
+    height: ${verticalCenter ? `calc(100% - ${vm}em)` : `min(100% - ${vm}em, (100dvw - ${hm}em) / ${ratio})`};
+    width: calc(100vw - ${hm}em);
+    width: calc(100dvw - ${hm}em);
+    overflow: visible;
+  }
+`
+
 const ratioFontSize = (ratio: number) => css`
   .react-transform-wrapper {
     font-size: 1dvh;
+    font-size: 1vh;
     @media (max-aspect-ratio: ${ratio}/1) {
+      font-size: calc(1vw / ${ratio});
       font-size: calc(1dvw / ${ratio});
     }
   }

@@ -73,6 +73,7 @@ export const menuButtonCss = css`
 export const menuBaseCss = css`
   position: absolute;
   top: 0;
+  max-height: 100vh;
   max-height: 100dvh;
   background: #F0FBFC;
   overflow: hidden;
@@ -93,7 +94,9 @@ export const hide = css`
 
 export const backdrop = css`
   position: fixed;
+  width: 100vw;
   width: 100dvw;
+  height: 100vw;
   height: 100dvw;
   background: rgba(0, 0, 0, 0.5);
   opacity: 0;
