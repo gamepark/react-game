@@ -57,7 +57,8 @@ export const MaterialTutorialDisplay = () => {
     <Dialog open={popup !== undefined && !game?.tutorialPopupClosed}
             css={[
               tutorialDialogCss,
-              popup?.position && transformCss(`translate(${popup.position.x ?? 0}em, ${popup.position.y ?? 0}em)`)
+              popup?.position && transformCss(`translate(${popup.position.x ?? 0}em, ${popup.position.y ?? 0}em)`),
+              sizeCss(popup?.size),
             ]}
             backdropCss={backdropCss}>
       {popup &&
@@ -113,7 +114,11 @@ const buttonsLine = css`
 `
 
 const tutorialDialogCss = css`
-  width: 80em;
   pointer-events: auto;
   transition: transform 0.1s ease-in-out;
+`
+
+const sizeCss = (size?: { height?: number, width?: number }) => css`
+  width: ${size?.width ?? 80}em;
+  ${size?.height !== undefined ? `height: ${size.height}em;` : ''}
 `
