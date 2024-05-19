@@ -49,6 +49,11 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
       const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
       if (canUndo(predicate)) return undo(predicate)
     }
+    const shortClickLocalMoves = description.getShortClickLocalMoves(itemContext)
+    if (shortClickLocalMoves.length) {
+      shortClickLocalMoves.forEach((move) => play(move, { local: true }))
+      return
+    }
     return play(description.displayHelp(item, itemContext), { local: true })
   }, [type, item, index, displayIndex, play, canUndo, undo, legalMoves])
 
@@ -66,6 +71,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
 
   const canClickToMove = useMemo(() => {
     let short = 0, long = 0
+    if (description.getShortClickLocalMoves(itemContext).length) short++
     for (const move of legalMoves) {
       if (description.canShortClick(move, itemContext)) short++
       if (description.canLongClick(move, itemContext)) long++
