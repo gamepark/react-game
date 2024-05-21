@@ -66,8 +66,8 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return isSelectItem(move) && move.itemType === type && move.itemIndex === index
   }
 
-  getShortClickLocalMoves(_context: ItemContext<P, M, L>): MaterialMove<P, M, L>[] {
-    return []
+  getShortClickLocalMove(_context: ItemContext<P, M, L>): MaterialMove<P, M, L> | undefined {
+    return undefined
   }
 
   height?: number
