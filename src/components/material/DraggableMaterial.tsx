@@ -49,6 +49,10 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
       const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
       if (canUndo(predicate)) return undo(predicate)
     }
+
+    const shortClickLocalMove = description.getShortClickLocalMove(itemContext)
+    if (shortClickLocalMove) return play(shortClickLocalMove, { local: true })
+
     return play(description.displayHelp(item, itemContext), { local: true })
   }, [type, item, index, displayIndex, play, canUndo, undo, legalMoves])
 
@@ -59,6 +63,10 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     }
     const shortClickMove = findIfUnique(legalMoves, move => description.canShortClick(move, itemContext))
     if (shortClickMove !== undefined) return play(description.displayHelp(item, itemContext), { local: true })
+
+    const shortClickLocalMove = description.getShortClickLocalMove(itemContext)
+    if (shortClickLocalMove) return play(description.displayHelp(item, itemContext), { local: true })
+
     const move = findIfUnique(legalMoves, move => description.canLongClick(move, itemContext))
     if (move !== undefined) return play(move)
     return
@@ -66,6 +74,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
 
   const canClickToMove = useMemo(() => {
     let short = 0, long = 0
+    if (description.getShortClickLocalMove(itemContext)) short++
     for (const move of legalMoves) {
       if (description.canShortClick(move, itemContext)) short++
       if (description.canLongClick(move, itemContext)) long++
