@@ -27,7 +27,19 @@ const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 const pointerSensorOptions = { activationConstraint: { distance: 2 } }
 export const GameTable: FC<GameTableProps> = (
-  { collisionAlgorithm, snapToCenter = true, perspective, xMin, xMax, yMin, yMax, margin = { left: 0, right: 0, top: 7, bottom: 0 }, verticalCenter, children, ...props }
+  {
+    collisionAlgorithm,
+    snapToCenter = true,
+    perspective,
+    xMin,
+    xMax,
+    yMin,
+    yMax,
+    margin = { left: 0, right: 0, top: 7, bottom: 0 },
+    verticalCenter,
+    children,
+    ...props
+  }
 ) => {
 
   const [dragging, setDragging] = useState(false)
@@ -50,10 +62,9 @@ export const GameTable: FC<GameTableProps> = (
       const moves = legalMoves.filter(move =>
         description?.canDrag(move, itemContext) && locator?.locationDescription?.canDrop(move, location, itemContext)
       )
-      if (moves.length === 1) {
-        play(dropItemMove(type, index, displayIndex), { local: true })
-        play(moves[0])
-      }
+      const move = moves.length === 1 ? moves[0] : locator!.locationDescription!.getBestDropMove(moves, location, itemContext)
+      play(dropItemMove(type, index, displayIndex), { local: true })
+      play(move)
     }
   }, [context, play, legalMoves])
 
@@ -83,14 +94,14 @@ export const GameTable: FC<GameTableProps> = (
   const panning = useMemo(() => ({ disabled: dragging }), [dragging])
   const wrapperStyle = useMemo(() => computedWrapperClass(margin, vm, hm, ratio, verticalCenter), [margin, vm, hm, ratio])
 
-  const modifiers = useMemo(() => snapToCenter? [snapCenterToCursor]: undefined, [snapToCenter])
+  const modifiers = useMemo(() => snapToCenter ? [snapCenterToCursor] : undefined, [snapToCenter])
 
   return (
     <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
                 modifiers={modifiers} sensors={sensors}
                 onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
       <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle]}/>
-      <TransformWrapper  ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
+      <TransformWrapper ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
                         centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
         <TransformComponent wrapperClass="wrapperClass">
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
