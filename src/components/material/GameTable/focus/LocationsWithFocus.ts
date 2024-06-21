@@ -1,6 +1,6 @@
 import { Location, MaterialItem } from '@gamepark/rules-api'
 import equal from 'fast-deep-equal'
-import { ItemContext, LocationContext } from '../../../../locators'
+import { ItemContext, ItemLocator, LocationContext } from '../../../../locators'
 import { MaterialFocus } from './MaterialFocus'
 
 export type LocationsWithFocus = {
@@ -36,7 +36,8 @@ export const getStaticLocationsWithFocus = (
   context: LocationContext, focus?: MaterialFocus
 ): Location[] => {
   return Object.keys(context.locators).flatMap((type) => {
-    const locator = context.locators[type]
+    const locator = context.locators[type] as ItemLocator
+    if (locator.parentItemType !== undefined) return []
     const locationsFocus = focus?.locations.filter(l => l.type === +type) ?? []
     const locations = locator.getLocationDescription(context)?.getLocations(context) ?? []
     return getFocusedLocations(locationsFocus, locations).locations
