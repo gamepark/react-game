@@ -32,7 +32,7 @@ const StaticItemsTypeDisplay = ({ type, description, ...props }: StaticItemsType
       )
       return <ItemDisplay key={`${type}_${index}_${displayIndex}`}
                           type={type} index={index} displayIndex={displayIndex} item={item}
-                          isFocused={isFocused}
+                          isFocused={isFocused} highlight={description.highlight(item, { ...context, type, index, displayIndex })}
                           onShortClick={() => play(description.displayHelp(item, { ...context, type, index, displayIndex }), { local: true })}
                           {...props}/>
     })
