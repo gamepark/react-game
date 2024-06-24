@@ -286,7 +286,7 @@
   resolved "https://registry.yarnpkg.com/@gamepark/avataaars/-/avataaars-2.2.0.tgz#7bc2b8246d847d8f66b67935d0ab247a7cceb477"
   integrity sha512-3rTwo+v87EO/GHcHjmpTqRcOdbh5MbO2Vv27xIGWdT3H2+SFSGlMwSCnn7kDQv+rQJzfg5C2gRe6XImiKcYlxA==
 
-"@gamepark/react-client@^6.18.0":
+"@gamepark/react-client@~6.18.0":
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/@gamepark/react-client/-/react-client-6.18.0.tgz#92f4e49e0a4ab3da7e19a3e7dcaccff49d076319"
   integrity sha512-viJxQ67wOsTym8iZqiS0jnh+qdrOdHt/aW9KJGcESSp9Nol1+clfOPlONRO7cLAtAj3lmg7jrnjqYI+Ukyl21A==
@@ -298,7 +298,7 @@
     pusher-js "^7.0.0"
     redux "^4.2.1"
 
-"@gamepark/rules-api@^6.18.0":
+"@gamepark/rules-api@~6.18.0":
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/@gamepark/rules-api/-/rules-api-6.18.0.tgz#708090b0a958675434313f992c30167d8833951e"
   integrity sha512-BwTyubQY97s1fRlVhBE/KuunMJ8v5fpiKHe1xHgYqA1gKPFUbiZZ4IjZuVnZk4qFCcsQdEvnqklcrhCzppd1Iw==
