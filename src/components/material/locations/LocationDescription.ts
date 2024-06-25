@@ -122,5 +122,13 @@ export class LocationDescription<P extends number = number, M extends number = n
     )
   }
 
+  getShortClickMove(_location: Location<P, L>, _context: MaterialContext<P, M, L>): MaterialMove<P, M, L> | undefined {
+    return undefined
+  }
+
+  getShortClickLocalMove(_location: Location<P, L>, _context: MaterialContext<P, M, L>): MaterialMove<P, M, L> | undefined {
+    return undefined
+  }
+
   displayInParentItemHelp?: boolean
 }

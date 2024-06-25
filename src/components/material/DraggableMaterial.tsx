@@ -50,6 +50,9 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
       if (canUndo(predicate)) return undo(predicate)
     }
 
+    const shortClickMove = description.getShortClickMove(itemContext)
+    if (shortClickMove) return play(shortClickMove)
+
     const shortClickLocalMove = description.getShortClickLocalMove(itemContext)
     if (shortClickLocalMove) return play(shortClickLocalMove, { local: true })
 

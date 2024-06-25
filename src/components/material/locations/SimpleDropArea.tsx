@@ -46,8 +46,15 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
 
   const onShortClick = useCallback(() => {
     const move = description ? findIfUnique(legalMoves, move => description.canShortClick(move, location, context)) : undefined
-    if (move !== undefined) play(move)
-    else openRules()
+    if (move !== undefined) return play(move)
+
+    const shortClickMove = description?.getShortClickMove(location, context)
+    if (shortClickMove) return play(shortClickMove)
+
+    const shortClickLocalMove = description?.getShortClickLocalMove(location, context)
+    if (shortClickLocalMove) return play(shortClickLocalMove, { local: true })
+
+    return openRules()
   }, [legalMoves, context])
 
   const onLongClick = useCallback(() => {
