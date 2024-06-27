@@ -1,6 +1,7 @@
 import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
 import { ItemMove, itemsCanMerge, MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
+import { isEqual } from 'lodash'
 import { centerLocator, ItemContext, ItemLocator } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
@@ -22,6 +23,9 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const potentialDroppedItem = { type: move.itemType, index: move.itemIndex, displayIndex: context.game.droppedItem?.displayIndex ?? 0 }
     if (isDroppedItem(this.getItemContext(context, potentialDroppedItem))) {
       return this.droppedItemDuration
+    }
+    if (isEqual(context.game.items[move.itemType]?.[move.itemIndex]?.location, move.location)) {
+      return 0 // item is moved where it is already (local move preview being validated for instance)
     }
     return this.duration
   }
