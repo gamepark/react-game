@@ -14,7 +14,7 @@ export const adjustRotation = (targetTransforms: string[], sourceTransforms: str
 const sumRotationsDegrees = (transforms: string[]): Coordinates => {
   const rotations: Coordinates = { x: 0, y: 0, z: 0 }
   for (const transform of transforms) {
-    const rotateMatch = transform.match(/rotate([^(]*)\((-?\d+.?\d*)([^)]*)\)/)
+    const rotateMatch = transform.match(/rotate([^(]*)\((-?\d+\.?\d*)([^)]*)\)/)
     if (rotateMatch) {
       const axis = rotateMatch[1].toLowerCase(), value = parseFloat(rotateMatch[2]), unit = rotateMatch[3]
       if (axis in rotations) {
