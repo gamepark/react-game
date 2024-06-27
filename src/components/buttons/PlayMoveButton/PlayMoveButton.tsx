@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css, ThemeProvider } from '@emotion/react'
+import { PlayOptions } from '@gamepark/react-client'
 import { ButtonHTMLAttributes, FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { buttonCss } from '../../../css'
-import { PlayOptions, usePlay } from '../../../hooks'
+import { usePlay } from '../../../hooks'
 import { Dialog } from '../../dialogs'
 import { ThemeButton } from '../ThemeButton'
 
@@ -82,57 +83,57 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
   )
 }
 const buttons = css`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin-bottom: 0.3em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 0.3em;
 `
 
 const moveButton = css`
-  text-transform: capitalize;
-  align-self: flex-end;
+    text-transform: capitalize;
+    align-self: flex-end;
 
-  > button {
-    white-space: break-spaces;
-  }
+    > button {
+        white-space: break-spaces;
+    }
 `
 
 const flex = css`
-  display: flex;
-  padding: 3em 1em 3em 3em;
-  max-width: 90vw;
-  max-height: 90vh;
+    display: flex;
+    padding: 3em 1em 3em 3em;
+    max-width: 90vw;
+    max-height: 90vh;
 `
 
 const content = css`
-  margin: 0 1em;
-  font-size: 3em;
-  display: flex;
-  flex-direction: column;
+    margin: 0 1em;
+    font-size: 3em;
+    display: flex;
+    flex-direction: column;
 
-  p {
-    white-space: break-spaces;
-  }
+    p {
+        white-space: break-spaces;
+    }
 `
 
 const confirmationDialogCss = css`
-  position: relative;
-  background-color: #f0fbfc;
-  color: #002448;
-  padding: 1em;
-  border-radius: 1em;
-  box-shadow: 0 0 0.2em black;
-  font-family: "Mulish", sans-serif;
+    position: relative;
+    background-color: #f0fbfc;
+    color: #002448;
+    padding: 1em;
+    border-radius: 1em;
+    box-shadow: 0 0 0.2em black;
+    font-family: "Mulish", sans-serif;
 `
 
 const countdownCss = (countdown: number) => css`
-  padding-right: 2em;
-  position: relative;
+    padding-right: 2em;
+    position: relative;
 
-  &:after {
-    content: '${countdown}';
-    position: absolute;
-    right: 0.5em;
-    font-style: italic;
-  }
+    &:after {
+        content: '${countdown}';
+        position: absolute;
+        right: 0.5em;
+        font-style: italic;
+    }
 `
