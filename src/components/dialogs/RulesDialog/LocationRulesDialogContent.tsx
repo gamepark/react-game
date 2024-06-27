@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { closeHelpDisplay, LocationHelpDisplay } from '@gamepark/rules-api'
+import { LocationHelpDisplay } from '@gamepark/rules-api'
 import { fontSizeCss } from '../../../css'
-import { useItemLocator, useMaterialContext, usePlay } from '../../../hooks'
+import { useItemLocator, useMaterialContext } from '../../../hooks'
+import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
 
 export type LocationRulesDialogContentProps<P extends number = number, L extends number = number> = {
@@ -12,7 +13,7 @@ export type LocationRulesDialogContentProps<P extends number = number, L extends
 export const LocationRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
   { helpDisplay }: LocationRulesDialogContentProps<P, L>
 ) => {
-  const play = usePlay()
+  const closeHelpDialog = useCloseHelpDialog()
   const context = useMaterialContext<P, M, L>()
   const locator = useItemLocator<P, M, L>(helpDisplay.location.type)
   const description = locator?.getLocationDescription(context)
@@ -24,7 +25,7 @@ export const LocationRulesDialogContent = <P extends number = number, M extends 
       <div css={[noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)), backgroundImage(image, height, width)]}/>
     }
     <div css={helpDialogContentCss}>
-      <description.help location={helpDisplay.location} closeDialog={() => play(closeHelpDisplay, { local: true })}/>
+      <description.help location={helpDisplay.location} closeDialog={closeHelpDialog}/>
     </div>
   </div>
 }

@@ -3,10 +3,11 @@ import { css, keyframes, Theme, useTheme } from '@emotion/react'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { closeHelpDisplay, displayMaterialHelp, isSameLocationArea, MaterialHelpDisplay, MaterialItem, MaterialRules } from '@gamepark/rules-api'
+import { displayMaterialHelp, isSameLocationArea, MaterialHelpDisplay, MaterialItem, MaterialRules } from '@gamepark/rules-api'
 import { FC, useMemo } from 'react'
 import { fontSizeCss, transformCss } from '../../../css'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
+import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
 import { useLocators } from '../../../hooks/useLocators'
 import { ItemContext, SortFunction } from '../../../locators'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
@@ -58,6 +59,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   { helpDisplay }: MaterialRulesDialogContentProps<P, M, L>
 ) => {
   const play = usePlay()
+  const closeHelpDialog = useCloseHelpDialog()
   const context = useMaterialContext<P, M, L>()
   const description = useMaterialDescription<P, M, L>(helpDisplay.itemType)
   const { previous, next } = useMaterialNavigation(helpDisplay)
@@ -76,7 +78,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
         {locations.map((location) => <LocationDisplay key={JSON.stringify(location)} location={location}/>)}
       </MaterialComponent>
       <div css={helpDialogContentCss}>
-        {description.help && <description.help {...helpDisplay} closeDialog={() => play(closeHelpDisplay, { local: true })}/>}
+        {description.help && <description.help {...helpDisplay} closeDialog={closeHelpDialog}/>}
       </div>
     </div>
     {previous && <PreviousArrow onPrevious={() => play(previous, { local: true })}/>}
