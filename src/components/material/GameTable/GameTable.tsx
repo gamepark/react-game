@@ -62,9 +62,11 @@ export const GameTable: FC<GameTableProps> = (
       const moves = legalMoves.filter(move =>
         description?.canDrag(move, itemContext) && locator?.locationDescription?.canDrop(move, location, itemContext)
       )
-      const move = moves.length === 1 ? moves[0] : locator!.locationDescription!.getBestDropMove(moves, location, itemContext)
-      play(dropItemMove(type, index, displayIndex), { local: true, transient: true })
-      play(move)
+      if (moves.length > 0) {
+        const move = moves.length === 1 ? moves[0] : locator!.locationDescription!.getBestDropMove(moves, location, itemContext)
+        play(dropItemMove(type, index, displayIndex), { local: true, transient: true })
+        play(move)
+      }
     }
   }, [context, play, legalMoves])
 
