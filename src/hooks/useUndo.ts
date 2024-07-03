@@ -48,6 +48,7 @@ export const useUndo = <Move = any, PlayerId extends number = number, Game = any
     if (index === -1) return false
     const action = actions[index]
     if (action.pending) return false
+    if (action.local) return true
     const consecutiveActions = actions.slice(index + 1).filter(action => !action.cancelled)
     const rules = new Rules(game, { player: playerId })
     if (!hasUndo(rules)) return false

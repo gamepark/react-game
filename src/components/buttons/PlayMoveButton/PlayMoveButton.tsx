@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css, ThemeProvider } from '@emotion/react'
+import { PlayOptions } from '@gamepark/react-client'
 import { ButtonHTMLAttributes, FC, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { buttonCss } from '../../../css'
-import { PlayOptions, usePlay } from '../../../hooks'
+import { usePlay } from '../../../hooks'
 import { Dialog } from '../../dialogs'
 import { ThemeButton } from '../ThemeButton'
 

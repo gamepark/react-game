@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { closeHelpDisplay, MaterialRules } from '@gamepark/rules-api'
+import { MaterialRules } from '@gamepark/rules-api'
 import { PropsWithChildren } from 'react'
-import { usePlay, useRules } from '../../../hooks'
+import { useRules } from '../../../hooks'
+import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
 import { MaterialRulesDialog } from '../../dialogs'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { DynamicItemsDisplay } from './DynamicItemsDisplay'
@@ -17,7 +18,7 @@ type GameMaterialDisplayProps = PropsWithChildren<{
 
 export const GameMaterialDisplay = ({ left, top, children }: GameMaterialDisplayProps) => {
   const rules = useRules<MaterialRules>()
-  const play = usePlay()
+  const closeHelpDialog = useCloseHelpDialog()
 
   if (!rules || !rules.game) return <></>
   const game = rules.game
@@ -27,7 +28,7 @@ export const GameMaterialDisplay = ({ left, top, children }: GameMaterialDisplay
     <StaticItemsDisplay css={position}/>
     <DynamicItemsDisplay css={position}/>
     <StaticLocationsDisplay css={position}/>
-    <MaterialRulesDialog open={!!game?.helpDisplay} close={() => play(closeHelpDisplay, { local: true })}/>
+    <MaterialRulesDialog open={!!game?.helpDisplay} close={closeHelpDialog}/>
     {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}
     {children}
   </FocusProvider>

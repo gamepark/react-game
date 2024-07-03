@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { closeHelpDisplay, RulesHelpDisplay } from '@gamepark/rules-api'
+import { RulesHelpDisplay } from '@gamepark/rules-api'
 import { useContext } from 'react'
-import { usePlay } from '../../../hooks'
+import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
 import { gameContext } from '../../GameProvider'
 
 export type RulesHelpDialogContentProps = {
@@ -12,13 +12,13 @@ export type RulesHelpDialogContentProps = {
 export const RulesHelpDialogContent = (
   { helpDisplay }: RulesHelpDialogContentProps
 ) => {
-  const play = usePlay()
+  const closeHelpDialog = useCloseHelpDialog()
   const context = useContext(gameContext)
   const RulesHelp = context.rulesHelp?.[helpDisplay.ruleId]
   return <div css={helpDialogCss}>
     <div css={helpDialogContentCss}>
       {RulesHelp ?
-        <RulesHelp close={() => play(closeHelpDisplay, { local: true })}/>
+        <RulesHelp close={closeHelpDialog}/>
         : <>
           <h2>Missing help</h2>
           <p>Please provide some text to explain rule #{helpDisplay.ruleId}</p>

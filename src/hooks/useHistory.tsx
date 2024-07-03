@@ -15,7 +15,7 @@ export const useHistory = () => {
   const setup = useSelector((state: GamePageState) => state.setup) ?? {}
   const gameOver = useSelector((state: GamePageState) => state.gameOver)
   const actions = useActions() ?? []
-  const filteredActions = useMemo(() => (actions ?? []).filter((a) => !a.pending && a.id !== undefined), [actions])
+  const filteredActions = useMemo(() => (actions ?? []).filter((a) => !a.local && !a.pending && a.id !== undefined), [actions])
   const historyRef = useRef<Histories>(new Map<string, ReactElement[] | undefined>())
   const [historySize, setHistorySize] = useState(0)
   const rules = useRef<Rules>()

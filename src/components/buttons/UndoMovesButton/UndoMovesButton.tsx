@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
+import { PlayOptions } from '@gamepark/react-client'
 import { ButtonHTMLAttributes, FC, useCallback, useEffect, useMemo, useState } from 'react'
-import { PlayOptions, useUndo } from '../../../hooks'
-import { ThemeButton } from '../ThemeButton'
+import { useUndo } from '../../../hooks'
 import { useIsAnimatingPlayerAction } from '../../material/utils/useIsAnimatingPlayerAction'
+import { ThemeButton } from '../ThemeButton'
 
 export type UndoMovesButtonProps = {
   moves?: number
