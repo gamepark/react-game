@@ -3,6 +3,7 @@ import { MaterialTutorial, TutorialStep } from './MaterialTutorial'
 
 export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCreator<any, any, any>) {
 
+  const isLegalMove = Rules.prototype.isLegalMove
   const getLegalMoves = Rules.prototype.getLegalMoves
   const isTurnToPlay = Rules.prototype.isTurnToPlay
   const canUndo = Rules.prototype.canUndo
@@ -19,6 +20,18 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
     }
     const tutorialStep = tutorial.steps[game.tutorialStep]
     return playerId === (tutorialStep.move?.player ?? this.game.players[0])
+  }
+
+  Rules.prototype.isLegalMove = function (playerId: any, move: MaterialMove): boolean {
+    if (move.kind === MoveKind.LocalMove) return true
+    const game = this.game as MaterialGame
+    if (game.tutorialStep !== undefined && game.tutorialStep < tutorial.steps.length) {
+      const tutorialStep = tutorial.steps[game.tutorialStep]
+      if (!tutorialStep.move || (tutorialStep.move?.filter && !tutorialStep.move.filter(move, game))) {
+        return false
+      }
+    }
+    return isLegalMove.bind(this)(playerId, move)
   }
 
   Rules.prototype.getLegalMoves = function (playerId: any): MaterialMove[] {
