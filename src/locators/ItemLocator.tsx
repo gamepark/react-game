@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { Coordinates, DisplayedItem, Location, Material, MaterialGame, MaterialItem, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
-import equal from 'fast-deep-equal'
+import isEqual from 'lodash/isEqual'
 import sumBy from 'lodash/sumBy'
 import { LocationDescription, MaterialDescriptionRecord } from '../components'
 
@@ -58,7 +58,7 @@ export class ItemLocator<P extends number = number, M extends number = number, L
     if (this.parentItemType === undefined) return undefined
     const parentItemId = this.getParentItemId(location, context)
     const parentMaterial = context.material[this.parentItemType]
-    return parentMaterial?.getStaticItems(context).find(item => equal(item.id, parentItemId))
+    return parentMaterial?.getStaticItems(context).find(item => isEqual(item.id, parentItemId))
   }
 
   getParentItemId(_location: Location<P, L>, _context: ItemContext<P, M, L>): number | undefined {

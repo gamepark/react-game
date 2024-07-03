@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
-import equal from 'fast-deep-equal'
+import isEqual from 'lodash/isEqual'
 import { useMaterialContext } from '../../../hooks'
 import { SimpleDropArea } from '../locations'
 import { getStaticLocationsWithFocus, useFocusContext } from './focus'
@@ -13,7 +13,7 @@ export const StaticLocationsDisplay = (props: { css?: Interpolation<Theme> }) =>
     <>
       {
         locations.map(location => {
-          const isFocused = focus?.locations.some(focusedLocation => equal(focusedLocation, location))
+          const isFocused = focus?.locations.some(focusedLocation => isEqual(focusedLocation, location))
           return (
             <SimpleDropArea
               key={JSON.stringify(location)}

@@ -1,5 +1,5 @@
 import { Location, MaterialItem } from '@gamepark/rules-api'
-import equal from 'fast-deep-equal'
+import isEqual from 'lodash/isEqual'
 import { ItemContext, ItemLocator, LocationContext } from '../../../../locators'
 import { MaterialFocus } from './MaterialFocus'
 
@@ -11,7 +11,7 @@ export type LocationsWithFocus = {
 const getFocusedLocations = (locationsFocus: Location[], locations: Location[]) => {
   const focusedIndexes = []
   for (const locationFocus of locationsFocus) {
-    const index = locations.findIndex(location => equal(location, locationFocus))
+    const index = locations.findIndex(location => isEqual(location, locationFocus))
     if (index !== -1) {
       focusedIndexes.push(index)
     } else {

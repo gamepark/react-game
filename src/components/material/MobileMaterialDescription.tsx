@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { DeleteItem, isDeleteItem, isMoveItem, MaterialMove, MoveItem } from '@gamepark/rules-api'
-import equal from 'fast-deep-equal'
+import isEqual from 'lodash/isEqual'
 import { ItemContext } from '../../locators'
 import { MaterialDescription } from './MaterialDescription'
 
@@ -21,7 +21,7 @@ export abstract class MobileMaterialDescription<P extends number = number, M ext
   protected canDragToMove(move: MoveItem<P, M, L>, { type, index, rules }: ItemContext<P, M, L>): boolean {
     const { rotation, ...actualLocation } = rules.material(type).getItem(index)?.location!
     const { rotation: nextRotation, ...nextLocation } = move.location
-    return !equal(actualLocation, nextLocation)
+    return !isEqual(actualLocation, nextLocation)
   }
 
   protected canDragToDelete(_move: DeleteItem<M>, _context: ItemContext<P, M, L>): boolean {

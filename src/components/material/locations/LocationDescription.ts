@@ -1,6 +1,6 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Coordinates, isCreateItem, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
-import equal from 'fast-deep-equal'
+import isEqual from 'lodash/isEqual'
 import { ComponentType } from 'react'
 import { ItemContext, LocationContext, LocationHelpProps, MaterialContext } from '../../../locators'
 import { ComponentSize } from '../MaterialDescription'
@@ -116,7 +116,7 @@ export class LocationDescription<P extends number = number, M extends number = n
     return (isMoveItem(move) && isLocationSubset(move.location, location)
       && !isLocationSubset(context.rules.material(move.itemType).getItem(move.itemIndex)!.location, location)
     ) || (
-      isDeleteItem(move) && equal(location, context.material[move.itemType]?.getStockLocation(
+      isDeleteItem(move) && isEqual(location, context.material[move.itemType]?.getStockLocation(
         context.rules.material(move.itemType).getItem(move.itemIndex)!, context)
       )
     )

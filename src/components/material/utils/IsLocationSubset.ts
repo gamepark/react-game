@@ -1,6 +1,6 @@
 import { Location } from '@gamepark/rules-api'
-import equal from 'fast-deep-equal'
+import isEqual from 'lodash/isEqual'
 
 export const isLocationSubset = (testLocation: Partial<Location>, parentLocation: Location) => {
-  return Object.keys(parentLocation).every(key => parentLocation[key] === undefined || equal(parentLocation[key], testLocation[key]))
+  return Object.keys(parentLocation).every(key => parentLocation[key] === undefined || isEqual(parentLocation[key], testLocation[key]))
 }

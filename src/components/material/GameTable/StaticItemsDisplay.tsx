@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
-import equal from 'fast-deep-equal'
+import isEqual from 'lodash/isEqual'
 import { useMaterialContext, usePlay } from '../../../hooks'
 import { MaterialDescription } from '../MaterialDescription'
 import { useFocusContext } from './focus'
@@ -28,7 +28,7 @@ const StaticItemsTypeDisplay = ({ type, description, ...props }: StaticItemsType
   return <>{description.getStaticItems(context).map((item, index) => {
     return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
       const isFocused = focus?.staticItems.some(focusedItem =>
-        focusedItem.type === type && equal(focusedItem.item, item)
+        focusedItem.type === type && isEqual(focusedItem.item, item)
       )
       return <ItemDisplay key={`${type}_${index}_${displayIndex}`}
                           type={type} index={index} displayIndex={displayIndex} item={item}
