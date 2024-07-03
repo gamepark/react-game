@@ -1,5 +1,5 @@
-  /** @jsxImportSource @emotion/react */
-  import { PlayOptions } from '@gamepark/react-client'
+/** @jsxImportSource @emotion/react */
+import { PlayOptions } from '@gamepark/react-client'
 import { ButtonHTMLAttributes, FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useUndo } from '../../../hooks'
 import { useIsAnimatingPlayerAction } from '../../material/utils/useIsAnimatingPlayerAction'
