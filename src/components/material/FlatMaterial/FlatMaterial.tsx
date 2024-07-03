@@ -72,7 +72,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         sizeCss(size.width, size.height),
         image && [backgroundCss(image), shadowCss(image)],
         borderRadius && borderRadiusCss(borderRadius),
-        highlight ? shineEffect : playDown && playDownCss(image)
+        highlight ? shineEffect : (playDown && playDownCss(image))
       ]}>
         {children}
       </div>
@@ -83,7 +83,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         backgroundCss(backImage), shadowCss(backImage),
         borderRadius && borderRadiusCss(borderRadius),
         transformCss('rotateY(-180deg)'),
-        highlight && shineEffect, playDown && playDownCss(backImage)
+        highlight ? shineEffect : (playDown && playDownCss(backImage))
       ]}/>}
     </>
   }
