@@ -63,7 +63,7 @@ export type TutorialStep<P extends number = number, M extends number = number, L
 }
 
 export type TutorialPopup = {
-  text: (t: TFunction) => string | ReactNode
+  text: (t: TFunction, game: MaterialGame) => string | ReactNode
   position?: Partial<XYCoordinates>
   size?: {
     height?: number,

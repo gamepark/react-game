@@ -65,7 +65,7 @@ export const MaterialTutorialDisplay = () => {
         <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
           <div css={rules}>
             {passMove && <PlayMoveButton move={passMove} css={passButton}>{t('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>}
-            <p>{popup.text(t)}</p>
+            <p>{popup.text(t, game!)}</p>
             <p css={buttonsLine}>
               <ThemeButton disabled={!canUndoLastMove} onClick={() => undo()}><FontAwesomeIcon icon={faBackward}/>&nbsp;{t('Previous')}</ThemeButton>
               {closeTutorialPopup ?
