@@ -9,7 +9,7 @@ import { fontSizeCss, transformCss } from '../../../css'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
 import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
 import { useLocators } from '../../../hooks/useLocators'
-import { ItemContext, SortFunction } from '../../../locators'
+import { ItemContext, ItemLocator, SortFunction } from '../../../locators'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
 import { LocationDisplay } from '../../material/locations/LocationDisplay'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
@@ -18,7 +18,7 @@ export type MaterialRulesDialogContentProps<Player extends number = number, Mate
   helpDisplay: MaterialHelpDisplay<Player, MaterialType, LocationType>
 }
 
-const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
+const useMaterialNavigation = <P extends number = number, M extends number = number, L extends number = number>(helpDisplay: MaterialHelpDisplay, context: ItemContext<P, M, L>) => {
   const rules = useRules<MaterialRules>()!
   const play = usePlay()
   const helpItem = helpDisplay.item
@@ -29,8 +29,8 @@ const useMaterialNavigation = (helpDisplay: MaterialHelpDisplay) => {
       .material(helpDisplay.itemType)
       .location((location) => isSameLocationArea(location, helpItem.location!))
 
-    const locator = locators[helpItem.location.type]
-    const sorts: SortFunction[] = locator?.navigationSorts ?? []
+    const locator = locators[helpItem.location.type] as ItemLocator<P, M, L> | undefined
+    const sorts: SortFunction[] = locator?.getNavigationSorts(context) ?? []
     if (!sorts.length) return
     return itemOnSameLocation.sort(...sorts)
   }, [rules.game])
@@ -62,11 +62,11 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const closeHelpDialog = useCloseHelpDialog()
   const context = useMaterialContext<P, M, L>()
   const description = useMaterialDescription<P, M, L>(helpDisplay.itemType)
-  const { previous, next } = useMaterialNavigation(helpDisplay)
+  const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
+  const { previous, next } = useMaterialNavigation<P, M, L>(helpDisplay, itemContext)
   if (!description) return null
   const item = helpDisplay.item
   const { width, height } = description.getSize(item.id)
-  const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
   const hasNavigation = previous || next
   const locations = item.location ? context.material[helpDisplay.itemType]?.getLocations(item as MaterialItem<P, L, any>, itemContext) ?? [] : []
   return <>

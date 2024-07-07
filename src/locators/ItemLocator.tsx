@@ -137,6 +137,10 @@ export class ItemLocator<P extends number = number, M extends number = number, L
   }
 
   navigationSorts: SortFunction[] = [(item) => item.location.x ?? 0, (item) => item.location.y ?? 0, (item) => item.location.z ?? 0]
+
+  getNavigationSorts(_context: ItemContext<P, M, L>): SortFunction[] {
+    return this.navigationSorts
+  }
 }
 
 export type ItemLocatorRecord<P extends number = number, M extends number = number, L extends number = number> = Record<L, ItemLocator<P, M, L>>
