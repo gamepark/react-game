@@ -64,6 +64,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const description = useMaterialDescription<P, M, L>(helpDisplay.itemType)
   const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
   const { previous, next } = useMaterialNavigation<P, M, L>(helpDisplay, itemContext)
+  useKeyDown('Escape', closeHelpDialog)
   if (!description) return null
   const item = helpDisplay.item
   const { width, height } = description.getSize(item.id)
