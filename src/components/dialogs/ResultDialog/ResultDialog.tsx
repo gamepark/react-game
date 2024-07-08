@@ -6,7 +6,7 @@ import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameMode, GamePageState, PLATFORM_URI, ScoringDescription } from '@gamepark/react-client'
 import { isCompetitive, MaterialRules } from '@gamepark/rules-api'
-import { Component, Fragment, useContext, useMemo } from 'react'
+import { ReactElement, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { usePlayerName, useRankedPlayers, useResultText, useRules } from '../../../hooks'
@@ -36,8 +36,11 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const rules = useRules()!
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const tournament = useSelector((state: GamePageState) => state.tournament)
-  const scoringCells = context.scoring.getScoringCells()
-  let row = (gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1) + scoringCells.length
+  const scoringCells = useMemo(() => {
+    if (!rules) return []
+    return context.scoring?.getScoringCells(rules) ?? []
+  }, [rules, context.scoring])
+  let row = (gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1) + (scoringCells?.length ?? 0)
 
   const resultText = useResultText()
   return (
@@ -67,6 +70,11 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
         {row > 1 && <div/>}
         {gameMode === GameMode.TOURNAMENT && <div css={borderTop}>{t('Tournament')}</div>}
         {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={borderTop}>{t('Ranking')}</div>}
+        {scoringCells.map((cell: (string | ReactElement), index: number) => (
+          <div css={[borderLeft, borderTop]} key={index}>
+            {cell}
+          </div>
+        ))}
         {rankedPlayers.map((player, index) =>
           <PlayerDisplay key={index}
                          playerId={player.id}
@@ -98,16 +106,17 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
   playerId: any,
   rank?: number,
   border: boolean,
-  scoring: ScoringDescription
+  scoring?: ScoringDescription
 }) => {
   const playerName = usePlayerName(playerId)
   const rules = useRules<MaterialRules>()!
   const tournamentPoints = useSelector((state: GamePageState) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
-  let cells: (Component | string)[] = useMemo(() => {
-    let cells = scoring.getPlayerCells(playerId, rules)
-    if (!cells.length) cells = scoring.getPlayerCellText(playerId, rules)
+  let cells = useMemo(() => {
+    if (!scoring) return []
+    let cells: (ReactElement | string)[] = scoring.getPlayerCells(playerId, rules)
+    if (!cells.length) cells = scoring.getPlayerCellsText(playerId, rules)
     return cells
-  }, [rules])
+  }, [rules, scoring])
   return <>
     <div css={[relative, border && borderLeft]}>
       <div css={avatarContainer}>
@@ -127,17 +136,17 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
       </div>
     }
     {cells.map((cell, index) => (
-      <Fragment key={index}>
+      <div css={[borderLeft, borderTop]} key={index}>
         {cell}
-      </Fragment>
-    ))
-    }
+      </div>
+    ))}
   </>
 }
 
 const style = css`
   font-size: 3.2em;
   text-align: center;
+  
 
   > h2 {
     margin: 0 1em 0.5em;
@@ -160,6 +169,7 @@ const buttonLine = css`
 const gridCss = css`
   display: grid;
   grid-auto-flow: column;
+  padding: 0.5em;
 
   > div {
     padding: 1em;

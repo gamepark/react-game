@@ -3,7 +3,7 @@ import { ApolloProvider } from '@apollo/client'
 import { datadogLogs, StatusType } from '@datadog/browser-logs'
 import createCache, { StylisPlugin } from '@emotion/cache'
 import { CacheProvider, css, Global, Theme, ThemeProvider } from '@emotion/react'
-import { getApolloClient, LocalGameProvider, LocalGameProviderProps, RemoteGameProvider, ScoringDescription } from '@gamepark/react-client'
+import { getApolloClient, LocalGameProvider, LocalGameProviderProps, RemoteGameProvider } from '@gamepark/react-client'
 import normalize from 'emotion-normalize'
 import merge from 'lodash/merge'
 import { PropsWithChildren, useEffect, useMemo } from 'react'
@@ -25,7 +25,7 @@ export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveVi
 }
 
 export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId extends number = number>(
-  { materialI18n, theme = {}, children, scoring = new ScoringDescription(), ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
+  { materialI18n, theme = {}, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
   useEffect(() => {
     if (isMaterialTutorial(props.tutorial)) {

@@ -15,7 +15,7 @@ export type GameContext<Game = any, Move = any, PlayerId extends number = number
   optionsSpec?: any
   animations?: Animations<Game, Move, PlayerId>
   tutorial?: TutorialDescription<Game, Move, PlayerId>
-  scoring?: ScoringDescription<PlayerId>
+  scoring?: ScoringDescription
   MaterialHistory?: ComponentType<MaterialHistoryProps<Game, Move, PlayerId>>
   hasSounds?: boolean
 }
