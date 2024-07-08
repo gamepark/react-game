@@ -4,9 +4,9 @@ import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
-import { isCompetitive } from '@gamepark/rules-api'
-import { useContext } from 'react'
+import { GameMode, GamePageState, PLATFORM_URI, ScoringDescription } from '@gamepark/react-client'
+import { isCompetitive, MaterialRules } from '@gamepark/rules-api'
+import { Component, Fragment, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { usePlayerName, useRankedPlayers, useResultText, useRules } from '../../../hooks'
@@ -28,6 +28,7 @@ const query = new URLSearchParams(window.location.search)
 const locale = query.get('locale') || 'en'
 const gameId = query.get('game')
 
+
 export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const { t } = useTranslation()
   const rankedPlayers = useRankedPlayers()
@@ -35,38 +36,45 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const rules = useRules()!
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const tournament = useSelector((state: GamePageState) => state.tournament)
-  const rows = gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1
+  const scoringCells = context.scoring.getScoringCells()
+  let row = (gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1) + scoringCells.length
+
   const resultText = useResultText()
   return (
     <Dialog onBackdropClick={close} css={style} {...props}>
       <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={close}/>
       <h2>{resultText}</h2>
       <div css={buttonLine}>
-      {gameMode === GameMode.TOURNAMENT && tournament ?
-        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
-          {t('result.tournament.link')}
-        </NavButton>
-        :
-        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}`}>{t('Back to Game Park')}</NavButton>
-      }
-      {gameMode === GameMode.COMPETITIVE &&
-        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play?mode=matchmaking`}>
-          {t('Play again')}
-        </NavButton>
-      }
-      {gameMode === GameMode.COMPETITIVE &&
-        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/ranking`}>
-          {t('See overall ranking')}
-        </NavButton>
-      }
+        {gameMode === GameMode.TOURNAMENT && tournament ?
+          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
+            {t('result.tournament.link')}
+          </NavButton>
+          :
+          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}`}>{t('Back to Game Park')}</NavButton>
+        }
+        {gameMode === GameMode.COMPETITIVE &&
+          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play?mode=matchmaking`}>
+            {t('Play again')}
+          </NavButton>
+        }
+        {gameMode === GameMode.COMPETITIVE &&
+          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/ranking`}>
+            {t('See overall ranking')}
+          </NavButton>
+        }
       </div>
-      <div css={[gridCss, rows > 1 ? multiRows(rankedPlayers.length, rows) : singleRow(rankedPlayers.length)]}>
-        {rows > 1 && <div/>}
+      <div css={[gridCss, row > 1 ? multiRows(rankedPlayers.length, row) : singleRow(rankedPlayers.length)]}>
+        {row > 1 && <div/>}
         {gameMode === GameMode.TOURNAMENT && <div css={borderTop}>{t('Tournament')}</div>}
         {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={borderTop}>{t('Ranking')}</div>}
         {rankedPlayers.map((player, index) =>
-          <PlayerDisplay key={index} playerId={player.id} gameMode={gameMode}
-                         rank={isCompetitive(rules) && player.rank <= 3 ? player.rank : undefined} border={rows > 1}/>)
+          <PlayerDisplay key={index}
+                         playerId={player.id}
+                         gameMode={gameMode}
+                         rank={isCompetitive(rules) && player.rank <= 3 ? player.rank : undefined}
+                         border={row > 1}
+                         scoring={context.scoring}
+          />)
         }
       </div>
       {gameMode === GameMode.TUTORIAL &&
@@ -85,9 +93,21 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   )
 }
 
-const PlayerDisplay = ({ gameMode, playerId, rank, border }: { gameMode?: GameMode, playerId: any, rank?: number, border: boolean }) => {
+const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
+  gameMode?: GameMode,
+  playerId: any,
+  rank?: number,
+  border: boolean,
+  scoring: ScoringDescription
+}) => {
   const playerName = usePlayerName(playerId)
+  const rules = useRules<MaterialRules>()!
   const tournamentPoints = useSelector((state: GamePageState) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
+  let cells: (Component | string)[] = useMemo(() => {
+    let cells = scoring.getPlayerCells(playerId, rules)
+    if (!cells.length) cells = scoring.getPlayerCellText(playerId, rules)
+    return cells
+  }, [rules])
   return <>
     <div css={[relative, border && borderLeft]}>
       <div css={avatarContainer}>
@@ -105,6 +125,12 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border }: { gameMode?: GameMo
       <div css={[borderLeft, borderTop]}>
         <GamePoints playerId={playerId}/>
       </div>
+    }
+    {cells.map((cell, index) => (
+      <Fragment key={index}>
+        {cell}
+      </Fragment>
+    ))
     }
   </>
 }
