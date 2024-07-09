@@ -5,9 +5,8 @@ import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameMode, GamePageState, PLATFORM_URI, ScoringDescription } from '@gamepark/react-client'
-import { ScoringValue } from '@gamepark/react-client/dist/Scoring/ScoringDescription'
-import { isCompetitive, MaterialRules } from '@gamepark/rules-api'
-import { useContext, useMemo } from 'react'
+import { isCompetitive } from '@gamepark/rules-api'
+import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { usePlayerName, useRankedPlayers, useResultText, useRules } from '../../../hooks'
@@ -19,6 +18,7 @@ import { NavButton } from '../../menus/Menu/NavButton'
 import { RestartTutorialButton } from '../../menus/RestartTutorialButton'
 import { Dialog, DialogProps } from '../Dialog'
 import { RematchSection } from './RematchSection'
+import { usePlayerScoring, useScoringHeader } from './useScoringTable'
 
 type Props = DialogProps & {
   openDialog: () => void
@@ -37,10 +37,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const rules = useRules()!
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const tournament = useSelector((state: GamePageState) => state.tournament)
-  const scoringCells = useMemo(() => {
-    if (!rules) return []
-    return context.scoring?.getScoringCells(rules) ?? []
-  }, [rules, context.scoring])
+  const scoringCells = useScoringHeader()
   let row = (gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1) + (scoringCells?.length ?? 0)
 
   const resultText = useResultText()
@@ -71,7 +68,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
         {row > 1 && <div/>}
         {gameMode === GameMode.TOURNAMENT && <div css={[borderTop, left]}>{t('Tournament')}</div>}
         {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTop, left]}>{t('Ranking')}</div>}
-        {scoringCells.map((cell: ScoringValue | null, index: number) => (
+        {scoringCells.map((cell, index) => (
           <div css={[borderTop, left]} key={index}>
             {cell}
           </div>
@@ -102,7 +99,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   )
 }
 
-const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
+const PlayerDisplay = ({ gameMode, playerId, rank, border }: {
   gameMode?: GameMode,
   playerId: any,
   rank?: number,
@@ -110,14 +107,8 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
   scoring?: ScoringDescription
 }) => {
   const playerName = usePlayerName(playerId)
-  const rules = useRules<MaterialRules>()!
   const tournamentPoints = useSelector((state: GamePageState) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
-  let cells = useMemo(() => {
-    if (!scoring) return []
-    return scoring
-      .getPlayerCells(playerId, rules)
-      .map(ensureComponent)
-  }, [rules, scoring])
+  const playerData = usePlayerScoring(playerId)
   return <>
     <div css={[relative, border && borderLeft]}>
       <div css={avatarContainer}>
@@ -136,17 +127,12 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
         <GamePoints playerId={playerId}/>
       </div>
     }
-    {cells.map((cell, index) => (
+    {playerData.map((cell, index) => (
       <div css={[borderLeft, borderTop]} key={index}>
         {cell}
       </div>
     ))}
   </>
-}
-
-const ensureComponent = (content: ScoringValue | null) => {
-  if (typeof content === 'string' || typeof content === 'number') return <>{content}</>
-  return content
 }
 
 const style = css`
