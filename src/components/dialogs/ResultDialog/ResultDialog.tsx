@@ -5,8 +5,9 @@ import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameMode, GamePageState, PLATFORM_URI, ScoringDescription } from '@gamepark/react-client'
+import { ScoringValue } from '@gamepark/react-client/dist/Scoring/ScoringDescription'
 import { isCompetitive, MaterialRules } from '@gamepark/rules-api'
-import { ReactElement, useContext, useMemo } from 'react'
+import { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { usePlayerName, useRankedPlayers, useResultText, useRules } from '../../../hooks'
@@ -70,7 +71,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
         {row > 1 && <div/>}
         {gameMode === GameMode.TOURNAMENT && <div css={[borderTop, left]}>{t('Tournament')}</div>}
         {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTop, left]}>{t('Ranking')}</div>}
-        {scoringCells.map((cell: (string | ReactElement), index: number) => (
+        {scoringCells.map((cell: ScoringValue | null, index: number) => (
           <div css={[borderTop, left]} key={index}>
             {cell}
           </div>
@@ -143,7 +144,7 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
   </>
 }
 
-const ensureComponent = (content: string | number | ReactElement) => {
+const ensureComponent = (content: ScoringValue | null) => {
   if (typeof content === 'string' || typeof content === 'number') return <>{content}</>
   return content
 }
