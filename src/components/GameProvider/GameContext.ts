@@ -33,7 +33,7 @@ class MissingRules {
 }
 
 // @ts-ignore
-const missingContext: GameContext = { game: '', Rules: MissingRules,  }
+const missingContext: GameContext = { game: '', Rules: MissingRules }
 
 export const gameContext = React.createContext<GameContext>(missingContext)
 
