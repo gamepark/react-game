@@ -113,9 +113,9 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
   const tournamentPoints = useSelector((state: GamePageState) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
   let cells = useMemo(() => {
     if (!scoring) return []
-    let cells: (ReactElement | string)[] = scoring.getPlayerCells(playerId, rules)
-    if (!cells.length) cells = scoring.getPlayerCellsText(playerId, rules)
-    return cells
+    return scoring
+      .getPlayerCells(playerId, rules)
+      .map(ensureComponent)
   }, [rules, scoring])
   return <>
     <div css={[relative, border && borderLeft]}>
@@ -143,13 +143,18 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
   </>
 }
 
+const ensureComponent = (content: string | ReactElement) => {
+  if (typeof content === 'string') return <>{content}</>
+  return content
+}
+
 const style = css`
   font-size: 3.2em;
   text-align: center;
   max-height: 90vh;
   max-height: 90dvh;
   overflow-y: auto;
-  
+
 
   > h2 {
     margin: 0 1em 0.5em;
