@@ -68,10 +68,10 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
       </div>
       <div css={[gridCss, row > 1 ? multiRows(rankedPlayers.length, row) : singleRow(rankedPlayers.length)]}>
         {row > 1 && <div/>}
-        {gameMode === GameMode.TOURNAMENT && <div css={borderTop}>{t('Tournament')}</div>}
-        {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={borderTop}>{t('Ranking')}</div>}
+        {gameMode === GameMode.TOURNAMENT && <div css={[borderTop, left]}>{t('Tournament')}</div>}
+        {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTop, left]}>{t('Ranking')}</div>}
         {scoringCells.map((cell: (string | ReactElement), index: number) => (
-          <div css={[borderLeft, borderTop]} key={index}>
+          <div css={[borderTop, left]} key={index}>
             {cell}
           </div>
         ))}
@@ -146,6 +146,9 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
 const style = css`
   font-size: 3.2em;
   text-align: center;
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow-y: auto;
   
 
   > h2 {
@@ -172,7 +175,7 @@ const gridCss = css`
   padding: 0.5em;
 
   > div {
-    padding: 1em;
+    padding: 0.7em;
   }
 `
 
@@ -213,15 +216,19 @@ const relative = css`
 `
 
 const borderLeft = css`
-  border-left: 0.2em solid #28b8ce;
+  border-left: 0.1em solid #28b8ce;
 `
 
 const borderTop = css`
-  border-top: 0.2em solid #28b8ce;
+  border-top: 0.1em solid #28b8ce;
 `
 
 const trophyIcon = css`
   color: #28b8ce;
+`
+
+const left = css`
+  text-align: left;
 `
 
 const buttonsLine = css`
