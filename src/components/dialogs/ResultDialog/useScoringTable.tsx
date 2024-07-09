@@ -10,7 +10,9 @@ export const useScoringHeader = () => {
   return useMemo(() => {
     if (!rules || !scoring) return []
     const keys = scoring.getScoringKeys(rules) ?? []
-    return keys.map((key) => scoring.getScoringHeader(key, rules))
+    return keys
+      .map((key) => scoring.getScoringHeader(key, rules))
+      .map(ensureComponent)
   }, [rules, scoring])
 }
 
