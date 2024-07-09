@@ -48,6 +48,7 @@ export const Menu = () => {
   const [resultDialogAutoOpen, setResultDialogAutoOpen] = useState(false)
   useEffect(() => {
     if (gameOver === false) setResultDialogAutoOpen(true)
+    else if (gameOver === true && !resultDialogAutoOpen) setResultDialogOpen(true)
   }, [gameOver])
   useEffect(() => {
     if (gameOver && resultDialogAutoOpen) {

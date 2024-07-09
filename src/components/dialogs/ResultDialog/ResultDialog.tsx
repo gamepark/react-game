@@ -4,7 +4,7 @@ import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GameMode, GamePageState, PLATFORM_URI, ScoringDescription } from '@gamepark/react-client'
+import { GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
 import { isCompetitive } from '@gamepark/rules-api'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -165,7 +165,7 @@ const gridCss = css`
   padding: 0.5em;
 
   > div {
-    padding: 0.7em;
+    padding: 0.6em;
   }
 `
 
