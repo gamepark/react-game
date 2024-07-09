@@ -143,8 +143,8 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border, scoring }: {
   </>
 }
 
-const ensureComponent = (content: string | ReactElement) => {
-  if (typeof content === 'string') return <>{content}</>
+const ensureComponent = (content: string | number | ReactElement) => {
+  if (typeof content === 'string' || typeof content === 'number') return <>{content}</>
   return content
 }
 
