@@ -79,7 +79,6 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
                          gameMode={gameMode}
                          rank={isCompetitive(rules) && player.rank <= 3 ? player.rank : undefined}
                          border={row > 1}
-                         scoring={context.scoring}
           />)
         }
       </div>
@@ -103,8 +102,7 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border }: {
   gameMode?: GameMode,
   playerId: any,
   rank?: number,
-  border: boolean,
-  scoring?: ScoringDescription
+  border: boolean
 }) => {
   const playerName = usePlayerName(playerId)
   const tournamentPoints = useSelector((state: GamePageState) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
