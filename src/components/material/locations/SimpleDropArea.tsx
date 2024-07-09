@@ -124,13 +124,14 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   }
 
   if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
+  const highlight = description.highlight?.(location, context)
 
   return (
     <LocationDisplay ref={mergeRefs([ref, setNodeRef])} location={location} canDrop={canDrop}
                      css={[
                        (onShortClick || onLongClick) && pointerCursorCss,
                        !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
-                       ((canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)) && shineEffect,
+                       (highlight || (canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)) && shineEffect,
                        canDrop && isOver && dropHighlight
                      ]}
                      {...props} {...combineEventListeners(listeners, props)}/>
