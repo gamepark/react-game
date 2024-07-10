@@ -10,7 +10,7 @@ import { transformItem } from './transformItem.util'
 export class MoveItemAtOnceAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
 
-  constructor(protected duration = 0.2) {
+  constructor(protected duration = 1) {
     super()
   }
 
