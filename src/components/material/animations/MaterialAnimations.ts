@@ -22,7 +22,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     this.animations = {
       [ItemMoveType.Create]: new CreateItemAnimations(duration),
       [ItemMoveType.Move]: new MoveItemAnimations(duration, droppedItemDuration),
-      [ItemMoveType.MoveAtOnce]: new MoveItemAtOnceAnimations(duration, droppedItemDuration),
+      [ItemMoveType.MoveAtOnce]: new MoveItemAtOnceAnimations(duration),
       [ItemMoveType.Delete]: new DeleteItemAnimations(duration, droppedItemDuration),
       [ItemMoveType.Shuffle]: new ShuffleAnimations(0),
       [ItemMoveType.Roll]: new RollItemAnimations(duration)
