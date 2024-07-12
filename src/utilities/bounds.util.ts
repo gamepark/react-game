@@ -2,14 +2,13 @@
  * Comes from https://github.com/prc5/react-zoom-pan-pinch/blob/master/src/utils/calculations.utils.ts
  */
 import { BoundsType, PositionType, ReactZoomPanPinchContext } from 'react-zoom-pan-pinch'
-import { ComponentsSizesType } from 'react-zoom-pan-pinch/dist/src/core/bounds/bounds.types'
 import { roundNumber } from './calculation.util'
 
 export function getComponentsSizes(
   wrapperComponent: HTMLDivElement,
   contentComponent: HTMLDivElement,
   newScale: number
-): ComponentsSizesType {
+): any {
   const wrapperWidth = wrapperComponent.offsetWidth
   const wrapperHeight = wrapperComponent.offsetHeight
 
