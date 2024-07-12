@@ -146,7 +146,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   useDndMonitor({ onDragStart, onDragEnd, onDragMove })
 
   const locatorTransform = useMemo(() => locator.transformItem(item, itemContext), [locator, item, itemContext])
-  const transformStyle = ((transform && applyTransform) ? [transformRef.current, ...locatorTransform] : locatorTransform).join(' ')
+  const transformStyle = (transform && applyTransform ? [transformRef.current, ...locatorTransform] : locatorTransform).join(' ')
 
   const componentCss = useMemo(() => [
     !applyTransform && !animating && transformTransition,
