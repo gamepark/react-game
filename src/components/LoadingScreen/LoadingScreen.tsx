@@ -66,7 +66,6 @@ export const LoadingScreen = ({
 const PeopleLine = ({type, icon, people}: {type: string, icon: IconProp, people: string[]}) => {
   if (!people.length) return null
   return <>
-    <br/>
     <FontAwesomeIcon css={iconStyle} icon={icon}/>
     {people.length === 1 &&
       <Trans defaults={`${type}.1`} values={{ name: people[0] }} components={[<strong/>]}/>
@@ -75,6 +74,7 @@ const PeopleLine = ({type, icon, people}: {type: string, icon: IconProp, people:
       <Trans defaults={`${type}.2`} values={{ name1: people[0], name2: people[1] }}
              components={[<strong/>]}/>
     }
+    <br/>
   </>
 }
 
