@@ -48,7 +48,9 @@ const updatePlayersTime = <PlayerId>(players: Player<PlayerId>[], now: number) =
     players.forEach(player => {
       const durationSinceLastPlayerChange = now - Date.parse(player.time!.lastChange)
       if (player.time!.playing) {
-        player.time!.availableTime -= durationSinceLastPlayerChange
+        if (player.time!.availableTime !== null) {
+          player.time!.availableTime -= durationSinceLastPlayerChange
+        }
         player.time!.cumulatedPlayTime += durationSinceLastPlayerChange
         player.time!.highestPlayTime = Math.max(player.time!.highestPlayTime, durationSinceLastPlayerChange)
         player.time!.cumulatedWaitForMeTime += cumulatedDownTime

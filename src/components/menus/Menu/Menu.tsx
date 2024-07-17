@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes'
 import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
+import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
-import { GameSpeed } from '@gamepark/rules-api'
 import fscreen from 'fscreen'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -34,11 +33,10 @@ export const Menu = () => {
   const gameId = query.get('game') ?? undefined
   const locale = query.get('locale') || 'en'
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
-  const options = useSelector((state: GamePageState) => state.options)
   const playerId = useSelector((state: GamePageState) => state.playerId)
   const gameOver = useSelector((state: GamePageState) => state.gameOver && !state.actions?.some(action => action.animation))
   const tournament = useSelector((state: GamePageState) => state.tournament)
-  const couldEject = !gameOver && (playerId !== undefined || tournament?.signedUp === true) && options?.speed === GameSpeed.RealTime
+  const couldEject = !gameOver && (playerId !== undefined || tournament?.signedUp === true)
   const couldUndo = !gameOver && playerId !== undefined
   const canGiveUp = !gameOver && playerId !== undefined && gameId !== undefined
   const canPlayAgain = gameOver && playerId !== undefined && gameMode === GameMode.COMPETITIVE
@@ -73,7 +71,7 @@ export const Menu = () => {
         {couldUndo && <UndoButton/>}
         {canGiveUp && <GiveUpButton/>}
         {couldEject && <EjectPlayerButton onClick={() => setEjectPlayerDialogOpen(true)}/>}
-        {options?.speed === GameSpeed.RealTime && <TimeStatsButton/>}
+        <TimeStatsButton/>
         {gameMode === GameMode.TUTORIAL && <RestartTutorialButton/>}
         <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}`}><LogoIcon css={buttonLogoIcon}/>{t('Back to Game Park')}</NavButton>
         {gameOver && <ResultButton onClick={() => setResultDialogOpen(true)}/>}
