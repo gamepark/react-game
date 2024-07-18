@@ -29,7 +29,7 @@ export const GameMaterialDisplay = ({ left, top, children }: GameMaterialDisplay
     <DynamicItemsDisplay css={position}/>
     <StaticLocationsDisplay css={position}/>
     <MaterialRulesDialog open={!!game?.helpDisplay} close={closeHelpDialog}/>
-    {game?.tutorialStep !== undefined && <MaterialTutorialDisplay/>}
+    {game?.tutorial && <MaterialTutorialDisplay/>}
     {children}
   </FocusProvider>
 }

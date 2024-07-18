@@ -30,13 +30,13 @@ export abstract class MaterialTutorial<P extends number = number, M extends numb
 
   setupTutorial(): [MaterialGame<P, M, L>, Player<P>[]] {
     const game = this.setup.setup(this.options)
-    game.tutorialStep = 0
+    game.tutorial = { step: 0, stepComplete: false, popupClosed: false }
     return [game, this.players]
   }
 
   getNextMove(rules: MaterialRules<P, M, L>) {
-    if (rules.game.tutorialStep !== undefined && rules.game.tutorialStep < this.steps.length) {
-      const step = this.steps[rules.game.tutorialStep]
+    if (rules.game.tutorial && rules.game.tutorial.step < this.steps.length) {
+      const step = this.steps[rules.game.tutorial.step]
       if (!step.move || step.move.player === undefined || step.move.player === rules.game.players[0]) return
       const moves = rules.getLegalMoves(step.move.player)
       return moves[Math.floor(Math.random() * moves.length)]

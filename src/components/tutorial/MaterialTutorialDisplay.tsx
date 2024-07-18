@@ -42,7 +42,7 @@ export const MaterialTutorialDisplay = () => {
   const { setFocus } = useFocusContext()
 
   useEffect(() => {
-    if (game && !game.tutorialPopupClosed) {
+    if (game && !game.tutorial?.popupClosed) {
       if (tutorialStep?.focus) {
         setFocus({ materials: [], staticItems: [], locations: [], highlight: true, ...tutorialStep.focus(game) })
       } else {
@@ -51,10 +51,10 @@ export const MaterialTutorialDisplay = () => {
     } else {
       setFocus(undefined, false)
     }
-  }, [tutorialStep, game?.tutorialPopupClosed])
+  }, [tutorialStep, game?.tutorial?.popupClosed])
 
   return (
-    <Dialog open={popup !== undefined && !game?.tutorialPopupClosed}
+    <Dialog open={popup !== undefined && !game?.tutorial?.popupClosed}
             css={[
               tutorialDialogCss,
               popup?.position && transformCss(`translate(${popup.position.x ?? 0}em, ${popup.position.y ?? 0}em)`),
