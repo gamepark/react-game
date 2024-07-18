@@ -1,5 +1,4 @@
-import { GamePageState, getPlayerTimeout, Player } from '@gamepark/react-client'
-import { GameSpeed } from '@gamepark/rules-api'
+import { GamePageState, Player } from '@gamepark/react-client'
 import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
@@ -12,11 +11,11 @@ export const useOpponentWithMaxTime = (time?: number) => {
   const players = useSelector((state: GamePageState) => state.players)
   const clientTimeDelta = useSelector((state: GamePageState) => state.clientTimeDelta)
   const player = players.find(p => p.id === playerId)
-  const awaitedPlayers = players.filter(p => p.time?.playing).sort((a, b) => getPlayerTimeout(a) - getPlayerTimeout(b))
+  const awaitedPlayers = players.filter(p => p.time?.playing && p.time?.availableTime !== null).sort((a, b) => getPlayerTimeout(a) - getPlayerTimeout(b))
   const opponent = awaitedPlayers.find(p => p.id !== playerId)
   const [result, setResult] = useState<Player | undefined>(opponent)
   useEffect(() => {
-    if (!options || options.speed === GameSpeed.Disabled || player?.time?.playing || !opponent) {
+    if (!options || player?.time?.playing || !opponent) {
       setResult(undefined)
     } else {
       const remainingTime = getPlayerTimeout(opponent) - new Date().getTime() - clientTimeDelta + (time ?? options.maxExceedTime)
@@ -31,4 +30,9 @@ export const useOpponentWithMaxTime = (time?: number) => {
     return
   }, [options, player, opponent, clientTimeDelta])
   return result
+}
+
+function getPlayerTimeout(player: Player) {
+  if (!player.time || !player.time.playing) return Infinity
+  return Date.parse(player.time.lastChange) + (player.time.availableTime ?? Infinity)
 }
