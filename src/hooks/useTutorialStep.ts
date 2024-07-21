@@ -6,6 +6,6 @@ import { MaterialGame } from '@gamepark/rules-api'
 export function useTutorialStep<P extends number = number, M extends number = number, L extends number = number>(): TutorialStep<P, M, L> | undefined {
   const game = useGame<MaterialGame>()
   const tutorial = useContext(gameContext).tutorial
-  if (!game || game.tutorialStep === undefined || !isMaterialTutorial<P, M, L>(tutorial)) return
-  return tutorial.steps[game.tutorialStep]
+  if (!game || !game.tutorial || !isMaterialTutorial<P, M, L>(tutorial)) return
+  return tutorial.steps[game.tutorial.step]
 }
