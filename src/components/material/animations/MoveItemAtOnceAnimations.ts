@@ -19,7 +19,7 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
   }
 
   getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>): Interpolation<Theme> {
-    if (animation.move.indexes.includes(context.index)) {
+    if (context.type === animation.move.itemType && animation.move.indexes.includes(context.index)) {
       return this.getMovedItemAnimation(context, animation)
     }
   }
