@@ -1,6 +1,6 @@
 import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
-import { ItemMove, itemsCanMerge, MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
+import { ItemMove, MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
 import { isEqual } from 'lodash'
 import { centerLocator, ItemContext, ItemLocator } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
@@ -61,8 +61,9 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
 
   getItemIndexAfterMove({ rules }: ItemContext<P, M, L>, move: MoveItem<P, M, L>): number {
     const items = rules.game.items[move.itemType]!
-    const itemAfterMove = rules.mutator(move.itemType).getItemAfterMove(move)
-    const mergeIndex = items.findIndex(item => itemsCanMerge(item, itemAfterMove))
+    const mutator = rules.mutator(move.itemType)
+    const itemAfterMove = mutator.getItemAfterMove(move)
+    const mergeIndex = mutator.findMergeIndex(itemAfterMove)
     if (mergeIndex !== -1) {
       return mergeIndex
     } else if ((items[move.itemIndex].quantity ?? 1) > (move.quantity ?? 1)) {
