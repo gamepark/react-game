@@ -286,10 +286,10 @@
   resolved "https://registry.yarnpkg.com/@gamepark/avataaars/-/avataaars-2.2.0.tgz#7bc2b8246d847d8f66b67935d0ab247a7cceb477"
   integrity sha512-3rTwo+v87EO/GHcHjmpTqRcOdbh5MbO2Vv27xIGWdT3H2+SFSGlMwSCnn7kDQv+rQJzfg5C2gRe6XImiKcYlxA==
 
-"@gamepark/react-client@~6.23.3":
-  version "6.23.3"
-  resolved "https://registry.yarnpkg.com/@gamepark/react-client/-/react-client-6.23.3.tgz#dbd4b41f8522acdfd0dc26597e7ff83dae355a23"
-  integrity sha512-e+p74D6UIXcCnfIyCxOxxDkNhurYYLzBXIIMgA7ZSYmNGn/NSubPJbPoX2yXBVkJiK0k33etb1JNpbD2ZNDT6g==
+"@gamepark/react-client@~6.23.4":
+  version "6.23.4"
+  resolved "https://registry.yarnpkg.com/@gamepark/react-client/-/react-client-6.23.4.tgz#7eb781f6a0265f12c69c90ca3db5d8ac43dc5913"
+  integrity sha512-77zNrhsQy9O7/7W3wL3rNJxca0Mos1tKXCwdJcyFhmvDL7jlyi58I/XHTM2/pPpmqcF1ksNlfgu7nOeqTyvw6Q==
   dependencies:
     "@harelpls/use-pusher" "^7.2.1"
     assert "^2.0.0"
