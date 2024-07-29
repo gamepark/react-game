@@ -1,5 +1,5 @@
 /**
- * Comes from https://github.com/prc5/react-zoom-pan-pinch/blob/master/src/utils/calculations.utils.ts
+ * Comes from https://github.com/prc5/react-zoom-pan-pinch/blob/master/src/utils/bounds.util.ts
  */
 import { BoundsType, PositionType, ReactZoomPanPinchContext } from 'react-zoom-pan-pinch'
 import { roundNumber } from './calculation.util'

@@ -1,9 +1,9 @@
 import { ReactZoomPanPinchContext, ReactZoomPanPinchState, useTransformContext } from 'react-zoom-pan-pinch'
 import { Margin } from '../components'
-import { animations } from '../utilities/animations.constants'
-import { animate, handleCancelAnimation } from '../utilities/animations.util'
-import { calculateBounds, getMouseBoundedPosition } from '../utilities/bounds.util'
-import { checkZoomBounds } from '../utilities/zoom.util'
+import { animations } from '../utilities/zoom-pan-pinch'
+import { animate, handleCancelAnimation } from '../utilities/zoom-pan-pinch'
+import { calculateBounds, getMouseBoundedPosition } from '../utilities/zoom-pan-pinch'
+import { checkZoomBounds } from '../utilities/zoom-pan-pinch'
 
 /**
  * react-zoom-pan-pinch only has "zoomToElement". This code is the equivalent to zoom to display multiple elements at once.

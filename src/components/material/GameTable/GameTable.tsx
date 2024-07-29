@@ -7,7 +7,7 @@ import { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState }
 import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
-import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/bounds.util'
+import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/zoom-pan-pinch'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
 
