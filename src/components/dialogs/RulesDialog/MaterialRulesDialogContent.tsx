@@ -3,7 +3,7 @@ import { css, keyframes, Theme, useTheme } from '@emotion/react'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { displayMaterialHelp, isSameLocationArea, MaterialHelpDisplay, MaterialItem, MaterialRules } from '@gamepark/rules-api'
+import { isSameLocationArea, MaterialHelpDisplay, MaterialItem, MaterialMoveBuilder, MaterialRules } from '@gamepark/rules-api'
 import { FC, useMemo } from 'react'
 import { fontSizeCss, transformCss } from '../../../css'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
@@ -13,6 +13,7 @@ import { ItemContext, ItemLocator, SortFunction } from '../../../locators'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
 import { LocationDisplay } from '../../material/locations/LocationDisplay'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
+import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   helpDisplay: MaterialHelpDisplay<Player, MaterialType, LocationType>

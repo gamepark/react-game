@@ -2,7 +2,7 @@
 import { CollisionDetection, DndContext, DragEndEvent, getClientRect, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { css, Global } from '@emotion/react'
-import { dropItemMove, Location } from '@gamepark/rules-api'
+import { Location, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
@@ -10,6 +10,7 @@ import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/zoom-pan-pinch'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
+import dropItemMove = MaterialMoveBuilder.dropItemMove
 
 export type GameTableProps = {
   collisionAlgorithm?: CollisionDetection

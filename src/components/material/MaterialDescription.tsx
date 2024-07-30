@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
 import {
-  displayMaterialHelp,
   isDeleteItem,
   isMoveItem,
   isRoll,
@@ -9,10 +8,12 @@ import {
   Location,
   MaterialHelpDisplay,
   MaterialItem,
-  MaterialMove
+  MaterialMove,
+  MaterialMoveBuilder
 } from '@gamepark/rules-api'
 import { ComponentType, FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
+import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 
 export type MaterialHelpProps<P extends number = number, M extends number = number, L extends number = number> = {
   closeDialog: () => void

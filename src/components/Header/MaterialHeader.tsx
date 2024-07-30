@@ -2,7 +2,7 @@
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons/faCircleQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GamePageState } from '@gamepark/react-client'
-import { displayRulesHelp, MaterialGame } from '@gamepark/rules-api'
+import { MaterialGame, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { ComponentType, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
@@ -11,6 +11,7 @@ import { useGame, usePlay, usePlayerId, usePlayerName, useResultText } from '../
 import { RulesDialog } from '../dialogs'
 import { gameContext } from '../GameProvider'
 import { Header, HeaderProps } from './Header'
+import displayRulesHelp = MaterialMoveBuilder.displayRulesHelp
 
 
 export type MaterialHeaderProps<RulesStep extends number = number> = MaterialHeaderContentProps<RulesStep> & HeaderProps

@@ -2,7 +2,7 @@
 import { useDroppable } from '@dnd-kit/core'
 import { css, keyframes, Theme } from '@emotion/react'
 import { GamePageState } from '@gamepark/react-client'
-import { displayLocationHelp, Location, MaterialMove } from '@gamepark/rules-api'
+import { Location, MaterialMove, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, MouseEvent, useCallback, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { useSelector } from 'react-redux'
@@ -12,6 +12,7 @@ import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { combineEventListeners, findIfUnique } from '../../../utilities'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { LocationDisplay } from './LocationDisplay'
+import displayLocationHelp = MaterialMoveBuilder.displayLocationHelp
 
 export type SimpleDropAreaProps<P extends number = number, L extends number = number> = {
   location: Location<P, L>
