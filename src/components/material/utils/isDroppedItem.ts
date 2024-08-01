@@ -8,5 +8,5 @@ export const isDroppedItem = <P extends number = number, M extends number = numb
   const droppedItem = rules.game.droppedItem
   if (!droppedItem) return false
   if (droppedItem.type === type && droppedItem.index === index && droppedItem.displayIndex === displayIndex) return true
-  return isPlacedOnItem(rules.material(type).getItem(index)!, droppedItem, context)
+  return isPlacedOnItem(rules.material(type).getItem(index)!, { ...context, ...droppedItem })
 }

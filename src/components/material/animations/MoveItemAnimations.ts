@@ -35,7 +35,8 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
       return this.getMovedItemAnimation(context, animation)
     }
     const item = context.rules.material(context.type).getItem(context.index)!
-    if (isPlacedOnItem(item, { type: animation.move.itemType, index: animation.move.itemIndex }, context)) {
+    const animatedItemContext = { ...context, type: animation.move.itemType, index: animation.move.itemIndex }
+    if (isPlacedOnItem(item, animatedItemContext)) {
       return this.getChildItemAnimation(item, context, animation)
     }
   }

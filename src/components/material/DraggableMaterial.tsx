@@ -97,7 +97,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
 
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
   const draggedItemContext = useMemo<ItemContext | undefined>(() => draggedItem && { ...context, ...draggedItem }, [draggedItem, context])
-  const isDraggingParent = useMemo(() => !!item && !!draggedItem && isPlacedOnItem(item, draggedItem, context), [item, draggedItem, context])
+  const isDraggingParent = useMemo(() => !!item && !!draggedItemContext && isPlacedOnItem(item, draggedItemContext), [item, draggedItemContext])
   const canDropToSameLocation = useMemo(() => {
     if (!draggedItemContext) return false
     const location = locator.getLocationDescription(context)
