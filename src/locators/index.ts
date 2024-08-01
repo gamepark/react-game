@@ -1,6 +1,6 @@
 export * from './utils'
 export * from './DeckLocator'
-export * from './GridLocator'
+export * from './FlexLocator'
 export * from './HandLocator'
 export * from './ItemLocator'
 export * from './LineLocator'
