@@ -3,11 +3,12 @@ import { Coordinates, isCreateItem, isDeleteItem, isMoveItem, Location, Material
 import isEqual from 'lodash/isEqual'
 import { ComponentType } from 'react'
 import { ItemContext, LocationContext, LocationHelpProps, MaterialContext } from '../../../locators'
-import { ComponentSize } from '../MaterialDescription'
+import { ComponentDescription, ComponentSize } from '../ComponentDescription'
 import { isLocationSubset } from '../utils'
 import { isWritingDescription } from '../Writing'
 
-export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any> {
+export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any>
+  extends ComponentDescription {
   help?: ComponentType<LocationHelpProps<P, L>>
   height?: number
   width?: number
@@ -32,6 +33,14 @@ export class LocationDescription<P extends number = number, M extends number = n
 
   getHelpImage(location: Location<P, L>, context: MaterialContext<P, M, L>): string | undefined {
     return this.helpImage ?? this.getImage(location, context)
+  }
+
+  getImages(): string[] {
+    const images: string[] = []
+    if (this.image) images.push(this.image)
+    if (this.images) images.push(...Object.values(this.images) as string[])
+    if (this.helpImage) images.push(this.helpImage)
+    return images
   }
 
   borderRadius?: number

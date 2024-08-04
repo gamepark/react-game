@@ -13,16 +13,12 @@ import {
 } from '@gamepark/rules-api'
 import { ComponentType, FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
+import { ComponentDescription, ComponentSize } from './ComponentDescription'
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 
 export type MaterialHelpProps<P extends number = number, M extends number = number, L extends number = number> = {
   closeDialog: () => void
 } & Omit<MaterialHelpDisplay<P, M, L>, 'type'>
-
-export type ComponentSize = {
-  width: number
-  height: number
-}
 
 export type MaterialContentProps<ItemId = any> = {
   itemId: ItemId,
@@ -33,7 +29,8 @@ export type MaterialContentProps<ItemId = any> = {
 /**
  * Base class to describe the material in a game
  */
-export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any> {
+export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
+  extends ComponentDescription {
   /**
    * Content of the help dialog opened when an item is clicked
    */
@@ -195,11 +192,6 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   getBorderRadius(_itemId: ItemId): number | undefined {
     return this.borderRadius
   }
-
-  /**
-   * All the images that can be used to display the item, and therefore should be preloaded with the web page.
-   */
-  abstract getImages(): string[]
 
   /**
    * Thickness of the item
