@@ -1,7 +1,7 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Animation, Animations } from '@gamepark/react-client'
 import { ItemMove, ItemMoveType, MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
-import { ItemContext, ItemLocator } from '../../../locators'
+import { ItemContext, Locator } from '../../../locators'
 import { MaterialDescription } from '../MaterialDescription'
 import { CreateItemAnimations } from './CreateItemAnimations'
 import { DeleteItemAnimations } from './DeleteItemAnimations'
@@ -41,7 +41,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
 
 export type ItemAnimationContext<P extends number = number, M extends number = number, L extends number = number> = {
   material: Record<M, MaterialDescription<P, M, L>>
-  locators: Record<L, ItemLocator<P, M, L>>
+  locators: Record<L, Locator<P, M, L>>
   rules: MaterialRules<P, M, L>
   player?: P
 }

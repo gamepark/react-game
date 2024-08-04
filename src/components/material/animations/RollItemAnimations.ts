@@ -1,7 +1,7 @@
 import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
 import { CreateItem, ItemMove, MaterialRulesCreator, RollItem } from '@gamepark/rules-api'
-import { centerLocator, ItemContext, ItemLocator } from '../../../locators'
+import { centerLocator, ItemContext, Locator } from '../../../locators'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
@@ -30,7 +30,7 @@ export class RollItemAnimations<P extends number = number, M extends number = nu
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.mutator(type).applyMove(animation.move)
     const futureItem = futureRules.material(type).getItem(index)!
-    const targetLocator = locators[futureItem.location.type] ?? centerLocator as unknown as ItemLocator<P, M, L>
+    const targetLocator = locators[futureItem.location.type] ?? centerLocator as unknown as Locator<P, M, L>
     const sourceTransforms = transformItem(context)
     const futureTransforms = targetLocator.transformItem(futureItem, context)
     addMissingOperations(sourceTransforms, futureTransforms)

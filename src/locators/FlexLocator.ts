@@ -1,7 +1,7 @@
 import { Coordinates, MaterialItem } from '@gamepark/rules-api'
-import { ItemContext, ItemLocator } from './ItemLocator'
+import { ItemContext, Locator } from './Locator'
 
-export abstract class FlexLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
+export abstract class FlexLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
   reverse = false
   coordinates: Coordinates = { x: 0, y: 0, z: 0 }
   abstract itemsPerLine: number

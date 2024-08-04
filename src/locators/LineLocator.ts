@@ -1,7 +1,7 @@
 import { Coordinates, MaterialItem } from '@gamepark/rules-api'
-import { ItemContext, ItemLocator } from './ItemLocator'
+import { ItemContext, Locator } from './Locator'
 
-export abstract class LineLocator<P extends number = number, M extends number = number, L extends number = number> extends ItemLocator<P, M, L> {
+export abstract class LineLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
   getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
     const coordinates = this.getCoordinates(item, context)
     const index = this.getItemIndex(item, context)

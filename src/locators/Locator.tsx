@@ -5,7 +5,7 @@ import sumBy from 'lodash/sumBy'
 import { LocationDescription, MaterialDescriptionRecord } from '../components'
 
 export type SortFunction = ((item: MaterialItem) => number)
-export class ItemLocator<P extends number = number, M extends number = number, L extends number = number> {
+export class Locator<P extends number = number, M extends number = number, L extends number = number> {
   parentItemType?: M
   limit?: number
   locationDescription?: LocationDescription<P, M, L>
@@ -143,7 +143,7 @@ export class ItemLocator<P extends number = number, M extends number = number, L
   }
 }
 
-export type ItemLocatorRecord<P extends number = number, M extends number = number, L extends number = number> = Record<L, ItemLocator<P, M, L>>
+export type ItemLocatorRecord<P extends number = number, M extends number = number, L extends number = number> = Record<L, Locator<P, M, L>>
 
 export type MaterialContext<P extends number = number, M extends number = number, L extends number = number> = {
   rules: MaterialRules<P, M, L>
@@ -165,4 +165,4 @@ export type LocationHelpProps<P extends number = number, L extends number = numb
   closeDialog: () => void
 }
 
-export const centerLocator = new ItemLocator()
+export const centerLocator = new Locator()

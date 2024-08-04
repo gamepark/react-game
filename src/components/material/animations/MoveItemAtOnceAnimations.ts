@@ -1,7 +1,7 @@
 import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
 import { ItemMove, MaterialItem, MaterialRulesCreator, MoveItemsAtOnce } from '@gamepark/rules-api'
-import { centerLocator, ItemContext, ItemLocator } from '../../../locators'
+import { centerLocator, ItemContext, Locator } from '../../../locators'
 import { adjustRotation } from './adjustRotation'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
@@ -31,7 +31,7 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     futureRules.play(animation.move)
     const futureItem = futureRules.material(type).getItem(context.index)!
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
-    const targetLocator = locators[futureItem.location.type] ?? centerLocator as unknown as ItemLocator<P, M, L>
+    const targetLocator = locators[futureItem.location.type] ?? centerLocator as unknown as Locator<P, M, L>
     const futureContext = { ...context, rules: futureRules, index: context.index, displayIndex: context.displayIndex }
     const sourceTransforms = transformItem(context)
     const sourceTransform = sourceTransforms.join(' ')
@@ -46,7 +46,7 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
-    const targetLocator = locators[item.location.type] ?? centerLocator as unknown as ItemLocator<P, M, L>
+    const targetLocator = locators[item.location.type] ?? centerLocator as unknown as Locator<P, M, L>
     const futureContext = { ...context, rules: futureRules }
     const sourceTransforms = transformItem(context)
     const sourceTransform = sourceTransforms.join(' ')

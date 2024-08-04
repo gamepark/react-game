@@ -9,7 +9,7 @@ import { fontSizeCss, transformCss } from '../../../css'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
 import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
 import { useLocators } from '../../../hooks/useLocators'
-import { ItemContext, ItemLocator, SortFunction } from '../../../locators'
+import { ItemContext, Locator, SortFunction } from '../../../locators'
 import { isFlatMaterialDescription, MaterialComponent } from '../../material'
 import { LocationDisplay } from '../../material/locations/LocationDisplay'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
@@ -30,7 +30,7 @@ const useMaterialNavigation = <P extends number = number, M extends number = num
       .material(helpDisplay.itemType)
       .location((location) => isSameLocationArea(location, helpItem.location!))
 
-    const locator = locators[helpItem.location.type] as ItemLocator<P, M, L> | undefined
+    const locator = locators[helpItem.location.type] as Locator<P, M, L> | undefined
     const sorts: SortFunction[] = locator?.getNavigationSorts(context) ?? []
     if (!sorts.length) return
     return itemOnSameLocation.sort(...sorts)

@@ -1,8 +1,8 @@
-import { ItemLocator } from '../locators'
+import { Locator } from '../locators'
 import { useLocators } from './useLocators'
 
 export function useItemLocator<P extends number = number, M extends number = number, L extends number = number>(
   type: L
-): ItemLocator<P, M, L> | undefined {
-  return useLocators()?.[type] as ItemLocator<P, M, L> | undefined
+): Locator<P, M, L> | undefined {
+  return useLocators()?.[type] as Locator<P, M, L> | undefined
 }

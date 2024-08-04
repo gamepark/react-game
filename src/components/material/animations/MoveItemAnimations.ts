@@ -2,7 +2,7 @@ import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
 import { ItemMove, MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
 import { isEqual } from 'lodash'
-import { centerLocator, ItemContext, ItemLocator } from '../../../locators'
+import { centerLocator, ItemContext, Locator } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
 import { adjustRotation } from './adjustRotation'
@@ -50,7 +50,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const futureItem = futureRules.material(type).getItem(futureIndex)!
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
-    const targetLocator = locators[futureItem.location.type] ?? centerLocator as unknown as ItemLocator<P, M, L>
+    const targetLocator = locators[futureItem.location.type] ?? centerLocator as unknown as Locator<P, M, L>
     const futureContext = { ...context, rules: futureRules, index: futureIndex, displayIndex: futureDisplayIndex }
     const sourceTransforms = transformItem(context)
     const sourceTransform = sourceTransforms.join(' ')
@@ -80,7 +80,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
-    const targetLocator = locators[item.location.type] ?? centerLocator as unknown as ItemLocator<P, M, L>
+    const targetLocator = locators[item.location.type] ?? centerLocator as unknown as Locator<P, M, L>
     const futureContext = { ...context, rules: futureRules }
     const sourceTransforms = transformItem(context)
     const sourceTransform = sourceTransforms.join(' ')

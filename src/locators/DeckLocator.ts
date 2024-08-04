@@ -1,5 +1,5 @@
 import { Coordinates, MaterialItem } from '@gamepark/rules-api'
-import { ItemContext } from './ItemLocator'
+import { ItemContext } from './Locator'
 import { LineLocator } from './LineLocator'
 
 export abstract class DeckLocator<P extends number = number, M extends number = number, L extends number = number> extends LineLocator<P, M, L> {
