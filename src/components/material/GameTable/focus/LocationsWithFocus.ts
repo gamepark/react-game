@@ -39,7 +39,7 @@ export const getStaticLocationsWithFocus = (
     const locator = context.locators[type] as Locator
     if (locator.parentItemType !== undefined) return []
     const locationsFocus = focus?.locations.filter(l => l.type === +type) ?? []
-    const locations = locator.getLocationDescription(context)?.getLocations(context) ?? []
+    const locations = locator.getLocations(context)
     return getFocusedLocations(locationsFocus, locations).locations
   })
 

@@ -11,6 +11,13 @@ export class Locator<P extends number = number, M extends number = number, L ext
   locationDescription?: LocationDescription<P, M, L>
   rotationUnit: string = 'deg'
 
+  location?: Location<P, L>
+  locations: Location<P, L>[] = []
+
+  getLocations(_context: MaterialContext<P, M, L>): Location<P, L>[] {
+    return this.location ? [this.location] : this.locations
+  }
+
   getLocationDescription(context: MaterialContext<P, M, L>): LocationDescription<P, M, L> | undefined {
     if (!this.locationDescription && this.parentItemType !== undefined) {
       const material = context.material[this.parentItemType]
