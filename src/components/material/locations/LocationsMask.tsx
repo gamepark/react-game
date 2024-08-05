@@ -31,8 +31,8 @@ const LocationRect = ({ location }: LocationRectProps) => {
   const context = useMaterialContext()
   const description = locator.getLocationDescription(context)!
   const position = locator.getPositionOnParent(location, context)
-  const { width, height } = description.getSize(location, context)
-  const radius = description.getBorderRadius(location, context) ?? 0
+  const { width, height } = description.getLocationSize(location, context)
+  const radius = description.getBorderRadius(location.id) ?? 0
   const transforms: string[] = description.transformLocation(location, context)
   return (
     <rect fill="black" x={`${position.x}%`} y={`${position.y}%`} width={`${width}em`} height={`${height}em`} rx={`${radius}em`} ry={`${radius}em`}

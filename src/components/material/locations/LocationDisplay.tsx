@@ -23,9 +23,9 @@ export const LocationDisplay = forwardRef<HTMLDivElement, LocationDisplayProps>(
     return null
   }
 
-  const { width, height } = description.getSize(location, context)
+  const { width, height } = description.getLocationSize(location, context)
   const image = description.getImage(location, context)
-  const borderRadius = description.getBorderRadius(location, context)
+  const borderRadius = description.getBorderRadius(location.id)
   const positionOnParent = useMemo(() => locator?.parentItemType !== undefined ? locator.getPositionOnParent(location, context) : undefined, [location, context, location])
 
   return (

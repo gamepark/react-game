@@ -13,7 +13,7 @@ import {
 } from '@gamepark/rules-api'
 import { ComponentType, FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
-import { ComponentDescription, ComponentSize } from './ComponentDescription'
+import { ComponentDescription } from './ComponentDescription'
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 
 export type MaterialHelpProps<P extends number = number, M extends number = number, L extends number = number> = {
@@ -30,7 +30,7 @@ export type MaterialContentProps<ItemId = any> = {
  * Base class to describe the material in a game
  */
 export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
-  extends ComponentDescription {
+  extends ComponentDescription<ItemId> {
   /**
    * Content of the help dialog opened when an item is clicked
    */
@@ -150,47 +150,6 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    */
   getShortClickLocalMove(_context: ItemContext<P, M, L>): MaterialMove<P, M, L> | undefined {
     return undefined
-  }
-
-  /**
-   * Height of the item
-   */
-  height?: number
-
-  /**
-   * Width of the item
-   */
-  width?: number
-
-  /**
-   * Ratio (width/height) of the item
-   */
-  ratio?: number
-
-  /**
-   * Border radius of the item
-   */
-  borderRadius?: number
-
-  /**
-   * Returns the size of the item. Default will be process from {@link width}, {@link height} and {@link ratio}.
-   * @param _itemId id of the item
-   * @returns {ComponentSize} The size
-   */
-  getSize(_itemId: ItemId): ComponentSize {
-    if (this.width && this.height) return { width: this.width, height: this.height }
-    if (this.ratio && this.width) return { width: this.width, height: this.width / this.ratio }
-    if (this.ratio && this.height) return { width: this.height * this.ratio, height: this.height }
-    throw new Error('You must implement 2 of "width", "height" & "ratio" in any Material description')
-  }
-
-  /**
-   * Returns the border radius of the item. Default to {@link borderRadius}
-   * @param _itemId id of the item
-   * @returns {number | undefined} The border radius
-   */
-  getBorderRadius(_itemId: ItemId): number | undefined {
-    return this.borderRadius
   }
 
   /**

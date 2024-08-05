@@ -19,7 +19,7 @@ export const LocationRulesDialogContent = <P extends number = number, M extends 
   const description = locator?.getLocationDescription(context)
   if (!description?.help) return null
   const image = description.getHelpImage(helpDisplay.location, context)
-  const { width, height } = description.getSize(helpDisplay.location, context)
+  const { width, height } = description.getLocationSize(helpDisplay.location, context)
   return <div css={flex}>
     {!!image &&
       <div css={[noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)), backgroundImage(image, height, width)]}/>

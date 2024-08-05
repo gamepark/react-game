@@ -8,18 +8,12 @@ import { isLocationSubset } from '../utils'
 import { isWritingDescription } from '../Writing'
 
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any>
-  extends ComponentDescription {
+  extends ComponentDescription<Id> {
   help?: ComponentType<LocationHelpProps<P, L>>
-  height?: number
-  width?: number
-  ratio?: number
   rotationUnit = 'deg'
 
-  getSize(_location: Location<P, L>, _context: MaterialContext<P, M, L>): ComponentSize {
-    if (this.width && this.height) return { width: this.width, height: this.height }
-    if (this.ratio && this.width) return { width: this.width, height: this.width / this.ratio }
-    if (this.ratio && this.height) return { width: this.height * this.ratio, height: this.height }
-    throw new Error('You must implement 2 of "width", "height" & "ratio" in any Location description')
+  getLocationSize(location: Location<P, L>, _context: MaterialContext<P, M, L>): ComponentSize {
+    return this.getSize(location.id)
   }
 
   image?: string
@@ -41,12 +35,6 @@ export class LocationDescription<P extends number = number, M extends number = n
     if (this.images) images.push(...Object.values(this.images) as string[])
     if (this.helpImage) images.push(this.helpImage)
     return images
-  }
-
-  borderRadius?: number
-
-  getBorderRadius(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
-    return this.borderRadius
   }
 
   extraCss?: Interpolation<Theme>
