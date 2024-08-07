@@ -168,16 +168,6 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   /**
-   * The css rotations to add to the item
-   * @param _item the item
-   * @param _context Context of the item
-   * @returns Css rotations such as `[rotateY(180deg)]`
-   */
-  getRotations(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
-    return []
-  }
-
-  /**
    * Any extra css to add on the item
    * @param _item The item
    * @param _context Context of the item

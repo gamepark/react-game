@@ -48,10 +48,10 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return this.hasBackFace() && this.getFrontId(item.id) === undefined
   }
 
-  getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    const rotations: string[] = []
-    if (this.isFlipped(item, context)) rotations.push('rotateY(180deg)')
-    return rotations
+  getItemTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    const transform = super.getItemTransform(item, context)
+    if (this.isFlipped(item, context)) transform.push('rotateY(180deg)')
+    return transform
   }
 
   content = ({ itemId, highlight, playDown, children }: MaterialContentProps<ItemId>) => {
