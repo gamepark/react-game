@@ -42,20 +42,19 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return this.transformParentItemLocation(item.location, context).concat(...this.transformOwnItemLocation(item, context))
   }
 
-  protected transformOwnItemLocation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    return [this.getTranslate3d(item, context), ...this.getRotations(item, context)]
-  }
-
-  getTranslate3d(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string {
-    let { x, y, z } = this.getPosition(item, context)
-    const parentMaterial = this.parentItemType ? context.material[this.parentItemType] : undefined
-    if (parentMaterial) {
-      const positionOnParent = this.getPositionOnParent(item.location, context)
-      const { width, height } = parentMaterial.getSize(this.getParentItemId(item.location, context))
-      x += width * (positionOnParent.x - 50) / 100
-      y += height * (positionOnParent.y - 50) / 100
+  protected transformParentItemLocation(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
+    if (!this.parentItemType) return []
+    const { rules, locators } = context
+    if (location.parent !== undefined) {
+      const parentItem = rules.material(this.parentItemType).getItem(location.parent)!
+      const parentLocator = locators[parentItem.location.type]
+      return parentLocator?.transformItemLocation(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 }) ?? []
+    } else {
+      const staticItem = this.getParentItem(location, context)
+      if (!staticItem) return []
+      const locator = locators[staticItem.location.type]
+      return locator?.transformItemLocation(staticItem, { ...context, type: this.parentItemType, displayIndex: 0 }) ?? []
     }
-    return `translate3d(${x}em, ${y}em, ${z}em)`
   }
 
   getParentItem(location: Location<P, L>, context: ItemContext<P, M, L>): MaterialItem<P, L> | undefined {
@@ -67,19 +66,6 @@ export class Locator<P extends number = number, M extends number = number, L ext
 
   getParentItemId(_location: Location<P, L>, _context: ItemContext<P, M, L>): number | undefined {
     return undefined
-  }
-
-  position: XYCoordinates = { x: 0, y: 0 }
-
-  /**
-   * Place the center of the item on the screen
-   *
-   * @param item Item being placed
-   * @param context Placement context (type of item, and index if item has a quantity to display)
-   * @return The delta coordinates in em of the center of the item from the center of their parent (or the screen)
-   */
-  getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
-    return { ...this.position, z: context.material[context.type]?.getThickness(item, context) ?? 0 }
   }
 
   positionOnParent: XYCoordinates = { x: 0, y: 0 }
@@ -97,6 +83,35 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return this.positionOnParent
   }
 
+  protected transformOwnItemLocation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    return [this.getTranslate3d(item, context), ...this.getRotations(item, context)]
+  }
+
+  getTranslate3d(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string {
+    let { x, y, z } = this.getPosition(item, context)
+    const parentMaterial = this.parentItemType ? context.material[this.parentItemType] : undefined
+    if (parentMaterial) {
+      const positionOnParent = this.getPositionOnParent(item.location, context)
+      const { width, height } = parentMaterial.getSize(this.getParentItemId(item.location, context))
+      x += width * (positionOnParent.x - 50) / 100
+      y += height * (positionOnParent.y - 50) / 100
+    }
+    return `translate3d(${x}em, ${y}em, ${z}em)`
+  }
+
+  position: XYCoordinates = { x: 0, y: 0 }
+
+  /**
+   * Place the center of the item on the screen
+   *
+   * @param item Item being placed
+   * @param context Placement context (type of item, and index if item has a quantity to display)
+   * @return The delta coordinates in em of the center of the item from the center of their parent (or the screen)
+   */
+  getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
+    return { ...this.position, z: context.material[context.type]?.getThickness(item, context) ?? 0 }
+  }
+
   rotateZ: number = 0
 
   getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
@@ -106,21 +121,6 @@ export class Locator<P extends number = number, M extends number = number, L ext
   getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     const rotateZ = this.getRotateZ(item, context)
     return [`rotateZ(${rotateZ ?? 0}${this.rotationUnit})`]
-  }
-
-  protected transformParentItemLocation(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
-    if (!this.parentItemType) return []
-    const { rules, locators } = context
-    if (location.parent !== undefined) {
-      const parentItem = rules.material(this.parentItemType).getItem(location.parent)!
-      const parentLocator = locators[parentItem.location.type]
-      return parentLocator?.transformItemLocation(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 }) ?? []
-    } else {
-      const staticItem = this.getParentItem(location, context)
-      if (!staticItem) return []
-      const locator = locators[staticItem.location.type]
-      return locator?.transformItemLocation(staticItem, { ...context, type: this.parentItemType, displayIndex: 0 }) ?? []
-    }
   }
 
   getItemIndex(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
