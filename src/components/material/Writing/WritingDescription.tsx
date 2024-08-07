@@ -1,9 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { MaterialItem } from '@gamepark/rules-api'
 import { ReactNode } from 'react'
 import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss } from '../../../css'
-import { ItemContext } from '../../../locators'
 import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
 
 export abstract class WritingDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
@@ -29,17 +27,6 @@ export abstract class WritingDescription<P extends number = number, M extends nu
 
   getFrontContent(_itemId: ItemId): ReactNode | undefined {
     return
-  }
-
-  getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    const rotations: string[] = []
-    const rotateZ = this.getRotateZ(item, context)
-    if (rotateZ) rotations.push(`rotateZ(${rotateZ}deg)`)
-    return rotations
-  }
-
-  getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
-    return 0
   }
 
   content = ({ itemId, highlight, playDown }: MaterialContentProps<ItemId>) => {
