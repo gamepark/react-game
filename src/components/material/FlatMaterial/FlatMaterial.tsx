@@ -50,14 +50,8 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
 
   getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     const rotations: string[] = []
-    const rotateZ = this.getRotateZ(item, context)
-    if (rotateZ) rotations.push(`rotateZ(${rotateZ}deg)`)
     if (this.isFlipped(item, context)) rotations.push('rotateY(180deg)')
     return rotations
-  }
-
-  getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
-    return 0
   }
 
   content = ({ itemId, highlight, playDown, children }: MaterialContentProps<ItemId>) => {
