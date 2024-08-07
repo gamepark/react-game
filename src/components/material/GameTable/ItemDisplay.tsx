@@ -4,7 +4,7 @@ import { forwardRef, useMemo } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { pointerCursorCss, transformCss } from '../../../css'
 import { useMaterialContext } from '../../../hooks'
-import { centerLocator, ItemContext } from '../../../locators'
+import { ItemContext } from '../../../locators'
 import { LocationsMask, SimpleDropArea } from '../locations'
 import { MaterialComponent, MaterialComponentProps } from '../MaterialComponent'
 import { getLocationsWithFocus, useFocusContext } from './focus'
@@ -24,12 +24,12 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const itemContext: ItemContext = { ...context, type, index, displayIndex }
   const { locations, focusedIndexes } = getLocationsWithFocus(item, itemContext, focus)
   const focusedLocations = useMemo(() => focusedIndexes.map(index => locations[index]), [locations, focusedIndexes])
-  const locator = context.locators[item.location.type] ?? centerLocator
   const description = context.material[type]
+  if (!description) return null
   return <MaterialComponent ref={isFocused ? mergeRefs([ref, addFocusRef]) : ref}
                             type={type} itemId={item.id}
                             playDown={focus?.highlight && !isFocused && !focusedIndexes.length}
-                            css={[pointerCursorCss, transformCss(...locator.transformItem(item, itemContext)), description?.getItemExtraCss(item, itemContext)]}
+                            css={[pointerCursorCss, transformCss(...description.getItemTransform(item, itemContext)), description.getItemExtraCss(item, itemContext)]}
                             {...props}>
     {locations.length > 0 && <>
       {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}

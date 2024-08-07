@@ -8,7 +8,7 @@ import { mergeRefs } from 'react-merge-refs'
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
 import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
-import { centerLocator, ItemContext } from '../../locators'
+import { ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
 import { gameContext } from '../GameProvider'
 import { MaterialGameAnimations } from './animations'
@@ -32,7 +32,6 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const description = material[type]!
   const item = useRevealedItem(type, index)
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
-  const locator = context.locators[item.location.type] ?? centerLocator
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const play = usePlay()
   const legalMoves = useLegalMoves<MaterialMove>()
@@ -100,10 +99,11 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const isDraggingParent = useMemo(() => !!item && !!draggedItemContext && isPlacedOnItem(item, draggedItemContext), [item, draggedItemContext])
   const canDropToSameLocation = useMemo(() => {
     if (!draggedItemContext) return false
-    const location = locator.getLocationDescription(context)
     const description = material[draggedItemContext.type]
-    return legalMoves.some(move => description?.canDrag(move, draggedItemContext) && location?.canDrop(move, item.location, draggedItemContext))
-  }, [item, draggedItemContext, legalMoves])
+    const location = context.locators[item.location.type]?.getLocationDescription(context)
+    if (!description || !location) return false
+    return legalMoves.some(move => description?.canDrag(move, draggedItemContext) && location.canDrop(move, item.location, draggedItemContext))
+  }, [context, item, draggedItemContext, legalMoves])
 
   const [parentTransform, setParentTransform] = useState<XYCoordinates>()
   const transform = selfTransform ?? parentTransform
@@ -145,8 +145,8 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   }, [])
   useDndMonitor({ onDragStart, onDragEnd, onDragMove })
 
-  const locatorTransform = useMemo(() => locator.transformItem(item, itemContext), [locator, item, itemContext])
-  const transformStyle = (applyTransform ? [transformRef.current, ...locatorTransform] : locatorTransform).join(' ')
+  const itemTransform = useMemo(() => description.getItemTransform(item, itemContext), [description, item, itemContext])
+  const transformStyle = (applyTransform ? [transformRef.current, ...itemTransform] : itemTransform).join(' ')
 
   const componentCss = useMemo(() => [
     !applyTransform && !animating && transformTransition,

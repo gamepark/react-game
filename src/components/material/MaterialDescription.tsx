@@ -207,6 +207,19 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   displayHelp(item: MaterialItem<P, L>, { type, index, displayIndex }: ItemContext<P, M, L>) {
     return displayMaterialHelp(type, item, index, displayIndex)
   }
+
+  /**
+   * Builds the CSS transform that will be applied to the item.
+   * @param item Item to position
+   * @param context Context of the item
+   * @returns {string[]} a list of CSS transformations
+   */
+  getItemTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    const transform = ['translate(-50%, -50%)']
+    const locator = context.locators[item.location.type]
+    if (locator) transform.push(...locator.transformItemLocation(item, context))
+    return transform
+  }
 }
 
 export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number> = Record<M, MaterialDescription<P, M, L>>

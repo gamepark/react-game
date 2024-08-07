@@ -38,10 +38,6 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return this.limit ? this.getItemIndex(item, context) >= this.limit : false
   }
 
-  transformItem(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    return ['translate(-50%, -50%)', ...this.transformItemLocation(item, context)]
-  }
-
   transformItemLocation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     return this.transformParentItemLocation(item.location, context).concat(...this.transformOwnItemLocation(item, context))
   }
@@ -164,5 +160,3 @@ export type LocationHelpProps<P extends number = number, L extends number = numb
   location: Location<P, L>
   closeDialog: () => void
 }
-
-export const centerLocator = new Locator()
