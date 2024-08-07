@@ -1,15 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import {
-  Coordinates,
-  DisplayedItem,
-  isSameLocationArea,
-  Location,
-  Material,
-  MaterialGame,
-  MaterialItem,
-  MaterialRules,
-  XYCoordinates
-} from '@gamepark/rules-api'
+import { Coordinates, DisplayedItem, isSameLocationArea, Location, MaterialItem, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import sumBy from 'lodash/sumBy'
 import { LocationDescription, MaterialDescriptionRecord } from '../components'
@@ -144,10 +134,6 @@ export class Locator<P extends number = number, M extends number = number, L ext
 
   countItems(location: Location<P, L>, { rules, type }: ItemContext<P, M, L>): number {
     return sumBy(rules.material(type).getItems(), item => isSameLocationArea(item.location, location) ? (item.quantity ?? 1) : 0)
-  }
-
-  getMaterial(game: MaterialGame<P, M, L>, type: M) {
-    return new Material<P, M, L>(type, Array.from((game.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
   }
 
   navigationSorts: SortFunction[] = [(item) => item.location.x ?? 0, (item) => item.location.y ?? 0, (item) => item.location.z ?? 0]
