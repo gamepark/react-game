@@ -25,7 +25,7 @@ export abstract class PileLocator<P extends number = number, M extends number = 
     return pilePositions.get(index)!
   }
 
-  getRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
     if (!this.maxAngle) return 0
     const pileId = this.getPileId(item, context)
     if (!this.rotations.has(pileId)) this.rotations.set(pileId, new Map())

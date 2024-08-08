@@ -43,7 +43,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
     if (x || y || z) {
       transform.push(`translate3d(${x}em, ${y}em, ${z}em)`)
     }
-    const rotateZ = this.getRotateZ(item, context)
+    const rotateZ = this.getItemRotateZ(item, context)
     if (rotateZ) {
       transform.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
     }
@@ -105,8 +105,12 @@ export class Locator<P extends number = number, M extends number = number, L ext
 
   rotateZ: number = 0
 
-  getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+  getRotateZ(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
     return this.rotateZ
+  }
+
+  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+    return this.getRotateZ(item.location, context)
   }
 
   getItemIndex(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {

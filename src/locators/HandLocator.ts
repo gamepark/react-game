@@ -16,7 +16,7 @@ export abstract class HandLocator<P extends number = number, M extends number = 
     }
   }
 
-  getRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
     return this.getItemAngle(item, context)
   }
 
