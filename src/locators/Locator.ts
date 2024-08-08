@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { Coordinates, DisplayedItem, isSameLocationArea, Location, MaterialItem, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
-import isEqual from 'lodash/isEqual'
 import sumBy from 'lodash/sumBy'
 import { LocationDescription, MaterialDescriptionRecord } from '../components'
 
@@ -51,24 +50,15 @@ export class Locator<P extends number = number, M extends number = number, L ext
     const parentMaterial = context.material[this.parentItemType]
     const { x, y } = this.getPositionOnParent(location, context)
     if (parentMaterial && (x !== 0 || y !== 0)) {
-      const { width, height } = parentMaterial.getSize(this.getParentItemId(location, context))
+      const { width, height } = parentMaterial.getSize(parentItem.id)
       transform.push(`translate(${width * (x - 50) / 100}em, ${height * (y - 50) / 100}em)`)
     }
     return transform
   }
 
   getParentItem(location: Location<P, L>, context: ItemContext<P, M, L>): MaterialItem<P, L> | undefined {
-    if (this.parentItemType === undefined) return undefined
-    if (location.parent !== undefined) {
-      return context.rules.material(this.parentItemType).getItem(location.parent)
-    } else {
-      const parentItemId = this.getParentItemId(location, context)
-      return context.material[this.parentItemType]?.getStaticItems(context).find(item => isEqual(item.id, parentItemId))
-    }
-  }
-
-  getParentItemId(_location: Location<P, L>, _context: ItemContext<P, M, L>): number | undefined {
-    return undefined
+    if (this.parentItemType === undefined || location.parent === undefined) return undefined
+    return context.rules.material(this.parentItemType).getItem(location.parent)
   }
 
   positionOnParent: XYCoordinates = { x: 0, y: 0 }
