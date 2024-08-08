@@ -113,8 +113,12 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return this.getRotateZ(item.location, context)
   }
 
+  getLocationIndex(location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
+    return location.x ?? location.y ?? location.z
+  }
+
   getItemIndex(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
-    return item.location.x ?? item.location.y ?? item.location.z ?? context.displayIndex
+    return this.getLocationIndex(item.location, context) ?? context.displayIndex
   }
 
   countItems(location: Location<P, L>, { rules, type }: ItemContext<P, M, L>): number {
