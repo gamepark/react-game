@@ -39,15 +39,22 @@ export class Locator<P extends number = number, M extends number = number, L ext
   }
 
   transformItemLocation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    return this.transformParentItemLocation(item.location, context).concat(...this.transformOwnItemLocation(item, context))
+    return this.placeItemOnParent(item.location, context).concat(...this.transformOwnItemLocation(item, context))
   }
 
-  protected transformParentItemLocation(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
+  protected placeItemOnParent(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
     const parentItem = this.getParentItem(location, context)
     if (this.parentItemType === undefined || !parentItem) return []
     const locator = context.locators[parentItem.location.type]
     if (!locator) return []
-    return locator.transformItemLocation(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 })
+    const transform = locator.transformItemLocation(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 })
+    const parentMaterial = context.material[this.parentItemType]
+    const { x, y } = this.getPositionOnParent(location, context)
+    if (parentMaterial && (x !== 0 || y !== 0)) {
+      const { width, height } = parentMaterial.getSize(this.getParentItemId(location, context))
+      transform.push(`translate(${width * (x - 50) / 100}em, ${height * (y - 50) / 100}em)`)
+    }
+    return transform
   }
 
   getParentItem(location: Location<P, L>, context: ItemContext<P, M, L>): MaterialItem<P, L> | undefined {
@@ -85,13 +92,6 @@ export class Locator<P extends number = number, M extends number = number, L ext
 
   getTranslate3d(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string {
     let { x, y, z } = this.getPosition(item, context)
-    const parentMaterial = this.parentItemType ? context.material[this.parentItemType] : undefined
-    if (parentMaterial) {
-      const positionOnParent = this.getPositionOnParent(item.location, context)
-      const { width, height } = parentMaterial.getSize(this.getParentItemId(item.location, context))
-      x += width * (positionOnParent.x - 50) / 100
-      y += height * (positionOnParent.y - 50) / 100
-    }
     return `translate3d(${x}em, ${y}em, ${z}em)`
   }
 
