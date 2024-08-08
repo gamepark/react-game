@@ -69,9 +69,10 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return transform
   }
 
-  getParentItem(location: Location<P, L>, context: ItemContext<P, M, L>): MaterialItem<P, L> | undefined {
-    if (this.parentItemType === undefined || location.parent === undefined) return undefined
-    return context.rules.material(this.parentItemType).getItem(location.parent)
+  getParentItem(location: Location<P, L>, { rules, material }: ItemContext<P, M, L>): MaterialItem<P, L> | undefined {
+    if (this.parentItemType === undefined) return undefined
+    if (location.parent === undefined) return material[this.parentItemType]?.staticItem
+    return rules.material(this.parentItemType).getItem(location.parent)
   }
 
   positionOnParent: XYCoordinates = { x: 0, y: 0 }
