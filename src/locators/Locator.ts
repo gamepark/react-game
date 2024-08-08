@@ -6,6 +6,7 @@ import { LocationDescription, MaterialDescriptionRecord } from '../components'
 export type SortFunction = ((item: MaterialItem) => number)
 
 export class Locator<P extends number = number, M extends number = number, L extends number = number> {
+  itemTypes: M[] = []
   parentItemType?: M
   limit?: number
   locationDescription?: LocationDescription<P, M, L>
@@ -38,6 +39,9 @@ export class Locator<P extends number = number, M extends number = number, L ext
   }
 
   placeItem(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    if (!this.itemTypes.includes(context.type)) {
+      this.itemTypes.push(context.type)
+    }
     const transform = this.placeItemOnParent(item.location, context)
     const { x, y, z } = this.getItemCoordinates(item, context)
     if (x || y || z) {
@@ -121,8 +125,8 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return this.getLocationIndex(item.location, context) ?? context.displayIndex
   }
 
-  countItems(location: Location<P, L>, { rules, type }: ItemContext<P, M, L>): number {
-    return sumBy(rules.material(type).getItems(), item => isSameLocationArea(item.location, location) ? (item.quantity ?? 1) : 0)
+  countItems(location: Location<P, L>, { rules }: MaterialContext<P, M, L>): number {
+    return sumBy(this.itemTypes, type => rules.material(type).location(itemLocation => isSameLocationArea(itemLocation, location)).getQuantity())
   }
 
   navigationSorts: SortFunction[] = [(item) => item.location.x ?? 0, (item) => item.location.y ?? 0, (item) => item.location.z ?? 0]
