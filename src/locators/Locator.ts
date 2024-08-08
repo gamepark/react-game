@@ -39,7 +39,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
 
   placeItem(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     const transform = this.placeItemOnParent(item.location, context)
-    const { x, y, z } = this.getPosition(item, context)
+    const { x, y, z } = this.getItemCoordinates(item, context)
     if (x || y || z) {
       transform.push(`translate3d(${x}em, ${y}em, ${z}em)`)
     }
@@ -85,7 +85,11 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return this.positionOnParent
   }
 
-  position: XYCoordinates = { x: 0, y: 0 }
+  coordinates: Partial<Coordinates> = { x: 0, y: 0, z: 0 }
+
+  getCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
+    return this.coordinates
+  }
 
   /**
    * Place the center of the item on the screen
@@ -94,8 +98,9 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Placement context (type of item, and index if item has a quantity to display)
    * @return The delta coordinates in em of the center of the item from the center of their parent (or the screen)
    */
-  getPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
-    return { ...this.position, z: context.material[context.type]?.getThickness(item, context) ?? 0 }
+  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
+    const { x = 0, y = 0, z = context.material[context.type]?.getThickness(item, context) ?? 0 } = this.getCoordinates(item.location, context)
+    return { x, y, z }
   }
 
   rotateZ: number = 0
