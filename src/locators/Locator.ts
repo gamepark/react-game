@@ -37,8 +37,17 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return this.limit ? this.getItemIndex(item, context) >= this.limit : false
   }
 
-  transformItemLocation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    return this.placeItemOnParent(item.location, context).concat(...this.transformOwnItemLocation(item, context))
+  placeItem(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    const transform = this.placeItemOnParent(item.location, context)
+    const { x, y, z } = this.getPosition(item, context)
+    if (x || y || z) {
+      transform.push(`translate3d(${x}em, ${y}em, ${z}em)`)
+    }
+    const rotateZ = this.getRotateZ(item, context)
+    if (rotateZ) {
+      transform.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
+    }
+    return transform
   }
 
   protected placeItemOnParent(location: Location<P, L>, context: ItemContext<P, M, L>): string[] {
@@ -46,7 +55,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
     if (this.parentItemType === undefined || !parentItem) return []
     const locator = context.locators[parentItem.location.type]
     if (!locator) return []
-    const transform = locator.transformItemLocation(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 })
+    const transform = locator.placeItem(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 })
     const parentMaterial = context.material[this.parentItemType]
     const { x, y } = this.getPositionOnParent(location, context)
     if (parentMaterial && (x !== 0 || y !== 0)) {
@@ -76,15 +85,6 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return this.positionOnParent
   }
 
-  protected transformOwnItemLocation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    return [this.getTranslate3d(item, context), ...this.getRotations(item, context)]
-  }
-
-  getTranslate3d(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string {
-    let { x, y, z } = this.getPosition(item, context)
-    return `translate3d(${x}em, ${y}em, ${z}em)`
-  }
-
   position: XYCoordinates = { x: 0, y: 0 }
 
   /**
@@ -102,11 +102,6 @@ export class Locator<P extends number = number, M extends number = number, L ext
 
   getRotateZ(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
     return this.rotateZ
-  }
-
-  getRotations(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    const rotateZ = this.getRotateZ(item, context)
-    return [`rotateZ(${rotateZ ?? 0}${this.rotationUnit})`]
   }
 
   getItemIndex(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
