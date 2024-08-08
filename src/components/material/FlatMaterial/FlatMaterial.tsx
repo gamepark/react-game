@@ -48,9 +48,17 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return this.hasBackFace() && this.getFrontId(item.id) === undefined
   }
 
+  isFlippedOnTable(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
+    return this.isFlipped(item, context)
+  }
+
+  isFlippedInDialog(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
+    return this.isFlipped(item, context)
+  }
+
   getItemTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     const transform = super.getItemTransform(item, context)
-    if (this.isFlipped(item, context)) transform.push('rotateY(180deg)')
+    if (this.isFlippedOnTable(item, context)) transform.push('rotateY(180deg)')
     return transform
   }
 

@@ -75,7 +75,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
     <div css={[flex, hasNavigation && fullSize]}>
       <MaterialComponent type={helpDisplay.itemType} itemId={item.id} css={[
         noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-        isFlatMaterialDescription(description) && description.isFlipped(item, itemContext) && transformCss('rotateY(180deg)')
+        isFlatMaterialDescription(description) && description.isFlippedInDialog(item, itemContext) && transformCss('rotateY(180deg)')
       ]}>
         {locations.map((location) => <LocationDisplay key={JSON.stringify(location)} location={location}/>)}
       </MaterialComponent>
