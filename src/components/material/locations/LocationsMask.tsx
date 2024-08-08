@@ -33,7 +33,7 @@ const LocationRect = ({ location }: LocationRectProps) => {
   const position = locator.getPositionOnParent(location, context)
   const { width, height } = description.getLocationSize(location, context)
   const radius = description.getBorderRadius(location.id) ?? 0
-  const transforms: string[] = description.transformLocation(location, context)
+  const transforms: string[] = description.getLocationTransform(location, context)
   return (
     <rect fill="black" x={`${position.x}%`} y={`${position.y}%`} width={`${width}em`} height={`${height}em`} rx={`${radius}em`} ry={`${radius}em`}
           style={{ transformBox: 'fill-box', transformOrigin: 'center', transform: transforms.join(' ') }}/>

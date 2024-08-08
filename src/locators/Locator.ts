@@ -38,6 +38,19 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return this.limit ? this.getItemIndex(item, context) >= this.limit : false
   }
 
+  placeLocation(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
+    const transform: string[] = []
+    const coordinates = this.getCoordinates(location, context)
+    if (coordinates) {
+      transform.push(`translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`)
+    }
+    const rotateZ = this.getRotateZ(location, context)
+    if (rotateZ) {
+      transform.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
+    }
+    return transform
+  }
+
   placeItem(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     if (!this.itemTypes.includes(context.type)) {
       this.itemTypes.push(context.type)

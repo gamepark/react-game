@@ -1,5 +1,5 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { Coordinates, isCreateItem, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
+import { isCreateItem, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import { ComponentType } from 'react'
 import { ItemContext, LocationContext, LocationHelpProps, MaterialContext } from '../../../locators'
@@ -10,7 +10,6 @@ import { isWritingDescription } from '../Writing'
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any>
   extends ComponentDescription<Id> {
   help?: ComponentType<LocationHelpProps<P, L>>
-  rotationUnit = 'deg'
 
   getLocationSize(location: Location<P, L>, _context: MaterialContext<P, M, L>): ComponentSize {
     return this.getSize(location.id)
@@ -43,33 +42,11 @@ export class LocationDescription<P extends number = number, M extends number = n
     return this.extraCss
   }
 
-  transformLocation(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
-    return ['translate(-50%, -50%)'].concat(this.transformOwnLocation(location, context))
-  }
-
-  transformOwnLocation(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
-    const transform: string[] = []
-    const coordinates = this.getCoordinates(location, context)
-    if (coordinates) {
-      transform.push(`translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`)
-    }
-    const rotateZ = this.getRotateZ(location, context)
-    if (rotateZ) {
-      transform.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
-    }
+  getLocationTransform(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
+    const transform = ['translate(-50%, -50%)']
+    const locator = context.locators[location.type]
+    if (locator) transform.push(...locator.placeLocation(location, context))
     return transform
-  }
-
-  coordinates?: Coordinates
-
-  getCoordinates(_location: Location<P, L>, _context: LocationContext<P, M, L>): Coordinates | undefined {
-    return this.coordinates
-  }
-
-  rotateZ: number = 0
-
-  getRotateZ(_location: Location<P, L>, _context: LocationContext<P, M, L>): number {
-    return this.rotateZ
   }
 
   alwaysVisible?: boolean

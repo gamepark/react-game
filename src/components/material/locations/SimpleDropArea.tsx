@@ -124,6 +124,10 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     return null
   }
 
+  if (location.type === 3) {
+    console.log(location, canDrop)
+  }
+
   if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
   const highlight = description.highlight?.(location, context)
 

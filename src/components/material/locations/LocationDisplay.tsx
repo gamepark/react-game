@@ -33,7 +33,7 @@ export const LocationDisplay = forwardRef<HTMLDivElement, LocationDisplayProps>(
          css={[
            absolute,
            positionOnParent && positionOnParentCss(positionOnParent),
-           transformCss(...description.transformLocation(location, locationContext)),
+           transformCss(...description.getLocationTransform(location, locationContext)),
            sizeCss(width, height), image && backgroundCss(image), borderRadius && borderRadiusCss(borderRadius),
            description.getExtraCss(location, locationContext)
          ]}
