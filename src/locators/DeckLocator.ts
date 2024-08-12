@@ -1,9 +1,10 @@
 import { Coordinates, MaterialItem } from '@gamepark/rules-api'
-import { ItemContext } from './Locator'
 import { LineLocator } from './LineLocator'
+import { ItemContext } from './Locator'
 
 export abstract class DeckLocator<P extends number = number, M extends number = number, L extends number = number> extends LineLocator<P, M, L> {
   limit = 20
+  delta: Partial<Coordinates> = { x: -0.05, y: -0.05 }
 
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
     if (!this.limit) return false
@@ -18,9 +19,5 @@ export abstract class DeckLocator<P extends number = number, M extends number = 
     const count = this.countItems(item.location, context)
     if (count <= this.limit) return index
     return Math.max(0, index - count + this.limit)
-  }
-
-  getDelta(_item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
-    return this.delta ?? { z: context.material[context.type]?.thickness ?? 0.05 }
   }
 }

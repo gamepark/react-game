@@ -2,12 +2,12 @@ import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
 export abstract class HandLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
-  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
-    return this.getLocationCoordinates(item.location, context)
+  getHandCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>) {
+    return this.coordinates
   }
 
   getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Coordinates {
-    const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)
+    const { x = 0, y = 0, z = 0 } = this.getHandCoordinates(location, context)
     const index = this.getLocationIndex(location, context) ?? 0
     const deltaZ = this.getDeltaZ(location, context)
     const radius = this.getRadius(location, context)
@@ -18,6 +18,10 @@ export abstract class HandLocator<P extends number = number, M extends number = 
       y: y - radius * Math.cos(angle * Math.PI / 180) + radius * Math.cos(baseAngle * Math.PI / 180),
       z: z + index * deltaZ
     }
+  }
+
+  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
+    return this.getLocationCoordinates(item.location, context)
   }
 
   getRotateZ(location: Location<P, L>, context: MaterialContext<P, M, L>): number {

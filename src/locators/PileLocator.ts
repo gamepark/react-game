@@ -13,7 +13,7 @@ export abstract class PileLocator<P extends number = number, M extends number = 
     const index = this.getItemIndex(item, context)
     const radius = this.getRadius(item, context)
     if (!pilePositions.has(index)) {
-      const { x = 0, y = 0, z = 0 } = this.getCoordinates(item.location, context)
+      const { x = 0, y = 0, z = 0 } = this.getLocationCoordinates(item.location, context)
       const distance = Math.random()
       const direction = Math.random() * 2 * Math.PI
       pilePositions.set(index, {

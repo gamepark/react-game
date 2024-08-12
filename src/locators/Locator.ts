@@ -40,7 +40,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
 
   placeLocation(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
     const transform: string[] = []
-    const coordinates = this.getCoordinates(location, context)
+    const coordinates = this.getLocationCoordinates(location, context)
     if (coordinates) {
       transform.push(`translate3d(${coordinates.x}em, ${coordinates.y}em, ${coordinates.z}em)`)
     }
@@ -105,7 +105,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
 
   coordinates: Partial<Coordinates> = { x: 0, y: 0, z: 0 }
 
-  getCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  getLocationCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
     return this.coordinates
   }
 
@@ -117,7 +117,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @return The delta coordinates in em of the center of the item from the center of their parent (or the screen)
    */
   getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
-    const { x = 0, y = 0, z = context.material[context.type]?.getThickness(item, context) ?? 0 } = this.getCoordinates(item.location, context)
+    const { x = 0, y = 0, z = context.material[context.type]?.getThickness(item, context) ?? 0 } = this.getLocationCoordinates(item.location, context)
     return { x, y, z }
   }
 
