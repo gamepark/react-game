@@ -25,9 +25,9 @@ export const GameMaterialDisplay = ({ left, top, children }: GameMaterialDisplay
 
   const position = defaultPosition(left, top)
   return <FocusProvider>
+    <StaticLocationsDisplay css={position}/>
     <StaticItemsDisplay css={position}/>
     <DynamicItemsDisplay css={position}/>
-    <StaticLocationsDisplay css={position}/>
     <MaterialRulesDialog open={!!game?.helpDisplay} close={closeHelpDialog}/>
     {game?.tutorial && <MaterialTutorialDisplay/>}
     {children}
