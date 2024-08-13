@@ -2,7 +2,6 @@ import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
 export abstract class FlexLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
-  reverse = false
   abstract itemsPerLine: number
   abstract itemsGap: Partial<Coordinates>
   abstract linesGap: Partial<Coordinates>
