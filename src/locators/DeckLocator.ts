@@ -1,10 +1,10 @@
 import { Coordinates, MaterialItem } from '@gamepark/rules-api'
-import { LineLocator } from './LineLocator'
+import { ListLocator } from './ListLocator'
 import { ItemContext } from './Locator'
 
-export abstract class DeckLocator<P extends number = number, M extends number = number, L extends number = number> extends LineLocator<P, M, L> {
+export abstract class DeckLocator<P extends number = number, M extends number = number, L extends number = number> extends ListLocator<P, M, L> {
   limit = 20
-  delta: Partial<Coordinates> = { x: -0.05, y: -0.05 }
+  gap: Partial<Coordinates> = { x: -0.05, y: -0.05 }
 
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
     if (!this.limit) return false

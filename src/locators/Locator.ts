@@ -48,6 +48,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
     if (rotateZ) {
       transform.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
     }
+    if (context.canDrop) transform.push('translateZ(10em)')
     return transform
   }
 
@@ -56,7 +57,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
       this.itemTypes.push(context.type)
     }
     const transform = this.placeItemOnParent(item.location, context)
-    const { x, y, z } = this.getItemCoordinates(item, context)
+    const { x = 0, y = 0, z = 0 } = this.getItemCoordinates(item, context)
     if (x || y || z) {
       transform.push(`translate3d(${x}em, ${y}em, ${z}em)`)
     }
@@ -116,9 +117,8 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Placement context (type of item, and index if item has a quantity to display)
    * @return The delta coordinates in em of the center of the item from the center of their parent (or the screen)
    */
-  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
-    const { x = 0, y = 0, z = context.material[context.type]?.getThickness(item, context) ?? 0 } = this.getLocationCoordinates(item.location, context)
-    return { x, y, z }
+  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
+    return this.getLocationCoordinates(item.location, context)
   }
 
   rotateZ: number = 0

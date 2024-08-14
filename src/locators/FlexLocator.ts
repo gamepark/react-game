@@ -1,42 +1,77 @@
-import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
-import { ItemContext, Locator, MaterialContext } from './Locator'
+import { Coordinates, Location } from '@gamepark/rules-api'
+import { ListLocator } from './ListLocator'
+import { MaterialContext } from './Locator'
 
-export abstract class FlexLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
-  abstract itemsPerLine: number
-  abstract itemsGap: Partial<Coordinates>
-  abstract linesGap: Partial<Coordinates>
-  maxLinesGap?: Partial<Coordinates>
+export abstract class FlexLocator<P extends number = number, M extends number = number, L extends number = number> extends ListLocator<P, M, L> {
+  lineSize: number = 2
 
-  getOriginCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
-    return this.coordinates
+  getLineSize(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+    return this.lineSize
   }
 
-  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
-                         index = this.getLocationIndex(location, context) ?? 0): Coordinates {
-    const { x = 0, y = 0, z = 0 } = this.getOriginCoordinates(location, context)
-    const itemIndex = index % this.itemsPerLine
-    const lineIndex = Math.floor(index / this.itemsPerLine)
-    const lineGap = this.getLinesGap(location, context)
+  getMaxCount(location: Location<P, L>, context: MaterialContext<P, M, L>): number | undefined {
+    return this.getLineSize(location, context)
+  }
+
+  lineGap?: Partial<Coordinates>
+
+  getLineGap(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
+    return this.lineGap ?? {}
+  }
+
+  maxLineGap?: Partial<Coordinates>
+
+  getMaxLineGap(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
+    if (this.maxLineGap) return this.maxLineGap
+    const maxLines = this.getMaxLines(location, context)
+    if (maxLines === undefined) return {}
+    const { x, y, z } = this.getLineGap(location, context)
     return {
-      x: x + itemIndex * (this.itemsGap.x ?? 0) + lineIndex * (lineGap.x ?? 0),
-      y: y + itemIndex * (this.itemsGap.y ?? 0) + lineIndex * (lineGap.y ?? 0),
-      z: z + itemIndex * (this.itemsGap.z ?? 0) + lineIndex * (lineGap.z ?? 0)
+      x: x ? x * (maxLines - 1) : x,
+      y: y ? y * (maxLines - 1) : y,
+      z: z ? z * (maxLines - 1) : z
     }
   }
 
-  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
-    return this.getLocationCoordinates(item.location, context, this.getItemIndex(item, context))
+  maxLines?: number
+
+  getMaxLines(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
+    return this.maxLines
   }
 
-  getLinesGap(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
-    if (!this.maxLinesGap) return this.linesGap
-    const count = this.countItems(location, context)
-    const lines = Math.floor(count / this.itemsPerLine)
-    const { x = 0, y = 0, z = 0 } = this.linesGap
+  countListItems(location: Location<P, L>, context: MaterialContext<P, M, L>): number {
+    return Math.min(super.countListItems(location, context), this.getLineSize(location, context))
+  }
+
+  getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
+    const { x = 0, y = 0, z = 0 } = super.getAreaCoordinates(location, context)
+    const { x: gx = 0, y: gy = 0 } = this.getLineGap(location, context)
+    const { x: mgx, y: mgy } = this.getMaxLineGap(location, context)
+    const count = Math.min(this.limit ?? Infinity, super.countItems(location, context))
+    const lineSize = this.getLineSize(location, context)
+    const lines = Math.floor(count / lineSize)
     return {
-      x: this.maxLinesGap.x && Math.abs(this.maxLinesGap.x) / lines < Math.abs(x) ? this.maxLinesGap.x / lines : x,
-      y: this.maxLinesGap.y && Math.abs(this.maxLinesGap.y) / lines < Math.abs(y) ? this.maxLinesGap.y / lines : y,
-      z: this.maxLinesGap.z && Math.abs(this.maxLinesGap.z) / lines < Math.abs(z) ? this.maxLinesGap.z / lines : z
+      x: x + (mgx ?? gx * lines) / 2,
+      y: y + (mgy ?? gy * lines) / 2,
+      z
+    }
+  }
+
+  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
+                         index = this.getLocationIndex(location, context)): Partial<Coordinates> {
+    if (index === undefined) return this.getAreaCoordinates(location, context)
+    const lineSize = this.getLineSize(location, context)
+    const itemIndex = index % lineSize
+    const lineIndex = Math.floor(index / lineSize)
+    const count = this.countItems(location, context)
+    const lines = Math.floor(count / lineSize)
+    const { x = 0, y = 0, z = 0 } = super.getLocationCoordinates(location, context, itemIndex)
+    const { x: gx = 0, y: gy = 0, z: gz = 0.05 * lineSize } = this.getLineGap(location, context)
+    const { x: mgx, y: mgy, z: mgz } = this.getMaxLineGap(location, context)
+    return {
+      x: x + lineIndex * (mgx && lines > 1 ? mgx * Math.min(gx / mgx, 1 / (lines - 1)) : gx),
+      y: y + lineIndex * (mgy && lines > 1 ? mgy * Math.min(gy / mgy, 1 / (lines - 1)) : gy),
+      z: z + lineIndex * (mgz && lines > 1 ? mgz * Math.min(gz / mgz, 1 / (lines - 1)) : gz)
     }
   }
 }
