@@ -6,13 +6,13 @@ export abstract class HandLocator<P extends number = number, M extends number = 
     return this.coordinates
   }
 
-  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Coordinates {
+  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
+                         index = this.getLocationIndex(location, context) ?? 0): Coordinates {
     const { x = 0, y = 0, z = 0 } = this.getHandCoordinates(location, context)
-    const index = this.getLocationIndex(location, context) ?? 0
     const deltaZ = this.getDeltaZ(location, context)
     const radius = this.getRadius(location, context)
     const baseAngle = this.getBaseAngle(location, context)
-    const angle = this.getRotateZ(location, context)
+    const angle = this.getRotateZ(location, context, index)
     return {
       x: x + radius * Math.sin(angle * Math.PI / 180) - radius * Math.sin(baseAngle * Math.PI / 180),
       y: y - radius * Math.cos(angle * Math.PI / 180) + radius * Math.cos(baseAngle * Math.PI / 180),
@@ -21,11 +21,11 @@ export abstract class HandLocator<P extends number = number, M extends number = 
   }
 
   getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
-    return this.getLocationCoordinates(item.location, context)
+    return this.getLocationCoordinates(item.location, context, this.getItemIndex(item, context))
   }
 
-  getRotateZ(location: Location<P, L>, context: MaterialContext<P, M, L>): number {
-    const index = this.getLocationIndex(location, context)
+  getRotateZ(location: Location<P, L>, context: MaterialContext<P, M, L>,
+             index = this.getLocationIndex(location, context) ?? 0): number {
     const baseAngle = this.getBaseAngle(location, context)
     if (index === undefined) return baseAngle
     const size = this.countItems(location, context)
@@ -33,6 +33,10 @@ export abstract class HandLocator<P extends number = number, M extends number = 
     const gapMaxAngle = this.getGapMaxAngle(location, context)
     const gapAngle = size > 1 ? Math.min(maxAngle / (size - 1), gapMaxAngle) : 0
     return baseAngle + (index - (size - 1) / 2) * gapAngle * (this.isClockwise(location, context) ? 1 : -1)
+  }
+
+  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+    return this.getRotateZ(item.location, context, this.getItemIndex(item, context))
   }
 
   getRadius(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
