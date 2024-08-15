@@ -97,14 +97,6 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
   const draggedItemContext = useMemo<ItemContext | undefined>(() => draggedItem && { ...context, ...draggedItem }, [draggedItem, context])
   const isDraggingParent = useMemo(() => !!item && !!draggedItemContext && isPlacedOnItem(item, draggedItemContext), [item, draggedItemContext])
-  const canDropToSameLocation = useMemo(() => {
-    if (!draggedItemContext) return false
-    const description = material[draggedItemContext.type]
-    const location = context.locators[item.location.type]?.getLocationDescription(context)
-    if (!description || !location) return false
-    return legalMoves.some(move => description?.canDrag(move, draggedItemContext) && location.canDrop(move, item.location, draggedItemContext))
-  }, [context, item, draggedItemContext, legalMoves])
-
   const [parentTransform, setParentTransform] = useState<XYCoordinates>()
   const transform = selfTransform ?? parentTransform
 
@@ -152,8 +144,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
     !applyTransform && !animating && transformTransition,
     !disabled && noTouchAction,
     disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
-    canDropToSameLocation && noPointerEvents
-  ], [applyTransform, animating, disabled, transform, canDropToSameLocation])
+  ], [applyTransform, animating, disabled, transform])
 
   const wrapperCss = useMemo(() => [animationWrapperCss, animation], [animation])
   const style = useMemo(() => ({ transform: transformStyle }), [transformStyle])
@@ -183,10 +174,6 @@ const animationWrapperCss = css`
 
 const noTouchAction = css`
   touch-action: none;
-`
-
-const noPointerEvents = css`
-  pointer-events: none;
 `
 
 const transformTransition = css`
