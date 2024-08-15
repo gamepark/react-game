@@ -15,13 +15,8 @@ export const LocationDisplay = forwardRef<HTMLDivElement, LocationDisplayProps>(
 ) => {
   const context = useMaterialContext()
   const locator = context.locators[location.type]
-  const description = locator?.getLocationDescription(context)
+  const description = locator?.getLocationDescription(context)!
   const locationContext = useMemo(() => ({ ...context, canDrop }), [context, canDrop])
-
-  if (!description) { // TODO: parent should never include a simple drop area which description is missing at all
-    console.warn('You must provide a LocationDescription to create drop locations with an ItemLocator')
-    return null
-  }
 
   const { width, height } = description.getLocationSize(location, context)
   const image = description.getImage(location, context)

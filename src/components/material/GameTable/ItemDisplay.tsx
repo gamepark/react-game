@@ -5,7 +5,7 @@ import { mergeRefs } from 'react-merge-refs'
 import { pointerCursorCss, transformCss } from '../../../css'
 import { useMaterialContext } from '../../../hooks'
 import { ItemContext } from '../../../locators'
-import { LocationsMask, SimpleDropArea } from '../locations'
+import { LocationsMask } from '../locations'
 import { MaterialComponent, MaterialComponentProps } from '../MaterialComponent'
 import { getLocationsWithFocus, useFocusContext } from './focus'
 
@@ -34,10 +34,11 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
     {locations.length > 0 && <>
       {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
       {locations.map((location, index) => {
-          const hasFocus = focusedIndexes.includes(index)
-          return <SimpleDropArea key={JSON.stringify(location)} location={location} alwaysVisible={hasFocus} ref={hasFocus ? addFocusRef : undefined}/>
-        }
-      )}
+        const LocationComponent = context.locators[location.type]?.getLocationDescription(context)?.Component
+        if (!LocationComponent) return null
+        const hasFocus = focusedIndexes.includes(index)
+        return <LocationComponent key={JSON.stringify(location)} location={location} alwaysVisible={hasFocus} ref={hasFocus ? addFocusRef : undefined}/>
+      })}
     </>}
   </MaterialComponent>
 })

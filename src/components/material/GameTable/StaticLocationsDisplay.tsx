@@ -2,7 +2,6 @@
 import { Interpolation, Theme } from '@emotion/react'
 import isEqual from 'lodash/isEqual'
 import { useMaterialContext } from '../../../hooks'
-import { SimpleDropArea } from '../locations'
 import { getStaticLocationsWithFocus, useFocusContext } from './focus'
 
 export const StaticLocationsDisplay = (props: { css?: Interpolation<Theme> }) => {
@@ -13,9 +12,11 @@ export const StaticLocationsDisplay = (props: { css?: Interpolation<Theme> }) =>
     <>
       {
         locations.map(location => {
+          const LocationComponent = context.locators[location.type]?.getLocationDescription(context)?.Component
+          if (!LocationComponent) return null
           const isFocused = focus?.locations.some(focusedLocation => isEqual(focusedLocation, location))
           return (
-            <SimpleDropArea
+            <LocationComponent
               key={JSON.stringify(location)}
               location={location}
               alwaysVisible={isFocused}

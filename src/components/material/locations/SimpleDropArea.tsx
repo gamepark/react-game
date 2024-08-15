@@ -11,6 +11,7 @@ import { pointerCursorCss, shineEffect } from '../../../css'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { combineEventListeners, findIfUnique } from '../../../utilities'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
+import { DropAreaDescription } from './DropAreaDescription'
 import { LocationDisplay } from './LocationDisplay'
 import displayLocationHelp = MaterialMoveBuilder.displayLocationHelp
 
@@ -27,7 +28,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const context = useMaterialContext()
   const material = context.material
   const locator = context.locators[location.type]
-  const description = locator?.getLocationDescription(context)
+  const description = locator?.getLocationDescription(context) as DropAreaDescription
   const rules = context.rules
   const play = usePlay<MaterialMove>()
   const legalMoves = useLegalMoves()
@@ -118,11 +119,6 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     },
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
-
-  if (!description) { // TODO: parent should never include a simple drop area which description is missing at all
-    console.warn('You must provide a LocationDescription to create drop locations with an ItemLocator')
-    return null
-  }
 
   if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
   const highlight = description.highlight?.(location, context)

@@ -1,14 +1,18 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { isCreateItem, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
-import { ComponentType } from 'react'
-import { ItemContext, LocationContext, LocationHelpProps, MaterialContext } from '../../../locators'
+import { ComponentType, ElementType } from 'react'
+import { LocationContext, LocationHelpProps, MaterialContext } from '../../../locators'
 import { ComponentDescription, ComponentSize } from '../ComponentDescription'
 import { isLocationSubset } from '../utils'
 import { isWritingDescription } from '../Writing'
+import { LocationDisplay } from './LocationDisplay'
 
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any>
   extends ComponentDescription<Id> {
+
+  Component: ElementType = LocationDisplay
+
   help?: ComponentType<LocationHelpProps<P, L>>
 
   getLocationSize(location: Location<P, L>, _context: MaterialContext<P, M, L>): ComponentSize {
@@ -49,27 +53,9 @@ export class LocationDescription<P extends number = number, M extends number = n
     return transform
   }
 
-  alwaysVisible?: boolean
-
-  isAlwaysVisible(location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
-    if (this.alwaysVisible !== undefined) return this.alwaysVisible
-    return context.locators[location.type]?.parentItemType !== undefined
-  }
-
   highlight?(location: Location<P, L>, context: MaterialContext<P, M, L>): boolean | undefined
 
   content?: ComponentType<{ location: Location }>
-
-  canDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: ItemContext<P, M, L>): boolean {
-    return this.isMoveToLocation(move, location, context)
-  }
-
-  getBestDropMove(moves: MaterialMove<P, M, L>[], _location: Location<P, L>, context: ItemContext<P, M, L>): MaterialMove<P, M, L> {
-    const moveWithSameRotation = moves.find(move =>
-      isMoveItem(move) && move.location.rotation === context.rules.material(move.itemType).getItem(move.itemIndex)?.location.rotation
-    )
-    return moveWithSameRotation ?? moves[0]
-  }
 
   canLongClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
     return this.isMoveToLocation(move, location, context)
