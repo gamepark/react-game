@@ -23,11 +23,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
     if (!this.locationDescription && this.parentItemType !== undefined) {
       const material = context.material[this.parentItemType]
       if (material) {
-        this.locationDescription = new DropAreaDescription<P, M, L>()
-        this.locationDescription.width = material.width
-        this.locationDescription.height = material.height
-        this.locationDescription.ratio = material.ratio
-        this.locationDescription.borderRadius = material.borderRadius
+        this.locationDescription = new DropAreaDescription<P, M, L>(material)
       }
     }
     return this.locationDescription

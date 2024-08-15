@@ -3,6 +3,14 @@
  * Contains all features common to items and locations display.
  */
 export abstract class ComponentDescription<Id = any> {
+
+  constructor(clone?: ComponentDescription) {
+    this.height = clone?.height
+    this.width = clone?.width
+    this.ratio = clone?.ratio
+    this.borderRadius = clone?.borderRadius ?? 0
+  }
+
   /**
    * All the images that can be used to display the component, and therefore should be preloaded with the web page.
    */
@@ -38,7 +46,7 @@ export abstract class ComponentDescription<Id = any> {
   /**
    * Border radius of the component.
    */
-  borderRadius: number = 0
+  borderRadius: number
 
   /**
    * Returns the border radius of the component. Default to {@link borderRadius}
