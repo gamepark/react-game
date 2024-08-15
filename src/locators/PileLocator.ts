@@ -40,7 +40,7 @@ export abstract class PileLocator<P extends number = number, M extends number = 
       pilePositions.set(index, {
         x: x + Math.cos(direction) * Math.sqrt(distance) * (typeof radius === 'number' ? radius : radius.x),
         y: y + Math.sin(direction) * Math.sqrt(distance) * (typeof radius === 'number' ? radius : radius.y),
-        z: z
+        z: z + index * 0.05
       })
     }
     return pilePositions.get(index)!
