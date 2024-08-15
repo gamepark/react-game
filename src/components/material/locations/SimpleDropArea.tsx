@@ -35,8 +35,8 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const dropMoves = useMemo(() => legalMoves.filter(move => description?.isMoveToLocation(move, location, context)), [legalMoves, context])
 
   const openRules = useCallback(() => {
-    if (rules && (locator?.locationDescription?.help || locator?.parentItemType !== undefined)) {
-      if (locator?.locationDescription?.help) {
+    if (rules && (description.help || locator?.parentItemType !== undefined)) {
+      if (description.help) {
         return play(displayLocationHelp(location), { local: true })
       } else {
         const itemType = locator!.parentItemType!
