@@ -32,12 +32,8 @@ export abstract class ListLocator<P extends number = number, M extends number = 
     return Math.min(this.limit ?? Infinity, this.countItems(location, context))
   }
 
-  getOriginCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
-    return this.coordinates
-  }
-
   getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
-    const { x = 0, y = 0, z = 0 } = this.getOriginCoordinates(location, context)
+    const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)
     const { x: gx = 0, y: gy = 0 } = this.getGap(location, context)
     const { x: mgx, y: mgy } = this.getMaxGap(location, context)
     const count = this.countListItems(location, context)
@@ -51,7 +47,7 @@ export abstract class ListLocator<P extends number = number, M extends number = 
   getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
                          index = this.getLocationIndex(location, context)): Partial<Coordinates> {
     if (index === undefined) return this.getAreaCoordinates(location, context)
-    const { x = 0, y = 0, z = 0 } = this.getOriginCoordinates(location, context)
+    const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)
     const { x: gx = 0, y: gy = 0, z: gz = 0.05 } = this.getGap(location, context)
     const { x: mgx, y: mgy, z: mgz } = this.getMaxGap(location, context)
     const count = this.countListItems(location, context)

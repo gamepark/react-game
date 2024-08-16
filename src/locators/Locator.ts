@@ -101,6 +101,10 @@ export class Locator<P extends number = number, M extends number = number, L ext
 
   coordinates: Partial<Coordinates> = { x: 0, y: 0, z: 0 }
 
+  getCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>) {
+    return this.coordinates
+  }
+
   getLocationCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
     return this.coordinates
   }

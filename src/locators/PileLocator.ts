@@ -22,19 +22,15 @@ export abstract class PileLocator<P extends number = number, M extends number = 
     return [location.player, location.id, location.parent].filter(part => part !== undefined).join('_')
   }
 
-  getPileCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>) {
-    return this.coordinates
-  }
-
   getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
                          index = this.getLocationIndex(location, context)): Partial<Coordinates> {
-    if (index === undefined) return this.getPileCoordinates(location, context)
+    if (index === undefined) return this.getCoordinates(location, context)
     const pileId = this.getPileId(location, context)
     if (!this.positions.has(pileId)) this.positions.set(pileId, new Map())
     const pilePositions = this.positions.get(pileId)!
     const radius = this.getRadius(location, context)
     if (!pilePositions.has(index)) {
-      const { x = 0, y = 0, z = 0 } = this.getPileCoordinates(location, context)
+      const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)
       const distance = Math.random()
       const direction = Math.random() * 2 * Math.PI
       pilePositions.set(index, {
