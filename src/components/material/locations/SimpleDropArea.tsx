@@ -3,7 +3,7 @@ import { useDroppable } from '@dnd-kit/core'
 import { css, keyframes, Theme } from '@emotion/react'
 import { GamePageState } from '@gamepark/react-client'
 import { Location, MaterialMove, MaterialMoveBuilder } from '@gamepark/rules-api'
-import { forwardRef, HTMLAttributes, MouseEvent, useCallback, useMemo, useState } from 'react'
+import { forwardRef, HTMLAttributes, MouseEvent, useMemo, useState } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { useSelector } from 'react-redux'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
@@ -34,41 +34,34 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const legalMoves = useLegalMoves()
   const dropMoves = useMemo(() => legalMoves.filter(move => description?.isMoveToLocation(move, location, context)), [legalMoves, context])
 
-  const openRules = useCallback(() => {
-    if (rules && (description.help || locator?.parentItemType !== undefined)) {
-      if (description.help) {
-        return play(displayLocationHelp(location), { local: true })
-      } else {
-        const itemType = locator!.parentItemType!
-        const item = rules.material(itemType).getItem(location.parent!)!
-        return play(material[itemType]!.displayHelp(item, { ...context, type: itemType, index: location.parent!, displayIndex: 0 }), { local: true })
-      }
+  const openRules = useMemo(() => {
+    if (description.help) {
+      return () => play(displayLocationHelp(location), { local: true })
     }
-  }, [locator])
+    const itemType = locator?.parentItemType
+    if (itemType === undefined) return
+    const item = rules.material(itemType).getItem(location.parent!)!
+    if (!item) return
+    return () => play(material[itemType]!.displayHelp(item, { ...context, type: itemType, index: location.parent!, displayIndex: 0 }), { local: true })
+  }, [context])
 
-  const onShortClick = useCallback(() => {
-    const move = description ? findIfUnique(legalMoves, move => description.canShortClick(move, location, context)) : undefined
-    if (move !== undefined) return play(move)
+  const onShortClick = useMemo(() => {
+    const move = findIfUnique(legalMoves, move => description.canShortClick(move, location, context))
+    if (move !== undefined) return () => play(move)
 
     const shortClickMove = description?.getShortClickMove(location, context)
-    if (shortClickMove) return play(shortClickMove)
+    if (shortClickMove) return () => play(shortClickMove)
 
     const shortClickLocalMove = description?.getShortClickLocalMove(location, context)
-    if (shortClickLocalMove) return play(shortClickLocalMove, { local: true })
+    if (shortClickLocalMove) return () => play(shortClickLocalMove, { local: true })
 
-    return openRules()
+    return openRules
   }, [legalMoves, context])
 
-  const onLongClick = useCallback(() => {
-    const shortClickMove = description ? findIfUnique(legalMoves, move => description.canShortClick(move, location, context)) : undefined
-    if (shortClickMove !== undefined) {
-      openRules()
-    } else {
-      const move = description ? findIfUnique(legalMoves, move => description.canLongClick(move, location, context)) : undefined
-      if (move !== undefined) play(move)
-      else openRules()
-    }
-
+  const onLongClick = useMemo(() => {
+    if (onShortClick !== openRules) return openRules
+    const move = findIfUnique(legalMoves, move => description.canLongClick(move, location, context))
+    if (move !== undefined) return () => play(move)
   }, [legalMoves, context])
 
   const canClickToMove = useMemo(() => {
@@ -127,7 +120,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     <LocationDisplay ref={mergeRefs([ref, setNodeRef])} location={location} canDrop={canDrop}
                      css={[
                        (onShortClick || onLongClick) && pointerCursorCss,
-                       !draggedItem && (onShortClick || onLongClick) && hoverHighlight, clicking && clickingAnimation,
+                       !draggedItem && (onShortClick || onLongClick) && hoverHighlight, onLongClick && clicking && clickingAnimation,
                        (highlight || (canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)) && shineEffect,
                        canDrop && isOver && dropHighlight
                      ]}
