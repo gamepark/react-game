@@ -1,7 +1,7 @@
 import isEqual from 'lodash/isEqual'
-import { useFocusContext } from '../components'
+import { isLocationSubset, useFocusContext } from '../components'
 import { Locator } from '../locators'
-import { LocationFocusRef } from './useItemLocations'
+import { LocationFocusRef, useExpectedDropLocations } from './useItemLocations'
 import { useMaterialContext } from './useMaterialContext'
 
 export function useStaticLocations<P extends number = number, M extends number = number, L extends number = number>(): LocationFocusRef<P, L>[] {
@@ -27,5 +27,13 @@ export function useStaticLocations<P extends number = number, M extends number =
       result.push({ location, focusRef })
     }
   }
+
+  const expectedDropLocations = useExpectedDropLocations<P, M, L>()
+  for (const location of expectedDropLocations) {
+    if (location.parent === undefined && locators[location.type]?.parentItemType === undefined && !result.some(r => isLocationSubset(location, r.location))) {
+      result.push({ location })
+    }
+  }
+
   return result
 }

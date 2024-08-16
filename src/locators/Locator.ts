@@ -162,6 +162,13 @@ export type ItemContext<P extends number = number, M extends number = number, L 
   dragTransform?: string
 }
 
+export function isItemContext<P extends number = number, M extends number = number, L extends number = number>(
+  context: MaterialContext<P, M, L>
+): context is ItemContext<P, M, L> {
+  const itemContext = context as ItemContext<P, M, L>
+  return itemContext.type !== undefined && itemContext.index !== undefined && itemContext.displayIndex !== undefined
+}
+
 export type LocationContext<P extends number = number, M extends number = number, L extends number = number> = MaterialContext<P, M, L> & {
   canDrop?: boolean
 }
