@@ -19,7 +19,6 @@ export const StaticLocationsDisplay = (props: { css?: Interpolation<Theme> }) =>
             <LocationComponent
               key={JSON.stringify(location)}
               location={location}
-              alwaysVisible={isFocused}
               ref={isFocused ? addFocusRef : undefined}
               {...props}/>
           )

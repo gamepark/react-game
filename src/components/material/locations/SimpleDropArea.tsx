@@ -19,11 +19,10 @@ export type SimpleDropAreaProps<P extends number = number, L extends number = nu
   location: Location<P, L>
   onShortClick?: () => void
   onLongClick?: () => void
-  alwaysVisible?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
-  { location, onShortClick: shortClick, onLongClick: longClick, alwaysVisible, ...props }, ref
+  { location, onShortClick: shortClick, onLongClick: longClick, ...props }, ref
 ) => {
   const context = useMaterialContext()
   const material = context.material
@@ -113,7 +112,6 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
 
-  if (!alwaysVisible && !description.isAlwaysVisible(location, context) && !canDrop) return null
   const highlight = description.highlight?.(location, context)
 
   return (

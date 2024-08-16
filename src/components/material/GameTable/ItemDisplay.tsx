@@ -37,7 +37,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
         const LocationComponent = context.locators[location.type]?.getLocationDescription(context)?.Component
         if (!LocationComponent) return null
         const hasFocus = focusedIndexes.includes(index)
-        return <LocationComponent key={JSON.stringify(location)} location={location} alwaysVisible={hasFocus} ref={hasFocus ? addFocusRef : undefined}/>
+        return <LocationComponent key={JSON.stringify(location)} location={location} ref={hasFocus ? addFocusRef : undefined}/>
       })}
     </>}
   </MaterialComponent>
