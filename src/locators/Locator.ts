@@ -43,7 +43,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
     if (rotateZ) {
       transform.push(`rotateZ(${rotateZ}${this.rotationUnit})`)
     }
-    if (context.canDrop) transform.push('translateZ(10em)')
+    if (context.canDrop) transform.push('translateZ(5em)')
     return transform
   }
 
