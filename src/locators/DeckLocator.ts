@@ -2,7 +2,13 @@ import { Coordinates, MaterialItem } from '@gamepark/rules-api'
 import { ListLocator } from './ListLocator'
 import { ItemContext } from './Locator'
 
-export abstract class DeckLocator<P extends number = number, M extends number = number, L extends number = number> extends ListLocator<P, M, L> {
+export class DeckLocator<P extends number = number, M extends number = number, L extends number = number> extends ListLocator<P, M, L> {
+
+  constructor(clone?: Partial<DeckLocator>) {
+    super()
+    Object.assign(this, clone)
+  }
+
   limit = 20
   gap: Partial<Coordinates> = { x: -0.05, y: -0.05 }
 

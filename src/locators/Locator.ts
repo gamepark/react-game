@@ -6,6 +6,11 @@ import { DropAreaDescription, LocationDescription, MaterialDescriptionRecord } f
 export type SortFunction = ((item: MaterialItem) => number)
 
 export class Locator<P extends number = number, M extends number = number, L extends number = number> {
+
+  constructor(clone?: Partial<Locator>) {
+    Object.assign(this, clone)
+  }
+
   itemTypes: M[] = []
   parentItemType?: M
   limit?: number

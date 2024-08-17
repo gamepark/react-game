@@ -1,7 +1,13 @@
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
-export abstract class HandLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+export class HandLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+
+  constructor(clone?: Partial<HandLocator>) {
+    super()
+    Object.assign(this, clone)
+  }
+
   getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
                          index = this.getLocationIndex(location, context)): Coordinates {
     const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)

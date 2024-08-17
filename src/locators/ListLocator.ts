@@ -1,7 +1,13 @@
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
-export abstract class ListLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+export class ListLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+
+  constructor(clone?: Partial<ListLocator>) {
+    super()
+    Object.assign(this, clone)
+  }
+
   gap?: Partial<Coordinates>
 
   getGap(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {

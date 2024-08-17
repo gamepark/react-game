@@ -2,7 +2,13 @@ import { Coordinates, Location } from '@gamepark/rules-api'
 import { ListLocator } from './ListLocator'
 import { MaterialContext } from './Locator'
 
-export abstract class FlexLocator<P extends number = number, M extends number = number, L extends number = number> extends ListLocator<P, M, L> {
+export class FlexLocator<P extends number = number, M extends number = number, L extends number = number> extends ListLocator<P, M, L> {
+
+  constructor(clone?: Partial<FlexLocator>) {
+    super()
+    Object.assign(this, clone)
+  }
+
   lineSize: number = 2
 
   getLineSize(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {

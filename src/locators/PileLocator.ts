@@ -1,7 +1,13 @@
 import { Coordinates, Location, MaterialItem, XYCoordinates } from '@gamepark/rules-api'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
-export abstract class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+export class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+
+  constructor(clone?: Partial<PileLocator>) {
+    super()
+    Object.assign(this, clone)
+  }
+
   limit = 20
   private positions = new Map<string, Map<number, Coordinates>>()
   private rotations = new Map<string, Map<number, number>>()
