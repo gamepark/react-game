@@ -1,7 +1,7 @@
 import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { DisplayedItem, isDeleteItem, isMoveItem, Location, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { isLocationSubset, MaterialDescription, useFocusContext } from '../components'
 import { dataIsDisplayedItem } from '../components/material/DraggableMaterial'
 import { ItemContext, MaterialContext } from '../locators'
@@ -19,12 +19,13 @@ export function useItemLocations<P extends number = number, M extends number = n
   const { index, type, locators, material } = context
   const { focus, focusRef } = useFocusContext<P, M, L>()
   if (!item) return []
-  const locationsFocus = focus?.locations?.filter(location =>
-    locators[location.type]?.parentItemType === type && (location.parent ?? 0) === index
-  ) ?? []
+
   const locations = material[type]?.getLocations(item, context) ?? []
   const result: LocationFocusRef<P, L>[] = locations.map(location => ({ location }))
 
+  const locationsFocus = focus?.locations?.filter(location =>
+    locators[location.type]?.parentItemType === type && (location.parent ?? 0) === index
+  ) ?? []
   for (const location of locationsFocus) {
     const index = result.findIndex(r => isEqual(r.location, location))
     if (index !== -1) {
@@ -45,21 +46,28 @@ export function useItemLocations<P extends number = number, M extends number = n
 }
 
 export const useExpectedDropLocations = <P extends number = number, M extends number = number, L extends number = number>(): Location<P, L>[] => {
-  const [draggedItem, setDraggedItem] = useState<DisplayedItem<M>>()
-  const onDragStart = useCallback((event: DragStartEvent) => dataIsDisplayedItem<M>(event.active.data.current) && setDraggedItem(event.active.data.current), [])
-  const onDragEnd = useCallback(() => setDraggedItem(undefined), [])
-  useDndMonitor({ onDragStart, onDragEnd })
-  const legalMoves = useLegalMoves<MaterialMove<P, M, L>>()
   const context = useMaterialContext<P, M, L>()
-  if (!draggedItem) return []
-  const locations: Location<P, L>[] = []
-  for (const move of legalMoves) {
-    const destination = getItemMoveDestination(draggedItem, move, context)
-    if (destination && !locations.some(location => isEqual(location, destination))) {
-      locations.push(destination)
+  const legalMoves = useLegalMoves<MaterialMove<P, M, L>>()
+
+  const onDragStart = useCallback((event: DragStartEvent) => {
+    if (dataIsDisplayedItem<M>(event.active.data.current) && !(context as any).expectedDropLocations) {
+      const draggedItem = event.active.data.current
+      const locations: Location<P, L>[] = []
+      for (const move of legalMoves) {
+        const destination = getItemMoveDestination(draggedItem, move, context)
+        if (destination && !locations.some(location => isEqual(location, destination))) {
+          locations.push(destination)
+        }
+      }
+      (context as any).expectedDropLocations = locations
     }
-  }
-  return locations
+  }, [legalMoves])
+
+  const onDragEnd = useCallback(() => delete (context as any).expectedDropLocations, [])
+
+  useDndMonitor({ onDragStart, onDragEnd })
+
+  return (context as any).expectedDropLocations ?? []
 }
 
 function getItemMoveDestination<P extends number = number, M extends number = number, L extends number = number>(
