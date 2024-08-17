@@ -37,7 +37,8 @@ export function useItemLocations<P extends number = number, M extends number = n
 
   const expectedDropLocations = useExpectedDropLocations<P, M, L>()
   for (const location of expectedDropLocations) {
-    if (location.parent === index && locators[location.type]?.parentItemType === type && !result.some(r => isLocationSubset(location, r.location))) {
+    const locator = locators[location.type]
+    if (locator?.parentItemType === type && isEqual(locator.getParentItem(location, context), item) && !result.some(r => isLocationSubset(location, r.location))) {
       result.push({ location })
     }
   }
