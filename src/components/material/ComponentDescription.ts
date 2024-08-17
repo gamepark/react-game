@@ -4,7 +4,7 @@
  */
 export abstract class ComponentDescription<Id = any> {
 
-  constructor(clone?: ComponentDescription) {
+  constructor(clone?: Partial<Pick<ComponentDescription, 'height' | 'width' | 'ratio' | 'borderRadius'>>) {
     this.height = clone?.height
     this.width = clone?.width
     this.ratio = clone?.ratio
