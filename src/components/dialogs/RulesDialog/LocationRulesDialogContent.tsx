@@ -11,21 +11,21 @@ export type LocationRulesDialogContentProps<P extends number = number, L extends
 }
 
 export const LocationRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
-  { helpDisplay }: LocationRulesDialogContentProps<P, L>
+  { helpDisplay: { location } }: LocationRulesDialogContentProps<P, L>
 ) => {
   const closeHelpDialog = useCloseHelpDialog()
   const context = useMaterialContext<P, M, L>()
-  const locator = useItemLocator<P, M, L>(helpDisplay.location.type)
-  const description = locator?.getLocationDescription(context)
+  const locator = useItemLocator<P, M, L>(location.type)
+  const description = locator?.getLocationDescription(location, context)
   if (!description?.help) return null
-  const image = description.getHelpImage(helpDisplay.location, context)
-  const { width, height } = description.getLocationSize(helpDisplay.location, context)
+  const image = description.getHelpImage(location, context)
+  const { width, height } = description.getLocationSize(location, context)
   return <div css={flex}>
     {!!image &&
       <div css={[noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)), backgroundImage(image, height, width)]}/>
     }
     <div css={helpDialogContentCss}>
-      <description.help location={helpDisplay.location} closeDialog={closeHelpDialog}/>
+      <description.help location={location} closeDialog={closeHelpDialog}/>
     </div>
   </div>
 }

@@ -61,7 +61,7 @@ export const GameTable: FC<GameTableProps> = (
       const location = event.over.data.current
       const locator = context.locators[location.type]
       const itemContext = { ...context, ...item }
-      const locationDescription = locator?.getLocationDescription(context) as DropAreaDescription
+      const locationDescription = locator?.getLocationDescription(location, itemContext) as DropAreaDescription
       const moves = legalMoves.filter(move =>
         description?.canDrag(move, itemContext) && locationDescription?.canDrop?.(move, location, itemContext)
       )

@@ -1,10 +1,9 @@
-import { DragStartEvent, useDndMonitor } from '@dnd-kit/core'
 import { DisplayedItem, isDeleteItem, isMoveItem, Location, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
-import { useCallback } from 'react'
+import { useMemo } from 'react'
 import { isLocationSubset, MaterialDescription, useFocusContext } from '../components'
-import { dataIsDisplayedItem } from '../components/material/DraggableMaterial'
 import { ItemContext, MaterialContext } from '../locators'
+import { useDraggedItem } from './useDraggedItem'
 import { useLegalMoves } from './useLegalMoves'
 import { useMaterialContext } from './useMaterialContext'
 
@@ -47,12 +46,13 @@ export function useItemLocations<P extends number = number, M extends number = n
 }
 
 export const useExpectedDropLocations = <P extends number = number, M extends number = number, L extends number = number>(): Location<P, L>[] => {
-  const context = useMaterialContext<P, M, L>()
+  const context: MaterialContext<P, M, L> & { expectedDropLocations?: Location<P, L>[] } = useMaterialContext<P, M, L>()
   const legalMoves = useLegalMoves<MaterialMove<P, M, L>>()
-
-  const onDragStart = useCallback((event: DragStartEvent) => {
-    if (dataIsDisplayedItem<M>(event.active.data.current) && !(context as any).expectedDropLocations) {
-      const draggedItem = event.active.data.current
+  const draggedItem = useDraggedItem<M>()
+  return useMemo(() => {
+    if (!draggedItem) {
+      delete context.expectedDropLocations
+    } else if (!context.expectedDropLocations) {
       const locations: Location<P, L>[] = []
       for (const move of legalMoves) {
         const destination = getItemMoveDestination(draggedItem, move, context)
@@ -60,15 +60,10 @@ export const useExpectedDropLocations = <P extends number = number, M extends nu
           locations.push(destination)
         }
       }
-      (context as any).expectedDropLocations = locations
+      context.expectedDropLocations = locations
     }
-  }, [legalMoves])
-
-  const onDragEnd = useCallback(() => delete (context as any).expectedDropLocations, [])
-
-  useDndMonitor({ onDragStart, onDragEnd })
-
-  return (context as any).expectedDropLocations ?? []
+    return (context as any).expectedDropLocations ?? []
+  }, [draggedItem])
 }
 
 function getItemMoveDestination<P extends number = number, M extends number = number, L extends number = number>(

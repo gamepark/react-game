@@ -15,19 +15,19 @@ import { DropAreaDescription } from './DropAreaDescription'
 import { LocationDisplay } from './LocationDisplay'
 import displayLocationHelp = MaterialMoveBuilder.displayLocationHelp
 
-export type SimpleDropAreaProps<P extends number = number, L extends number = number> = {
+export type SimpleDropAreaProps<P extends number = number, M extends number = number, L extends number = number> = {
   location: Location<P, L>
+  description: DropAreaDescription<P, M, L>
   onShortClick?: () => void
   onLongClick?: () => void
 } & HTMLAttributes<HTMLDivElement>
 
 export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
-  { location, onShortClick: shortClick, onLongClick: longClick, ...props }, ref
+  { location, description, onShortClick: shortClick, onLongClick: longClick, ...props }, ref
 ) => {
   const context = useMaterialContext()
   const material = context.material
   const locator = context.locators[location.type]
-  const description = locator?.getLocationDescription(context) as DropAreaDescription
   const rules = context.rules
   const play = usePlay<MaterialMove>()
   const legalMoves = useLegalMoves()
@@ -115,7 +115,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
   const highlight = description.highlight?.(location, context)
 
   return (
-    <LocationDisplay ref={mergeRefs([ref, setNodeRef])} location={location} canDrop={canDrop}
+    <LocationDisplay ref={mergeRefs([ref, setNodeRef])} location={location} description={description} canDrop={canDrop}
                      css={[
                        (onShortClick || onLongClick) && pointerCursorCss,
                        !draggedItem && (onShortClick || onLongClick) && hoverHighlight, onLongClick && clicking && clickingAnimation,

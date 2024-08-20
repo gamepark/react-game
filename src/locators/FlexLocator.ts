@@ -1,4 +1,4 @@
-import { Coordinates, Location } from '@gamepark/rules-api'
+import { Coordinates, Location, XYCoordinates } from '@gamepark/rules-api'
 import { ListLocator } from './ListLocator'
 import { MaterialContext } from './Locator'
 
@@ -49,18 +49,14 @@ export class FlexLocator<P extends number = number, M extends number = number, L
     return Math.min(super.countListItems(location, context), this.getLineSize(location, context))
   }
 
-  getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
-    const { x = 0, y = 0, z = 0 } = super.getAreaCoordinates(location, context)
+  protected getCurrentMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L>): XYCoordinates {
+    const { x, y } = super.getCurrentMaxGap(location, context)
     const { x: gx = 0, y: gy = 0 } = this.getLineGap(location, context)
     const { x: mgx, y: mgy } = this.getMaxLineGap(location, context)
     const count = Math.min(this.limit ?? Infinity, super.countItems(location, context))
     const lineSize = this.getLineSize(location, context)
     const lines = Math.floor(count / lineSize)
-    return {
-      x: x + (mgx ?? gx * lines) / 2,
-      y: y + (mgy ?? gy * lines) / 2,
-      z
-    }
+    return { x: x + (mgx ?? gx * lines), y: y + (mgy ?? gy * lines) }
   }
 
   getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,

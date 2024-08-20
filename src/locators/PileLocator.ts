@@ -1,4 +1,5 @@
 import { Coordinates, Location, MaterialItem, XYCoordinates } from '@gamepark/rules-api'
+import { DropAreaDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
 export class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
@@ -53,8 +54,8 @@ export class PileLocator<P extends number = number, M extends number = number, L
   }
 
   getRotateZ(location: Location<P, L>, context: MaterialContext<P, M, L>,
-             index = this.getLocationIndex(location, context) ?? 0): number {
-    if (!this.maxAngle) return 0
+             index = this.getLocationIndex(location, context)): number {
+    if (!this.maxAngle || index === undefined) return 0
     const pileId = this.getPileId(location, context)
     if (!this.rotations.has(pileId)) this.rotations.set(pileId, new Map())
     const pileRotations = this.rotations.get(pileId)!
@@ -67,5 +68,16 @@ export class PileLocator<P extends number = number, M extends number = number, L
 
   getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
     return this.getRotateZ(item.location, context, this.getItemIndex(item, context))
+  }
+
+  protected generateLocationDescriptionFromDraggedItem(location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> {
+    const { width = 0, height = 0 } = context.material[context.type] ?? {}
+    const max = Math.max(width, height)
+    const radius = this.getRadius(location, context)
+    return new DropAreaDescription({
+      width: max + (typeof radius === 'number' ? radius * 2 : radius.x * 2),
+      height: max + (typeof radius === 'number' ? radius * 2 : radius.y * 2),
+      borderRadius: max / 2 + (typeof radius === 'number' ? radius : Math.max(radius.x, radius.y))
+    })
   }
 }

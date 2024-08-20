@@ -1,4 +1,5 @@
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
+import { DropAreaDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
 export class HandLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
@@ -64,5 +65,15 @@ export class HandLocator<P extends number = number, M extends number = number, L
 
   getDeltaZ(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
     return 0.05
+  }
+
+  protected generateLocationDescriptionFromDraggedItem(_location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> {
+    const { width = 0, height = 0, borderRadius } = context.material[context.type] ?? {}
+    const max = Math.max(width, height)
+    return new DropAreaDescription({
+      width: max * 3,
+      height: max + 1,
+      borderRadius
+    })
   }
 }

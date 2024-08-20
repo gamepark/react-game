@@ -71,14 +71,17 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const { width, height } = description.getSize(item.id)
   const hasNavigation = previous || next
   const locations = item.location ? context.material[helpDisplay.itemType]?.getLocations(item as MaterialItem<P, L, any>, itemContext) ?? [] : []
-  const locationsInHelp = locations.filter(l => context.locators[l.type]?.getLocationDescription(context)?.displayInParentItemHelp)
   return <>
     <div css={[flex, hasNavigation && fullSize]}>
       <MaterialComponent type={helpDisplay.itemType} itemId={item.id} css={[
         noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
         isFlatMaterialDescription(description) && description.isFlippedInDialog(item, itemContext) && transformCss('rotateY(180deg)')
       ]}>
-        {locationsInHelp.map((location) => <LocationDisplay key={JSON.stringify(location)} location={location}/>)}
+        {locations.map((location) => {
+          const locationDescription = context.locators[location.type]?.getLocationDescription(location, context)
+          if (!locationDescription || !locationDescription.displayInParentItemHelp) return null
+          return <LocationDisplay key={JSON.stringify(location)} location={location} description={locationDescription as any}/>
+        })}
       </MaterialComponent>
       <div css={helpDialogContentCss}>
         {description.help && <description.help {...helpDisplay} closeDialog={closeHelpDialog}/>}

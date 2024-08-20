@@ -3,7 +3,7 @@ import { MaterialItem } from '@gamepark/rules-api'
 import { forwardRef, useMemo } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { pointerCursorCss, transformCss } from '../../../css'
-import { useMaterialContext } from '../../../hooks'
+import { useDraggedItem, useMaterialContext } from '../../../hooks'
 import { useItemLocations } from '../../../hooks/useItemLocations'
 import { ItemContext } from '../../../locators'
 import { LocationsMask } from '../locations'
@@ -24,6 +24,8 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const { focus, focusRef } = useFocusContext()
   const itemContext: ItemContext = { ...context, type, index, displayIndex }
   const locations = useItemLocations(item, itemContext)
+  const draggedItem = useDraggedItem()
+  const draggedItemContext = { ...context, ...draggedItem }
   const focusedLocations = useMemo(() => locations.filter(l => l.focusRef).map(l => l.location), [locations])
   const description = context.material[type]
   if (!description) return null
@@ -34,9 +36,10 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
                             {...props}>
     {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
     {locations.map(({ location, focusRef }) => {
-      const LocationComponent = context.locators[location.type]?.getLocationDescription(context)?.Component
+      const description = context.locators[location.type]?.getLocationDescription(location, draggedItemContext)
+      const LocationComponent = description?.Component
       if (!LocationComponent) return null
-      return <LocationComponent key={JSON.stringify(location)} location={location} ref={focusRef}/>
+      return <LocationComponent key={JSON.stringify(location)} location={location} description={description} ref={focusRef}/>
     })}
   </MaterialComponent>
 })

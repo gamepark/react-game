@@ -1,4 +1,5 @@
-import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
+import { Coordinates, Location, MaterialItem, XYCoordinates } from '@gamepark/rules-api'
+import { DropAreaDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
 export class ListLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
@@ -40,14 +41,15 @@ export class ListLocator<P extends number = number, M extends number = number, L
 
   getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
     const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)
+    const { x: mx, y: my } = this.getCurrentMaxGap(location, context)
+    return { x: x + mx / 2, y: y + my / 2, z }
+  }
+
+  protected getCurrentMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L>): XYCoordinates {
     const { x: gx = 0, y: gy = 0 } = this.getGap(location, context)
     const { x: mgx, y: mgy } = this.getMaxGap(location, context)
     const count = this.countListItems(location, context)
-    return {
-      x: x + (mgx ?? gx * (count - 1)) / 2,
-      y: y + (mgy ?? gy * (count - 1)) / 2,
-      z
-    }
+    return { x: (mgx ?? gx * (count - 1)), y: (mgy ?? gy * (count - 1)) }
   }
 
   getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
@@ -72,5 +74,18 @@ export class ListLocator<P extends number = number, M extends number = number, L
 
   getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
     return this.getLocationCoordinates(item.location, context, this.getItemIndex(item, context))
+  }
+
+  protected generateLocationDescriptionFromDraggedItem(location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
+    const item = context.rules.material(context.type).getItem(context.index)
+    if (!item) return
+    const { width = 0, height = 0 } = context.material[context.type]?.getSize(item.id) ?? {}
+    const { x, y } = this.getCurrentMaxGap(location, context)
+    const borderRadius = context.material[context.type]?.getBorderRadius(item.id) ?? 0
+    return new DropAreaDescription({
+      width: width + Math.abs(x),
+      height: height + Math.abs(y),
+      borderRadius
+    })
   }
 }

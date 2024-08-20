@@ -24,14 +24,22 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return this.location ? [this.location] : this.locations
   }
 
-  getLocationDescription(context: MaterialContext<P, M, L>): LocationDescription<P, M, L> | undefined {
-    if (!this.locationDescription && this.parentItemType !== undefined) {
-      const material = context.material[this.parentItemType]
-      if (material) {
-        this.locationDescription = new DropAreaDescription<P, M, L>(material)
+  getLocationDescription(location: Location<P, L>, context: MaterialContext<P, M, L> | ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
+    if (!this.locationDescription) {
+      if (this.parentItemType !== undefined && location.x === undefined && location.y === undefined && location.z === undefined) {
+        const material = context.material[this.parentItemType]
+        if (material) {
+          this.locationDescription = new DropAreaDescription<P, M, L>(material)
+        }
+      } else if (isItemContext(context)) {
+        return this.generateLocationDescriptionFromDraggedItem(location, context)
       }
     }
     return this.locationDescription
+  }
+
+  protected generateLocationDescriptionFromDraggedItem(_location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
+    return new DropAreaDescription(context.material[context.type])
   }
 
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {

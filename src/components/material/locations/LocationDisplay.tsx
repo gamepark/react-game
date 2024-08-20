@@ -4,18 +4,19 @@ import { Location, XYCoordinates } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, useMemo } from 'react'
 import { backgroundCss, borderRadiusCss, sizeCss, transformCss } from '../../../css'
 import { useMaterialContext } from '../../../hooks'
+import { LocationDescription } from './LocationDescription'
 
-export type LocationDisplayProps<P extends number = number, L extends number = number> = {
+export type LocationDisplayProps<P extends number = number, M extends number = number, L extends number = number> = {
   location: Location<P, L>
+  description: LocationDescription<P, M, L>
   canDrop?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 export const LocationDisplay = forwardRef<HTMLDivElement, LocationDisplayProps>((
-  { location, canDrop = false, ...props }, ref
+  { location, description, canDrop = false, ...props }, ref
 ) => {
   const context = useMaterialContext()
   const locator = context.locators[location.type]
-  const description = locator?.getLocationDescription(context)!
   const locationContext = useMemo(() => ({ ...context, canDrop }), [context, canDrop])
 
   const { width, height } = description.getLocationSize(location, context)
