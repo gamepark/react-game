@@ -36,11 +36,7 @@ export const DraggableMaterial = <M extends number = number>(
   const legalMoves = useLegalMoves<MaterialMove>()
   const [undo, canUndo] = useUndo()
 
-  const lastShortClick = useRef(new Date().getTime())
   const onShortClick = useCallback(() => {
-    const time = new Date().getTime()
-    if (time - lastShortClick.current < 300) return
-    lastShortClick.current = time
     const move = findIfUnique(legalMoves, move => description.canShortClick(move, itemContext))
     if (move !== undefined) return play(move)
     if (item.selected) {

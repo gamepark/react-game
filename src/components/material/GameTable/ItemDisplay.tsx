@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
-import { forwardRef, MouseEvent, useMemo } from 'react'
+import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { pointerCursorCss, transformCss } from '../../../css'
@@ -35,12 +35,16 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const focusedLocations = useMemo(() => locations.filter(l => l.focusRef).map(l => l.location), [locations])
   const description = context.material[type]
 
+  const lastShortClick = useRef(new Date().getTime())
   const listeners = useLongPress(() => onLongClick && onLongClick(), {
     detect: LongPressEventType.Pointer,
     cancelOnMovement: 5,
     threshold: 600,
     onCancel: (_, { reason }) => {
       if (reason === LongPressCallbackReason.CancelledByRelease) {
+        const time = new Date().getTime()
+        if (time - lastShortClick.current < 300) return
+        lastShortClick.current = time
         setTimeout(() => onShortClick && onShortClick())
       }
     },
