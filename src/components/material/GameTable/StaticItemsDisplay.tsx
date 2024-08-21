@@ -30,11 +30,9 @@ const StaticItemsTypeDisplay = ({ type, description, ...props }: StaticItemsType
       const isFocused = focus?.staticItems.some(focusedItem =>
         focusedItem.type === type && isEqual(focusedItem.item, item)
       )
-      const itemContext = { ...context, type, index, displayIndex }
       return <ItemDisplay key={`${type}_${index}_${displayIndex}`}
                           type={type} index={index} displayIndex={displayIndex} item={item}
-                          isFocused={isFocused} highlight={description.highlight(item, itemContext)}
-                          transformStyle={description.getItemTransform(item, itemContext).join(' ')}
+                          isFocused={isFocused} highlight={description.highlight(item, { ...context, type, index, displayIndex })}
                           css={pointerCursorCss}
                           {...props}/>
     })

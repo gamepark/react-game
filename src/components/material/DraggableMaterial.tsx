@@ -110,9 +110,6 @@ export const DraggableMaterial = <M extends number = number>(
   }, [])
   useDndMonitor({ onDragStart, onDragEnd, onDragMove })
 
-  const itemTransform = useMemo(() => description.getItemTransform(item, itemContext), [description, item, itemContext])
-  const transformStyle = (applyTransform ? [transformRef.current, ...itemTransform] : itemTransform).join(' ')
-
   return <ItemDisplay ref={setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
                       isFocused={isFocused}
                       css={[
@@ -122,7 +119,7 @@ export const DraggableMaterial = <M extends number = number>(
                         animationWrapperCss,
                         animation
                       ]}
-                      transformStyle={transformStyle}
+                      draggingTransform={applyTransform ? transformRef.current : undefined}
                       highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
                       {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
                       onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>

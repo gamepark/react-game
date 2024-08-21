@@ -16,14 +16,14 @@ type ItemDisplayProps = MaterialComponentProps & {
   index: number
   displayIndex: number
   item: MaterialItem
-  transformStyle: string
+  draggingTransform?: string
   isFocused?: boolean
   onShortClick?: () => void
   onLongClick?: () => void
 }
 
 export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
-  { type, index, displayIndex, item, transformStyle, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
+  { type, index, displayIndex, item, draggingTransform, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
 ) => {
   const context = useMaterialContext()
   const { focus, focusRef } = useFocusContext()
@@ -31,6 +31,8 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const locations = useItemLocations(item, itemContext)
   const focusedLocations = useMemo(() => locations.filter(l => l.focusRef).map(l => l.location), [locations])
   const description = context.material[type]!
+  const itemTransform = useMemo(() => description.getItemTransform(item, itemContext), [description, item, itemContext])
+  const transformStyle = (draggingTransform ? [draggingTransform, ...itemTransform] : itemTransform).join(' ')
 
   const play = usePlay()
   const displayHelp = useMemo(() => () => play(description.displayHelp(item, itemContext), { local: true }), [description, item, itemContext])
