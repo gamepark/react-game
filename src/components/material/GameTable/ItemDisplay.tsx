@@ -1,11 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { MaterialItem } from '@gamepark/rules-api'
-import { forwardRef, useMemo } from 'react'
+import { forwardRef, MouseEvent, useMemo } from 'react'
 import { mergeRefs } from 'react-merge-refs'
+import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { pointerCursorCss, transformCss } from '../../../css'
 import { useDraggedItem, useMaterialContext } from '../../../hooks'
 import { useItemLocations } from '../../../hooks/useItemLocations'
 import { ItemContext } from '../../../locators'
+import { combineEventListeners } from '../../../utilities'
 import { LocationsMask } from '../locations'
 import { MaterialComponent, MaterialComponentProps } from '../MaterialComponent'
 import { useFocusContext } from './focus'
@@ -15,10 +17,12 @@ type ItemDisplayProps = MaterialComponentProps & {
   displayIndex: number
   item: MaterialItem
   isFocused?: boolean
+  onShortClick?: () => void
+  onLongClick?: () => void
 }
 
 export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
-  { type, index, displayIndex, item, isFocused, ...props }: ItemDisplayProps, ref
+  { type, index, displayIndex, item, isFocused, onShortClick, onLongClick, ...props }: ItemDisplayProps, ref
 ) => {
   const context = useMaterialContext()
   const { focus, focusRef } = useFocusContext()
@@ -28,12 +32,26 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const draggedItemContext = { ...context, ...draggedItem }
   const focusedLocations = useMemo(() => locations.filter(l => l.focusRef).map(l => l.location), [locations])
   const description = context.material[type]
+
+  const listeners = useLongPress(() => onLongClick && onLongClick(), {
+    detect: LongPressEventType.Pointer,
+    cancelOnMovement: 5,
+    threshold: 600,
+    onCancel: (_, { reason }) => {
+      if (reason === LongPressCallbackReason.CancelledByRelease) {
+        setTimeout(() => onShortClick && onShortClick())
+      }
+    },
+    filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
+  })()
+
+
   if (!description) return null
   return <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                             type={type} itemId={item.id}
                             playDown={focus?.highlight && !isFocused && !focusedLocations.length}
                             css={[pointerCursorCss, transformCss(...description.getItemTransform(item, itemContext)), description.getItemExtraCss(item, itemContext)]}
-                            {...props}>
+                            {...props} {...combineEventListeners(listeners, props)}>
     {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
     {locations.map(({ location, focusRef }) => {
       const description = context.locators[location.type]?.getLocationDescription(location, draggedItemContext)
