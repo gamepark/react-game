@@ -3,8 +3,7 @@ import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd
 import { css, Interpolation, Theme } from '@emotion/react'
 import { DisplayedItem, isMoveItemType, isSelectItem, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import merge from 'lodash/merge'
-import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { mergeRefs } from 'react-merge-refs'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
 import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
@@ -23,8 +22,8 @@ export type DraggableMaterialProps<M extends number = number> = {
   isFocused?: boolean
 } & MaterialComponentProps<M>
 
-export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialProps>((
-  { highlight, type, index, displayIndex, isFocused, ...props }, ref
+export const DraggableMaterial = <M extends number = number>(
+  { highlight, type, index, displayIndex, isFocused, ...props }: DraggableMaterialProps<M>
 ) => {
 
   const context = useMaterialContext()
@@ -151,7 +150,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
 
   return (
     <div css={wrapperCss}>
-      <ItemDisplay ref={ref ? mergeRefs([ref, setNodeRef]) : setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
+      <ItemDisplay ref={setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
                    isFocused={isFocused}
                    css={componentCss}
                    style={style}
@@ -160,9 +159,7 @@ export const DraggableMaterial = forwardRef<HTMLDivElement, DraggableMaterialPro
                    onShortClick={onShortClick} onLongClick={onLongClick}/>
     </div>
   )
-})
-
-DraggableMaterial.displayName = 'DraggableMaterial'
+}
 
 const animationWrapperCss = css`
   transform-style: preserve-3d;
