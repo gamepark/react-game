@@ -1,7 +1,7 @@
 import { DisplayedItem, isDeleteItem, isMoveItem, Location, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import { useMemo } from 'react'
-import { isLocationSubset, MaterialDescription, useFocusContext } from '../components'
+import { MaterialDescription, useFocusContext } from '../components'
 import { ItemContext, MaterialContext } from '../locators'
 import { useDraggedItem } from './useDraggedItem'
 import { useLegalMoves } from './useLegalMoves'
@@ -31,14 +31,6 @@ export function useItemLocations<P extends number = number, M extends number = n
       result[index].focusRef = focusRef
     } else {
       result.push({ location, focusRef })
-    }
-  }
-
-  const expectedDropLocations = useExpectedDropLocations<P, M, L>()
-  for (const location of expectedDropLocations) {
-    const locator = locators[location.type]
-    if (locator?.parentItemType === type && isEqual(locator.getParentItem(location, context), item) && !result.some(r => isLocationSubset(location, r.location))) {
-      result.push({ location })
     }
   }
 

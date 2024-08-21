@@ -91,7 +91,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return transform
   }
 
-  getParentItem(location: Location<P, L>, { rules, material }: ItemContext<P, M, L>): MaterialItem<P, L> | undefined {
+  getParentItem(location: Location<P, L>, { rules, material }: MaterialContext<P, M, L>): MaterialItem<P, L> | undefined {
     if (this.parentItemType === undefined) return undefined
     if (location.parent === undefined) return material[this.parentItemType]?.staticItem
     return rules.material(this.parentItemType).getItem(location.parent)
