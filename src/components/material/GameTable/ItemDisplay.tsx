@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import { Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { forwardRef, MouseEvent, useMemo } from 'react'
 import { mergeRefs } from 'react-merge-refs'
@@ -19,10 +20,11 @@ type ItemDisplayProps = MaterialComponentProps & {
   isFocused?: boolean
   onShortClick?: () => void
   onLongClick?: () => void
+  wrapperCss?: Interpolation<Theme>
 }
 
 export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
-  { type, index, displayIndex, item, isFocused, onShortClick, onLongClick, ...props }: ItemDisplayProps, ref
+  { type, index, displayIndex, item, isFocused, onShortClick, onLongClick, wrapperCss, ...props }: ItemDisplayProps, ref
 ) => {
   const context = useMaterialContext()
   const { focus, focusRef } = useFocusContext()
@@ -47,19 +49,21 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 
 
   if (!description) return null
-  return <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
-                            type={type} itemId={item.id}
-                            playDown={focus?.highlight && !isFocused && !focusedLocations.length}
-                            css={[pointerCursorCss, transformCss(...description.getItemTransform(item, itemContext)), description.getItemExtraCss(item, itemContext)]}
-                            {...props} {...combineEventListeners(listeners, props)}>
-    {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
-    {locations.map(({ location, focusRef }) => {
-      const description = context.locators[location.type]?.getLocationDescription(location, draggedItemContext)
-      const LocationComponent = description?.Component
-      if (!LocationComponent) return null
-      return <LocationComponent key={JSON.stringify(location)} location={location} description={description} ref={focusRef}/>
-    })}
-  </MaterialComponent>
+  return <div css={wrapperCss}>
+    <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
+                       type={type} itemId={item.id}
+                       playDown={focus?.highlight && !isFocused && !focusedLocations.length}
+                       css={[pointerCursorCss, transformCss(...description.getItemTransform(item, itemContext)), description.getItemExtraCss(item, itemContext)]}
+                       {...props} {...combineEventListeners(listeners, props)}>
+      {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
+      {locations.map(({ location, focusRef }) => {
+        const description = context.locators[location.type]?.getLocationDescription(location, draggedItemContext)
+        const LocationComponent = description?.Component
+        if (!LocationComponent) return null
+        return <LocationComponent key={JSON.stringify(location)} location={location} description={description} ref={focusRef}/>
+      })}
+    </MaterialComponent>
+  </div>
 })
 
 ItemDisplay.displayName = 'ItemDisplay'

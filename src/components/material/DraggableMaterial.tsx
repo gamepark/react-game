@@ -142,23 +142,20 @@ export const DraggableMaterial = <M extends number = number>(
   const componentCss = useMemo(() => [
     !applyTransform && !animating && transformTransition,
     !disabled && noTouchAction,
-    disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
+    disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor
   ], [applyTransform, animating, disabled, transform])
 
   const wrapperCss = useMemo(() => [animationWrapperCss, animation], [animation])
   const style = useMemo(() => ({ transform: transformStyle }), [transformStyle])
 
-  return (
-    <div css={wrapperCss}>
-      <ItemDisplay ref={setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
-                   isFocused={isFocused}
-                   css={componentCss}
-                   style={style}
-                   highlight={highlight ?? (!draggedItem && (!disabled || canClickToMove))}
-                   {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
-                   onShortClick={onShortClick} onLongClick={onLongClick}/>
-    </div>
-  )
+  return <ItemDisplay ref={setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
+                      isFocused={isFocused}
+                      css={componentCss}
+                      wrapperCss={wrapperCss}
+                      style={style}
+                      highlight={highlight ?? (!draggedItem && (!disabled || canClickToMove))}
+                      {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
+                      onShortClick={onShortClick} onLongClick={onLongClick}/>
 }
 
 const animationWrapperCss = css`
