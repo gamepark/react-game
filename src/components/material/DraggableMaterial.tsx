@@ -113,18 +113,17 @@ export const DraggableMaterial = <M extends number = number>(
   const itemTransform = useMemo(() => description.getItemTransform(item, itemContext), [description, item, itemContext])
   const transformStyle = (applyTransform ? [transformRef.current, ...itemTransform] : itemTransform).join(' ')
 
-  const componentCss = useMemo(() => [
-    !applyTransform && !animating && transformTransition,
-    !disabled && noTouchAction,
-    disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor
-  ], [applyTransform, animating, disabled, transform])
-
-  const wrapperCss = useMemo(() => [animationWrapperCss, animation], [animation])
-
   return <ItemDisplay ref={setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
                       isFocused={isFocused}
-                      css={componentCss}
-                      wrapperCss={wrapperCss}
+                      css={[
+                        !applyTransform && !animating && transformTransition,
+                        !disabled && noTouchAction,
+                        disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor
+                      ]}
+                      wrapperCss={[
+                        animationWrapperCss,
+                        animation
+                      ]}
                       transformStyle={transformStyle}
                       highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
                       {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
@@ -144,7 +143,7 @@ const noTouchAction = css`
 `
 
 const transformTransition = css`
-  transition: transform 0.2s ease-in-out
+  transition: transform 0.2s ease-in-out;
 `
 
 export function dataIsDisplayedItem<M extends number = number>(data?: Record<string, any>): data is DisplayedItem<M> {
