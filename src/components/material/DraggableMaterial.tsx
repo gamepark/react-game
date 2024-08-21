@@ -120,13 +120,12 @@ export const DraggableMaterial = <M extends number = number>(
   ], [applyTransform, animating, disabled, transform])
 
   const wrapperCss = useMemo(() => [animationWrapperCss, animation], [animation])
-  const style = useMemo(() => ({ transform: transformStyle }), [transformStyle])
 
   return <ItemDisplay ref={setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
                       isFocused={isFocused}
                       css={componentCss}
                       wrapperCss={wrapperCss}
-                      style={style}
+                      transformStyle={transformStyle}
                       highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
                       {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
                       onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>

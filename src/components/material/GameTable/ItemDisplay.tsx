@@ -4,7 +4,7 @@ import { MaterialItem } from '@gamepark/rules-api'
 import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { pointerCursorCss, transformCss } from '../../../css'
+import { pointerCursorCss } from '../../../css'
 import { useDraggedItem, useMaterialContext, usePlay } from '../../../hooks'
 import { useItemLocations } from '../../../hooks/useItemLocations'
 import { combineEventListeners } from '../../../utilities'
@@ -16,6 +16,7 @@ type ItemDisplayProps = MaterialComponentProps & {
   index: number
   displayIndex: number
   item: MaterialItem
+  transformStyle: string
   isFocused?: boolean
   onShortClick?: () => void
   onLongClick?: () => void
@@ -23,7 +24,7 @@ type ItemDisplayProps = MaterialComponentProps & {
 }
 
 export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
-  { type, index, displayIndex, item, isFocused, onShortClick, onLongClick, wrapperCss, ...props }: ItemDisplayProps, ref
+  { type, index, displayIndex, item, transformStyle, isFocused, onShortClick, onLongClick, wrapperCss, ...props }: ItemDisplayProps, ref
 ) => {
   const context = useMaterialContext()
   const { focus, focusRef } = useFocusContext()
@@ -59,7 +60,8 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
     <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                        type={type} itemId={item.id}
                        playDown={focus?.highlight && !isFocused && !focusedLocations.length}
-                       css={[pointerCursorCss, transformCss(...description.getItemTransform(item, itemContext)), description.getItemExtraCss(item, itemContext)]}
+                       style={{ transform: transformStyle }}
+                       css={[pointerCursorCss, description.getItemExtraCss(item, itemContext)]}
                        {...props} {...combineEventListeners(listeners, props)}>
       {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
       {locations.map(({ location, focusRef }) => {
