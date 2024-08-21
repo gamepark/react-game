@@ -76,4 +76,8 @@ export class HandLocator<P extends number = number, M extends number = number, L
       borderRadius
     })
   }
+
+  getHoverTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    return ['translateZ(10em)', `rotateZ(${-this.getItemRotateZ(item, context)}${this.rotationUnit})`, 'scale(2)']
+  }
 }

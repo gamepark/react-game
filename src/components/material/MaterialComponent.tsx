@@ -24,14 +24,25 @@ export const MaterialComponent = memo(forwardRef<HTMLDivElement, MaterialCompone
 
   return (
     <div ref={ref} css={componentCss} {...props}>
-      {description.content({ itemId, highlight, playDown, ...props })}
+      <div css={hoverWrapper}>
+        {description.content({ itemId, highlight, playDown, ...props })}
+      </div>
     </div>
   )
 }))
 
+const hoverWrapper = css`
+  transform-style: preserve-3d;
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: center;
+  width: 100%;
+  height: 100%;
+`
+
 MaterialComponent.displayName = 'MaterialComponent'
 
 const materialCss = css`
+  position: absolute;
   transform-style: preserve-3d;
   -webkit-tap-highlight-color: transparent;
 `

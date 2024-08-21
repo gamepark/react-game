@@ -210,6 +210,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     if (locator) transform.push(...locator.placeItem(item, context))
     return transform
   }
+
+  getHoverTransform(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
+    return []
+  }
 }
 
 export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number> = Record<M, MaterialDescription<P, M, L>>

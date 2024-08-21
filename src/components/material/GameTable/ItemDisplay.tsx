@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
@@ -7,6 +8,7 @@ import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-l
 import { useDraggedItem, useMaterialContext, usePlay } from '../../../hooks'
 import { LocationFocusRef, useExpectedDropLocations, useItemLocations } from '../../../hooks/useItemLocations'
 import { combineEventListeners } from '../../../utilities'
+import { ComponentSize } from '../ComponentDescription'
 import { LocationsMask } from '../locations'
 import { MaterialComponent, MaterialComponentProps } from '../MaterialComponent'
 import { isLocationSubset } from '../utils'
@@ -33,6 +35,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const description = context.material[type]!
   const itemTransform = useMemo(() => description.getItemTransform(item, itemContext), [description, item, itemContext])
   const transformStyle = (draggingTransform ? [draggingTransform, ...itemTransform] : itemTransform).join(' ')
+  const hoverTransform = useMemo(() => description.getHoverTransform(item, itemContext).join(' '), [description, item, itemContext])
 
   const play = usePlay()
   const displayHelp = useMemo(() => () => play(description.displayHelp(item, itemContext), { local: true }), [description, item, itemContext])
@@ -56,7 +59,8 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 
   const canHaveChildren = useMemo(() => Object.values(context.locators).some(locator => locator?.parentItemType === type), [context, type])
 
-  return <div {...props} {...combineEventListeners(listeners, props)}>
+  return <div css={hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, !!draggingTransform)}
+              {...props} {...combineEventListeners(listeners, props)}>
     <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                        type={type} itemId={item.id}
                        highlight={highlight}
@@ -68,6 +72,24 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
     </MaterialComponent>
   </div>
 })
+
+const hoverCss = (itemTransform: string, itemSize: ComponentSize, hoverTransform: string, dragging: boolean) => css`
+  &:hover > * > * {
+    transform: ${dragging ? '' : hoverTransform};
+  }
+  
+  > * {
+    pointer-events: ${dragging ? 'auto' : 'none'};
+  }
+
+  &:before {
+    content: " ";
+    position: absolute;
+    width: ${itemSize.width}em;
+    height: ${itemSize.height}em;
+    transform: ${itemTransform};
+  }
+`
 
 ItemDisplay.displayName = 'ItemDisplay'
 

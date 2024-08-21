@@ -155,6 +155,10 @@ export class Locator<P extends number = number, M extends number = number, L ext
     return sumBy(this.itemTypes, type => rules.material(type).location(itemLocation => isSameLocationArea(itemLocation, location)).getQuantity())
   }
 
+  getHoverTransform(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
+    return []
+  }
+
   navigationSorts: SortFunction[] = [(item) => item.location.x ?? 0, (item) => item.location.y ?? 0, (item) => item.location.z ?? 0]
 
   getNavigationSorts(_context: ItemContext<P, M, L>): SortFunction[] {

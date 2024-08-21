@@ -97,6 +97,12 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
   getBackExtraCss(_itemId: ItemId): Interpolation<Theme> {
     return
   }
+
+  getHoverTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+    const locator = context.locators[item.location.type]
+    if (!locator || this.isFlippedOnTable(item, context)) return []
+    return locator.getHoverTransform(item, context)
+  }
 }
 
 export function isFlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
