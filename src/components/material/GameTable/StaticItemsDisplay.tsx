@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
 import isEqual from 'lodash/isEqual'
-import { useMaterialContext, usePlay } from '../../../hooks'
+import { useMaterialContext } from '../../../hooks'
 import { MaterialDescription } from '../MaterialDescription'
 import { useFocusContext } from './focus'
 import { ItemDisplay } from './ItemDisplay'
@@ -24,7 +24,6 @@ type StaticItemsTypeDisplayProps = {
 const StaticItemsTypeDisplay = ({ type, description, ...props }: StaticItemsTypeDisplayProps) => {
   const context = useMaterialContext()
   const { focus } = useFocusContext()
-  const play = usePlay()
   return <>{description.getStaticItems(context).map((item, index) => {
     return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
       const isFocused = focus?.staticItems.some(focusedItem =>
@@ -33,7 +32,6 @@ const StaticItemsTypeDisplay = ({ type, description, ...props }: StaticItemsType
       return <ItemDisplay key={`${type}_${index}_${displayIndex}`}
                           type={type} index={index} displayIndex={displayIndex} item={item}
                           isFocused={isFocused} highlight={description.highlight(item, { ...context, type, index, displayIndex })}
-                          onShortClick={() => play(description.displayHelp(item, { ...context, type, index, displayIndex }), { local: true })}
                           {...props}/>
     })
   })}</>

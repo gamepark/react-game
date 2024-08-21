@@ -36,49 +36,27 @@ export const DraggableMaterial = <M extends number = number>(
   const legalMoves = useLegalMoves<MaterialMove>()
   const [undo, canUndo] = useUndo()
 
-  const onShortClick = useCallback(() => {
+  const unselect = useMemo(() => {
+    if (item.selected) {
+      const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
+      if (canUndo(predicate)) return () => undo(predicate)
+    }
+  }, [item, itemContext, canUndo, undo])
+
+  const onShortClickMove = useMemo(() => {
     const move = findIfUnique(legalMoves, move => description.canShortClick(move, itemContext))
-    if (move !== undefined) return play(move)
-    if (item.selected) {
-      const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
-      if (canUndo(predicate)) return undo(predicate)
-    }
-
+    if (move !== undefined) return () => play(move)
     const shortClickMove = description.getShortClickMove(itemContext)
-    if (shortClickMove) return play(shortClickMove)
-
+    if (shortClickMove) return () => play(shortClickMove)
     const shortClickLocalMove = description.getShortClickLocalMove(itemContext)
-    if (shortClickLocalMove) return play(shortClickLocalMove, { local: true })
+    if (shortClickLocalMove) return () => play(shortClickLocalMove, { local: true })
+  }, [itemContext, play, legalMoves])
 
-    return play(description.displayHelp(item, itemContext), { local: true })
-  }, [type, item, index, displayIndex, play, canUndo, undo, legalMoves])
-
-  const onLongClick = useCallback(() => {
-    if (item.selected) {
-      const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
-      if (canUndo(predicate)) return play(description.displayHelp(item, itemContext), { local: true })
-    }
-    const shortClickMove = findIfUnique(legalMoves, move => description.canShortClick(move, itemContext))
-    if (shortClickMove !== undefined) return play(description.displayHelp(item, itemContext), { local: true })
-
-    const shortClickLocalMove = description.getShortClickLocalMove(itemContext)
-    if (shortClickLocalMove) return play(description.displayHelp(item, itemContext), { local: true })
-
+  const onLongClickMove = useMemo(() => {
+    if (unselect || onShortClickMove) return
     const move = findIfUnique(legalMoves, move => description.canLongClick(move, itemContext))
-    if (move !== undefined) return play(move)
-    return
-  }, [type, item, index, displayIndex, play, canUndo, undo, legalMoves])
-
-  const canClickToMove = useMemo(() => {
-    let short = 0, long = 0
-    if (description.getShortClickLocalMove(itemContext)) short++
-    for (const move of legalMoves) {
-      if (description.canShortClick(move, itemContext)) short++
-      if (description.canLongClick(move, itemContext)) long++
-      if (short > 1 && long > 1) return false
-    }
-    return short === 1 || long === 1
-  }, [legalMoves])
+    if (move !== undefined) return () => play(move)
+  }, [itemContext, play, legalMoves])
 
   const disabled = useMemo(() => !legalMoves.some(move => description.canDrag(move, itemContext))
     , [legalMoves, itemContext])
@@ -149,9 +127,9 @@ export const DraggableMaterial = <M extends number = number>(
                       css={componentCss}
                       wrapperCss={wrapperCss}
                       style={style}
-                      highlight={highlight ?? (!draggedItem && (!disabled || canClickToMove))}
+                      highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
                       {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
-                      onShortClick={onShortClick} onLongClick={onLongClick}/>
+                      onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>
 }
 
 const animationWrapperCss = css`

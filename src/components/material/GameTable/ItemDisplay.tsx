@@ -5,9 +5,8 @@ import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { pointerCursorCss, transformCss } from '../../../css'
-import { useDraggedItem, useMaterialContext } from '../../../hooks'
+import { useDraggedItem, useMaterialContext, usePlay } from '../../../hooks'
 import { useItemLocations } from '../../../hooks/useItemLocations'
-import { ItemContext } from '../../../locators'
 import { combineEventListeners } from '../../../utilities'
 import { LocationsMask } from '../locations'
 import { MaterialComponent, MaterialComponentProps } from '../MaterialComponent'
@@ -28,12 +27,16 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 ) => {
   const context = useMaterialContext()
   const { focus, focusRef } = useFocusContext()
-  const itemContext: ItemContext = { ...context, type, index, displayIndex }
+  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
   const locations = useItemLocations(item, itemContext)
   const draggedItem = useDraggedItem()
   const draggedItemContext = { ...context, ...draggedItem }
   const focusedLocations = useMemo(() => locations.filter(l => l.focusRef).map(l => l.location), [locations])
-  const description = context.material[type]
+  const description = context.material[type]!
+
+  const play = usePlay()
+  const displayHelp = useMemo(() => () => play(description.displayHelp(item, itemContext), { local: true }), [description, item, itemContext])
+  onLongClick = onLongClick ?? (onShortClick ? displayHelp : undefined)
 
   const lastShortClick = useRef(new Date().getTime())
   const listeners = useLongPress(() => onLongClick && onLongClick(), {
@@ -45,14 +48,13 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
         const time = new Date().getTime()
         if (time - lastShortClick.current < 300) return
         lastShortClick.current = time
-        setTimeout(() => onShortClick && onShortClick())
+        setTimeout(onShortClick ?? displayHelp)
       }
     },
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
 
 
-  if (!description) return null
   return <div css={wrapperCss}>
     <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                        type={type} itemId={item.id}
