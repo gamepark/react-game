@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
 import isEqual from 'lodash/isEqual'
+import { pointerCursorCss } from '../../../css'
 import { useMaterialContext } from '../../../hooks'
 import { MaterialDescription } from '../MaterialDescription'
 import { useFocusContext } from './focus'
@@ -34,6 +35,7 @@ const StaticItemsTypeDisplay = ({ type, description, ...props }: StaticItemsType
                           type={type} index={index} displayIndex={displayIndex} item={item}
                           isFocused={isFocused} highlight={description.highlight(item, itemContext)}
                           transformStyle={description.getItemTransform(item, itemContext).join(' ')}
+                          css={pointerCursorCss}
                           {...props}/>
     })
   })}</>

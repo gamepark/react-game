@@ -1,10 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import { Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { pointerCursorCss } from '../../../css'
 import { useDraggedItem, useMaterialContext, usePlay } from '../../../hooks'
 import { useItemLocations } from '../../../hooks/useItemLocations'
 import { combineEventListeners } from '../../../utilities'
@@ -20,11 +18,10 @@ type ItemDisplayProps = MaterialComponentProps & {
   isFocused?: boolean
   onShortClick?: () => void
   onLongClick?: () => void
-  wrapperCss?: Interpolation<Theme>
 }
 
 export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
-  { type, index, displayIndex, item, transformStyle, isFocused, onShortClick, onLongClick, wrapperCss, ...props }: ItemDisplayProps, ref
+  { type, index, displayIndex, item, transformStyle, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
 ) => {
   const context = useMaterialContext()
   const { focus, focusRef } = useFocusContext()
@@ -56,13 +53,13 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   })()
 
 
-  return <div css={wrapperCss}>
+  return <div {...props} {...combineEventListeners(listeners, props)}>
     <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                        type={type} itemId={item.id}
-                       playDown={focus?.highlight && !isFocused && !focusedLocations.length}
+                       highlight={highlight}
+                       playDown={playDown ?? (focus?.highlight && !isFocused && !focusedLocations.length)}
                        style={{ transform: transformStyle }}
-                       css={[pointerCursorCss, description.getItemExtraCss(item, itemContext)]}
-                       {...props} {...combineEventListeners(listeners, props)}>
+                       css={description.getItemExtraCss(item, itemContext)}>
       {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
       {locations.map(({ location, focusRef }) => {
         const description = context.locators[location.type]?.getLocationDescription(location, draggedItemContext)

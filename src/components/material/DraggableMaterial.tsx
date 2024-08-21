@@ -118,9 +118,7 @@ export const DraggableMaterial = <M extends number = number>(
                       css={[
                         !applyTransform && !animating && transformTransition,
                         !disabled && noTouchAction,
-                        disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor
-                      ]}
-                      wrapperCss={[
+                        disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
                         animationWrapperCss,
                         animation
                       ]}
@@ -143,7 +141,9 @@ const noTouchAction = css`
 `
 
 const transformTransition = css`
-  transition: transform 0.2s ease-in-out;
+  > * {
+    transition: transform 0.2s ease-in-out;
+  }
 `
 
 export function dataIsDisplayedItem<M extends number = number>(data?: Record<string, any>): data is DisplayedItem<M> {
