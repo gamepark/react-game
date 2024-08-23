@@ -2,6 +2,9 @@ import { Coordinates, Location, XYCoordinates } from '@gamepark/rules-api'
 import { ListLocator } from './ListLocator'
 import { MaterialContext } from './Locator'
 
+/**
+ * This Locator places a list of items as a grid, with break points for the lines. Inspired by the CSS flexbox.
+ */
 export class FlexLocator<P extends number = number, M extends number = number, L extends number = number> extends ListLocator<P, M, L> {
 
   constructor(clone?: Partial<FlexLocator>) {
@@ -9,8 +12,17 @@ export class FlexLocator<P extends number = number, M extends number = number, L
     Object.assign(this, clone)
   }
 
+  /**
+   * The number of items per line.
+   */
   lineSize: number = 2
 
+  /**
+   * Function to override to provide a {@link lineSize} that depends on the context
+   * @param _location Location to position
+   * @param _context Context of the game
+   * @returns The number of items per line.
+   */
   getLineSize(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
     return this.lineSize
   }
@@ -19,14 +31,47 @@ export class FlexLocator<P extends number = number, M extends number = number, L
     return this.getLineSize(location, context)
   }
 
+  /**
+   * The default gap between 2 consecutive lines
+   */
   lineGap?: Partial<Coordinates>
 
+  /**
+   * Function to override to provide a {@link getLineGap} that depends on the context
+   * @param _location Location to position
+   * @param _context Context of the game
+   * @returns The default gap between 2 consecutive lines
+   */
   getLineGap(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
     return this.lineGap ?? {}
   }
 
+  /**
+   * The maximum number of lines displayed before the gap between the lines is reduced to fill in the same space.
+   */
+  maxLines?: number
+
+  /**
+   * Function to override to provide a {@link maxLines} that depends on the context
+   * @param _location Location to position
+   * @param _context Context of the game
+   * @returns The maximum number of lines displayed before the gap between the lines is reduced to fill in the same space.
+   */
+  getMaxLines(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
+    return this.maxLines
+  }
+
+  /**
+   * The maximum gap between the first and the last line. Use {@link maxLines} if it matches a specific number of lines.
+   */
   maxLineGap?: Partial<Coordinates>
 
+  /**
+   * Function to override to provide a {@link maxLineGap} that depends on the context. Uses getMaxLines by default.
+   * @param location Location to position
+   * @param context Context of the game
+   * @returns The maximum gap between the first and the last line.
+   */
   getMaxLineGap(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
     if (this.maxLineGap) return this.maxLineGap
     const maxLines = this.getMaxLines(location, context)
@@ -37,12 +82,6 @@ export class FlexLocator<P extends number = number, M extends number = number, L
       y: y ? y * (maxLines - 1) : y,
       z: z ? z * (maxLines - 1) : z
     }
-  }
-
-  maxLines?: number
-
-  getMaxLines(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
-    return this.maxLines
   }
 
   countListItems(location: Location<P, L>, context: MaterialContext<P, M, L>): number {
