@@ -211,6 +211,12 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return transform
   }
 
+  /**
+   * Builds the CSS transform that will be applied to the item when hovered.
+   * @param _item Item to position
+   * @param _context Context of the item
+   * @returns {string[]} a list of CSS transformations
+   */
   getHoverTransform(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
     return []
   }
