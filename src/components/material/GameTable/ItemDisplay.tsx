@@ -60,8 +60,10 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 
   const canHaveChildren = useMemo(() => Object.values(context.locators).some(locator => locator?.parentItemType === type), [context, type])
 
-  return <div css={hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, animating || !!dragTransform)}
-              {...props} {...combineEventListeners(listeners, props)}>
+  return <div css={[
+    itemCss,
+    hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, animating || !!dragTransform)
+  ]} {...props} {...combineEventListeners(listeners, props)}>
     <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                        type={type} itemId={item.id}
                        highlight={highlight}
@@ -74,14 +76,19 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   </div>
 })
 
+const itemCss = css`
+  > * {
+    position: absolute;
+  }
+`
+
 const hoverCss = (itemTransform: string, itemSize: ComponentSize, hoverTransform: string, disable: boolean) => css`
   &:hover > * > * {
     transition: transform 50ms ease-in-out;
     transform: ${disable ? '' : hoverTransform};
   }
-  
+
   > * {
-    position: absolute;
     pointer-events: ${disable ? 'auto' : 'none'};
   }
 
