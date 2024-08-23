@@ -2,6 +2,9 @@ import { Coordinates, Location, MaterialItem, XYCoordinates } from '@gamepark/ru
 import { DropAreaDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
+/**
+ * This Locator places items at regular intervals.
+ */
 export class ListLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
 
   constructor(clone?: Partial<ListLocator>) {
@@ -9,14 +12,47 @@ export class ListLocator<P extends number = number, M extends number = number, L
     Object.assign(this, clone)
   }
 
+  /**
+   * The default gap between 2 consecutive items
+   */
   gap?: Partial<Coordinates>
 
+  /**
+   * Function to override to provide a {@link gap} that depends on the context
+   * @param _location Location to position
+   * @param _context Context of the game
+   * @returns The default gap between 2 consecutive items
+   */
   getGap(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
     return this.gap ?? {}
   }
 
+  /**
+   * The maximum number of items that can be displayed in the list before the gap between items is reduced to fill in the same space.
+   */
+  maxCount?: number
+
+  /**
+   * Function to override to provide a {@link maxCount that depends on the context
+   * @param _location Location to position
+   * @param _context Context of the game
+   * @returns The maximum number of items that can be displayed in the list before the gap between items is reduced to fill in the same space.
+   */
+  getMaxCount(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
+    return this.maxCount
+  }
+
+  /**
+   * The maximum gap between the first and the last items. See {@link maxCount} to get a maxGap based on a max number of items.
+   */
   maxGap?: Partial<Coordinates>
 
+  /**
+   * Function to override to provide a {@link maxGap} that depends on the context
+   * @param location Location to position
+   * @param context Context of the game
+   * @returns The maximum gap between the first and the last items
+   */
   getMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
     if (this.maxGap) return this.maxGap
     const maxCount = this.getMaxCount(location, context)
@@ -29,17 +65,17 @@ export class ListLocator<P extends number = number, M extends number = number, L
     }
   }
 
-  maxCount?: number
-
-  getMaxCount(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
-    return this.maxCount
-  }
-
+  /**
+   * The number of items displayed in the list
+   * @param location Location area of the items
+   * @param context Context of the game
+   * @returns number of items in the location area
+   */
   countListItems(location: Location<P, L>, context: MaterialContext<P, M, L>): number {
     return Math.min(this.limit ?? Infinity, this.countItems(location, context))
   }
 
-  getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  protected getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
     const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)
     const { x: mx, y: my } = this.getCurrentMaxGap(location, context)
     return { x: x + mx / 2, y: y + my / 2, z }
@@ -64,12 +100,6 @@ export class ListLocator<P extends number = number, M extends number = number, L
       y: y + index * (mgy && count > 1 ? mgy * Math.min(gy / mgy, 1 / (count - 1)) : gy),
       z: z + index * (mgz && count > 1 ? mgz * Math.min(gz / mgz, 1 / (count - 1)) : gz)
     }
-  }
-
-  getDeltaValue(delta: number = 0, max: number | undefined, count: number) {
-    if (max !== undefined && max > 0) return Math.min(delta, max / (count - 1))
-    if (max !== undefined && max < 0) return Math.max(delta, max / (count - 1))
-    return delta
   }
 
   getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
