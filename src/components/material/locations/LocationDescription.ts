@@ -6,12 +6,12 @@ import { LocationContext, MaterialContext } from '../../../locators'
 import { ComponentDescription, ComponentSize } from '../ComponentDescription'
 import { isLocationSubset } from '../utils'
 import { isWritingDescription } from '../Writing'
-import { LocationDisplay } from './LocationDisplay'
+import { LocationComponent } from './LocationComponent'
 
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any>
   extends ComponentDescription<Id> {
 
-  Component: ElementType = LocationDisplay
+  Component: ElementType = LocationComponent
 
   help?: ComponentType<LocationHelpProps<P, L>>
 
