@@ -2,6 +2,9 @@ import { Coordinates, Location, MaterialItem, XYCoordinates } from '@gamepark/ru
 import { DropAreaDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
+/**
+ * This Locator places items in a disorganised pile.
+ */
 export class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
 
   constructor(clone?: Partial<PileLocator>) {
@@ -9,22 +12,50 @@ export class PileLocator<P extends number = number, M extends number = number, L
     Object.assign(this, clone)
   }
 
-  limit = 20
   private positions = new Map<string, Map<number, Coordinates>>()
   private rotations = new Map<string, Map<number, number>>()
 
+  /**
+   * By default, a maximum of 20 items are displayed
+   */
+  limit = 20
+
+  /**
+   * Maximum dispersion radius of the items.
+   */
   radius: number | XYCoordinates = 0
 
+  /**
+   * Function to override to provide a {@link radius} that depends on the context
+   * @param _location Location to position
+   * @param _context Context of the game
+   * @returns the maximum dispersion radius of the items.
+   */
   getRadius(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | XYCoordinates {
     return this.radius
   }
 
+  /**
+   * Maximum angle of rotation of the items. Defaults to 180, bidirectional so items can have any rotation.
+   */
   maxAngle = 180
 
+  /**
+   * Function to override to provide a {@link maxAngle} that depends on the context
+   * @param _location Location to position
+   * @param _context Context of the game
+   * @returns the maximum angle of rotation of the items
+   */
   getMaxAngle(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
     return this.maxAngle
   }
 
+  /**
+   * Identifier of the pile. By default, distinct location areas (different player, id or parent) forms distinct piles.
+   * @param location Location to position
+   * @param _context Context of the game
+   * @returns a unique identifier for the pile of items this location goes to
+   */
   getPileId(location: Location<P, L>, _context: MaterialContext<P, M, L>): string {
     return [location.player, location.id, location.parent].filter(part => part !== undefined).join('_')
   }
