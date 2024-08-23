@@ -18,7 +18,7 @@ type ItemDisplayProps = MaterialComponentProps & {
   index: number
   displayIndex: number
   item: MaterialItem
-  draggingTransform?: string
+  dragTransform?: string
   animating?: boolean
   isFocused?: boolean
   onShortClick?: () => void
@@ -26,16 +26,16 @@ type ItemDisplayProps = MaterialComponentProps & {
 }
 
 export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
-  { type, index, displayIndex, item, draggingTransform, animating, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
+  { type, index, displayIndex, item, dragTransform, animating, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
 ) => {
   const context = useMaterialContext()
   const { focus, focusRef } = useFocusContext()
-  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
+  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex, dragTransform }), [context, type, index, displayIndex, dragTransform])
   const locations = useItemLocations(item, itemContext)
   const focusedLocations = useMemo(() => locations.filter(l => l.focusRef).map(l => l.location), [locations])
   const description = context.material[type]!
   const itemTransform = useMemo(() => description.getItemTransform(item, itemContext), [description, item, itemContext])
-  const transformStyle = (draggingTransform ? [draggingTransform, ...itemTransform] : itemTransform).join(' ')
+  const transformStyle = (dragTransform ? [dragTransform, ...itemTransform] : itemTransform).join(' ')
   const hoverTransform = useMemo(() => description.getHoverTransform(item, itemContext).join(' '), [description, item, itemContext])
 
   const play = usePlay()
@@ -60,7 +60,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 
   const canHaveChildren = useMemo(() => Object.values(context.locators).some(locator => locator?.parentItemType === type), [context, type])
 
-  return <div css={hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, animating || !!draggingTransform)}
+  return <div css={hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, animating || !!dragTransform)}
               {...props} {...combineEventListeners(listeners, props)}>
     <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                        type={type} itemId={item.id}

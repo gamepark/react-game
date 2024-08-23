@@ -119,7 +119,7 @@ export const DraggableMaterial = <M extends number = number>(
                         animationWrapperCss,
                         animation
                       ]}
-                      draggingTransform={applyTransform ? transformRef.current : undefined}
+                      dragTransform={applyTransform ? transformRef.current : undefined}
                       animating={animating}
                       highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
                       {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}

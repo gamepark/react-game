@@ -40,6 +40,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
   }
 
   getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+    if (context.dragTransform) return 0
     return this.getRotateZ(item.location, context, this.getItemIndex(item, context))
   }
 
