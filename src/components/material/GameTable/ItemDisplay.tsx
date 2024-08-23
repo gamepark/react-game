@@ -19,13 +19,14 @@ type ItemDisplayProps = MaterialComponentProps & {
   displayIndex: number
   item: MaterialItem
   draggingTransform?: string
+  animating?: boolean
   isFocused?: boolean
   onShortClick?: () => void
   onLongClick?: () => void
 }
 
 export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
-  { type, index, displayIndex, item, draggingTransform, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
+  { type, index, displayIndex, item, draggingTransform, animating, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
 ) => {
   const context = useMaterialContext()
   const { focus, focusRef } = useFocusContext()
@@ -59,7 +60,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 
   const canHaveChildren = useMemo(() => Object.values(context.locators).some(locator => locator?.parentItemType === type), [context, type])
 
-  return <div css={hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, !!draggingTransform)}
+  return <div css={hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, animating || !!draggingTransform)}
               {...props} {...combineEventListeners(listeners, props)}>
     <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                        type={type} itemId={item.id}
@@ -73,13 +74,15 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   </div>
 })
 
-const hoverCss = (itemTransform: string, itemSize: ComponentSize, hoverTransform: string, dragging: boolean) => css`
+const hoverCss = (itemTransform: string, itemSize: ComponentSize, hoverTransform: string, disable: boolean) => css`
   &:hover > * > * {
-    transform: ${dragging ? '' : hoverTransform};
+    transition: transform 50ms ease-in-out;
+    transform: ${disable ? '' : hoverTransform};
   }
   
   > * {
-    pointer-events: ${dragging ? 'auto' : 'none'};
+    position: absolute;
+    pointer-events: ${disable ? 'auto' : 'none'};
   }
 
   &:before {

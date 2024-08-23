@@ -42,7 +42,6 @@ const hoverWrapper = css`
 MaterialComponent.displayName = 'MaterialComponent'
 
 const materialCss = css`
-  position: absolute;
   transform-style: preserve-3d;
   -webkit-tap-highlight-color: transparent;
 `
