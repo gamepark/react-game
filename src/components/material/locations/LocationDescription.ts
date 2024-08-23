@@ -2,7 +2,7 @@ import { Interpolation, Theme } from '@emotion/react'
 import { isCreateItem, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import { ComponentType, ElementType } from 'react'
-import { LocationContext, LocationHelpProps, MaterialContext } from '../../../locators'
+import { LocationContext, MaterialContext } from '../../../locators'
 import { ComponentDescription, ComponentSize } from '../ComponentDescription'
 import { isLocationSubset } from '../utils'
 import { isWritingDescription } from '../Writing'
@@ -86,4 +86,9 @@ export class LocationDescription<P extends number = number, M extends number = n
   }
 
   displayInParentItemHelp?: boolean
+}
+
+export type LocationHelpProps<P extends number = number, L extends number = number> = {
+  location: Location<P, L>
+  closeDialog: () => void
 }
