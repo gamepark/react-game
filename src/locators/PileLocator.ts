@@ -1,5 +1,5 @@
 import { Coordinates, Location, MaterialItem, XYCoordinates } from '@gamepark/rules-api'
-import { DropAreaDescription, LocationDescription } from '../components'
+import { CardDescription, DropAreaDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
 /**
@@ -102,7 +102,9 @@ export class PileLocator<P extends number = number, M extends number = number, L
   }
 
   protected generateLocationDescriptionFromDraggedItem(location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> {
-    const { width = 0, height = 0 } = context.material[context.type] ?? {}
+    const itemDescription = context.material[context.type] ?? new CardDescription()
+    const item = context.rules.material(context.type).getItem(context.index)
+    const { width, height } = itemDescription.getSize(item.id)
     const max = Math.max(width, height)
     const radius = this.getRadius(location, context)
     return new DropAreaDescription({
