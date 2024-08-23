@@ -180,7 +180,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
   /**
    * Position of the location on the parent item, in percentage. Use {@link getPositionOnParent} to provide a dynamic position.
    */
-  positionOnParent: XYCoordinates = { x: 0, y: 0 }
+  positionOnParent: XYCoordinates = { x: 50, y: 50 }
 
   /**
    * Place the center of the item in the plan of their parent item. This is ignored if "parentItemType" is undefined.
