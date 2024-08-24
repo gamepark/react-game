@@ -220,6 +220,16 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   getHoverTransform(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
     return []
   }
+
+  getDropLocations(item: MaterialItem<P, L>, move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): Location<P, L>[] {
+    if (isMoveItem(move) && move.location.type !== undefined) {
+      return [move.location as Location<P, L>]
+    } else if (isDeleteItem(move)) {
+      const stockLocation = context.material[context.type]?.getStockLocation(item, context)
+      return stockLocation ? [stockLocation] : []
+    }
+    return []
+  }
 }
 
 export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number> = Record<M, MaterialDescription<P, M, L>>
