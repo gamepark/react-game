@@ -21,17 +21,15 @@ export const LocationComponent = forwardRef<HTMLDivElement, LocationComponentPro
   const context = useMaterialContext()
   const material = context.material
   const locator = context.locators[location.type]
-  const rules = context.rules
   const play = usePlay<MaterialMove>()
 
   const displayHelp = useMemo(() => {
     if (description.help) {
       return () => play(displayLocationHelp(location), { local: true })
     }
-    const itemType = locator?.parentItemType
-    if (itemType === undefined) return
-    const item = rules.material(itemType).getItem(location.parent!)!
-    if (!item) return
+    const item = locator?.getParentItem(location, context)
+    if (!item || locator?.parentItemType === undefined) return
+    const itemType = locator.parentItemType
     return () => play(material[itemType]!.displayHelp(item, { ...context, type: itemType, index: location.parent!, displayIndex: 0 }), { local: true })
   }, [context])
   onLongClick = onLongClick ?? (onShortClick ? displayHelp : undefined)
