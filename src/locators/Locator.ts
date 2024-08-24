@@ -154,8 +154,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
     const parentItem = this.getParentItem(item.location, context)
     if (this.parentItemType === undefined || !parentItem) return []
     const locator = context.locators[parentItem.location.type]
-    if (!locator) return []
-    const transform = locator.placeItem(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 })
+    const transform = locator?.placeItem(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 }) ?? []
     const parentMaterial = context.material[this.parentItemType]
     const { x, y } = this.getPositionOnParent(item.location, context)
     if (parentMaterial && (x !== 0 || y !== 0)) {
