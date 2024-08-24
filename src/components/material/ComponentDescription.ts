@@ -40,7 +40,7 @@ export abstract class ComponentDescription<Id = any> {
     if (this.width && this.height) return { width: this.width, height: this.height }
     if (this.ratio && this.width) return { width: this.width, height: this.width / this.ratio }
     if (this.ratio && this.height) return { width: this.height * this.ratio, height: this.height }
-    throw new Error('You must implement "getSize" or 2 of "width", "height" & "ratio" in any Component description')
+    throw new Error(`${this.constructor.name}: you must implement "getSize" or 2 of "width", "height" & "ratio" in any Component description`)
   }
 
   /**
