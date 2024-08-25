@@ -84,21 +84,16 @@ export class PileLocator<P extends number = number, M extends number = number, L
     return this.getLocationCoordinates(item.location, context, this.getItemIndex(item, context))
   }
 
-  getRotateZ(location: Location<P, L>, context: MaterialContext<P, M, L>,
-             index = this.getLocationIndex(location, context)): number {
-    if (!this.maxAngle || index === undefined) return 0
-    const pileId = this.getPileId(location, context)
+  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+    const index = this.getItemIndex(item, context)
+    const pileId = this.getPileId(item.location, context)
     if (!this.rotations.has(pileId)) this.rotations.set(pileId, new Map())
     const pileRotations = this.rotations.get(pileId)!
     if (!pileRotations.has(index)) {
-      const maxAngle = this.getMaxAngle(location, context)
+      const maxAngle = this.getMaxAngle(item.location, context)
       pileRotations.set(index, (Math.random() - 0.5) * maxAngle)
     }
     return pileRotations.get(index) ?? 0
-  }
-
-  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
-    return this.getRotateZ(item.location, context, this.getItemIndex(item, context))
   }
 
   protected generateLocationDescriptionFromDraggedItem(location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> {
