@@ -80,7 +80,7 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
   }
 
   getItemTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
-    return super.getItemTransform(item, context).concat(...this.getRotations(item, context))
+    return super.getItemTransform(item, context).concat(`translateZ(${this.width / 2}em)`, ...this.getRotations(item, context))
   }
 
   getRotations(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
