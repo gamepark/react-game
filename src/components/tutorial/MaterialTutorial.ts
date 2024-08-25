@@ -29,8 +29,8 @@ export abstract class MaterialTutorial<P extends number = number, M extends numb
   }
 
   setupTutorial(): [MaterialGame<P, M, L>, Player<P>[]] {
-    const game = this.setup.setup(this.options)
-    game.tutorial = { step: 0, stepComplete: false, popupClosed: false }
+    const tutorial = { step: 0, stepComplete: false, popupClosed: false }
+    const game = this.setup.setup(this.options, tutorial)
     return [game, this.players]
   }
 
