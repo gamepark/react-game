@@ -19,19 +19,9 @@ export const LocationComponent = forwardRef<HTMLDivElement, LocationComponentPro
   { location, description, highlight, onShortClick, onLongClick, ...props }, ref
 ) => {
   const context = useMaterialContext()
-  const material = context.material
-  const locator = context.locators[location.type]
   const play = usePlay<MaterialMove>()
 
-  const displayHelp = useMemo(() => {
-    if (description.help) {
-      return () => play(displayLocationHelp(location), { local: true })
-    }
-    const item = locator?.getParentItem(location, context)
-    if (!item || locator?.parentItemType === undefined) return
-    const itemType = locator.parentItemType
-    return () => play(material[itemType]!.displayHelp(item, { ...context, type: itemType, index: location.parent!, displayIndex: 0 }), { local: true })
-  }, [context])
+  const displayHelp = useMemo(() => description.help && (() => play(displayLocationHelp(location), { local: true })), [context])
   onLongClick = onLongClick ?? (onShortClick ? displayHelp : undefined)
   onShortClick = onShortClick ?? displayHelp
 
@@ -62,7 +52,7 @@ export const LocationComponent = forwardRef<HTMLDivElement, LocationComponentPro
   return (
     <LocationDisplay ref={ref} location={location} description={description}
                      css={[
-                       (onShortClick || onLongClick) && hoverHighlight,
+                       (onShortClick || onLongClick) ? hoverHighlight : noPointerEvents,
                        onLongClick && clicking && clickingAnimation,
                        highlight && shineEffect
                      ]}
@@ -76,6 +66,10 @@ const hoverHighlight = css`
   &:hover {
     background-color: rgba(255, 255, 255, 0.2);
   }
+`
+
+const noPointerEvents = css`
+  pointer-events: none;
 `
 
 const clickingKeyframes = (theme: Theme) => keyframes`
