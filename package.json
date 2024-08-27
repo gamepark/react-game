@@ -1,6 +1,6 @@
 {
   "name": "@gamepark/react-game",
-  "version": "6.23.4",
+  "version": "6.24.1",
   "description": "React components & tools to create a Board Game user interface for Game Park",
   "author": "Romain Fromi <romain@game-park.com> (https://game-park.com/)",
   "license": "ISC",
