@@ -298,10 +298,10 @@
     pusher-js "^7.0.0"
     redux "^4.2.1"
 
-"@gamepark/rules-api@~6.23.3":
-  version "6.23.3"
-  resolved "https://registry.yarnpkg.com/@gamepark/rules-api/-/rules-api-6.23.3.tgz#62bb02d694bcb9941adbfc28b4ee20e43589ae72"
-  integrity sha512-O13YeJNBZcdn0wOJ2sUDNO3h645imJHXYvOjgGgPh4JcJsmlPOVDY0iq+URrqMQSUwMVW/VnXMOmCFW8LJjJfQ==
+"@gamepark/rules-api@~6.24.0":
+  version "6.24.0"
+  resolved "https://registry.yarnpkg.com/@gamepark/rules-api/-/rules-api-6.24.0.tgz#78b03cddad3eb38fab371b0db3fc0a62d0e6a5d5"
+  integrity sha512-UtQWSugVuwrSbefbcWvrKzk9KTh2paxwjiQ4KmRuid3t9vtuycIqjOJ1n/d7Gyx36WjCR4+SumCEcMp6z8rwVQ==
 
 "@graphql-typed-document-node/core@^3.1.1":
   version "3.2.0"
