@@ -3,12 +3,12 @@ import { Animation } from '@gamepark/react-client'
 import { DeleteItem, ItemMove, MoveItem } from '@gamepark/rules-api'
 import { ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
-import { adjustRotation } from './adjustRotation'
 import { getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
 import { isMovedOrDeletedItem } from './isMovedOrDeletedItem.util'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
+import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { transformItem } from './transformItem.util'
 
 export class DeleteItemAnimations<P extends number = number, M extends number = number, L extends number = number>
@@ -28,10 +28,12 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
 
   getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<DeleteItem<M>>): Interpolation<Theme> {
     if (!isMovedOrDeletedItem(context, animation.move)) return
-    const stockLocation = getFirstStockItemTransforms(context)
-    if (stockLocation) {
-      const targetTransform = adjustRotation(stockLocation, transformItem(context)).join(' ')
-      const animationKeyframes = this.getKeyframesToDestination(targetTransform, animation, context)
+    const stockTransforms = getFirstStockItemTransforms(context)
+    if (stockTransforms) {
+      const originTransforms = toSingleRotation(transformItem(context))
+      const targetTransforms = toSingleRotation(stockTransforms)
+      toClosestRotations(originTransforms, targetTransforms)
+      const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
       return movementAnimationCss(animationKeyframes, animation.duration)
     } else {
       const fadeout = keyframes`
