@@ -2,6 +2,7 @@
 import { css } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
+import partition from 'lodash/partition'
 import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
@@ -32,7 +33,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const { focus, focusRef } = useFocusContext()
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex, dragTransform }), [context, type, index, displayIndex, dragTransform])
   const locations = useItemLocations(item, itemContext)
-  const focusedLocations = useMemo(() => locations.filter(l => l.focusRef).map(l => l.location), [locations])
+  const [focusedLocations, otherLocations] = useMemo(() => partition(locations, l => l.focusRef), [locations])
   const description = context.material[type]!
   const itemTransform = useMemo(() => description.getItemTransform(item, itemContext), [description, item, itemContext])
   const transformStyle = (dragTransform ? [dragTransform, ...itemTransform] : itemTransform).join(' ')
@@ -70,8 +71,9 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
                        playDown={playDown ?? (focus?.highlight && !isFocused && !focusedLocations.length)}
                        style={{ transform: transformStyle }}
                        css={description.getItemExtraCss(item, itemContext)}>
-      {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations}/>}
-      {canHaveChildren ? <ItemDropLocations locations={locations} item={item} type={type}/> : <ItemLocations locations={locations}/>}
+      {canHaveChildren ? <ItemDropLocations locations={otherLocations} item={item} type={type}/> : <ItemLocations locations={otherLocations}/>}
+      {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations.map(l => l.location)}/>}
+      <ItemLocations locations={focusedLocations}/>
     </MaterialComponent>
   </div>
 })
