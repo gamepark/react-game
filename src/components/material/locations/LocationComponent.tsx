@@ -1,13 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes, Theme } from '@emotion/react'
-import { MaterialMove, MaterialMoveBuilder } from '@gamepark/rules-api'
+import { MaterialMove } from '@gamepark/rules-api'
 import { forwardRef, MouseEvent, useMemo, useRef, useState } from 'react'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { shineEffect } from '../../../css'
 import { useMaterialContext, usePlay } from '../../../hooks'
 import { combineEventListeners } from '../../../utilities'
 import { LocationDisplay, LocationDisplayProps } from './LocationDisplay'
-import displayLocationHelp = MaterialMoveBuilder.displayLocationHelp
 
 export type LocationComponentProps<P extends number = number, M extends number = number, L extends number = number> = LocationDisplayProps<P, M, L> & {
   highlight?: boolean
@@ -21,7 +20,10 @@ export const LocationComponent = forwardRef<HTMLDivElement, LocationComponentPro
   const context = useMaterialContext()
   const play = usePlay<MaterialMove>()
 
-  const displayHelp = useMemo(() => description.help && (() => play(displayLocationHelp(location), { local: true })), [context])
+  const displayHelp = useMemo(() => {
+    const move = description.displayHelp(location, context)
+    return move && (() => play(move, { local: true }))
+  }, [location, context])
   onLongClick = onLongClick ?? (onShortClick ? displayHelp : undefined)
   onShortClick = onShortClick ?? displayHelp
 

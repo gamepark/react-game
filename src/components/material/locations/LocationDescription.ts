@@ -1,5 +1,5 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { isCreateItem, isDeleteItem, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
+import { isCreateItem, isDeleteItem, isMoveItem, Location, MaterialMove, MaterialMoveBuilder } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import { ComponentType, ElementType } from 'react'
 import { LocationContext, MaterialContext } from '../../../locators'
@@ -7,6 +7,7 @@ import { ComponentDescription, ComponentSize } from '../ComponentDescription'
 import { isLocationSubset } from '../utils'
 import { isWritingDescription } from '../Writing'
 import { LocationComponent } from './LocationComponent'
+import displayLocationHelp = MaterialMoveBuilder.displayLocationHelp
 
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any>
   extends ComponentDescription<Id> {
@@ -86,6 +87,17 @@ export class LocationDescription<P extends number = number, M extends number = n
   }
 
   displayInParentItemHelp?: boolean
+
+  /**
+   * The move to execute in order to display the help dialog about this location.
+   * By default, open the help about this specific location, but can be overloaded for any other behavior.
+   * @param location The location
+   * @param _context Context of the game
+   * @return The move to play to open the help dialog, if any
+   */
+  displayHelp(location: Location<P, L>, _context: MaterialContext<P, M, L>): MaterialMove<P, M, L> | undefined {
+    return this.help && displayLocationHelp(location)
+  }
 }
 
 export type LocationHelpProps<P extends number = number, L extends number = number> = {
