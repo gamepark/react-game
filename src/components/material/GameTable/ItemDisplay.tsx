@@ -85,11 +85,13 @@ const itemCss = css`
 `
 
 const hoverCss = (itemTransform: string, itemSize: ComponentSize, hoverTransform: string, disable: boolean) => css`
-  &:hover > * > * {
-    transition: transform 50ms ease-in-out;
-    transform: ${disable ? '' : hoverTransform};
+  @media (hover) {
+    &:hover > * > * {
+      transition: transform 50ms ease-in-out;
+      transform: ${disable ? '' : hoverTransform};
+    }  
   }
-
+  
   > * {
     pointer-events: ${disable ? 'auto' : 'none'};
   }
