@@ -1,6 +1,6 @@
-import { Interpolation, keyframes, Theme } from '@emotion/react'
+import { Interpolation, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
-import { CreateItem, ItemMove, MaterialRulesCreator, RollItem } from '@gamepark/rules-api'
+import { CreateItem, MaterialRulesCreator, RollItem } from '@gamepark/rules-api'
 import { ItemContext } from '../../../locators'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
@@ -35,19 +35,8 @@ export class RollItemAnimations<P extends number = number, M extends number = nu
     addMissingOperations(sourceTransforms, futureTransforms)
     const sourceTransform = [...sourceTransforms, 'rotate3d(-1, -1, 0, 0)'].join(' ')
     const futureTransform = [...futureTransforms, 'rotate3d(-1, -1, 0, 1800deg)'].join(' ')
-    const animationKeyframes = this.getKeyframes(sourceTransform, futureTransform, animation, context)
+    const animationKeyframes = this.getTransformKeyframes(sourceTransform, futureTransform, animation, context)
     return movementAnimationCss(animationKeyframes, animation.duration)
-  }
-
-  protected getKeyframes(origin: string, destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
-    return keyframes`
-      from {
-        transform: ${origin};
-      }
-      to {
-        transform: ${destination};
-      }
-    `
   }
 }
 

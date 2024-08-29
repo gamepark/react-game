@@ -1,15 +1,15 @@
-import { Interpolation, keyframes, Theme } from '@emotion/react'
+import { Interpolation, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
-import { ItemMove, MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
+import { MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
 import { isEqual } from 'lodash'
 import { ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
-import { adjustRotation } from './adjustRotation'
 import { isMovedOrDeletedItem } from './isMovedOrDeletedItem.util'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
+import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { transformItem } from './transformItem.util'
 
 export class MoveItemAnimations<P extends number = number, M extends number = number, L extends number = number>
@@ -51,11 +51,10 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const futureContext = { ...context, rules: futureRules, index: futureIndex, displayIndex: futureDisplayIndex }
-    const sourceTransforms = transformItem(context)
-    const sourceTransform = sourceTransforms.join(' ')
-    const futureTransforms = material[type]?.getItemTransform(futureItem, futureContext) ?? []
-    const futureTransform = adjustRotation(futureTransforms, sourceTransforms).join(' ')
-    const animationKeyframes = this.getKeyframes(sourceTransform, futureTransform, animation, context)
+    const originTransforms = toSingleRotation(transformItem(context))
+    const targetTransforms = toSingleRotation(material[type]?.getItemTransform(futureItem, futureContext) ?? [])
+    toClosestRotations(originTransforms, targetTransforms)
+    const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
     return movementAnimationCss(animationKeyframes, animation.duration)
   }
 
@@ -80,22 +79,10 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
     const futureContext = { ...context, rules: futureRules }
-    const sourceTransforms = transformItem(context)
-    const sourceTransform = sourceTransforms.join(' ')
+    const originTransforms = transformItem(context)
     const targetTransforms = material[type]?.getItemTransform(item, futureContext) ?? []
-    const targetTransform = adjustRotation(targetTransforms, sourceTransforms).join(' ')
-    const animationKeyframes = this.getKeyframes(sourceTransform, targetTransform, animation, context)
+    toClosestRotations(originTransforms, targetTransforms)
+    const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
     return movementAnimationCss(animationKeyframes, animation.duration)
-  }
-
-  protected getKeyframes(origin: string, destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
-    return keyframes`
-      from {
-        transform: ${origin};
-      }
-      to {
-        transform: ${destination};
-      }
-    `
   }
 }

@@ -3,11 +3,11 @@ import { Animation } from '@gamepark/react-client'
 import { CreateItem, ItemMove, MaterialRules } from '@gamepark/rules-api'
 import { fadeIn } from '../../../css'
 import { ItemContext } from '../../../locators'
-import { adjustRotation } from './adjustRotation'
 import { getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
+import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { transformItem } from './transformItem.util'
 
 const lastCreatedItemsIndexes: Record<string, number> = {}
@@ -35,8 +35,10 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     if (!this.isItemToAnimate(context, animation)) return
     const stockTransforms = getFirstStockItemTransforms(context)
     if (stockTransforms) {
-      const targetTransform = adjustRotation(stockTransforms, transformItem(context)).join(' ')
-      const animationKeyframes = this.getKeyframesFromOrigin(targetTransform, animation, context)
+      const originTransforms = toSingleRotation(stockTransforms)
+      const targetTransforms = toSingleRotation(transformItem(context))
+      toClosestRotations(originTransforms, targetTransforms)
+      const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
       return movementAnimationCss(animationKeyframes, animation.duration)
     } else {
       return fadeIn(animation.duration)

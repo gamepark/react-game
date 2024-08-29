@@ -1,6 +1,6 @@
-import { Interpolation, Theme } from '@emotion/react'
+import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation, Animations } from '@gamepark/react-client'
-import { DisplayedItem, MaterialGame, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { DisplayedItem, ItemMove, MaterialGame, MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 
@@ -17,5 +17,16 @@ export class ItemAnimations<P extends number = number, M extends number = number
 
   getItemContext(context: MaterialGameAnimationContext<P, M, L>, item: DisplayedItem<M>): ItemContext<P, M, L> {
     return { ...this.getMaterialContext(context), ...item }
+  }
+
+  protected getTransformKeyframes(origin: string, destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
+    return keyframes`
+      from {
+        transform: ${origin};
+      }
+      to {
+        transform: ${destination};
+      }
+    `
   }
 }
