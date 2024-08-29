@@ -61,7 +61,7 @@ export class PileLocator<P extends number = number, M extends number = number, L
   }
 
   getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
-                         index = this.getLocationIndex(location, context)): Partial<Coordinates> {
+                         index?: number): Partial<Coordinates> {
     if (index === undefined) return this.getCoordinates(location, context)
     const pileId = this.getPileId(location, context)
     if (!this.positions.has(pileId)) this.positions.set(pileId, new Map())
