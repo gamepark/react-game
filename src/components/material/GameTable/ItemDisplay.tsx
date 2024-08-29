@@ -72,7 +72,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
                        style={{ transform: transformStyle }}
                        css={description.getItemExtraCss(item, itemContext)}>
       {canHaveChildren ? <ItemDropLocations locations={otherLocations} item={item} type={type}/> : <ItemLocations locations={otherLocations}/>}
-      {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations.map(l => l.location)}/>}
+      {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations.map(l => l.location)} borderRadius={description.getBorderRadius(item.id)}/>}
       <ItemLocations locations={focusedLocations}/>
     </MaterialComponent>
   </div>

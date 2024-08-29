@@ -5,12 +5,13 @@ import { useItemLocator, useMaterialContext } from '../../../hooks'
 
 export type LocationsMaskProps = {
   locations: Location[]
+  borderRadius: number
 }
 
-export const LocationsMask = ({ locations }: LocationsMaskProps) => {
+export const LocationsMask = ({ borderRadius, locations }: LocationsMaskProps) => {
   const id = useMemo(() => uniqueId('mask'), [])
   return (
-    <svg width="100%" height="100%" style={{ position: 'absolute' }}>
+    <svg width="100%" height="100%" style={{ position: 'absolute', borderRadius: borderRadius + 'em' }}>
       <defs>
         <mask id={id}>
           <rect width="100%" height="100%" fill="white"/>
