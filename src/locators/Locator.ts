@@ -154,12 +154,13 @@ export class Locator<P extends number = number, M extends number = number, L ext
     const parentItem = this.getParentItem(item.location, context)
     if (this.parentItemType === undefined || !parentItem) return []
     const locator = context.locators[parentItem.location.type]
-    const transform = locator?.placeItem(parentItem, { ...context, type: this.parentItemType, displayIndex: 0 }) ?? []
+    const parentContext = { ...context, type: this.parentItemType, displayIndex: 0 }
+    const transform = locator?.placeItem(parentItem, parentContext) ?? []
     const parentMaterial = context.material[this.parentItemType]
     const { x, y } = this.getPositionOnParent(item.location, context)
     if (parentMaterial && (x !== 0 || y !== 0)) {
       const { width, height } = parentMaterial.getSize(parentItem.id)
-      transform.push(`translate(${width * (x - 50) / 100}em, ${height * (y - 50) / 100}em)`)
+      transform.push(`translate3d(${width * (x - 50) / 100}em, ${height * (y - 50) / 100}em, ${parentMaterial.getThickness(parentItem, parentContext)}em)`)
     }
     return transform
   }
