@@ -1,4 +1,5 @@
 import { isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
+import isEqual from 'lodash/isEqual'
 import { ElementType } from 'react'
 import { ItemContext } from '../../../locators'
 import { LocationDescription } from './LocationDescription'
@@ -13,7 +14,10 @@ export class DropAreaDescription<P extends number = number, M extends number = n
     return this.isMoveToLocation(move, location, context)
   }
 
-  getBestDropMove(moves: MaterialMove<P, M, L>[], _location: Location<P, L>, context: ItemContext<P, M, L>): MaterialMove<P, M, L> {
+  getBestDropMove(moves: MaterialMove<P, M, L>[], location: Location<P, L>, context: ItemContext<P, M, L>): MaterialMove<P, M, L> {
+    const exactMove = moves.find((move) => isMoveItem(move) && isEqual(location, move.location))
+    if (exactMove) return exactMove
+
     const moveWithSameRotation = moves.find(move =>
       isMoveItem(move) && move.location.rotation === context.rules.material(move.itemType).getItem(move.itemIndex)?.location.rotation
     )
