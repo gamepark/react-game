@@ -8,15 +8,18 @@ import { usePlayerName, useRules } from '../../hooks'
 import { Avatar, SpeechBubbleDirection } from '../Avatar'
 import { MaterialFocus, useFocusContext } from '../material'
 import { blinkOnRunningTimeout, PlayerTimer } from '../PlayerTimer'
+import { Counters } from './Counters'
 
-type MainCounterProps = {
+type CountersProps = {
   image: string
   value: number | string
-} & { imageCss?: Interpolation<Theme>}
+} & { imageCss?: Interpolation<Theme> }
 
 type StyledPlayerPanelProps = {
   player: Player
-  mainCounter?: MainCounterProps
+  mainCounter?: CountersProps
+  counters?: CountersProps[]
+  countersPerLine?: number,
   backgroundImage?: string
   playerFocus?: MaterialFocus
   color?: string
@@ -25,7 +28,8 @@ type StyledPlayerPanelProps = {
 } & HTMLAttributes<HTMLDivElement>
 
 export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
-  const { player, activeRing, timerOnRight, color = '#28B8CE', playerFocus, backgroundImage, mainCounter, ...rest } = props
+  const { player, activeRing, timerOnRight, color = '#28B8CE', playerFocus, backgroundImage, counters = [], countersPerLine = 2, mainCounter, ...rest } = props
+  const allCounter = mainCounter ? [mainCounter, ...counters] : counters ?? []
   const { setFocus } = useFocusContext()
   const playerName = usePlayerName(player.id)
   const gameOver = useSelector((state: GamePageState) => state.gameOver)
@@ -36,40 +40,50 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
     setFocus(playerFocus)
   }, [playerFocus])
   return (
-    <>
-      <div css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable]} onClick={focusPlayer} {...rest}>
-        <Avatar css={avatarStyle} playerId={player.id} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }}/>
-        {activeRing && isTurnToPlay && <div css={isPlaying}>
-          <div css={isTurnToPlay && circle}/>
-        </div>}
-        <h2 css={[nameStyle, data]}>{playerName}</h2>
-        {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, timerOnRight && rightAlignment]} customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>}
-        {!!mainCounter && <MainIcon player={player.id} {...mainCounter}/>}
-      </div>
+    <div css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !allCounter.length && noCounterCss]} onClick={focusPlayer} {...rest}>
+      <Avatar css={avatarStyle} playerId={player.id} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }}/>
+      {activeRing && isTurnToPlay && <div css={isPlaying}>
+        <div css={isTurnToPlay && circle}/>
+      </div>}
+      <h2 css={[nameStyle, data]}>{playerName}</h2>
+      {!allCounter.length && !gameOver &&
+        (
+          <PlayerTimer playerId={player.id} css={[timerStyle, data, rightAlignment]}
+                       customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>
+        )
+      }
 
-    </>
+      {allCounter.length === 1 && (
+        <div css={groupTimerAndCounter}>
+          {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, rightAlignment]}
+                                     customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>}
+          <Counters counters={allCounter} lineSize={countersPerLine}/>
+        </div>
+      )}
+      {allCounter.length > 1 && (
+        <>
+          {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, rightAlignment]}
+                                     customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>}
+          <Counters counters={allCounter} lineSize={countersPerLine}/>
+        </>
+      )}
+    </div>
   )
 }
+
+const noCounterCss = css`
+  min-height: 8.1em;
+`
+
+const groupTimerAndCounter = css`
+  display: flex;
+  flex-direction: row;
+  align-self: flex-end;
+  gap: 0.5em;
+`
 
 const halfOpacityOnPause = (playing: boolean) => !playing && css`
   opacity: 0.8;
-`
-
-const MainIcon: FC<{ player: Player } & MainCounterProps> = (props) => {
-  const { image, value, imageCss } = props
-  if (image === undefined && value === undefined) return null
-  return (
-    <span css={[data, counter, rightAlignment]}>
-      <div css={[mini, mainIconBackground(image), imageCss]}/>
-      <span>{value}</span>
-    </span>
-  )
-}
-
-const mainIconBackground = (image: string) => css`
-  background-image: url(${image});
-  background-repeat: no-repeat;
-  background-size: cover;
 `
 
 const rightAlignment = css`
@@ -77,38 +91,16 @@ const rightAlignment = css`
   right: 0.2em;
   font-size: 2.5em;
 `
-const mini = css`
-  height: 1em;
-  width: 1em;
-  align-self: center;
-  border: 0.01em solid white;
-`
-
-const counter = css`
-  position: absolute;
-  width: 3.5em;
-  font-size: 2.5em;
-  bottom: 0.2em;
-  left: initial;
-  right: 0.25em;
-  display: flex;
-  height: 1.3em;
-  align-items: center;
-  justify-content: space-between;
-
-  > span {
-    text-align: right;
-    width: 1.7em;
-    bottom: 0.2em;
-  }
-`
 
 const panelPlayerStyle = css`
   color: black;
   border-radius: 3em 1.5em 1.5em 1.5em;
   box-shadow: 0 0 0.5em black, 0 0 0.5em black;
   width: 28em;
-  height: 8.3em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  padding: 0.5em;
 `
 
 const avatarStyle = css`
@@ -122,13 +114,10 @@ const avatarStyle = css`
   z-index: 1;
 `
 const nameStyle = css`
-  position: absolute;
-  top: 0.2em;
-  left: initial;
-  right: 0.2em;
+  align-self: end;
   max-width: 7.3em;
-  font-size: 2.4em;
   margin: 0;
+  font-size: 2.4em;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -167,10 +156,7 @@ const data = css`
 `
 
 const timerStyle = css`
-  position: absolute;
-  bottom: 0.2em;
-  left: initial;
-  right: 4.1em;
+  align-self: end;
   font-size: 2.5em;
 `
 
