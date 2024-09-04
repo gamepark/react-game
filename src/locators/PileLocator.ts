@@ -52,18 +52,18 @@ export class PileLocator<P extends number = number, M extends number = number, L
 
   /**
    * Identifier of the pile. By default, distinct location areas (different player, id or parent) forms distinct piles.
-   * @param location Location to position
-   * @param _context Context of the game
+   * @param item Item to position
+   * @param _context Context of the item
    * @returns a unique identifier for the pile of items this location goes to
    */
-  getPileId(location: Location<P, L>, _context: MaterialContext<P, M, L>): string {
-    return [location.player, location.id, location.parent].filter(part => part !== undefined).join('_')
+  getPileId(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string {
+    return [item.location.player, item.location.id, item.location.parent].filter(part => part !== undefined).join('_')
   }
 
-  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
-                         index?: number): Partial<Coordinates> {
-    if (index === undefined) return this.getCoordinates(location, context)
-    const pileId = this.getPileId(location, context)
+  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
+    const location = item.location
+    const index = this.getItemIndex(item, context)
+    const pileId = this.getPileId(item, context)
     if (!this.positions.has(pileId)) this.positions.set(pileId, new Map())
     const pilePositions = this.positions.get(pileId)!
     const radius = this.getRadius(location, context)
@@ -80,13 +80,9 @@ export class PileLocator<P extends number = number, M extends number = number, L
     return pilePositions.get(index)!
   }
 
-  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
-    return this.getLocationCoordinates(item.location, context, this.getItemIndex(item, context))
-  }
-
   getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
     const index = this.getItemIndex(item, context)
-    const pileId = this.getPileId(item.location, context)
+    const pileId = this.getPileId(item, context)
     if (!this.rotations.has(pileId)) this.rotations.set(pileId, new Map())
     const pileRotations = this.rotations.get(pileId)!
     if (!pileRotations.has(index)) {
