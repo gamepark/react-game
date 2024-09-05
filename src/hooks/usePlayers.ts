@@ -10,10 +10,15 @@ type Options = {
   withTimeUpdate?: boolean
 }
 
+
 export const usePlayers = <PlayerId = any>(options?: Options): Player<PlayerId>[] => {
   const now = useNow({ standby: !options?.withTimeUpdate })
   const playerId = usePlayerId<PlayerId>()
-  const rawPlayers = useSelector((state: GamePageState<any, any, PlayerId>) => state.players)
+  const rawPlayers = [...useSelector((state: GamePageState<any, any, PlayerId>) => state.players)]
+  const playerIds = useSelector((state: GamePageState<any, any, PlayerId>) => state.state?.players)
+  if (Array.isArray(playerIds)) {
+    rawPlayers.sort((a, b) => playerIds.indexOf(a.id) - playerIds.indexOf(b.id))
+  }
   const players = useMemo(() => {
     const index = rawPlayers.findIndex(player => player.id === playerId)
     if (!options?.sortFromMe || index < 1) return rawPlayers
