@@ -96,12 +96,16 @@ export class PileLocator<P extends number = number, M extends number = number, L
     const itemDescription = context.material[context.type] ?? new CardDescription()
     const item = context.rules.material(context.type).getItem(context.index)
     const { width, height } = itemDescription.getSize(item.id)
-    const max = Math.max(width, height)
-    const radius = this.getRadius(location, context)
-    return new DropAreaDescription({
-      width: max + (typeof radius === 'number' ? radius * 2 : radius.x * 2),
-      height: max + (typeof radius === 'number' ? radius * 2 : radius.y * 2),
-      borderRadius: max / 2 + (typeof radius === 'number' ? radius : Math.max(radius.x, radius.y))
-    })
+    if (this.getMaxAngle(location, context) < 180) {
+      return new DropAreaDescription(itemDescription)
+    } else {
+      const max = Math.max(width, height)
+      const radius = this.getRadius(location, context)
+      return new DropAreaDescription({
+        width: max + (typeof radius === 'number' ? radius * 2 : radius.x * 2),
+        height: max + (typeof radius === 'number' ? radius * 2 : radius.y * 2),
+        borderRadius: max / 2 + (typeof radius === 'number' ? radius : Math.max(radius.x, radius.y))
+      })
+    }
   }
 }
