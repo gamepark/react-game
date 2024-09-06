@@ -2,10 +2,10 @@
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { GamePageState, Player } from '@gamepark/react-client'
 import { MaterialRules } from '@gamepark/rules-api'
-import { FC, HTMLAttributes, useCallback } from 'react'
+import { FC, HTMLAttributes, RefObject, useCallback, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import { usePlayerName, useRules } from '../../hooks'
-import { Avatar, SpeechBubbleDirection } from '../Avatar'
+import { Avatar, SpeechBubbleDirection, SpeechBubbleProps } from '../Avatar'
 import { MaterialFocus, useFocusContext } from '../material'
 import { blinkOnRunningTimeout, PlayerTimer } from '../PlayerTimer'
 import { Counters } from './Counters'
@@ -35,13 +35,15 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
   const gameOver = useSelector((state: GamePageState) => state.gameOver)
   const rules = useRules<MaterialRules>()
   const isTurnToPlay = rules?.isTurnToPlay(player.id) ?? false
+  const panelRef = useRef<HTMLDivElement>(null)
   const focusPlayer = useCallback(() => {
     if (!playerFocus) return
     setFocus(playerFocus)
   }, [playerFocus])
+
   return (
-    <div css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !allCounter.length && noCounterCss]} onClick={focusPlayer} {...rest}>
-      <Avatar css={avatarStyle} playerId={player.id} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }}/>
+    <div ref={panelRef} css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !allCounter.length && noCounterCss]} onClick={focusPlayer} {...rest}>
+      <Avatar css={avatarStyle} playerId={player.id} speechBubbleProps={getSpeechBubbleDirection(panelRef)}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
         <div css={isTurnToPlay && circle}/>
       </div>}
@@ -69,6 +71,31 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
       )}
     </div>
   )
+}
+
+const getSpeechBubbleDirection = (element: RefObject<HTMLDivElement>): SpeechBubbleProps | undefined => {
+  if (element.current) {
+    const rect = element.current.getBoundingClientRect()
+    const coordinates = {
+      left: rect.left,
+      top: rect.top,
+      right: (window.visualViewport?.width ?? window.innerWidth ?? 0) - rect.right,
+      bottom: (window.visualViewport?.height ?? window.innerHeight ?? 0) - rect.bottom
+    }
+
+    console.warn(coordinates)
+    if (coordinates.left < 100) {
+      if (coordinates.top < 200) return { direction: SpeechBubbleDirection.BOTTOM_RIGHT}
+      if (coordinates.bottom < 100) return { direction: SpeechBubbleDirection.TOP_RIGHT}
+    }
+
+    if (coordinates.right < 100) {
+      if (coordinates.top < 200) return { direction: SpeechBubbleDirection.BOTTOM_LEFT}
+      if (coordinates.bottom < 100) return { direction: SpeechBubbleDirection.TOP_LEFT}
+    }
+  }
+
+  return { direction: SpeechBubbleDirection.BOTTOM_RIGHT}
 }
 
 const noCounterCss = css`

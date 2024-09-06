@@ -21,7 +21,7 @@ export const ChatSpeechBubble = ({ gameId, player, ...props }: Props) => {
   const hideMessage = () => setMessage('')
   useEffect(() => {
     if (message) {
-      const timeout = setTimeout(hideMessage, 3000)
+      const timeout = setTimeout(hideMessage, 5000)
       return () => clearTimeout(timeout)
     }
   }, [message])
@@ -39,5 +39,5 @@ const fadeOut = keyframes`
 `
 
 const chatSpeechBubbleCss = css`
-  animation: 1s ${fadeOut} 2s forwards;
+  animation: 1s ${fadeOut} 4s forwards;
 `
