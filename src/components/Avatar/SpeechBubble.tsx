@@ -35,6 +35,7 @@ const speechBubbleCss = css`
   margin: 0;
   z-index: 500;
   pointer-events: none;
+  filter:drop-shadow(0 0 0.1rem black);
 
   :after {
     content: '';
