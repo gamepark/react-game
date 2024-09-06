@@ -35,13 +35,13 @@ const AvatarSpeechBubble: FC<AvatarSpeechBubbleProps> = (props) => {
   const { playerId, ...speechBubbleProps } = props
   const player = usePlayer(playerId)
   const query = new URLSearchParams(window.location.search)
-  const gameId = query.get('game') ?? "0"
+  const gameId = query.get('game')
 
   return (
     <>
       {speechBubbleProps?.children ?
         <SpeechBubble {...speechBubbleProps}>{speechBubbleProps.children}</SpeechBubble> :
-        player && <ChatSpeechBubble gameId={gameId} player={player} {...speechBubbleProps}/>
+        gameId && player && <ChatSpeechBubble gameId={gameId} player={player} {...speechBubbleProps}/>
       }
     </>
   )

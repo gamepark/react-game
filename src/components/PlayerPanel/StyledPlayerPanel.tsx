@@ -95,7 +95,7 @@ const getSpeechBubbleDirection = (element: RefObject<HTMLDivElement>): SpeechBub
     }
   }
 
-  return
+  return { direction: SpeechBubbleDirection.BOTTOM_RIGHT}
 }
 
 const noCounterCss = css`
