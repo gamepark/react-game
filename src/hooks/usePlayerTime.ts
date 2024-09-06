@@ -12,7 +12,7 @@ export const usePlayerTime = <PlayerId>(playerId: PlayerId) => {
   const running = player?.time?.playing
 
   const getPlayerTime = useCallback(() => {
-    if (!player?.time || player.quit || player.time.availableTime === null) return undefined
+    if (!player?.time || player.quit || player.time.availableTime === null || player.time.availableTime === undefined) return undefined
     if (!player.time.playing) return player.time.availableTime
     return player.time.availableTime + Date.parse(player.time.lastChange) - new Date().getTime() - clientTimeDelta
   }, [player?.time, player?.quit, clientTimeDelta])
