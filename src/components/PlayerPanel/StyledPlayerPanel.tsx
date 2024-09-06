@@ -63,11 +63,11 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
         </div>
       )}
       {allCounter.length > 1 && (
-        <>
+        <div css={groupTimerAndCounters}>
           {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, rightAlignment]}
                                      customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>}
           <Counters counters={allCounter} lineSize={countersPerLine}/>
-        </>
+        </div>
       )}
     </div>
   )
@@ -107,6 +107,14 @@ const groupTimerAndCounter = css`
   flex-direction: row;
   align-self: flex-end;
   gap: 0.5em;
+`
+
+const groupTimerAndCounters = css`
+  min-height: 7.6em;
+  width: 100%; 
+  display: flex;
+  flex-direction: column; 
+  justify-content: flex-end;
 `
 
 const halfOpacityOnPause = (playing: boolean) => !playing && css`
