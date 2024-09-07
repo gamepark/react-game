@@ -83,7 +83,6 @@ const getSpeechBubbleDirection = (element: RefObject<HTMLDivElement>): SpeechBub
       bottom: (window.visualViewport?.height ?? window.innerHeight ?? 0) - rect.bottom
     }
 
-    console.warn(coordinates)
     if (coordinates.left < 100) {
       if (coordinates.top < 200) return { direction: SpeechBubbleDirection.BOTTOM_RIGHT}
       if (coordinates.bottom < 100) return { direction: SpeechBubbleDirection.TOP_RIGHT}
