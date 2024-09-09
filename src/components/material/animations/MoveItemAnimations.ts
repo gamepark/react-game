@@ -5,7 +5,6 @@ import { isEqual } from 'lodash'
 import { ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
-import { isMovedOrDeletedItem } from './isMovedOrDeletedItem.util'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
@@ -31,10 +30,12 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   }
 
   getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
-    if (isMovedOrDeletedItem(context, animation.move)) {
+    const { rules, type, index, locators } = context
+    const item = rules.material(type).getItem(index)
+    const itemLocator = locators[item.location.type]
+    if (itemLocator?.isItemToAnimate(item, context, animation.move)) {
       return this.getMovedItemAnimation(context, animation)
     }
-    const item = context.rules.material(context.type).getItem(context.index)!
     const animatedItemContext = { ...context, type: animation.move.itemType, index: animation.move.itemIndex }
     if (isPlacedOnItem(item, animatedItemContext)) {
       return this.getChildItemAnimation(item, context, animation)
@@ -47,7 +48,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const futureIndex = this.getItemIndexAfterMove(context, animation.move)
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
-    const futureItem = futureRules.material(type).getItem(futureIndex)!
+    const futureItem = futureRules.material(type).getItem(futureIndex)
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const futureContext = { ...context, rules: futureRules, index: futureIndex, displayIndex: futureDisplayIndex }

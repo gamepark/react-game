@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { Coordinates, DisplayedItem, isSameLocationArea, Location, MaterialItem, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
+import { Coordinates, DeleteItem, DisplayedItem, isSameLocationArea, Location, MaterialItem, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import sumBy from 'lodash/sumBy'
 import { DropAreaDescription, LocationDescription, MaterialDescriptionRecord } from '../components'
 
@@ -318,6 +318,30 @@ export class Locator<P extends number = number, M extends number = number, L ext
    */
   getNavigationSorts(_context: ItemContext<P, M, L>): SortFunction[] {
     return this.navigationSorts
+  }
+
+  /**
+   * Utility function for animation to know if the item is one that should be animated.
+   * @param item Item to consider
+   * @param context Context of the Item
+   * @param move Move to animate
+   * @returns true if the items must be animated
+   */
+  isItemToAnimate(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, move: MoveItem<P, M, L> | DeleteItem<M>): boolean {
+    const { rules, type, index, displayIndex } = context
+    if (move.itemType !== type || move.itemIndex !== index) return false
+    const quantity = item.quantity ?? 1
+    const movedQuantity = move.quantity ?? 1
+    if (quantity === movedQuantity) return true
+    // If we move only a part of the quantity, we need to find which displayed items should move
+    const droppedItem = rules.game.droppedItem
+    let itemsNotMoving = this.limit ? Math.min(quantity, this.limit) - movedQuantity : quantity - movedQuantity
+    if (droppedItem?.type === type && droppedItem.index === index) {
+      const droppedIndex = droppedItem.displayIndex
+      if (displayIndex === droppedIndex) return true
+      if (droppedIndex < itemsNotMoving) itemsNotMoving++
+    }
+    return this.getItemIndex(item, context) >= itemsNotMoving
   }
 }
 
