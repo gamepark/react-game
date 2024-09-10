@@ -4,7 +4,6 @@ import { DeleteItem, ItemMove, MoveItem } from '@gamepark/rules-api'
 import { ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
-import { isMovedOrDeletedItem } from './isMovedOrDeletedItem.util'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
@@ -27,7 +26,10 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
   }
 
   getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<DeleteItem<M>>): Interpolation<Theme> {
-    if (!isMovedOrDeletedItem(context, animation.move)) return
+    const { rules, type, index, locators } = context
+    const item = rules.material(type).getItem(index)
+    const itemLocator = locators[item.location.type]
+    if (!itemLocator?.isItemToAnimate(item, context, animation.move)) return
     const stockTransforms = getFirstStockItemTransforms(context)
     if (stockTransforms) {
       const originTransforms = toSingleRotation(transformItem(context))
