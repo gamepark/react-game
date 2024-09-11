@@ -3,7 +3,7 @@ import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import range from 'lodash/range'
 import { backgroundCss, borderRadiusCss, shadowEffect, shineEffect, transformCss } from '../../../css'
-import { ItemContext, MaterialContext } from '../../../locators'
+import { ItemContext } from '../../../locators'
 import { MaterialContentProps } from '../MaterialDescription'
 import { MobileMaterialDescription } from '../MobileMaterialDescription'
 
@@ -13,13 +13,13 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
   ratio = 1
   borderRadius = 0.3
   color = '#000000'
-  abstract images: string[] | Record<any, string>
+  abstract images: string[] | Record<any, string[]>
 
   getImages(): string[] {
-    return Array.isArray(this.images) ? this.images : Object.values(this.images)
+    return Array.isArray(this.images) ? this.images : Object.values(this.images).flat()
   }
 
-  getDiceImages(itemId: ItemId, _context: MaterialContext<P, M, L>) {
+  getDiceImages(itemId: ItemId) {
     return Array.isArray(this.images) ? this.images : this.images[itemId]
   }
 
@@ -41,6 +41,7 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
       background-color: ${this.getColor(itemId)};
       border-radius: ${this.borderRadius / 2}em;
     `
+    const images = this.getDiceImages(itemId)
     return <>
       {range(6).map((_, index) =>
         <div key={index} css={[
@@ -50,7 +51,7 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
             width: ${this.width}em;
             height: ${this.width}em;
           `,
-          backgroundCss(this.images[this.getSideId(index, itemId)]),
+          backgroundCss(images[this.getSideId(index, itemId)]),
           highlight ? shineEffect : playDown && shadowEffect,
           borderRadiusCss(this.borderRadius),
           this.getSideTransform(index)
