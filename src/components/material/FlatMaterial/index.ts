@@ -1,4 +1,5 @@
 export * from './BoardDescription'
 export * from './CardDescription'
 export * from './FlatMaterial'
+export * from './MoneyDescription'
 export * from './TokenDescription'
