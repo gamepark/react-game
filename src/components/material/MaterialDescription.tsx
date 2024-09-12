@@ -11,6 +11,7 @@ import {
   MaterialMove,
   MaterialMoveBuilder
 } from '@gamepark/rules-api'
+import { TFunction } from 'i18next'
 import { ComponentType, FC, HTMLAttributes } from 'react'
 import { ItemContext, MaterialContext } from '../../locators'
 import { ComponentDescription } from './ComponentDescription'
@@ -229,6 +230,11 @@ export abstract class MaterialDescription<P extends number = number, M extends n
       return stockLocation ? [stockLocation] : []
     }
     return []
+  }
+
+  getTooltip(item: MaterialItem<P, L>, t: TFunction, _context: ItemContext<P, M, L>): string | null | undefined {
+    if (item.quantity) return t('quantity.tooltip', { n: item.quantity })
+    return
   }
 }
 
