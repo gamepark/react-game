@@ -1,26 +1,29 @@
 export const toSingleRotation = (transforms: string[]): string[] => {
   const result: string[] = []
   let rotateZ = 0
+  const radTurn = angleUnitValue['rad']
   for (const transform of transforms) {
     const rotateZMatch = transform.match(/rotateZ?\((-?\d+\.?\d*)([^)]*)\)/)
     if (rotateZMatch) {
       rotateZ += convertAngle(parseFloat(rotateZMatch[1]), rotateZMatch[2])
+    } else if (!transform.startsWith('translate')) {
+      const applyRotate = ((rotateZ % radTurn) + radTurn) % radTurn
+      if (applyRotate) result.push(`rotateZ(${applyRotate}rad)`)
+      rotateZ = 0
+      result.push(transform)
+    } else if (Math.abs(rotateZ) % radTurn === 0) {
+      result.push(transform)
     } else {
-      if (Math.abs(rotateZ) % 360 === 0 || !transform.startsWith('translate')) {
-        result.push(transform)
-      } else {
-        const values = getTranslateValues(transform)
-        if (!values) result.push(transform)
-        else {
-          const { x, y, z } = values
-          const cos = Math.cos(rotateZ)
-          const sin = Math.sin(rotateZ)
-          result.push(`translate3d(${cos * x - sin * y}em, ${cos * y + sin * x}em, ${z}em)`)
-        }
+      const values = getTranslateValues(transform)
+      if (!values) result.push(transform)
+      else {
+        const { x, y, z } = values
+        const cos = Math.cos(rotateZ)
+        const sin = Math.sin(rotateZ)
+        result.push(`translate3d(${cos * x - sin * y}em, ${cos * y + sin * x}em, ${z}em)`)
       }
     }
   }
-  const radTurn = 2 * Math.PI
   const finalRotate = ((rotateZ % radTurn) + radTurn) % radTurn
   if (finalRotate) result.push(`rotateZ(${finalRotate}rad)`)
   return result
@@ -57,6 +60,10 @@ const convertAngle = (value: number, unit: string, targetUnit: string = 'rad') =
   unit === targetUnit ? value : value * angleUnitValue[targetUnit] / angleUnitValue[unit]
 
 export const toClosestRotations = (originTransforms: string[], targetTransforms: string[]): void => {
+  //const originInput = JSON.parse(JSON.stringify(originTransforms))
+  //console.log('Origin input:', originInput)
+  //const targetInput = JSON.parse(JSON.stringify(targetTransforms))
+  //console.log('Target input:', targetInput)
   let lastOriginAngle = 0
   let lastTargetAngle = 0
   for (let i = 0; i < Math.max(originTransforms.length, targetTransforms.length); i++) {
@@ -83,4 +90,6 @@ export const toClosestRotations = (originTransforms: string[], targetTransforms:
       }
     }
   }
+  //console.log('Origin output:', isEqual(originInput, originTransforms) ? 'unchanged' : JSON.parse(JSON.stringify(originTransforms)))
+  //console.log('Target output:', isEqual(targetInput, targetTransforms) ? 'unchanged' : JSON.parse(JSON.stringify(targetTransforms)))
 }
