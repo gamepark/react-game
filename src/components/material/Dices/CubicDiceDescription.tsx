@@ -27,10 +27,6 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
     return this.color
   }
 
-  getSideId(index: number, _itemId: ItemId): any {
-    return index
-  }
-
   content = ({ itemId, highlight, playDown }: MaterialContentProps<ItemId>) => {
     const internalMask = css`
       position: absolute;
@@ -51,7 +47,7 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
             width: ${this.width}em;
             height: ${this.width}em;
           `,
-          backgroundCss(images[this.getSideId(index, itemId)]),
+          backgroundCss(images[index]),
           highlight ? shineEffect : playDown && shadowEffect,
           borderRadiusCss(this.borderRadius),
           this.getSideTransform(index)
