@@ -116,12 +116,12 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border }: {
       <span>{playerName}</span>
     </div>
     {gameMode === GameMode.TOURNAMENT &&
-      <div css={[borderLeft, borderTop]}>
+      <div css={[borderLeft, borderTop, centered]}>
         {tournamentPoints !== undefined && <><FontAwesomeIcon icon={faTrophy} css={trophyIcon}/><span>+{tournamentPoints}</span></>}
       </div>
     }
     {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) &&
-      <div css={[borderLeft, borderTop]}>
+      <div css={[borderLeft, borderTop, centered]}>
         <GamePoints playerId={playerId}/>
       </div>
     }
@@ -132,6 +132,12 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border }: {
     ))}
   </>
 }
+
+const centered = css`
+  > * {
+    justify-content: center;
+  }
+`
 
 const style = css`
   font-size: 3.2em;
