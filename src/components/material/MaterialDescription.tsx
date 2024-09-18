@@ -21,8 +21,10 @@ export type MaterialHelpProps<P extends number = number, M extends number = numb
   closeDialog: () => void
 } & Omit<MaterialHelpDisplay<P, M, L>, 'type'>
 
-export type MaterialContentProps<ItemId = any> = {
+export type MaterialContentProps<ItemId = any, M extends number = number> = {
   itemId: ItemId,
+  itemIndex?: number
+  type?: M
   highlight?: boolean
   playDown?: boolean
 } & HTMLAttributes<HTMLElement>

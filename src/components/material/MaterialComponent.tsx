@@ -7,12 +7,13 @@ import { useMaterialDescription } from '../../hooks'
 export type MaterialComponentProps<M extends number = number, ItemId = any> = {
   type: M
   itemId?: ItemId
+  itemIndex?: number
   highlight?: boolean
   playDown?: boolean
 } & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = memo(forwardRef<HTMLDivElement, MaterialComponentProps>((
-  { type, itemId, highlight, playDown, ...props }, ref
+  { type, itemId, itemIndex, highlight, playDown, ...props }, ref
 ) => {
   const description = useMaterialDescription(type)
 
@@ -25,7 +26,7 @@ export const MaterialComponent = memo(forwardRef<HTMLDivElement, MaterialCompone
   return (
     <div ref={ref} css={componentCss} {...props}>
       <div css={hoverWrapper}>
-        {description.content({ itemId, highlight, playDown, ...props })}
+        {description.content({ type, itemId, highlight, playDown, itemIndex, ...props })}
       </div>
     </div>
   )

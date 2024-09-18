@@ -1,16 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
-import { css, Interpolation, Theme } from '@emotion/react'
-import { DisplayedItem, isMoveItemType, isSelectItem, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
+import { css } from '@emotion/react'
+import { DisplayedItem, isMoveItemType, isSelectItem, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import merge from 'lodash/merge'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
-import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
+import { useAnimation, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
+import { useItemAnimation } from '../../hooks/useItemAnimation'
 import { ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
-import { gameContext } from '../GameProvider'
-import { MaterialGameAnimations } from './animations'
 import { ItemDisplay } from './GameTable/ItemDisplay'
 import { MaterialComponentProps } from './MaterialComponent'
 import { isDroppedItem } from './utils/isDroppedItem'
@@ -157,23 +156,4 @@ const useRevealedItem = <P extends number = number, M extends number = number, L
   return useMemo(() =>
       item && typeof animation?.move.reveal === 'object' ? merge(JSON.parse(JSON.stringify(item)), animation.move.reveal) : item
     , [item, animation?.move.reveal])
-}
-
-const useItemAnimation = <P extends number = number, M extends number = number, L extends number = number>(
-  displayedItem: DisplayedItem<M>, dragTransform?: string
-): Interpolation<Theme> => {
-  const { type, index } = displayedItem
-  const context = useMaterialContext<P, M, L>()
-  const animationsConfig = useContext(gameContext).animations as MaterialGameAnimations<P, M, L>
-  const animations = useAnimations<ItemMove<P, M, L>, P>()
-  if (!animations.length) return
-  const item = context.rules.material(type).getItem(index)
-  if (!item || !animationsConfig) return
-  const itemContext: ItemContext<P, M, L> = { ...context, ...displayedItem, dragTransform }
-  for (const animation of animations) {
-    const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
-    const itemAnimation = config.getItemAnimation(itemContext, animation)
-    if (itemAnimation) return itemAnimation
-  }
-  return
 }

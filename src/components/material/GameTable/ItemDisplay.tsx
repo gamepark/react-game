@@ -66,6 +66,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
     hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, animating || !!dragTransform)
   ]} {...props} {...combineEventListeners(listeners, props)}>
     <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
+                       itemIndex={index}
                        type={type} itemId={item.id}
                        highlight={highlight}
                        playDown={playDown ?? (focus?.highlight && !isFocused && !focusedLocations.length)}
