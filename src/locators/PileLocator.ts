@@ -89,7 +89,7 @@ export class PileLocator<P extends number = number, M extends number = number, L
       const maxAngle = this.getMaxAngle(item.location, context)
       pileRotations.set(index, (Math.random() - 0.5) * maxAngle)
     }
-    return pileRotations.get(index) ?? 0
+    return this.getRotateZ(item.location, context) + pileRotations.get(index)!
   }
 
   protected generateLocationDescriptionFromDraggedItem(location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> {
