@@ -166,6 +166,7 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
   const context = useMaterialContext<P, M, L>()
   const animationsConfig = useContext(gameContext).animations as MaterialGameAnimations<P, M, L>
   const animations = useAnimations<ItemMove<P, M, L>, P>()
+  const animationCache = useRef<{ move: MaterialMove<P, M, L>, itemAnimation: Interpolation<Theme> }>()
   if (!animations.length) return
   const item = context.rules.material(type).getItem(index)
   if (!item || !animationsConfig) return
@@ -173,7 +174,13 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
   for (const animation of animations) {
     const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
     const itemAnimation = config.getItemAnimation(itemContext, animation)
-    if (itemAnimation) return itemAnimation
+    if (itemAnimation) {
+      if (animationCache.current?.move !== animation.move) {
+        // Remember current item animation for each move so that it does not restart if the item's origin changes in between
+        animationCache.current = { move: animation.move, itemAnimation }
+      }
+      return animationCache.current.itemAnimation
+    }
   }
-  return
+  delete animationCache.current
 }
