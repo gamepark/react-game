@@ -110,8 +110,9 @@ export class ListLocator<P extends number = number, M extends number = number, L
     const item = context.rules.material(context.type).getItem(context.index)
     if (!item) return
     const { width = 0, height = 0 } = context.material[context.type]?.getSize(item.id) ?? {}
-    const { x, y } = this.getCurrentMaxGap(location, context)
     const borderRadius = context.material[context.type]?.getBorderRadius(item.id) ?? 0
+    if (this.getLocationIndex(location, context) !== undefined) return new DropAreaDescription({ width, height, borderRadius })
+    const { x, y } = this.getCurrentMaxGap(location, context)
     return new DropAreaDescription({
       width: width + Math.abs(x),
       height: height + Math.abs(y),
