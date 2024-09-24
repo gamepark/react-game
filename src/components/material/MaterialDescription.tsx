@@ -121,8 +121,8 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param move The move to consider
    * @param context Context of the item
    */
-  canLongClick(move: MaterialMove<P, M, L>, { type, index }: ItemContext<P, M, L>): boolean {
-    return (isMoveItem(move) || isDeleteItem(move) || isRoll(move)) && move.itemType === type && move.itemIndex === index
+  canLongClick(move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): boolean {
+    return (isMoveItem(move) || isDeleteItem(move) || isRoll(move)) && move.itemType === context.type && move.itemIndex === context.index
   }
 
   /**
@@ -131,8 +131,8 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param move The move to consider
    * @param context Context of the item
    */
-  canShortClick(move: MaterialMove<P, M, L>, { type, index }: ItemContext<P, M, L>): boolean {
-    return isSelectItem(move) && move.itemType === type && move.itemIndex === index
+  canShortClick(move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): boolean {
+    return isSelectItem(move) && move.itemType === context.type && move.itemIndex === context.index
   }
 
   /**
