@@ -21,7 +21,7 @@ export abstract class MaterialTutorial<P extends number = number, M extends numb
   abstract players: Player<P>[]
 
   material(game: MaterialGame<P, M, L>, type: M): Material<P, M, L> {
-    return new Material(type, Array.from((game?.items[type] ?? []).entries()).filter(entry => entry[1].quantity !== 0))
+    return new Material(type, game.items[type])
   }
 
   location(type: L): LocationBuilder<P, L> {
