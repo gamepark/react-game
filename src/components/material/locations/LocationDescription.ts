@@ -12,6 +12,11 @@ import displayLocationHelp = MaterialMoveBuilder.displayLocationHelp
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any>
   extends ComponentDescription<Id> {
 
+  constructor(clone?: Partial<Pick<LocationDescription, 'height' | 'width' | 'ratio' | 'borderRadius' | 'extraCss'>>) {
+    super(clone)
+    this.extraCss = clone?.extraCss
+  }
+
   Component: ElementType = LocationComponent
 
   help?: ComponentType<LocationHelpProps<P, L>>
