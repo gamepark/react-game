@@ -1,6 +1,6 @@
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
 import { CardDescription, DropAreaDescription, LocationDescription } from '../components'
-import { ItemContext, Locator, MaterialContext } from './Locator'
+import { getItemFromContext, ItemContext, Locator, MaterialContext } from './Locator'
 
 /**
  * This Locator places items fan-shaped to mimic the ways we hold cards in our hands.
@@ -151,7 +151,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
 
   protected generateLocationDescriptionFromDraggedItem(_location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> {
     const itemDescription = context.material[context.type] ?? new CardDescription()
-    const item = context.rules.material(context.type).getItem(context.index)
+    const item = getItemFromContext(context)
     const { width, height } = itemDescription.getSize(item.id)
     const borderRadius = itemDescription.getBorderRadius(item.id)
     const max = Math.max(width, height)

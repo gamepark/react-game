@@ -385,6 +385,17 @@ export function isItemContext<P extends number = number, M extends number = numb
 }
 
 /**
+ * Help function to get an item from an ItemContext
+ * @param context Context of the item
+ * @return The item
+ */
+export function getItemFromContext<Id = any, P extends number = number, M extends number = number, L extends number = number>(
+  context: ItemContext<P, M, L>
+): MaterialItem<P, L, Id> {
+  return context.rules.material(context.type).getItem<Id>(context.index)
+}
+
+/**
  * Context of a location in a displayed game.
  * @property canDrop Whether some item is currently being dragged, and can be dropped in the location.
  */

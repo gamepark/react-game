@@ -1,7 +1,7 @@
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
 import { DeleteItem, ItemMove, MoveItem } from '@gamepark/rules-api'
-import { ItemContext } from '../../../locators'
+import { getItemFromContext, ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
 import { ItemAnimations } from './ItemAnimations'
@@ -26,9 +26,8 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
   }
 
   getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<DeleteItem<M>>): Interpolation<Theme> {
-    const { rules, type, index, locators } = context
-    const item = rules.material(type).getItem(index)
-    const itemLocator = locators[item.location.type]
+    const item = getItemFromContext(context)
+    const itemLocator = context.locators[item.location.type]
     if (!itemLocator?.isItemToAnimate(item, context, animation.move)) return
     const stockTransforms = getFirstStockItemTransforms(context)
     if (stockTransforms) {
