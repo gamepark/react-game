@@ -1,4 +1,5 @@
 import { Location, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { uniqWith } from 'lodash'
 import isEqual from 'lodash/isEqual'
 import { useMemo } from 'react'
 import { useFocusContext } from '../components'
@@ -45,20 +46,10 @@ export const useExpectedDropLocations = <P extends number = number, M extends nu
     if (!draggedItem) {
       delete context.expectedDropLocations
     } else if (!context.expectedDropLocations) {
-      const description = context.material[draggedItem.type]
-      const item = context.rules.material(draggedItem.type).getItem(draggedItem.index)!
+      const description = context.material[draggedItem.type]!
       const itemContext = { ...context, ...draggedItem }
-      const locations: Location<P, L>[] = []
-      for (const move of legalMoves) {
-        if (description?.canDrag(move, itemContext)) {
-          for (const dropLocation of description.getDropLocations(item, move, itemContext)) {
-            if (!locations.some(location => isEqual(location, dropLocation))) {
-              locations.push(dropLocation)
-            }
-          }
-        }
-      }
-      context.expectedDropLocations = locations
+      const dragMoves = legalMoves.filter(move => description.canDrag(move, itemContext))
+      context.expectedDropLocations = uniqWith(description.getDropLocations(itemContext, dragMoves), isEqual)
     }
     return (context as any).expectedDropLocations ?? []
   }, [draggedItem])

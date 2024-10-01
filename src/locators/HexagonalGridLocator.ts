@@ -1,5 +1,8 @@
-import { Coordinates, Location, XYCoordinates } from '@gamepark/rules-api'
-import { Locator, MaterialContext } from './Locator'
+import { Coordinates, Location, MoveItem, XYCoordinates } from '@gamepark/rules-api'
+import isEqual from 'lodash/isEqual'
+import omit from 'lodash/omit'
+import uniqWith from 'lodash/uniqWith'
+import { ItemContext, Locator, MaterialContext } from './Locator'
 
 export enum HexagonalGridCoordinatesSystem {
   Cube, OddQ, EvenQ, OddR, EvenR
@@ -51,5 +54,9 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
         throw new Error('EvenR HexagonalGridCoordinatesSystem is not yet implemented')
       }
     }
+  }
+
+  getDropLocations(moves: MoveItem<P, M, L>[], _context: ItemContext<P, M, L>): Location<P, L>[] {
+    return uniqWith(moves.map(move => (omit(move.location, ['x', 'y', 'z', 'rotation']) as Location<P, L>)), isEqual)
   }
 }

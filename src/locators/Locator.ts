@@ -343,6 +343,17 @@ export class Locator<P extends number = number, M extends number = number, L ext
     }
     return this.getItemIndex(item, context) >= itemsNotMoving
   }
+
+  /**
+   * Given an item being dragged, and all the moves for this item going to this location type, this function must return the list of valid drop locations
+   * for the item
+   * @param moves Legal movements for the item
+   * @param _context Context of the item
+   * @return the drop locations to display
+   */
+  getDropLocations(moves: MoveItem<P, M, L>[], _context: ItemContext<P, M, L>): Location<P, L>[] {
+    return moves.map(move => move.location as Location<P, L>)
+  }
 }
 
 /**

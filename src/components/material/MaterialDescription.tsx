@@ -12,8 +12,10 @@ import {
   MaterialMoveBuilder
 } from '@gamepark/rules-api'
 import { TFunction } from 'i18next'
+import groupBy from 'lodash/groupBy'
+import partition from 'lodash/partition'
 import { ComponentType, FC, HTMLAttributes } from 'react'
-import { ItemContext, MaterialContext } from '../../locators'
+import { getItemFromContext, ItemContext, Locator, MaterialContext } from '../../locators'
 import { ComponentDescription } from './ComponentDescription'
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 
@@ -224,11 +226,33 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return []
   }
 
-  getDropLocations(item: MaterialItem<P, L>, move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): Location<P, L>[] {
+  /**
+   * Provide the locations that are required to drop an item given the legal moves that currently allow to drag the item.
+   * @param context Context of the item. Use {@link getItemFromContext} to get the item from it.
+   * @param dragMoves Legal moves filtered to only keep those that allows the item to be dragged
+   * @return All the locations where the item can be dropped
+   */
+  getDropLocations(context: ItemContext<P, M, L>, dragMoves: MaterialMove<P, M, L>[]): Location<P, L>[] {
+    const locations: Location<P, L>[] = []
+    const [itemMoves, otherMoves] = partition(dragMoves, isMoveItem)
+    const itemMovesByType = groupBy(itemMoves, 'location.type')
+    for (const type in itemMovesByType) {
+      const locator: Locator<P, M, L> | undefined = context.locators[type]
+      if (locator) {
+        locations.push(...locator.getDropLocations(itemMovesByType[type], context))
+      } else {
+        locations.push(...itemMovesByType[type].flatMap(move => this.getMoveDropLocations(context, move)))
+      }
+    }
+    locations.push(...otherMoves.flatMap(move => this.getMoveDropLocations(context, move)))
+    return locations
+  }
+
+  getMoveDropLocations(context: ItemContext<P, M, L>, move: MaterialMove<P, M, L>): Location<P, L>[] {
     if (isMoveItem(move) && move.location.type !== undefined) {
       return [move.location as Location<P, L>]
     } else if (isDeleteItem(move)) {
-      const stockLocation = context.material[context.type]?.getStockLocation(item, context)
+      const stockLocation = this.getStockLocation(getItemFromContext(context), context)
       return stockLocation ? [stockLocation] : []
     }
     return []
