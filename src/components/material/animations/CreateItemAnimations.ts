@@ -2,7 +2,7 @@ import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
 import { CreateItem, ItemMove, MaterialRules } from '@gamepark/rules-api'
 import { fadeIn } from '../../../css'
-import { ItemContext } from '../../../locators'
+import { getItemFromContext, ItemContext } from '../../../locators'
 import { getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
 import { ItemAnimations } from './ItemAnimations'
 import { movementAnimationCss } from './itemMovementCss.util'
@@ -45,10 +45,10 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     }
   }
 
-  isItemToAnimate({ rules, type, index, displayIndex }: ItemContext<P, M, L>, animation: Animation<CreateItem<P, M, L>>): boolean {
-    const item = rules.material(type).getItem(index)!
+  isItemToAnimate(context: ItemContext<P, M, L>, animation: Animation<CreateItem<P, M, L>>): boolean {
+    const { type, index, displayIndex } = context
     if (animation.move.itemType !== type || lastCreatedItemsIndexes[JSON.stringify(animation.move)] !== index) return false
-    const quantity = item.quantity ?? 1
+    const quantity = getItemFromContext(context).quantity ?? 1
     const createdQuantity = animation.move.item.quantity ?? 1
     return displayIndex >= quantity - createdQuantity
   }

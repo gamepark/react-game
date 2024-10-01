@@ -1,6 +1,6 @@
 import { Coordinates, Location, MaterialItem, XYCoordinates } from '@gamepark/rules-api'
 import { DropAreaDescription, LocationDescription } from '../components'
-import { ItemContext, Locator, MaterialContext } from './Locator'
+import { getItemFromContext, ItemContext, Locator, MaterialContext } from './Locator'
 
 /**
  * This Locator places items at regular intervals.
@@ -107,8 +107,7 @@ export class ListLocator<P extends number = number, M extends number = number, L
   }
 
   protected generateLocationDescriptionFromDraggedItem(location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
-    const item = context.rules.material(context.type).getItem(context.index)
-    if (!item) return
+    const item = getItemFromContext(context)
     const { width = 0, height = 0 } = context.material[context.type]?.getSize(item.id) ?? {}
     const borderRadius = context.material[context.type]?.getBorderRadius(item.id) ?? 0
     if (this.getLocationIndex(location, context) !== undefined) return new DropAreaDescription({ width, height, borderRadius })

@@ -1,12 +1,11 @@
 import isEqual from 'lodash/isEqual'
-import { ItemContext } from '../../../locators'
+import { getItemFromContext, ItemContext } from '../../../locators'
 
 export const getFirstStockItemTransforms = <P extends number = number, M extends number = number, L extends number = number>(
   context: ItemContext<P, M, L>
 ): string[] => {
-  const { rules, type, index, material } = context
-  const item = rules.material(type).getItem(index)!
-  const description = material[type]
+  const description = context.material[context.type]
+  const item = getItemFromContext(context)
   const stockLocation = description?.getStockLocation(item, context)
   if (!description || !stockLocation) return []
   const stockItem = description?.getStaticItems(context).find(item => isEqual(item.location, stockLocation))

@@ -2,7 +2,7 @@ import { Interpolation, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
 import { MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
 import { isEqual } from 'lodash'
-import { ItemContext } from '../../../locators'
+import { getItemFromContext, ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
 import { ItemAnimations } from './ItemAnimations'
@@ -30,9 +30,8 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
   }
 
   getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
-    const { rules, type, index, locators } = context
-    const item = rules.material(type).getItem(index)
-    const itemLocator = locators[item.location.type]
+    const item = getItemFromContext(context)
+    const itemLocator = context.locators[item.location.type]
     if (itemLocator?.isItemToAnimate(item, context, animation.move)) {
       return this.getMovedItemAnimation(context, animation)
     }
