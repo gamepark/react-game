@@ -182,5 +182,5 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
       return animationCache.current.itemAnimation
     }
   }
-  delete animationCache.current
+  animationCache.current = undefined
 }
