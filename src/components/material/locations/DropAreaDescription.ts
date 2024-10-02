@@ -1,3 +1,4 @@
+import { DragEndEvent } from '@dnd-kit/core'
 import { isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import { ElementType } from 'react'
@@ -14,7 +15,7 @@ export class DropAreaDescription<P extends number = number, M extends number = n
     return this.isMoveToLocation(move, location, context)
   }
 
-  getBestDropMove(moves: MaterialMove<P, M, L>[], location: Location<P, L>, context: ItemContext<P, M, L>): MaterialMove<P, M, L> {
+  getBestDropMove(moves: MaterialMove<P, M, L>[], location: Location<P, L>, context: ItemContext<P, M, L>, _event: DragEndEvent): MaterialMove<P, M, L> {
     const exactMove = moves.find((move) => isMoveItem(move) && isEqual(location, move.location))
     if (exactMove) return exactMove
 
