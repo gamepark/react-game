@@ -15,7 +15,7 @@ import maxBy from 'lodash/maxBy'
 import minBy from 'lodash/minBy'
 import omit from 'lodash/omit'
 import uniqWith from 'lodash/uniqWith'
-import { isPolyhexDescription } from '../components'
+import { DropAreaDescription, HexGridDropAreaDescription, isPolyhexDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
 /**
@@ -184,5 +184,32 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    */
   getDropLocations(moves: MoveItem<P, M, L>[], _context: ItemContext<P, M, L>): Location<P, L>[] {
     return uniqWith(moves.map(move => (omit(move.location, ['x', 'y', 'z', 'rotation']) as Location<P, L>)), isEqual)
+  }
+
+  /**
+   * Generate automatically a {@link HexGridDropAreaDescription} based on the grid boundaries
+   */
+  getLocationDescription(location: Location<P, L>, context: MaterialContext<P, M, L> | ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
+    if (this.locationDescription) return this.locationDescription
+    const { xMin = 0, xMax = 0, yMin = 0, yMax = 0 } = this.getBoundaries(location, context)
+    const borderRadius = this.sizeX / 3
+    switch (this.coordinatesSystem) {
+      case HexagonalGridCoordinatesSystem.Axial: {
+        throw new Error('Axial HexagonalGridCoordinatesSystem is not yet implemented')
+      }
+      case HexagonalGridCoordinatesSystem.OddQ:
+      case HexagonalGridCoordinatesSystem.EvenQ:
+        return new DropAreaDescription({
+          width: (xMax - xMin + 1) * 3 / 2 * this.sizeX,
+          height: (yMax - yMin + 1) * Math.sqrt(3) * this.sizeY,
+          borderRadius
+        })
+      case HexagonalGridCoordinatesSystem.OddR: {
+        throw new Error('OddR HexagonalGridCoordinatesSystem is not yet implemented')
+      }
+      case HexagonalGridCoordinatesSystem.EvenR: {
+        throw new Error('EvenR HexagonalGridCoordinatesSystem is not yet implemented')
+      }
+    }
   }
 }
