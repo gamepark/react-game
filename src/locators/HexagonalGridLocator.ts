@@ -1,7 +1,7 @@
 import {
   Coordinates,
   GridBoundaries,
-  HexagonalGridCoordinatesSystem,
+  HexGridSystem,
   hexFromAxial,
   hexRotate,
   hexToAxial,
@@ -25,7 +25,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
   /**
    * The coordinates system used by the location and items to place
    */
-  abstract coordinatesSystem: HexagonalGridCoordinatesSystem
+  abstract coordinatesSystem: HexGridSystem
 
   /**
    * The size of one hexagon, i.e. the distance between the center of the hexagon and its vertices.
@@ -71,24 +71,24 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
   private getAreaDelta(boundaries: Partial<GridBoundaries>): XYCoordinates {
     const { xMin = 0, xMax = 0, yMin = 0, yMax = 0 } = boundaries
     switch (this.coordinatesSystem) {
-      case HexagonalGridCoordinatesSystem.Axial: {
-        throw new Error('Axial HexagonalGridCoordinatesSystem is not yet implemented')
+      case HexGridSystem.Axial: {
+        throw new Error('Axial HexGridSystem is not yet implemented')
       }
-      case HexagonalGridCoordinatesSystem.OddQ: {
+      case HexGridSystem.OddQ: {
         const deltaX = (xMin + xMax) / 2
         const deltaY = ((xMin !== xMax ? 0.5 : xMin % 2 === 0 ? 0 : 1) + yMin + yMax) / 2
         return { x: deltaX * 3 / 2 * this.sizeX, y: deltaY * Math.sqrt(3) * this.sizeY }
       }
-      case HexagonalGridCoordinatesSystem.EvenQ: {
+      case HexGridSystem.EvenQ: {
         const deltaX = (xMin + xMax) / 2
         const deltaY = ((xMin !== xMax ? -0.5 : xMin % 2 === 0 ? 0 : -1) + yMin + yMax) / 2
         return { x: deltaX * 3 / 2 * this.sizeX, y: deltaY * Math.sqrt(3) * this.sizeY }
       }
-      case HexagonalGridCoordinatesSystem.OddR: {
-        throw new Error('OddR HexagonalGridCoordinatesSystem is not yet implemented')
+      case HexGridSystem.OddR: {
+        throw new Error('OddR HexGridSystem is not yet implemented')
       }
-      case HexagonalGridCoordinatesSystem.EvenR: {
-        throw new Error('EvenR HexagonalGridCoordinatesSystem is not yet implemented')
+      case HexGridSystem.EvenR: {
+        throw new Error('EvenR HexGridSystem is not yet implemented')
       }
     }
   }
@@ -117,28 +117,28 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
     }
     let { x = 0, y = 0 } = location
     switch (this.coordinatesSystem) {
-      case HexagonalGridCoordinatesSystem.Axial: {
-        throw new Error('Axial HexagonalGridCoordinatesSystem is not yet implemented')
+      case HexGridSystem.Axial: {
+        throw new Error('Axial HexGridSystem is not yet implemented')
       }
-      case HexagonalGridCoordinatesSystem.OddQ: {
+      case HexGridSystem.OddQ: {
         if (x % 2 !== 0) y += 0.5
         return {
           x: x * 3 / 2 * this.sizeX,
           y: y * Math.sqrt(3) * this.sizeY
         }
       }
-      case HexagonalGridCoordinatesSystem.EvenQ: {
+      case HexGridSystem.EvenQ: {
         if (x % 2 !== 0) y -= 0.5
         return {
           x: x * 3 / 2 * this.sizeX,
           y: y * Math.sqrt(3) * this.sizeY
         }
       }
-      case HexagonalGridCoordinatesSystem.OddR: {
-        throw new Error('OddR HexagonalGridCoordinatesSystem is not yet implemented')
+      case HexGridSystem.OddR: {
+        throw new Error('OddR HexGridSystem is not yet implemented')
       }
-      case HexagonalGridCoordinatesSystem.EvenR: {
-        throw new Error('EvenR HexagonalGridCoordinatesSystem is not yet implemented')
+      case HexGridSystem.EvenR: {
+        throw new Error('EvenR HexGridSystem is not yet implemented')
       }
     }
   }
@@ -194,21 +194,21 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
     const { xMin = 0, xMax = 0, yMin = 0, yMax = 0 } = this.getBoundaries(location, context)
     const borderRadius = this.sizeX / 3
     switch (this.coordinatesSystem) {
-      case HexagonalGridCoordinatesSystem.Axial: {
-        throw new Error('Axial HexagonalGridCoordinatesSystem is not yet implemented')
+      case HexGridSystem.Axial: {
+        throw new Error('Axial HexGridSystem is not yet implemented')
       }
-      case HexagonalGridCoordinatesSystem.OddQ:
-      case HexagonalGridCoordinatesSystem.EvenQ:
+      case HexGridSystem.OddQ:
+      case HexGridSystem.EvenQ:
         return new HexGridDropAreaDescription({
           width: (xMax - xMin + 1) * 3 / 2 * this.sizeX,
           height: (yMax - yMin + 1) * Math.sqrt(3) * this.sizeY,
           borderRadius
         })
-      case HexagonalGridCoordinatesSystem.OddR: {
-        throw new Error('OddR HexagonalGridCoordinatesSystem is not yet implemented')
+      case HexGridSystem.OddR: {
+        throw new Error('OddR HexGridSystem is not yet implemented')
       }
-      case HexagonalGridCoordinatesSystem.EvenR: {
-        throw new Error('EvenR HexagonalGridCoordinatesSystem is not yet implemented')
+      case HexGridSystem.EvenR: {
+        throw new Error('EvenR HexGridSystem is not yet implemented')
       }
     }
   }
