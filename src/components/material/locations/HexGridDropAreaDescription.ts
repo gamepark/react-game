@@ -1,4 +1,4 @@
-import { DragEndEvent } from '@dnd-kit/core'
+import { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
 import { isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import minBy from 'lodash/minBy'
 import { ElementType } from 'react'
@@ -15,7 +15,7 @@ export class HexGridDropAreaDescription<P extends number = number, M extends num
     return this.isMoveToLocation(move, location, context)
   }
 
-  getBestDropMove(moves: MaterialMove<P, M, L>[], location: Location<P, L>, context: ItemContext<P, M, L>, event: DragEndEvent): MaterialMove<P, M, L> {
+  getBestDropMove(moves: MaterialMove<P, M, L>[], location: Location<P, L>, context: ItemContext<P, M, L>, event: DragMoveEvent | DragEndEvent): MaterialMove<P, M, L> {
     const itemRect = event.active.rect.current.translated
     const dropAreaRect = event.over?.rect
     if (itemRect && dropAreaRect) {

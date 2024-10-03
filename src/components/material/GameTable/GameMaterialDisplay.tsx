@@ -6,6 +6,7 @@ import { useRules } from '../../../hooks'
 import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
 import { MaterialRulesDialog } from '../../dialogs'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
+import { DropPreview } from './DropPreview'
 import { DynamicItemsDisplay } from './DynamicItemsDisplay'
 import { FocusProvider } from './focus'
 import { StaticItemsDisplay } from './StaticItemsDisplay'
@@ -28,6 +29,7 @@ export const GameMaterialDisplay = ({ left, top, children }: GameMaterialDisplay
     <StaticLocationsDisplay css={position}/>
     <StaticItemsDisplay css={position}/>
     <DynamicItemsDisplay css={position}/>
+    <DropPreview css={position}/>
     <MaterialRulesDialog open={!!game?.helpDisplay} close={closeHelpDialog}/>
     {game?.tutorial && <MaterialTutorialDisplay/>}
     {children}

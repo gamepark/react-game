@@ -29,6 +29,7 @@ export type MaterialContentProps<ItemId = any, M extends number = number> = {
   type?: M
   highlight?: boolean
   playDown?: boolean
+  preview?: boolean
 } & HTMLAttributes<HTMLElement>
 
 /**

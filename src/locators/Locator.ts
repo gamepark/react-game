@@ -354,6 +354,21 @@ export class Locator<P extends number = number, M extends number = number, L ext
   getDropLocations(moves: MoveItem<P, M, L>[], _context: ItemContext<P, M, L>): Location<P, L>[] {
     return moves.map(move => move.location as Location<P, L>)
   }
+
+  /**
+   * If set to true, each time an item is dragged over
+   */
+  dropPreview: boolean = false
+
+  /**
+   * If this function returns true, a preview of the dragged item will be displayed when it is over this location.
+   * @param _move The move that will be played if the item is dropped
+   * @param _context Context of the game
+   * @return true if a preview must be displayed
+   */
+  showDropPreview(_move: MoveItem<P, M, L>, _context: MaterialContext<P, M, L>): boolean {
+    return this.dropPreview
+  }
 }
 
 /**

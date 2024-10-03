@@ -186,6 +186,8 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
     return uniqWith(moves.map(move => (omit(move.location, ['x', 'y', 'z', 'rotation']) as Location<P, L>)), isEqual)
   }
 
+  dropPreview = true
+
   /**
    * Generate automatically a {@link HexGridDropAreaDescription} based on the grid boundaries
    */
