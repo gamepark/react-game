@@ -15,7 +15,7 @@ import maxBy from 'lodash/maxBy'
 import minBy from 'lodash/minBy'
 import omit from 'lodash/omit'
 import uniqWith from 'lodash/uniqWith'
-import { DropAreaDescription, HexGridDropAreaDescription, isPolyhexDescription, LocationDescription } from '../components'
+import { HexGridDropAreaDescription, isPolyhexDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
 /**
@@ -199,7 +199,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
       }
       case HexagonalGridCoordinatesSystem.OddQ:
       case HexagonalGridCoordinatesSystem.EvenQ:
-        return new DropAreaDescription({
+        return new HexGridDropAreaDescription({
           width: (xMax - xMin + 1) * 3 / 2 * this.sizeX,
           height: (yMax - yMin + 1) * Math.sqrt(3) * this.sizeY,
           borderRadius

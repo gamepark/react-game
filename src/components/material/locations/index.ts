@@ -1,4 +1,5 @@
 export * from './DropAreaDescription'
+export * from './HexGridDropAreaDescription'
 export * from './LocationDescription'
 export * from './LocationsMask'
 export * from './SimpleDropArea'
