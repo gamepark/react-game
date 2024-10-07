@@ -62,7 +62,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return transform
   }
 
-  content = ({ itemId, highlight, playDown, children }: MaterialContentProps<ItemId>) => {
+  content = ({ itemId, highlight, playDown, preview, children }: MaterialContentProps<ItemId>) => {
     const image = this.getImage(itemId)
     const backImage = this.getBackImage(itemId)
     const size = this.getSize(itemId)
@@ -74,7 +74,8 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         sizeCss(size.width, size.height),
         image && [backgroundCss(image), shadowCss(image)],
         borderRadius && borderRadiusCss(borderRadius),
-        highlight ? shineEffect : (playDown && playDownCss(image))
+        highlight ? shineEffect : (playDown && playDownCss(image)),
+        preview && halfOpacityCss
       ]}>
         {children}
       </div>
@@ -85,7 +86,8 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         backgroundCss(backImage), shadowCss(backImage),
         borderRadius && borderRadiusCss(borderRadius),
         transformCss('rotateY(-180deg)'),
-        highlight ? shineEffect : (playDown && playDownCss(backImage))
+        highlight ? shineEffect : (playDown && playDownCss(backImage)),
+        preview && halfOpacityCss
       ]}/>}
     </>
   }
@@ -125,3 +127,7 @@ const playDownCss = (image?: string) => {
     `
   }
 }
+
+const halfOpacityCss = css`
+  opacity: 0.5;
+`

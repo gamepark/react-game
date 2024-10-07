@@ -2,14 +2,14 @@
 import { CollisionDetection, DndContext, DragEndEvent, getClientRect, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { css, Global } from '@emotion/react'
-import { Location, MaterialMoveBuilder } from '@gamepark/rules-api'
+import { MaterialMoveBuilder } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/zoom-pan-pinch'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
-import { DropAreaDescription } from '../locations'
+import { getBestDropMove } from '../utils/getBestDropMove'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
 import dropItemMove = MaterialMoveBuilder.dropItemMove
 
@@ -54,22 +54,14 @@ export const GameTable: FC<GameTableProps> = (
   const legalMoves = useLegalMoves()
   const onDragEnd = useCallback((event: DragEndEvent) => {
     setDragging(false)
-    if (event.over && dataIsDisplayedItem(event.active.data.current) && dataIsLocation(event.over.data.current)) {
-      const item = event.active.data.current
-      const { type, index, displayIndex } = item
-      const description = context.material[type]
-      const location = event.over.data.current
-      const locator = context.locators[location.type]
-      const itemContext = { ...context, ...item }
-      const locationDescription = locator?.getLocationDescription(location, itemContext) as DropAreaDescription
-      const moves = legalMoves.filter(move =>
-        description?.canDrag(move, itemContext) && locationDescription?.canDrop?.(move, location, itemContext)
-      )
-      if (moves.length > 0) {
-        const move = moves.length === 1 ? moves[0] : locationDescription.getBestDropMove(moves, location, itemContext, event)
+    const move = getBestDropMove(event, context, legalMoves)
+    if (move !== undefined) {
+      if (dataIsDisplayedItem(event.active.data.current)) {
+        const item = event.active.data.current
+        const { type, index, displayIndex } = item
         play(dropItemMove(type, index, displayIndex), { local: true, transient: true })
-        play(move)
       }
+      play(move)
     }
   }, [context, play, legalMoves])
 
@@ -118,10 +110,6 @@ export const GameTable: FC<GameTableProps> = (
       </TransformWrapper>
     </DndContext>
   )
-}
-
-function dataIsLocation<P extends number = number, L extends number = number>(data?: Record<string, any>): data is Location<P, L> {
-  return typeof data?.type === 'number'
 }
 
 const computedWrapperClass = (margin: any, vm: number, hm: number, ratio: number, verticalCenter?: boolean) => css`

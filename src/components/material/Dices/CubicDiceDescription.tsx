@@ -27,7 +27,7 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
     return this.color
   }
 
-  content = ({ itemId, highlight, playDown }: MaterialContentProps<ItemId>) => {
+  content = ({ itemId, highlight, preview, playDown = preview }: MaterialContentProps<ItemId>) => {
     const internalMask = css`
       position: absolute;
       top: 1px;
