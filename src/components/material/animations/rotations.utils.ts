@@ -60,10 +60,6 @@ const convertAngle = (value: number, unit: string, targetUnit: string = 'rad') =
   unit === targetUnit ? value : value * angleUnitValue[targetUnit] / angleUnitValue[unit]
 
 export const toClosestRotations = (originTransforms: string[], targetTransforms: string[]): void => {
-  //const originInput = JSON.parse(JSON.stringify(originTransforms))
-  //console.log('Origin input:', originInput)
-  //const targetInput = JSON.parse(JSON.stringify(targetTransforms))
-  //console.log('Target input:', targetInput)
   let lastOriginAngle = 0
   let lastTargetAngle = 0
   for (let i = 0; i < Math.max(originTransforms.length, targetTransforms.length); i++) {
@@ -90,6 +86,6 @@ export const toClosestRotations = (originTransforms: string[], targetTransforms:
       }
     }
   }
-  //console.log('Origin output:', isEqual(originInput, originTransforms) ? 'unchanged' : JSON.parse(JSON.stringify(originTransforms)))
-  //console.log('Target output:', isEqual(targetInput, targetTransforms) ? 'unchanged' : JSON.parse(JSON.stringify(targetTransforms)))
 }
+
+export const removeRotations = (transforms: string[]): string[] => toSingleRotation(transforms).filter(transform => !transform.startsWith('rotate'))

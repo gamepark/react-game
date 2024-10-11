@@ -1,5 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
+import { faQuestion } from '@fortawesome/free-solid-svg-icons/faQuestion'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   isDeleteItem,
   isMoveItem,
@@ -14,9 +16,11 @@ import {
 import { TFunction } from 'i18next'
 import groupBy from 'lodash/groupBy'
 import partition from 'lodash/partition'
-import { ComponentType, FC, HTMLAttributes } from 'react'
+import { ComponentType, FC, HTMLAttributes, ReactNode } from 'react'
+import { Trans } from 'react-i18next'
 import { getItemFromContext, ItemContext, Locator, MaterialContext } from '../../locators'
 import { ComponentDescription } from './ComponentDescription'
+import { ItemMenuButton } from './ItemMenuButton'
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 
 export type MaterialHelpProps<P extends number = number, M extends number = number, L extends number = number> = {
@@ -262,6 +266,20 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   getTooltip(item: MaterialItem<P, L>, t: TFunction, _context: ItemContext<P, M, L>): string | null | undefined {
     if (item.quantity) return t('quantity.tooltip', { n: item.quantity })
     return
+  }
+
+  getItemMenu(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>, _legalMoves: MaterialMove<P, M, L>[]): ReactNode {
+    return
+  }
+
+  getHelpButton(item: MaterialItem<P, L>, context: ItemContext<P, M, L>) {
+    return <ItemMenuButton
+      label={<Trans defaults="Help"/>}
+      move={this.displayHelp(item, context)}
+      options={{ local: true }}
+      angle={30}>
+      <FontAwesomeIcon icon={faQuestion}/>
+    </ItemMenuButton>
   }
 }
 
