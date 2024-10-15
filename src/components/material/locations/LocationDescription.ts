@@ -5,6 +5,7 @@ import { ComponentType, ElementType } from 'react'
 import { LocationContext, MaterialContext } from '../../../locators'
 import { ComponentDescription, ComponentSize } from '../ComponentDescription'
 import { isLocationSubset } from '../utils'
+import { isRotationMove } from '../utils/isRotationMove'
 import { isWritingDescription } from '../Writing'
 import { LocationComponent } from './LocationComponent'
 import displayLocationHelp = MaterialMoveBuilder.displayLocationHelp
@@ -74,8 +75,7 @@ export class LocationDescription<P extends number = number, M extends number = n
   }
 
   isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
-    return (isMoveItem(move) && isLocationSubset(move.location, location)
-      && !isLocationSubset(context.rules.material(move.itemType).getItem(move.itemIndex)!.location, location)
+    return (isMoveItem(move) && isLocationSubset(move.location, location)  && !isRotationMove(move, context)
     ) || (
       isDeleteItem(move) && isEqual(location, context.material[move.itemType]?.getStockLocation(
         context.rules.material(move.itemType).getItem(move.itemIndex)!, context)
