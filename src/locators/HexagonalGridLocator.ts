@@ -121,14 +121,14 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
         throw new Error('Axial HexGridSystem is not yet implemented')
       }
       case HexGridSystem.OddQ: {
-        if (x % 2 !== 0) y += 0.5
+        y += ((x % 2 + 2) % 2) / 2
         return {
           x: x * 3 / 2 * this.sizeX,
           y: y * Math.sqrt(3) * this.sizeY
         }
       }
       case HexGridSystem.EvenQ: {
-        if (x % 2 !== 0) y -= 0.5
+        y -= ((x % 2 + 2) % 2) / 2
         return {
           x: x * 3 / 2 * this.sizeX,
           y: y * Math.sqrt(3) * this.sizeY
