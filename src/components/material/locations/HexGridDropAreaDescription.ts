@@ -19,14 +19,15 @@ export class HexGridDropAreaDescription<P extends number = number, M extends num
     const itemRect = event.active.rect.current.translated
     const dropAreaRect = event.over?.rect
     if (itemRect && dropAreaRect) {
-      const description = context.material[context.type]!
+      const description = context.locators[location.type]!.getLocationDescription(location, context)!
       const item = getItemFromContext(context)
-      const { width, height } = description.getSize(item.id)
+      const dropAreaWidth = description.getSize(item.id).width
+      const pixelsToEm = dropAreaWidth / dropAreaRect.width // TODO: does not work if drop area is rotated.
       const dropAreaCenter = { x: dropAreaRect.left + dropAreaRect.width / 2, y: dropAreaRect.top + dropAreaRect.height / 2 }
       const itemCenter = { x: itemRect.left + itemRect.width / 2, y: itemRect.top + itemRect.height / 2 }
       const itemDeltaCenter = {
-        x: (itemCenter.x - dropAreaCenter.x) * width / itemRect.width, // Convert pixels to em
-        y: (itemCenter.y - dropAreaCenter.y) * height / itemRect.height // Convert pixels to em
+        x: (itemCenter.x - dropAreaCenter.x) * pixelsToEm,
+        y: (itemCenter.y - dropAreaCenter.y) * pixelsToEm
       }
       const locator = context.locators[location.type]!
       const { x: lx = 0, y: ly = 0 } = locator.getLocationCoordinates(location, context)
@@ -34,8 +35,10 @@ export class HexGridDropAreaDescription<P extends number = number, M extends num
         const bestMove = minBy(moves, move => {
           if (isMoveItem(move) && move.location.type === location.type) {
             const { x = 0, y = 0 } = locator.getItemCoordinates({ ...item, location: move.location as Location<P, L> }, context)
-            return Math.sqrt(Math.pow(x - lx - itemDeltaCenter.x, 2) + Math.pow(y - ly - itemDeltaCenter.y, 2))
-              + Math.abs((Math.abs((move.location.rotation ?? 0) - (item.location.rotation ?? 0)) + 3) % 6 - 3) / 3
+            const distance = Math.sqrt(Math.pow(x - lx - itemDeltaCenter.x, 2) + Math.pow(y - ly - itemDeltaCenter.y, 2))
+            const rotationDistance = Math.abs((Math.abs((move.location.rotation ?? 0) - (item.location.rotation ?? 0)) + 3) % 6 - 3)
+            return distance
+              + rotationDistance / 3
           }
           return Infinity
         })
