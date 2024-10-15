@@ -6,9 +6,10 @@ import partition from 'lodash/partition'
 import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { useDraggedItem, useMaterialContext, usePlay } from '../../../hooks'
+import { useDraggedItem, useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { LocationFocusRef, useExpectedDropLocations, useItemLocations } from '../../../hooks/useItemLocations'
 import { combineEventListeners } from '../../../utilities'
+import { removeRotations } from '../animations/rotations.utils'
 import { ComponentSize } from '../ComponentDescription'
 import { LocationsMask } from '../locations'
 import { MaterialComponent, MaterialComponentProps } from '../MaterialComponent'
@@ -30,6 +31,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   { type, index, displayIndex, item, dragTransform, animating, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
 ) => {
   const context = useMaterialContext()
+  const legalMoves = useLegalMoves()
   const { focus, focusRef } = useFocusContext()
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex, dragTransform }), [context, type, index, displayIndex, dragTransform])
   const locations = useItemLocations(item, itemContext)
@@ -61,22 +63,30 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 
   const canHaveChildren = useMemo(() => Object.values(context.locators).some(locator => locator?.parentItemType === type), [context, type])
 
-  return <div css={[
-    itemCss,
-    hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, animating || !!dragTransform)
-  ]} {...props} {...combineEventListeners(listeners, props)}>
-    <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
-                       itemIndex={index}
-                       type={type} itemId={item.id}
-                       highlight={highlight}
-                       playDown={playDown ?? (focus?.highlight && !isFocused && !focusedLocations.length)}
-                       style={{ transform: transformStyle }}
-                       css={description.getItemExtraCss(item, itemContext)}>
-      {canHaveChildren ? <ItemDropLocations locations={otherLocations} item={item} type={type}/> : <ItemLocations locations={otherLocations}/>}
-      {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations.map(l => l.location)} borderRadius={description.getBorderRadius(item.id)}/>}
-      <ItemLocations locations={focusedLocations}/>
-    </MaterialComponent>
-  </div>
+  const menu = description.getItemMenu(item, itemContext, legalMoves)
+
+  return <>
+    <div css={[
+      itemCss,
+      hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, animating || !!dragTransform)
+    ]} {...props} {...combineEventListeners(listeners, props)}>
+      <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
+                         itemIndex={index}
+                         type={type} itemId={item.id}
+                         highlight={highlight}
+                         playDown={playDown ?? (focus?.highlight && !isFocused && !focusedLocations.length)}
+                         style={{ transform: transformStyle }}
+                         css={description.getItemExtraCss(item, itemContext)}>
+        {canHaveChildren ? <ItemDropLocations locations={otherLocations} item={item} type={type}/> : <ItemLocations locations={otherLocations}/>}
+        {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations.map(l => l.location)} borderRadius={description.getBorderRadius(item.id)}/>}
+        <ItemLocations locations={focusedLocations}/>
+      </MaterialComponent>
+    </div>
+    {menu && <div style={{ position: 'absolute', transform: removeRotations(itemTransform).join(' ') + ' translateZ(15em)' }} {...props}>
+      {menu}
+    </div>
+    }
+  </>
 })
 
 const itemCss = css`
@@ -90,9 +100,9 @@ const hoverCss = (itemTransform: string, itemSize: ComponentSize, hoverTransform
     &:hover > * > * {
       transition: transform 50ms ease-in-out;
       transform: ${disable ? '' : hoverTransform};
-    }  
+    }
   }
-  
+
   > * {
     pointer-events: ${disable ? 'auto' : 'none'};
   }
