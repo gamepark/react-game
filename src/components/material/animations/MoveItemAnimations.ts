@@ -6,7 +6,6 @@ import { getItemFromContext, ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
 import { ItemAnimations } from './ItemAnimations'
-import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { transformItem } from './transformItem.util'
@@ -43,6 +42,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
 
   getMovedItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
     const { type, rules, material, player } = context
+    const description = material[type]
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
     const futureIndex = this.getItemIndexAfterMove(context, animation.move)
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
@@ -52,10 +52,10 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const futureContext = { ...context, rules: futureRules, index: futureIndex, displayIndex: futureDisplayIndex }
     const originTransforms = toSingleRotation(transformItem(context))
-    const targetTransforms = toSingleRotation(material[type]?.getItemTransform(futureItem, futureContext) ?? [])
+    const targetTransforms = toSingleRotation(description?.getItemTransform(futureItem, futureContext) ?? [])
     toClosestRotations(originTransforms, targetTransforms)
     const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
-    return movementAnimationCss(animationKeyframes, animation.duration)
+    return description?.getAnimationCss(animationKeyframes, animation.duration)
   }
 
   getItemIndexAfterMove({ rules }: ItemContext<P, M, L>, move: MoveItem<P, M, L>): number {
@@ -75,14 +75,15 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
 
   getChildItemAnimation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, animation: Animation<MoveItem<P, M, L>>): Interpolation<Theme> {
     const { type, rules, material, player } = context
+    const description = material[type]
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
     const futureContext = { ...context, rules: futureRules }
     const originTransforms = transformItem(context)
-    const targetTransforms = material[type]?.getItemTransform(item, futureContext) ?? []
+    const targetTransforms = description?.getItemTransform(item, futureContext) ?? []
     toClosestRotations(originTransforms, targetTransforms)
     const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
-    return movementAnimationCss(animationKeyframes, animation.duration)
+    return description?.getAnimationCss(animationKeyframes, animation.duration)
   }
 }

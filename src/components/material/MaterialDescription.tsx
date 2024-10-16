@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { Interpolation, Theme } from '@emotion/react'
+import { css, Interpolation, keyframes, Keyframes, Theme } from '@emotion/react'
 import { faQuestion } from '@fortawesome/free-solid-svg-icons/faQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -281,7 +281,26 @@ export abstract class MaterialDescription<P extends number = number, M extends n
       <FontAwesomeIcon icon={faQuestion}/>
     </ItemMenuButton>
   }
+
+  getAnimationCss(keyframes: Keyframes, duration: number): Interpolation<Theme> {
+    return css`
+      animation: ${upAndDown} ${duration}s linear infinite;
+
+      > * {
+        animation: ${keyframes} ${duration}s ease-in-out forwards;
+      }
+    `
+  }
 }
+
+const upAndDown = keyframes`
+  from, to {
+    transform: none;
+  }
+  50% {
+    transform: translateZ(10em);
+  }
+`
 
 export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number> = Record<M, MaterialDescription<P, M, L>>
 

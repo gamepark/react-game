@@ -5,7 +5,6 @@ import { fadeIn } from '../../../css'
 import { getItemFromContext, ItemContext } from '../../../locators'
 import { getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
 import { ItemAnimations } from './ItemAnimations'
-import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { transformItem } from './transformItem.util'
@@ -39,7 +38,8 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
       const targetTransforms = toSingleRotation(transformItem(context))
       toClosestRotations(originTransforms, targetTransforms)
       const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
-      return movementAnimationCss(animationKeyframes, animation.duration)
+      const description = context.material[context.type]
+      return description?.getAnimationCss(animationKeyframes, animation.duration)
     } else {
       return fadeIn(animation.duration)
     }

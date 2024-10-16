@@ -5,7 +5,6 @@ import { getItemFromContext, ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
 import { ItemAnimations } from './ItemAnimations'
-import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { transformItem } from './transformItem.util'
@@ -35,7 +34,8 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
       const targetTransforms = toSingleRotation(stockTransforms)
       toClosestRotations(originTransforms, targetTransforms)
       const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
-      return movementAnimationCss(animationKeyframes, animation.duration)
+      const description = context.material[context.type]
+      return description?.getAnimationCss(animationKeyframes, animation.duration)
     } else {
       const fadeout = keyframes`
         to {
