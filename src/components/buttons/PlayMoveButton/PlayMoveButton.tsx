@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css, ThemeProvider } from '@emotion/react'
 import { PlayOptions } from '@gamepark/react-client'
-import { ButtonHTMLAttributes, FC, useCallback, useEffect, useState } from 'react'
+import { ButtonHTMLAttributes, FC, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { buttonCss } from '../../../css'
 import { usePlay } from '../../../hooks'
@@ -9,8 +9,8 @@ import { Dialog } from '../../dialogs'
 import { ThemeButton } from '../ThemeButton'
 
 export type PlayMoveButtonConfirmation = {
-  text?: string
-  cancelText?: string
+  text?: ReactNode
+  cancelText?: ReactNode
 }
 
 export type PlayMoveButtonProps = {
@@ -90,7 +90,10 @@ const buttons = css`
 `
 
 const moveButton = css`
-  text-transform: capitalize;
+  &:first-letter {
+    text-transform: capitalize;
+  }
+
   align-self: flex-end;
 
   > button {
