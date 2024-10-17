@@ -3,7 +3,6 @@ import { Animation } from '@gamepark/react-client'
 import { MaterialItem, MaterialRulesCreator, MoveItemsAtOnce } from '@gamepark/rules-api'
 import { ItemContext } from '../../../locators'
 import { ItemAnimations } from './ItemAnimations'
-import { movementAnimationCss } from './itemMovementCss.util'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { transformItem } from './transformItem.util'
 
@@ -26,6 +25,7 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
 
   getMovedItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>): Interpolation<Theme> {
     const { type, rules, material, player } = context
+    const description = material[type]
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
@@ -33,22 +33,23 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const futureContext = { ...context, rules: futureRules, index: context.index, displayIndex: context.displayIndex }
     const originTransforms = toSingleRotation(transformItem(context))
-    const targetTransforms = toSingleRotation(material[type]?.getItemTransform(futureItem, futureContext) ?? [])
+    const targetTransforms = toSingleRotation(description?.getItemTransform(futureItem, futureContext) ?? [])
     toClosestRotations(originTransforms, targetTransforms)
     const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
-    return movementAnimationCss(animationKeyframes, animation.duration)
+    return description?.getAnimationCss(animationKeyframes, animation.duration)
   }
 
   getChildItemAnimation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>): Interpolation<Theme> {
     const { type, rules, material, player } = context
+    const description = material[type]
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
     const futureContext = { ...context, rules: futureRules }
     const originTransforms = transformItem(context)
-    const targetTransforms = material[type]?.getItemTransform(item, futureContext) ?? []
+    const targetTransforms = description?.getItemTransform(item, futureContext) ?? []
     toClosestRotations(originTransforms, targetTransforms)
     const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
-    return movementAnimationCss(animationKeyframes, animation.duration)
+    return description?.getAnimationCss(animationKeyframes, animation.duration)
   }
 }

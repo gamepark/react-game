@@ -3,7 +3,6 @@ import { Animation } from '@gamepark/react-client'
 import { CreateItem, MaterialRulesCreator, RollItem } from '@gamepark/rules-api'
 import { ItemContext } from '../../../locators'
 import { ItemAnimations } from './ItemAnimations'
-import { movementAnimationCss } from './itemMovementCss.util'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { transformItem } from './transformItem.util'
 
@@ -26,17 +25,18 @@ export class RollItemAnimations<P extends number = number, M extends number = nu
 
   getRolledItemAnimation(context: ItemContext<P, M, L>, animation: Animation<RollItem<P, M, L>>): Interpolation<Theme> {
     const { type, rules, material, player, index } = context
+    const description = material[type]
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.mutator(type).applyMove(animation.move)
     const futureItem = futureRules.material(type).getItem(index)!
     const sourceTransforms = transformItem(context)
-    const futureTransforms = material[type]?.getItemTransform(futureItem, context) ?? []
+    const futureTransforms = description?.getItemTransform(futureItem, context) ?? []
     addMissingOperations(sourceTransforms, futureTransforms)
     const sourceTransform = [...sourceTransforms, 'rotate3d(-1, -1, 0, 0)'].join(' ')
     const futureTransform = [...futureTransforms, 'rotate3d(-1, -1, 0, 1800deg)'].join(' ')
     const animationKeyframes = this.getTransformKeyframes(sourceTransform, futureTransform, animation, context)
-    return movementAnimationCss(animationKeyframes, animation.duration)
+    return description?.getAnimationCss(animationKeyframes, animation.duration)
   }
 }
 

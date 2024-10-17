@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { Interpolation, Theme } from '@emotion/react'
+import { css, Interpolation, Keyframes, Theme } from '@emotion/react'
 import { MaterialContentProps } from '../MaterialDescription'
 import { MobileMaterialDescription } from '../MobileMaterialDescription'
 import { WheelItem } from './WheelItem'
@@ -75,5 +75,13 @@ export class WheelDescription<P extends number = number, M extends number = numb
         {...props}
       />
     )
+  }
+
+  getAnimationCss(keyframes: Keyframes, duration: number): Interpolation<Theme> {
+    return css`
+      > * {
+        animation: ${keyframes} ${duration}s ease-in-out forwards;
+      }
+    `
   }
 }
