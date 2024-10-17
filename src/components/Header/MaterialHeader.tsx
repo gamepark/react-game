@@ -62,7 +62,8 @@ const MaterialHeaderContent = <RulesStep extends number = number>(
       </>}
     </>
   } else {
-    return <>{t(`TODO: header for rule id ${game?.rule?.id}`)}</>
+    console.warn(`Missing header for rule id ${game?.rule?.id}`)
+    return null
   }
 }
 
