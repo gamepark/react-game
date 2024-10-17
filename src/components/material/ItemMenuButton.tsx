@@ -30,6 +30,7 @@ const itemMenuButtonCss = css`
   border-radius: 1em;
   background-color: white;
   color: black;
+  cursor: pointer;
 `
 
 const buttonPositionCss = (angle: number, radius: number) => css`
@@ -42,7 +43,6 @@ const buttonLabelCss = css`
   background: rgba(0, 0, 0, 0.5);
   color: white;
   border-radius: 0.3em;
-  cursor: pointer;
 `
 
 const labelLeft = css`
