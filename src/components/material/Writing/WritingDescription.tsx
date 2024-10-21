@@ -21,8 +21,8 @@ export abstract class WritingDescription<P extends number = number, M extends nu
     return images
   }
 
-  protected getFrontId(itemId: ItemId) {
-    return typeof itemId === 'object' ? (itemId as any).front : itemId as keyof any
+  protected getFrontId(itemId: ItemId): keyof typeof this.images {
+    return (typeof itemId === 'object' ? (itemId as any).front : itemId) as keyof typeof this.images
   }
 
   getFrontContent(_itemId: ItemId): ReactNode | undefined {

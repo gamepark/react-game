@@ -44,7 +44,7 @@ const MaterialHeaderContent = <RulesStep extends number = number>(
   const victoryClaim = useSelector<GamePageState, boolean>(state =>
     state.gameOver === true && state.players.length > 1 && state.players.filter(player => !player.quit).length === 1
   )
-  const RulesStepsHeader = game?.rule ? rulesStepsHeaders[game.rule.id] : undefined
+  const RulesStepsHeader = game?.rule ? rulesStepsHeaders[game.rule.id as RulesStep] as ComponentType : undefined
 
   if (loading || !game) {
     return <>{t('Game loading...')}</>

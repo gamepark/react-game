@@ -11,14 +11,14 @@ export class WheelDescription<P extends number = number, M extends number = numb
   images?: Record<ItemId extends keyof any ? ItemId : never, string>
 
   getImage(itemId: ItemId): string | undefined {
-    return this.images?.[itemId as keyof any] ?? this.image
+    return this.images?.[itemId as keyof typeof this.wheelImage] ?? this.image
   }
 
   wheelImage?: string
   wheelImages?: Record<ItemId extends keyof any ? ItemId : never, string>
 
   getWheelImage(itemId: ItemId): string | undefined {
-    return this.wheelImages?.[itemId as keyof any] ?? this.wheelImage
+    return this.wheelImages?.[itemId as keyof typeof this.wheelImage] ?? this.wheelImage
   }
 
   angle: number = 20

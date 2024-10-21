@@ -30,7 +30,7 @@ export class LocationDescription<P extends number = number, M extends number = n
   images?: Record<Id extends keyof any ? Id : never, string>
 
   getImage(location: Location<P, L>, _context: MaterialContext<P, M, L>): string | undefined {
-    return this.images?.[location.id] ?? this.image
+    return this.images?.[location.id as keyof typeof this.images] ?? this.image
   }
 
   helpImage?: string

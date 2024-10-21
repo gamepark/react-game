@@ -242,7 +242,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     const [itemMoves, otherMoves] = partition(dragMoves, isMoveItem)
     const itemMovesByType = groupBy(itemMoves, 'location.type')
     for (const type in itemMovesByType) {
-      const locator: Locator<P, M, L> | undefined = context.locators[type]
+      const locator: Locator<P, M, L> | undefined = context.locators[parseInt(type) as L]
       if (locator) {
         locations.push(...locator.getDropLocations(itemMovesByType[type], context))
       } else {

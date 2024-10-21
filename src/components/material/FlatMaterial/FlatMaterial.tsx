@@ -13,14 +13,14 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
   images?: Record<ItemId extends keyof any ? ItemId : never, string>
 
   getImage(itemId: ItemId): string | undefined {
-    return this.images?.[this.getFrontId(itemId)] ?? this.image
+    return this.images?.[this.getFrontId(itemId) as keyof typeof this.images] ?? this.image
   }
 
   backImage?: string
   backImages?: Record<ItemId extends keyof any ? ItemId : never, string>
 
   getBackImage(itemId: ItemId): string | undefined {
-    return this.backImages?.[this.getBackId(itemId)] ?? this.backImage
+    return this.backImages?.[this.getBackId(itemId) as keyof typeof this.backImages] ?? this.backImage
   }
 
   getImages(): string[] {

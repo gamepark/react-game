@@ -57,7 +57,7 @@ const angleUnitValue = {
 }
 
 const convertAngle = (value: number, unit: string, targetUnit: string = 'rad') =>
-  unit === targetUnit ? value : value * angleUnitValue[targetUnit] / angleUnitValue[unit]
+  unit === targetUnit ? value : value * angleUnitValue[targetUnit as keyof typeof angleUnitValue] / angleUnitValue[unit as keyof typeof angleUnitValue]
 
 export const toClosestRotations = (originTransforms: string[], targetTransforms: string[]): void => {
   let lastOriginAngle = 0

@@ -23,7 +23,7 @@ export const handleCancelAnimation = (
 
 export function handleSetupAnimation(
   contextInstance: ReactZoomPanPinchContext,
-  animationName: string,
+  animationName: keyof typeof animations,
   animationTime: number,
   callback: (step: number) => void
 ): void {
@@ -68,7 +68,7 @@ export function animate(
   contextInstance: ReactZoomPanPinchContext,
   targetState: StateType,
   animationTime: number,
-  animationName: string
+  animationName: keyof typeof animations
 ): void {
   const isValid = isValidTargetState(targetState)
   if (!contextInstance.mounted || !isValid) return
