@@ -96,4 +96,10 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
         return []
     }
   }
+
+  getHelpDisplayExtraCss(item: Partial<MaterialItem<P, L>>, context: ItemContext<P, M, L>): Interpolation<Theme> {
+    return item.location && [transformCss(...this.getRotations(item as MaterialItem<P, L>, context)), css`
+      margin: ${this.width / 4}em;
+    `]
+  }
 }

@@ -3,7 +3,7 @@ import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
-import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
+import { MaterialContentProps } from '../MaterialDescription'
 import { MobileMaterialDescription } from '../MobileMaterialDescription'
 
 export abstract class FlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
@@ -105,11 +105,10 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     if (!locator || this.isFlippedOnTable(item, context)) return []
     return locator.getHoverTransform(item, context)
   }
-}
 
-export function isFlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
-(description: MaterialDescription<P, M, L, ItemId>): description is FlatMaterialDescription<P, M, L, ItemId> {
-  return typeof (description as FlatMaterialDescription<P, M, L, ItemId>).isFlipped === 'function'
+  getHelpDisplayExtraCss(item: Partial<MaterialItem<P, L>>, context: ItemContext<P, M, L>): Interpolation<Theme> {
+    return this.isFlippedInDialog(item, context) && transformCss('rotateY(180deg)')
+  }
 }
 
 const faceCss = css`

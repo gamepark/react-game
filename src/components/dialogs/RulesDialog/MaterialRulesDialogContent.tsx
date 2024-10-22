@@ -5,12 +5,12 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { isSameLocationArea, MaterialHelpDisplay, MaterialItem, MaterialMoveBuilder, MaterialRules } from '@gamepark/rules-api'
 import { FC, useMemo } from 'react'
-import { fontSizeCss, transformCss } from '../../../css'
+import { fontSizeCss } from '../../../css'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
 import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
 import { useLocators } from '../../../hooks/useLocators'
 import { ItemContext, Locator, SortFunction } from '../../../locators'
-import { isFlatMaterialDescription, MaterialComponent } from '../../material'
+import { MaterialComponent } from '../../material'
 import { LocationDisplay } from '../../material/locations/LocationDisplay'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
@@ -75,7 +75,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
     <div css={[flex, hasNavigation && fullSize]}>
       <MaterialComponent type={helpDisplay.itemType} itemId={item.id} itemIndex={helpDisplay.itemIndex} css={[
         noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-        isFlatMaterialDescription(description) && description.isFlippedInDialog(item, itemContext) && transformCss('rotateY(180deg)')
+        description.getHelpDisplayExtraCss(item, itemContext)
       ]}>
         {locations.map((location) => {
           const locationDescription = context.locators[location.type]?.getLocationDescription(location, context)
