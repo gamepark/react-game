@@ -291,6 +291,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
       }
     `
   }
+
+  getHelpDisplayExtraCss(_item: Partial<MaterialItem<P, L>>, _context: ItemContext<P, M, L>): Interpolation<Theme> {
+    return
+  }
 }
 
 const upAndDown = keyframes`
