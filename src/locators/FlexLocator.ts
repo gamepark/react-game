@@ -94,7 +94,7 @@ export class FlexLocator<P extends number = number, M extends number = number, L
     const { x: mgx, y: mgy } = this.getMaxLineGap(location, context)
     const count = Math.min(this.limit ?? Infinity, super.countItems(location, context))
     const lineSize = this.getLineSize(location, context)
-    const lines = Math.floor(count / lineSize)
+    const lines = Math.ceil(count / lineSize)
     return { x: x + (mgx ?? gx * lines), y: y + (mgy ?? gy * lines) }
   }
 
@@ -105,7 +105,7 @@ export class FlexLocator<P extends number = number, M extends number = number, L
     const itemIndex = index % lineSize
     const lineIndex = Math.floor(index / lineSize)
     const count = this.countItems(location, context)
-    const lines = Math.floor(count / lineSize)
+    const lines = Math.ceil(count / lineSize)
     const { x = 0, y = 0, z = 0 } = super.getLocationCoordinates(location, context, itemIndex)
     const { x: gx = 0, y: gy = 0, z: gz = 0.05 * lineSize } = this.getLineGap(location, context)
     const { x: mgx, y: mgy, z: mgz } = this.getMaxLineGap(location, context)
