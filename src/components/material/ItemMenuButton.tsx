@@ -9,7 +9,7 @@ export type ItemButtonProps = {
   angle: number
   radius?: number
   move: any
-  options: PlayOptions
+  options?: PlayOptions
 }
 
 export const ItemMenuButton = (

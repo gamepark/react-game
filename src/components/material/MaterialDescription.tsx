@@ -3,6 +3,7 @@ import { css, Interpolation, keyframes, Keyframes, Theme } from '@emotion/react'
 import { faQuestion } from '@fortawesome/free-solid-svg-icons/faQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+  DisplayedItem,
   isDeleteItem,
   isMoveItem,
   isRoll,
@@ -20,7 +21,7 @@ import { ComponentType, FC, HTMLAttributes, ReactNode } from 'react'
 import { Trans } from 'react-i18next'
 import { getItemFromContext, ItemContext, Locator, MaterialContext } from '../../locators'
 import { ComponentDescription } from './ComponentDescription'
-import { ItemMenuButton } from './ItemMenuButton'
+import { ItemButtonProps, ItemMenuButton } from './ItemMenuButton'
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 
 export type MaterialHelpProps<P extends number = number, M extends number = number, L extends number = number> = {
@@ -268,16 +269,18 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return
   }
 
+  clickedItem?: DisplayedItem<M>
+
   getItemMenu(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>, _legalMoves: MaterialMove<P, M, L>[]): ReactNode {
     return
   }
 
-  getHelpButton(item: MaterialItem<P, L>, context: ItemContext<P, M, L>) {
+  getHelpButton(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, props: Partial<ItemButtonProps> = {}) {
     return <ItemMenuButton
       label={<Trans defaults="Help"/>}
       move={this.displayHelp(item, context)}
       options={{ local: true }}
-      angle={30}>
+      angle={30} {...props}>
       <FontAwesomeIcon icon={faQuestion}/>
     </ItemMenuButton>
   }
