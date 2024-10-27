@@ -44,18 +44,18 @@ export class Locator<P extends number = number, M extends number = number, L ext
   /**
    * Declare this field if you always need to display one location that does not depend on the context. See {@link getLocations}.
    */
-  location?: Location<P, L>
+  location?: Partial<Location<P, L>>
 
   /**
    * Declare this field if you always need to display some locations that does not depend on the context. See {@link getLocations}.
    */
-  locations: Location<P, L>[] = []
+  locations: Partial<Location<P, L>>[] = []
 
   /**
    * Override this if you need to display some locations on the Game Table that depends on the context.
    * By default, return any {@link location} or {@link locations}.
    */
-  getLocations(_context: MaterialContext<P, M, L>): Location<P, L>[] {
+  getLocations(_context: MaterialContext<P, M, L>): Partial<Location<P, L>>[] {
     return this.location ? [this.location] : this.locations
   }
 

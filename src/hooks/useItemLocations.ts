@@ -24,7 +24,7 @@ export function useItemLocations<P extends number = number, M extends number = n
   for (const locationType in locators) {
     const locator = locators[locationType] as Locator<P, M, L>
     if (locator.parentItemType === type) {
-      locations.push(...locator.getLocations(context))
+      locations.push(...locator.getLocations(context).map(location => ({ type: locationType, ...location })))
     }
   }
   const result: LocationFocusRef<P, L>[] = locations.map(location => ({ location }))

@@ -8,10 +8,11 @@ export function useStaticLocations<P extends number = number, M extends number =
   const context = useMaterialContext<P, M, L>()
   const locators = context.locators
   const result: LocationFocusRef<P, L>[] = []
-  for (const locator of Object.values(locators) as Locator<P, M, L>[]) {
+  for (const type in locators) {
+    const locator = locators[type] as Locator<P, M, L>
     if (locator.parentItemType === undefined) {
       for (const location of locator.getLocations(context)) {
-        result.push({ location })
+        result.push({ location: { type, ...location } })
       }
     }
   }
