@@ -3,7 +3,7 @@ import { uniqWith } from 'lodash'
 import isEqual from 'lodash/isEqual'
 import { useMemo } from 'react'
 import { useFocusContext } from '../components'
-import { ItemContext, MaterialContext } from '../locators'
+import { ItemContext, Locator, MaterialContext } from '../locators'
 import { useDraggedItem } from './useDraggedItem'
 import { useLegalMoves } from './useLegalMoves'
 import { useMaterialContext } from './useMaterialContext'
@@ -21,6 +21,12 @@ export function useItemLocations<P extends number = number, M extends number = n
   if (!item) return []
 
   const locations = material[type]?.getLocations(item, context) ?? []
+  for (const locationType in locators) {
+    const locator = locators[locationType] as Locator<P, M, L>
+    if (locator.parentItemType === type) {
+      locations.push(...locator.getLocations(context))
+    }
+  }
   const result: LocationFocusRef<P, L>[] = locations.map(location => ({ location }))
 
   const locationsFocus = focus?.locations?.filter(location =>
