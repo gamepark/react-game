@@ -116,11 +116,10 @@ export const DraggableMaterial = <M extends number = number>(
                         !applyTransform && !animating && transformTransition,
                         !disabled && noTouchAction,
                         disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
-                        animationWrapperCss,
-                        animation
+                        animationWrapperCss
                       ]}
                       dragTransform={applyTransform ? transformRef.current : undefined}
-                      animating={animating}
+                      animation={animation}
                       highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
                       {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
                       onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>
