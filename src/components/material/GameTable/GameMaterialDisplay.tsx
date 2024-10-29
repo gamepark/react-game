@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { MaterialRules } from '@gamepark/rules-api'
+import { MaterialMoveBuilder, MaterialRules } from '@gamepark/rules-api'
 import { PropsWithChildren } from 'react'
-import { useRules } from '../../../hooks'
-import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
+import { usePlay, useRules } from '../../../hooks'
 import { MaterialRulesDialog } from '../../dialogs'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { DropPreview } from './DropPreview'
@@ -11,6 +10,7 @@ import { DynamicItemsDisplay } from './DynamicItemsDisplay'
 import { FocusProvider } from './focus'
 import { StaticItemsDisplay } from './StaticItemsDisplay'
 import { StaticLocationsDisplay } from './StaticLocationsDisplay'
+import displayHelp = MaterialMoveBuilder.displayHelp
 
 type GameMaterialDisplayProps = PropsWithChildren<{
   left: number
@@ -19,7 +19,7 @@ type GameMaterialDisplayProps = PropsWithChildren<{
 
 export const GameMaterialDisplay = ({ left, top, children }: GameMaterialDisplayProps) => {
   const rules = useRules<MaterialRules>()
-  const closeHelpDialog = useCloseHelpDialog()
+  const play = usePlay()
 
   if (!rules || !rules.game) return <></>
   const game = rules.game
@@ -30,7 +30,7 @@ export const GameMaterialDisplay = ({ left, top, children }: GameMaterialDisplay
     <StaticItemsDisplay css={position}/>
     <DynamicItemsDisplay css={position}/>
     <DropPreview css={position}/>
-    <MaterialRulesDialog open={!!game?.helpDisplay} close={closeHelpDialog}/>
+    <MaterialRulesDialog open={!!game?.helpDisplay} close={() => play(displayHelp(undefined), { transient: true })}/>
     {game?.tutorial && <MaterialTutorialDisplay/>}
     {children}
   </FocusProvider>
