@@ -7,12 +7,12 @@ import { isSameLocationArea, MaterialHelpDisplay, MaterialItem, MaterialMoveBuil
 import { FC, useMemo } from 'react'
 import { fontSizeCss } from '../../../css'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
-import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
 import { useLocators } from '../../../hooks/useLocators'
 import { ItemContext, Locator, SortFunction } from '../../../locators'
 import { MaterialComponent } from '../../material'
 import { LocationDisplay } from '../../material/locations/LocationDisplay'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
+import displayHelp = MaterialMoveBuilder.displayHelp
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
@@ -60,12 +60,12 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   { helpDisplay }: MaterialRulesDialogContentProps<P, M, L>
 ) => {
   const play = usePlay()
-  const closeHelpDialog = useCloseHelpDialog()
   const context = useMaterialContext<P, M, L>()
   const description = useMaterialDescription<P, M, L>(helpDisplay.itemType)
   const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
   const { previous, next } = useMaterialNavigation<P, M, L>(helpDisplay, itemContext)
-  useKeyDown('Escape', closeHelpDialog)
+  const closeDialog = () => play(displayHelp(undefined), { transient: true })
+  useKeyDown('Escape', closeDialog)
   if (!description) return null
   const item = helpDisplay.item
   const { width, height } = description.getSize(item.id)
@@ -84,11 +84,11 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
         })}
       </MaterialComponent>
       <div css={helpDialogContentCss}>
-        {description.help && <description.help {...helpDisplay} closeDialog={closeHelpDialog}/>}
+        {description.help && <description.help {...helpDisplay} closeDialog={closeDialog}/>}
       </div>
     </div>
-    {previous && <PreviousArrow onPrevious={() => play(previous, { local: true })}/>}
-    {next && <NextArrow onNext={() => play(next, { local: true })}/>}
+    {previous && <PreviousArrow onPrevious={() => play(previous, { transient: true })}/>}
+    {next && <NextArrow onNext={() => play(next, { transient: true })}/>}
   </>
 }
 

@@ -279,7 +279,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return <ItemMenuButton
       label={<Trans defaults="Help"/>}
       move={this.displayHelp(item, context)}
-      options={{ local: true }}
+      options={{ transient: true }}
       angle={30} {...props}>
       <FontAwesomeIcon icon={faQuestion}/>
     </ItemMenuButton>

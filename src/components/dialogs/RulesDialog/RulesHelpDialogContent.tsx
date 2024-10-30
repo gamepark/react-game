@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { RulesHelpDisplay } from '@gamepark/rules-api'
+import { MaterialMoveBuilder, RulesHelpDisplay } from '@gamepark/rules-api'
 import { useContext } from 'react'
-import { useCloseHelpDialog } from '../../../hooks/useCloseHelpDialog'
+import { usePlay } from '../../../hooks'
 import { gameContext } from '../../GameProvider'
+import displayHelp = MaterialMoveBuilder.displayHelp
 
 export type RulesHelpDialogContentProps = {
   helpDisplay: RulesHelpDisplay
@@ -12,13 +13,13 @@ export type RulesHelpDialogContentProps = {
 export const RulesHelpDialogContent = (
   { helpDisplay }: RulesHelpDialogContentProps
 ) => {
-  const closeHelpDialog = useCloseHelpDialog()
+  const play = usePlay()
   const context = useContext(gameContext)
   const RulesHelp = context.rulesHelp?.[helpDisplay.ruleId]
   return <div css={helpDialogCss}>
     <div css={helpDialogContentCss}>
       {RulesHelp ?
-        <RulesHelp close={closeHelpDialog}/>
+        <RulesHelp close={() => play(displayHelp(undefined), { transient: true })}/>
         : <>
           <h2>Missing help</h2>
           <p>Please provide some text to explain rule #{helpDisplay.ruleId}</p>

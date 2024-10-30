@@ -58,7 +58,7 @@ const MaterialHeaderContent = <RulesStep extends number = number>(
     return <>
       <RulesStepsHeader/>
       {context.rulesHelp?.hasOwnProperty(game.rule!.id) && <>
-        &nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => play(displayRulesHelp(game.rule!.id), { local: true })} css={pointerCursorCss}/>
+        &nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => play(displayRulesHelp(game.rule!.id), { transient: true })} css={pointerCursorCss}/>
       </>}
     </>
   } else {

@@ -42,7 +42,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const hoverTransform = useMemo(() => description.getHoverTransform(item, itemContext).join(' '), [description, item, itemContext])
 
   const play = usePlay()
-  const displayHelp = useMemo(() => () => play(description.displayHelp(item, itemContext), { local: true }), [description, item, itemContext])
+  const displayHelp = useMemo(() => () => play(description.displayHelp(item, itemContext), { transient: true }), [description, item, itemContext])
   onLongClick = onLongClick ?? (onShortClick ? displayHelp : undefined)
 
   const lastShortClick = useRef(new Date().getTime())

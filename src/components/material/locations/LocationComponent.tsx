@@ -22,7 +22,7 @@ export const LocationComponent = forwardRef<HTMLDivElement, LocationComponentPro
 
   const displayHelp = useMemo(() => {
     const move = description.displayHelp(location, context)
-    return move && (() => play(move, { local: true }))
+    return move && (() => play(move, { transient: true }))
   }, [location, context])
   onLongClick = onLongClick ?? (onShortClick ? displayHelp : undefined)
   onShortClick = onShortClick ?? displayHelp

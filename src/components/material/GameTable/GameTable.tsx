@@ -59,7 +59,7 @@ export const GameTable: FC<GameTableProps> = (
       if (dataIsDisplayedItem(event.active.data.current)) {
         const item = event.active.data.current
         const { type, index, displayIndex } = item
-        play(dropItemMove(type, index, displayIndex), { local: true, transient: true })
+        play(dropItemMove(type, index, displayIndex), { transient: true })
       }
       play(move)
     }
