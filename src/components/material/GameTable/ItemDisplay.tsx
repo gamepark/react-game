@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
+import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import partition from 'lodash/partition'
@@ -21,14 +21,14 @@ type ItemDisplayProps = MaterialComponentProps & {
   displayIndex: number
   item: MaterialItem
   dragTransform?: string
-  animating?: boolean
+  animation?: Interpolation<Theme>
   isFocused?: boolean
   onShortClick?: () => void
   onLongClick?: () => void
 }
 
 export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
-  { type, index, displayIndex, item, dragTransform, animating, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
+  { type, index, displayIndex, item, dragTransform, animation, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
 ) => {
   const context = useMaterialContext()
   const legalMoves = useLegalMoves()
@@ -67,8 +67,8 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 
   return <>
     <div css={[
-      itemCss,
-      hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, animating || !!dragTransform)
+      itemCss, animation,
+      hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, !!animation || !!dragTransform)
     ]} {...props} {...combineEventListeners(listeners, props)}>
       <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                          itemIndex={index}
