@@ -6,10 +6,9 @@ import partition from 'lodash/partition'
 import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
-import { useDraggedItem, useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
+import { useDraggedItem, useMaterialContext, usePlay } from '../../../hooks'
 import { LocationFocusRef, useExpectedDropLocations, useItemLocations } from '../../../hooks/useItemLocations'
 import { combineEventListeners } from '../../../utilities'
-import { removeRotations } from '../animations/rotations.utils'
 import { ComponentSize } from '../ComponentDescription'
 import { LocationsMask } from '../locations'
 import { MaterialComponent, MaterialComponentProps } from '../MaterialComponent'
@@ -31,7 +30,6 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   { type, index, displayIndex, item, dragTransform, animation, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
 ) => {
   const context = useMaterialContext()
-  const legalMoves = useLegalMoves()
   const { focus, focusRef } = useFocusContext()
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex, dragTransform }), [context, type, index, displayIndex, dragTransform])
   const locations = useItemLocations(item, itemContext)
@@ -63,8 +61,6 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 
   const canHaveChildren = useMemo(() => Object.values(context.locators).some(locator => locator?.parentItemType === type), [context, type])
 
-  const menu = description.getItemMenu(item, itemContext, legalMoves)
-
   return <>
     <div css={[
       itemCss, animation,
@@ -82,10 +78,6 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
         <ItemLocations locations={focusedLocations}/>
       </MaterialComponent>
     </div>
-    {menu && <div style={{ position: 'absolute', transform: removeRotations(itemTransform).join(' ') + ' translateZ(15em)' }} {...props}>
-      {menu}
-    </div>
-    }
   </>
 })
 

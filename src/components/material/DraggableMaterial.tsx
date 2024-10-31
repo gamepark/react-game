@@ -3,16 +3,18 @@ import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd
 import { css, Interpolation, Theme } from '@emotion/react'
 import { DisplayedItem, isMoveItemType, isSelectItem, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import merge from 'lodash/merge'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { HTMLAttributes, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useTransformContext } from 'react-zoom-pan-pinch'
-import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
+import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../../css'
 import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
 import { ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
 import { gameContext } from '../GameProvider'
 import { MaterialGameAnimations } from './animations'
+import { removeRotations } from './animations/rotations.utils'
 import { ItemDisplay } from './GameTable/ItemDisplay'
 import { MaterialComponentProps } from './MaterialComponent'
+import { MaterialDescription } from './MaterialDescription'
 import { isDroppedItem } from './utils/isDroppedItem'
 import { isPlacedOnItem } from './utils/isPlacedOnItem'
 
@@ -35,6 +37,7 @@ export const DraggableMaterial = <M extends number = number>(
   const play = usePlay()
   const legalMoves = useLegalMoves<MaterialMove>()
   const [undo, canUndo] = useUndo()
+  const menu = description.getItemMenu(item, itemContext, legalMoves)
 
   const unselect = useMemo(() => {
     if (item.selected) {
@@ -110,19 +113,24 @@ export const DraggableMaterial = <M extends number = number>(
   }, [])
   useDndMonitor({ onDragStart, onDragEnd, onDragMove })
 
-  return <ItemDisplay ref={setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
-                      isFocused={isFocused}
-                      css={[
-                        !applyTransform && !animating && transformTransition,
-                        !disabled && noTouchAction,
-                        disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
-                        animationWrapperCss
-                      ]}
-                      dragTransform={applyTransform ? transformRef.current : undefined}
-                      animation={animation}
-                      highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
-                      {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
-                      onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>
+  return <>
+    <ItemDisplay ref={setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
+                 isFocused={isFocused}
+                 css={[
+                   !applyTransform && !animating && transformTransition,
+                   !disabled && noTouchAction,
+                   disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
+                   animationWrapperCss
+                 ]}
+                 dragTransform={applyTransform ? transformRef.current : undefined}
+                 animation={animation}
+                 highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
+                 {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
+                 onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>
+    {menu &&
+      <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props}>{menu}</ItemMenuWrapper>
+    }
+  </>
 }
 
 const animationWrapperCss = css`
@@ -140,6 +148,26 @@ const noTouchAction = css`
 const transformTransition = css`
   > * {
     transition: transform 0.2s ease-in-out;
+  }
+`
+
+type ItemMenuWrapperProps = {
+  item: MaterialItem
+  itemContext: ItemContext
+  description: MaterialDescription
+} & HTMLAttributes<HTMLDivElement>
+
+const ItemMenuWrapper = ({ item, itemContext, description, ...props }: ItemMenuWrapperProps) => {
+  const itemTransform = useMemo(() => removeRotations(description.getItemTransform(item, itemContext)), [description, item, itemContext])
+  return <div css={[itemMenuWrapperCss, transformCss(...itemTransform, 'translateZ(15em)')]} {...props}/>
+}
+
+const itemMenuWrapperCss = css`
+  position: absolute;
+  transform-style: preserve-3d;
+
+  > * {
+    position: absolute;
   }
 `
 
