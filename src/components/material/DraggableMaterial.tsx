@@ -29,7 +29,7 @@ export const DraggableMaterial = <M extends number = number>(
 ) => {
 
   const context = useMaterialContext()
-  const { material } = context
+  const { material, rules } = context
   const description = material[type]!
   const item = useRevealedItem(type, index)
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
@@ -38,6 +38,7 @@ export const DraggableMaterial = <M extends number = number>(
   const legalMoves = useLegalMoves<MaterialMove>()
   const [undo, canUndo] = useUndo()
   const menu = description.getItemMenu(item, itemContext, legalMoves)
+  const menuAlwaysVisible = description.isMenuAlwaysVisible(item, itemContext)
 
   const unselect = useMemo(() => {
     if (item.selected) {
@@ -53,6 +54,18 @@ export const DraggableMaterial = <M extends number = number>(
     if (shortClickMove) return () => play(shortClickMove)
     const shortClickLocalMove = description.getShortClickLocalMove(itemContext)
     if (shortClickLocalMove) return () => play(shortClickLocalMove, { local: true })
+    if (menu && !menuAlwaysVisible) {
+      return () => {
+        if (item.selected) {
+          play(rules.material(type).index(index).unselectItem(), { transient: true })
+        } else {
+          play(rules.material(type).index(index).selectItem(), { transient: true })
+          for (const unselectItem of rules.material(type).selected().unselectItems()) {
+            play(unselectItem, { transient: true })
+          }
+        }
+      }
+    }
   }, [itemContext, play, legalMoves])
 
   const onLongClickMove = useMemo(() => {
@@ -60,6 +73,12 @@ export const DraggableMaterial = <M extends number = number>(
     const move = findIfUnique(legalMoves, move => description.canLongClick(move, itemContext))
     if (move !== undefined) return () => play(move)
   }, [itemContext, play, legalMoves])
+
+  useEffect(() => {
+    if (!menu && !menuAlwaysVisible && item.selected) {
+      play(rules.material(type).index(index).unselectItem(), { transient: true })
+    }
+  }, [!menu, menuAlwaysVisible, item.selected])
 
   const disabled = useMemo(() => !legalMoves.some(move => description.canDrag(move, itemContext))
     , [legalMoves, itemContext])
@@ -127,7 +146,7 @@ export const DraggableMaterial = <M extends number = number>(
                  highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
                  {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
                  onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>
-    {menu &&
+    {menu && (menuAlwaysVisible || item.selected) &&
       <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props}>{menu}</ItemMenuWrapper>
     }
   </>

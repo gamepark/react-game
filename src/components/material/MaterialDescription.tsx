@@ -3,7 +3,6 @@ import { css, Interpolation, keyframes, Keyframes, Theme } from '@emotion/react'
 import { faQuestion } from '@fortawesome/free-solid-svg-icons/faQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  DisplayedItem,
   isDeleteItem,
   isMoveItem,
   isRoll,
@@ -269,7 +268,11 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return
   }
 
-  clickedItem?: DisplayedItem<M>
+  menuAlwaysVisible = false
+
+  isMenuAlwaysVisible(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): boolean {
+    return this.menuAlwaysVisible
+  }
 
   getItemMenu(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>, _legalMoves: MaterialMove<P, M, L>[]): ReactNode {
     return
