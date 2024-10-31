@@ -3,25 +3,28 @@ import { css, Interpolation, keyframes, Keyframes, Theme } from '@emotion/react'
 import { faQuestion } from '@fortawesome/free-solid-svg-icons/faQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  DisplayedItem,
   isDeleteItem,
   isMoveItem,
   isRoll,
   isSelectItem,
+  LocalMoveType,
   Location,
   MaterialHelpDisplay,
   MaterialItem,
   MaterialMove,
-  MaterialMoveBuilder
+  MaterialMoveBuilder,
+  MoveKind
 } from '@gamepark/rules-api'
 import { TFunction } from 'i18next'
 import groupBy from 'lodash/groupBy'
 import partition from 'lodash/partition'
-import { ComponentType, FC, HTMLAttributes, ReactNode } from 'react'
+import { ComponentType, FC, HTMLAttributes, ReactNode, useEffect, useMemo } from 'react'
 import { Trans } from 'react-i18next'
+import { useLegalMoves, usePlay, useUndo } from '../../hooks'
 import { getItemFromContext, ItemContext, Locator, MaterialContext } from '../../locators'
+import { findIfUnique } from '../../utilities'
 import { ComponentDescription } from './ComponentDescription'
-import { ItemButtonProps, ItemMenuButton } from './ItemMenuButton'
+import { ItemMenuButton } from './ItemMenuButton'
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 
 export type MaterialHelpProps<P extends number = number, M extends number = number, L extends number = number> = {
@@ -126,6 +129,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   /**
+   * @deprecated Use the Item Menu instead
    * This function determines if a move can be played by clicking for 1 second on an item
    *
    * @param move The move to consider
@@ -136,16 +140,16 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   /**
+   * @deprecated Override getClickMoves instead
    * This function determines if a move can be played by clicking on an item
    *
    * @param move The move to consider
    * @param context Context of the item
    */
-  canShortClick(move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): boolean {
-    return isSelectItem(move) && move.itemType === context.type && move.itemIndex === context.index
-  }
+  canShortClick?(move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): boolean
 
   /**
+   * @deprecated Override useOnClick instead or use the Item Menu
    * This function returns the move that should be played when clicking on an item, if any
    *
    * @param _context Context of the item
@@ -155,12 +159,67 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   /**
+   * @deprecated Override useOnClick instead or use the Item Menu
    * This function returns the local move that should be played when clicking on an item, if any
    *
    * @param _context Context of the item
    */
   getShortClickLocalMove(_context: ItemContext<P, M, L>): MaterialMove<P, M, L> | undefined {
     return undefined
+  }
+
+  /**
+   * Return the function that will be executed when an item is clicked.
+   * This is a hook, so you can use hooks inside.
+   *
+   * @param context Context of the item
+   */
+  useOnClick(context: ItemContext<P, M, L>): (() => void) | undefined {
+    const play = usePlay()
+    const [undo, canUndo] = useUndo()
+    const legalMoves = useLegalMoves<MaterialMove<P, M, L>>()
+    const { type, index, rules } = context
+    const item = getItemFromContext(context)
+
+    const unselect = useMemo(() => {
+      if (item.selected) {
+        const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
+        if (canUndo(predicate)) return () => undo(predicate)
+      }
+    }, [item, context, canUndo, undo])
+
+    const clickMoves = useMemo(() => this.getClickMoves(item, context, legalMoves), [item, context, legalMoves])
+
+    const canSelectToOpenMenu = useMemo(() => !unselect && clickMoves.length > 1, [unselect, clickMoves])
+
+    useEffect(() => {
+      if (!canSelectToOpenMenu && item.selected) {
+        play(rules.material(type).index(index).unselectItem(), { transient: true })
+      }
+    }, [canSelectToOpenMenu])
+
+    return useMemo(() => {
+      if (clickMoves.length === 1) return () => play(clickMoves[0])
+      if (unselect) return unselect
+      const move = findIfUnique(legalMoves, move => this.canShortClick?.(move, context) ?? false)
+      if (move !== undefined) return () => play(move)
+      const shortClickMove = this.getShortClickMove(context)
+      if (shortClickMove) return () => play(shortClickMove)
+      const shortClickLocalMove = this.getShortClickLocalMove(context)
+      if (shortClickLocalMove) return () => play(shortClickLocalMove, { local: true })
+      if (canSelectToOpenMenu) {
+        return () => {
+          if (item.selected) {
+            play(rules.material(type).index(index).unselectItem(), { transient: true })
+          } else {
+            play(rules.material(type).index(index).selectItem(), { transient: true })
+            for (const unselectItem of rules.material(type).selected().unselectItems()) {
+              play(unselectItem, { transient: true })
+            }
+          }
+        }
+      }
+    }, [context, legalMoves, unselect, canSelectToOpenMenu])
   }
 
   /**
@@ -269,20 +328,50 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return
   }
 
-  clickedItem?: DisplayedItem<M>
-
-  getItemMenu(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>, _legalMoves: MaterialMove<P, M, L>[]): ReactNode {
-    return
+  /**
+   * get the list of moves that can be played using clicks only.
+   * If one move is returned, it will be played when the item is clicked.
+   * If multiple moves are returned, the clicking the item will open the menu, which is generated based on that moves.
+   * @param _item Item concerned
+   * @param context Context of the item
+   * @param legalMoves The current legal moves
+   */
+  getClickMoves(_item: MaterialItem<P, L>, context: ItemContext<P, M, L>, legalMoves: MaterialMove<P, M, L>[]): MaterialMove<P, M, L>[] {
+    return legalMoves.filter(move => isSelectItem(move) && move.itemType === context.type && move.itemIndex === context.index)
   }
 
-  getHelpButton(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, props: Partial<ItemButtonProps> = {}) {
-    return <ItemMenuButton
-      label={<Trans defaults="Help"/>}
-      move={this.displayHelp(item, context)}
-      options={{ transient: true }}
-      angle={30} {...props}>
-      <FontAwesomeIcon icon={faQuestion}/>
-    </ItemMenuButton>
+  /**
+   * Return the menu to display around an item.
+   * @param item Item concerned
+   * @param context Context of the item
+   * @param legalMoves The current legal moves
+   */
+  getItemMenu(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, legalMoves: MaterialMove<P, M, L>[]): ReactNode {
+    const moves = this.getClickMoves(item, context, legalMoves)
+    if (moves.length > 1) {
+      return <>
+        {moves.map(move => {
+          const Button = this.getMenuButton(move, context)
+          return <Button key={JSON.stringify(move)}/>
+        })}
+      </>
+    }
+    return null
+  }
+
+  /**
+   * Return the component that display a menu button to play the given move
+   * @param move Move that will be played on click
+   * @param _context Context of the item
+   */
+  getMenuButton(move: MaterialMove<P, M, L>, _context: ItemContext<P, M, L>): ComponentType {
+    if (move.kind === MoveKind.LocalMove && move.type === LocalMoveType.DisplayHelp) {
+      return () =>
+        <ItemMenuButton label={<Trans defaults="Help"/>} move={move} options={{ transient: true }} angle={30}>
+          <FontAwesomeIcon icon={faQuestion}/>
+        </ItemMenuButton>
+    }
+    return () => null
   }
 
   getAnimationCss(keyframes: Keyframes, duration: number): Interpolation<Theme> {

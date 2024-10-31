@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
-import { DisplayedItem, isMoveItemType, isSelectItem, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
+import { DisplayedItem, isMoveItemType, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import merge from 'lodash/merge'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
-import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
+import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules } from '../../hooks'
 import { ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
 import { gameContext } from '../GameProvider'
@@ -34,26 +34,11 @@ export const DraggableMaterial = <M extends number = number>(
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const play = usePlay()
   const legalMoves = useLegalMoves<MaterialMove>()
-  const [undo, canUndo] = useUndo()
 
-  const unselect = useMemo(() => {
-    if (item.selected) {
-      const predicate = (move: MaterialMove) => isSelectItem(move) && move.itemType === type && move.itemIndex === index && item.selected === (move.quantity ?? true)
-      if (canUndo(predicate)) return () => undo(predicate)
-    }
-  }, [item, itemContext, canUndo, undo])
-
-  const onShortClickMove = useMemo(() => {
-    const move = findIfUnique(legalMoves, move => description.canShortClick(move, itemContext))
-    if (move !== undefined) return () => play(move)
-    const shortClickMove = description.getShortClickMove(itemContext)
-    if (shortClickMove) return () => play(shortClickMove)
-    const shortClickLocalMove = description.getShortClickLocalMove(itemContext)
-    if (shortClickLocalMove) return () => play(shortClickLocalMove, { local: true })
-  }, [itemContext, play, legalMoves])
+  const onClick = description.useOnClick(itemContext)
 
   const onLongClickMove = useMemo(() => {
-    if (unselect || onShortClickMove) return
+    if (onClick) return
     const move = findIfUnique(legalMoves, move => description.canLongClick(move, itemContext))
     if (move !== undefined) return () => play(move)
   }, [itemContext, play, legalMoves])
@@ -120,9 +105,9 @@ export const DraggableMaterial = <M extends number = number>(
                       ]}
                       dragTransform={applyTransform ? transformRef.current : undefined}
                       animation={animation}
-                      highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
+                      highlight={highlight ?? (!draggedItem && (!disabled || onClick !== undefined || onLongClickMove !== undefined))}
                       {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
-                      onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>
+                      onShortClick={onClick} onLongClick={onLongClickMove}/>
 }
 
 const animationWrapperCss = css`
