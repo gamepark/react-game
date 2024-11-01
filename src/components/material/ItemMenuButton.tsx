@@ -5,7 +5,7 @@ import { HTMLAttributes, ReactNode } from 'react'
 import { usePlay } from '../../hooks'
 
 export type ItemButtonProps = {
-  label: ReactNode
+  label?: ReactNode
   angle: number
   radius?: number
   move: any
