@@ -2,24 +2,33 @@
 import { css } from '@emotion/react'
 import { PlayOptions } from '@gamepark/react-client'
 import { HTMLAttributes, ReactNode } from 'react'
+import { transformCss } from '../../css'
 import { usePlay } from '../../hooks'
 
 export type ItemButtonProps = {
-  label?: ReactNode
-  angle: number
-  radius?: number
-  move: any
+  move?: any
   options?: PlayOptions
+  label?: ReactNode
+  labelPosition?: 'left' | 'right'
+  x?: number
+  y?: number
+  angle?: number
+  radius?: number
 }
 
 export const ItemMenuButton = (
-  { label, angle, radius = 3, move, options, children, ...props }: ItemButtonProps & HTMLAttributes<HTMLButtonElement>
+  {
+    move, options, label,
+    angle = 0, radius = 3, x = radius * Math.sin(angle * Math.PI / 180), y = radius * -Math.cos(angle * Math.PI / 180),
+    labelPosition = x > 0 ? 'left' : 'right',
+    children, ...props
+  }: ItemButtonProps & HTMLAttributes<HTMLButtonElement>
 ) => {
   const play = usePlay()
-  return <button css={[itemMenuButtonCss, buttonPositionCss(angle * Math.PI / 180, radius)]}
-                 onClick={() => play(move, options)} {...props}>
+  return <button css={[itemMenuButtonCss, transformCss('translate(-50%, -50%)', `translate(${x}em, ${y}em)`)]}
+                 onClick={() => play(move, options)} disabled={!move} {...props}>
     {children}
-    {label && <span css={[buttonLabelCss, (angle % 360 + 360) % 360 < 180 ? labelLeft : labelRight]}>{label}</span>}
+    {label && <span css={[buttonLabelCss, labelPosition === 'left' ? labelLeft : labelRight]}>{label}</span>}
   </button>
 }
 
@@ -31,10 +40,6 @@ const itemMenuButtonCss = css`
   background-color: white;
   color: black;
   cursor: pointer;
-`
-
-const buttonPositionCss = (angle: number, radius: number) => css`
-  transform: translate(-50%, -50%) translate(${radius * Math.sin(angle)}em, ${radius * -Math.cos(angle)}em);
 `
 
 const buttonLabelCss = css`
