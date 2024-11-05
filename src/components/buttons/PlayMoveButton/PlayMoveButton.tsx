@@ -21,7 +21,7 @@ export type PlayMoveButtonProps = {
 } & PlayOptions & ButtonHTMLAttributes<HTMLButtonElement>
 
 export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
-  const { move, confirmation, delayed, skipAnimation, local, onPlay, auto, ...rest } = props
+  const { move, confirmation, delayed, skipAnimation, local, transient, onPlay, auto, ...rest } = props
   const play = usePlay()
   const { t } = useTranslation()
   const [showDialog, setShowDialog] = useState<boolean>(false)
@@ -38,9 +38,9 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
 
   const doPlay = useCallback(() => {
     setShowDialog(false)
-    play(move, { delayed, skipAnimation, local })
+    play(move, { delayed, skipAnimation, local, transient })
     if (onPlay) onPlay()
-  }, [move, delayed, skipAnimation, local, onPlay])
+  }, [move, delayed, skipAnimation, local, transient, onPlay])
 
   const onClick = useCallback(() => {
     if (confirmation !== undefined) {
