@@ -1,4 +1,5 @@
 import { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
+import { Interpolation, Theme } from '@emotion/react'
 import { isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import minBy from 'lodash/minBy'
 import { ElementType } from 'react'
@@ -48,6 +49,10 @@ export class HexGridDropAreaDescription<P extends number = number, M extends num
       }
     }
     return super.getBestDropMove(moves, location, context, event)
+  }
+
+  get dropHighlight(): Interpolation<Theme> {
+    return
   }
 }
 

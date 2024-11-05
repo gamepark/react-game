@@ -1,4 +1,5 @@
 import { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
+import { css, Interpolation, Theme } from '@emotion/react'
 import { isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import { ElementType } from 'react'
@@ -23,5 +24,11 @@ export class DropAreaDescription<P extends number = number, M extends number = n
       isMoveItem(move) && move.location.rotation === context.rules.material(move.itemType).getItem(move.itemIndex)?.location.rotation
     )
     return moveWithSameRotation ?? moves[0]
+  }
+
+  get dropHighlight(): Interpolation<Theme> {
+    return (theme: Theme) => css`
+      background-color: ${theme.dropArea?.backgroundColor};
+    `
   }
 }

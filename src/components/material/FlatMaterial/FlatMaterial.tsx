@@ -75,7 +75,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         image && [backgroundCss(image), shadowCss(image)],
         borderRadius && borderRadiusCss(borderRadius),
         highlight ? shineEffect : (playDown && playDownCss(image)),
-        preview && halfOpacityCss
+        preview && previewCss
       ]}>
         {children}
       </div>
@@ -87,7 +87,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         borderRadius && borderRadiusCss(borderRadius),
         transformCss('rotateY(-180deg)'),
         highlight ? shineEffect : (playDown && playDownCss(backImage)),
-        preview && halfOpacityCss
+        preview && previewCss
       ]}/>}
     </>
   }
@@ -127,6 +127,6 @@ const playDownCss = (image?: string) => {
   }
 }
 
-const halfOpacityCss = css`
-  opacity: 0.5;
+const previewCss = css`
+  opacity: 0.7;
 `

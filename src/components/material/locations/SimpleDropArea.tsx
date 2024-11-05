@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { useDroppable } from '@dnd-kit/core'
-import { css, Theme } from '@emotion/react'
 import { GamePageState } from '@gamepark/react-client'
 import { Location, MaterialMove } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, useMemo } from 'react'
@@ -74,12 +73,8 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     <LocationComponent ref={mergeRefs([ref, setNodeRef])} location={location} description={description} canDrop={canDrop}
                        onShortClick={onShortClick} onLongClick={onLongClick}
                        highlight={(canDrop && !isOver) || (!draggedItem && canClickToMove && !isAnimatingPlayerAction)}
-                       css={canDrop && isOver && dropHighlight} {...props}/>
+                       css={canDrop && isOver && description.dropHighlight} {...props}/>
   )
 })
 
 SimpleDropArea.displayName = 'SimpleDropArea'
-
-const dropHighlight = (theme: Theme) => css`
-  background-color: ${theme.dropArea?.backgroundColor};
-`
