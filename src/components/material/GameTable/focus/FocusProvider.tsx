@@ -1,11 +1,13 @@
 /** @jsxImportSource @emotion/react */
+import { MaterialItem } from '@gamepark/rules-api'
+import { flatten, values } from 'lodash'
 import sumBy from 'lodash/sumBy'
 import { createContext, FC, useCallback, useContext, useRef, useState } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
 import { useZoomToElements } from '../../../../hooks'
 import { useLocators } from '../../../../hooks/useLocators'
 import { ItemLocatorRecord } from '../../../../locators'
-import { MaterialFocus } from './MaterialFocus'
+import { MaterialFocus, StaticItem } from './MaterialFocus'
 
 export type FocusContextType<P extends number = number, M extends number = number, L extends number = number> = {
   focus?: MaterialFocus<P, M, L>
@@ -68,8 +70,16 @@ function countFocusRefs(focus?: MaterialFocus, locators?: Partial<ItemLocatorRec
         Math.min(item.quantity ?? 1, locators?.[item.location.type]?.limit ?? Infinity)
       )
     )
-    + sumBy(focus.staticItems, ({ item }) =>
+    + sumBy(getStaticItems(focus.staticItems), item =>
       Math.min(item.quantity ?? 1, locators?.[item.location.type]?.limit ?? Infinity)
     )
     + focus.locations.length
+}
+
+function getStaticItems(staticItems: StaticItem[] | Partial<Record<number, MaterialItem[]>>): MaterialItem[] {
+  if (Array.isArray(staticItems)) {
+    return staticItems.map(s => s.item)
+  } else {
+    return flatten(values(staticItems).map(value => value ?? []))
+  }
 }
