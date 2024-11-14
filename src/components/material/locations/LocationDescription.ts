@@ -6,7 +6,6 @@ import { LocationContext, MaterialContext } from '../../../locators'
 import { ComponentDescription, ComponentSize } from '../ComponentDescription'
 import { isLocationSubset } from '../utils'
 import { isRotationMove } from '../utils/isRotationMove'
-import { isWritingDescription } from '../Writing'
 import { LocationComponent } from './LocationComponent'
 import displayLocationHelp = MaterialMoveBuilder.displayLocationHelp
 
@@ -68,14 +67,17 @@ export class LocationDescription<P extends number = number, M extends number = n
     return this.isMoveToLocation(move, location, context)
   }
 
+  placeOnShortClick: boolean = false
+
   canShortClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
-    return isCreateItem(move)
-      && isLocationSubset(move.item.location, location)
-      && context.material[move.itemType] && isWritingDescription(context.material[move.itemType]!)
+    return this.placeOnShortClick && (
+      this.isMoveToLocation(move, location, context)
+      || (isCreateItem(move) && isLocationSubset(move.item.location, location))
+    )
   }
 
   isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
-    return (isMoveItem(move) && isLocationSubset(move.location, location)  && !isRotationMove(move, context)
+    return (isMoveItem(move) && isLocationSubset(move.location, location) && !isRotationMove(move, context)
     ) || (
       isDeleteItem(move) && isEqual(location, context.material[move.itemType]?.getStockLocation(
         context.rules.material(move.itemType).getItem(move.itemIndex)!, context)
