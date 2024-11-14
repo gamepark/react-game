@@ -16,7 +16,7 @@ export type LocationFocusRef<P extends number = number, L extends number = numbe
 export function useItemLocations<P extends number = number, M extends number = number, L extends number = number>(
   item: MaterialItem<P, L>, context: ItemContext<P, M, L>
 ): LocationFocusRef<P, L>[] {
-  const { index, type, locators, material } = context
+  const { type, locators, material } = context
   const { focus, focusRef } = useFocusContext<P, M, L>()
   if (!item) return []
 
@@ -29,8 +29,10 @@ export function useItemLocations<P extends number = number, M extends number = n
   }
   const result: LocationFocusRef<P, L>[] = locations.map(location => ({ location }))
 
-  const locationsFocus = focus?.locations?.filter(location =>
-    locators[location.type]?.parentItemType === type && (location.parent ?? 0) === index
+  const locationsFocus = focus?.locations?.filter(location => {
+    const locator = locators[location.type]
+    return locator?.parentItemType === type && isEqual(locator.getParentItem(location, context), item)
+    }
   ) ?? []
   for (const location of locationsFocus) {
     const index = result.findIndex(r => isEqual(r.location, location))
