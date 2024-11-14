@@ -2,7 +2,7 @@ import { Location, Material, MaterialItem } from '@gamepark/rules-api'
 
 export type MaterialFocus<P extends number = number, M extends number = number, L extends number = number> = {
   materials: Material<P, M, L>[]
-  staticItems: StaticItem<P, M, L>[]
+  staticItems: StaticItem<P, M, L>[] | Partial<Record<M, MaterialItem<P, L>[]>>
   locations: Location<P, L>[]
   margin?: Margin
   scale?: number
