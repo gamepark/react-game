@@ -6,14 +6,14 @@ import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { playTutorialMovesAction } from '@gamepark/react-client'
-import { isCloseTutorialPopup, isSetTutorialStep, MaterialGame, SetTutorialStep } from '@gamepark/rules-api'
+import { isCloseTutorialPopup, isSetTutorialStep, SetTutorialStep } from '@gamepark/rules-api'
 import maxBy from 'lodash/maxBy'
 import minBy from 'lodash/minBy'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 import { buttonCss, transformCss } from '../../css'
-import { useGame, useLegalMove, useLegalMoves, useUndo } from '../../hooks'
+import { useLegalMove, useLegalMoves, useMaterialContext, useUndo } from '../../hooks'
 import { useTutorialStep } from '../../hooks/useTutorialStep'
 import { PlayMoveButton, ThemeButton } from '../buttons'
 import { Dialog } from '../dialogs'
@@ -21,7 +21,8 @@ import { useFocusContext } from '../material'
 
 export const MaterialTutorialDisplay = () => {
   const { t } = useTranslation()
-  const game = useGame<MaterialGame>()
+  const context = useMaterialContext()
+  const game = context.rules.game
   const tutorialStep = useTutorialStep()
   const tutorialMoves = useLegalMoves<SetTutorialStep>(isSetTutorialStep)
   const closeTutorialPopup = useLegalMove(isCloseTutorialPopup)
@@ -44,7 +45,7 @@ export const MaterialTutorialDisplay = () => {
   useEffect(() => {
     if (game && !game.tutorial?.popupClosed) {
       if (tutorialStep?.focus) {
-        setFocus({ materials: [], staticItems: [], locations: [], highlight: true, ...tutorialStep.focus(game) })
+        setFocus({ materials: [], staticItems: [], locations: [], highlight: true, ...tutorialStep.focus(game, context) })
       } else {
         setFocus(undefined)
       }

@@ -11,6 +11,7 @@ import {
 } from '@gamepark/rules-api'
 import { TFunction } from 'i18next'
 import { ReactNode } from 'react'
+import { MaterialContext } from '../../locators'
 import { MaterialFocus } from '../material'
 
 export abstract class MaterialTutorial<P extends number = number, M extends number = number, L extends number = number>
@@ -53,7 +54,7 @@ export type TutorialStepBase = { zoom?: number }
 
 export type TutorialStep<P extends number = number, M extends number = number, L extends number = number> = {
   popup?: TutorialPopup
-  focus?: (game: MaterialGame<P, M, L>) => Partial<MaterialFocus<P, M, L>>
+  focus?: (game: MaterialGame<P, M, L>, context: MaterialContext<P, M, L>) => Partial<MaterialFocus<P, M, L>>
   move?: {
     player?: P
     filter?: (move: MaterialMove<P, M, L>, game: MaterialGame<P, M, L>) => boolean
