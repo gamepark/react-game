@@ -37,6 +37,7 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
   }, [disabled])
 
   const doPlay = useCallback(() => {
+    setCountdown(undefined)
     setShowDialog(false)
     play(move, { delayed, skipAnimation, local, transient })
     if (onPlay) onPlay()
@@ -58,7 +59,7 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
     }
   }, [auto])
   useEffect(() => {
-    if (countdown === 0) play(move)
+    if (countdown === 0) doPlay()
   }, [countdown, move])
 
   return (
