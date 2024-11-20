@@ -51,7 +51,11 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
     }
   }, [confirmation !== undefined, doPlay, displayedLongEnough])
 
-  const [countdown, setCountdown] = useState(auto)
+  const [countdown, setCountdown] = useState<number | undefined>(undefined)
+  useEffect(() => {
+    if (move === undefined) setCountdown(undefined)
+    else setCountdown(auto)
+  }, [move])
   useEffect(() => {
     if (auto) {
       const interval = setInterval(() => setCountdown(countdown => countdown && countdown > 0 ? countdown - 1 : countdown), 1000)
