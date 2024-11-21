@@ -50,14 +50,14 @@ const buttonLabelCss = css`
   border-radius: 0.3em;
 `
 
-const labelLeft = css`
+const labelRight = css`
   padding: 0 0.2em 0 0.5em;
   top: 50%;
   right: 0.2em;
   transform: translate(100%, -50%) translateZ(-0.1em);
 `
 
-const labelRight = css`
+const labelLeft = css`
   padding: 0 0.5em 0 0.2em;
   top: 50%;
   left: 0.2em;
