@@ -78,7 +78,7 @@ export const DraggableMaterial = <M extends number = number>(
     if (!menu && !menuAlwaysVisible && item.selected) {
       play(rules.material(type).index(index).unselectItem(), { transient: true })
     }
-  }, [!menu, menuAlwaysVisible, item.selected])
+  }, [!menu])
 
   const disabled = useMemo(() => !legalMoves.some(move => description.canDrag(move, itemContext))
     , [legalMoves, itemContext])
