@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
-import { MaterialItem } from '@gamepark/rules-api'
+import { MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import { pointerCursorCss } from '../../../css'
-import { useMaterialContext } from '../../../hooks'
+import { useLegalMoves, useMaterialContext } from '../../../hooks'
+import { ItemMenuWrapper } from '../ItemMenuWrapper'
 import { MaterialDescription } from '../MaterialDescription'
 import { StaticItem, useFocusContext } from './focus'
 import { ItemDisplay } from './ItemDisplay'
@@ -23,19 +24,35 @@ type StaticItemsTypeDisplayProps = {
   css?: Interpolation<Theme>
 }
 
-const StaticItemsTypeDisplay = ({ type, description, ...props }: StaticItemsTypeDisplayProps) => {
+const StaticItemsTypeDisplay = ({ description, ...props }: StaticItemsTypeDisplayProps) => {
+  const context = useMaterialContext()
+  return <>{description.getStaticItems(context).map((item, index) => {
+    return [...Array(item.quantity ?? 1)].map((_, displayIndex) =>
+      <StaticItemDisplay key={`${index}_${displayIndex}`} description={description} index={index} displayIndex={displayIndex} item={item} {...props}/>
+    )
+  })}</>
+}
+
+type StaticItemDisplay = StaticItemsTypeDisplayProps & {
+  index: number
+  displayIndex: number
+  item: MaterialItem
+}
+
+const StaticItemDisplay = ({ type, description, index, displayIndex, item, ...props }: StaticItemDisplay) => {
   const context = useMaterialContext()
   const { focus } = useFocusContext()
-  return <>{description.getStaticItems(context).map((item, index) => {
-    return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
-      const isFocused = focus && getStaticItemsOfType(focus.staticItems, type).some(focusedItem => isEqual(focusedItem, item))
-      return <ItemDisplay key={`${type}_${index}_${displayIndex}`}
-                          type={type} index={index} displayIndex={displayIndex} item={item}
-                          isFocused={isFocused} highlight={description.highlight(item, { ...context, type, index, displayIndex })}
-                          css={pointerCursorCss}
-                          {...props}/>
-    })
-  })}</>
+  const isFocused = focus && getStaticItemsOfType(focus.staticItems, type).some(focusedItem => isEqual(focusedItem, item))
+  const legalMoves = useLegalMoves<MaterialMove>()
+  const itemContext = { ...context, type, index, displayIndex }
+  const menu = description.getItemMenu(item, itemContext, legalMoves)
+  return <>
+    <ItemDisplay type={type} index={index} displayIndex={displayIndex} item={item}
+                 isFocused={isFocused} highlight={description.highlight(item, itemContext)}
+                 css={pointerCursorCss}
+                 {...props}/>
+    {menu && <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props}>{menu}</ItemMenuWrapper>}
+  </>
 }
 
 function getStaticItemsOfType<P extends number = number, M extends number = number, L extends number = number>(

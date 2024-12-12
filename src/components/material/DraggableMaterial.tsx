@@ -3,18 +3,17 @@ import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd
 import { css, Interpolation, Theme } from '@emotion/react'
 import { DisplayedItem, isMoveItemType, isSelectItem, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import merge from 'lodash/merge'
-import { HTMLAttributes, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useTransformContext } from 'react-zoom-pan-pinch'
-import { grabbingCursor, grabCursor, pointerCursorCss, transformCss } from '../../css'
+import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
 import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
 import { ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
 import { gameContext } from '../GameProvider'
 import { MaterialGameAnimations } from './animations'
-import { removeRotations } from './animations/rotations.utils'
 import { ItemDisplay } from './GameTable/ItemDisplay'
+import { ItemMenuWrapper } from './ItemMenuWrapper'
 import { MaterialComponentProps } from './MaterialComponent'
-import { MaterialDescription } from './MaterialDescription'
 import { isDroppedItem } from './utils/isDroppedItem'
 import { isPlacedOnItem } from './utils/isPlacedOnItem'
 
@@ -167,26 +166,6 @@ const noTouchAction = css`
 const transformTransition = css`
   > * {
     transition: transform 0.2s ease-in-out;
-  }
-`
-
-type ItemMenuWrapperProps = {
-  item: MaterialItem
-  itemContext: ItemContext
-  description: MaterialDescription
-} & HTMLAttributes<HTMLDivElement>
-
-const ItemMenuWrapper = ({ item, itemContext, description, ...props }: ItemMenuWrapperProps) => {
-  const itemTransform = useMemo(() => removeRotations(description.getItemTransform(item, itemContext)), [description, item, itemContext])
-  return <div css={[itemMenuWrapperCss, transformCss(...itemTransform, 'translateZ(15em)')]} {...props}/>
-}
-
-const itemMenuWrapperCss = css`
-  position: absolute;
-  transform-style: preserve-3d;
-
-  > * {
-    position: absolute;
   }
 `
 
