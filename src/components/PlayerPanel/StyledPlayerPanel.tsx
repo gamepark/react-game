@@ -149,7 +149,7 @@ const avatarStyle = css`
 `
 const nameStyle = css`
   align-self: end;
-  max-width: 7.3em;
+  max-width: 8em;
   margin: 0;
   font-size: 2.4em;
   text-overflow: ellipsis;
