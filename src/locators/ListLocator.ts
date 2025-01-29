@@ -84,8 +84,8 @@ export class ListLocator<P extends number = number, M extends number = number, L
   protected getCurrentMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L>): XYCoordinates {
     const { x: gx = 0, y: gy = 0 } = this.getGap(location, context)
     const { x: mgx, y: mgy } = this.getMaxGap(location, context)
-    const count = this.countListItems(location, context)
-    return { x: (mgx ?? gx * (count - 1)), y: (mgy ?? gy * (count - 1)) }
+    const gapCount = Math.max(0, this.countListItems(location, context) - 1)
+    return { x: (mgx ?? gx * gapCount), y: (mgy ?? gy * gapCount) }
   }
 
   getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
