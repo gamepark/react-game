@@ -1,6 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { Coordinates, DeleteItem, DisplayedItem, isSameLocationArea, Location, MaterialItem, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
+import isEqual from 'lodash/isEqual'
+import omit from 'lodash/omit'
 import sumBy from 'lodash/sumBy'
+import uniqWith from 'lodash/uniqWith'
 import { DropAreaDescription, LocationDescription, MaterialDescriptionRecord } from '../components'
 
 export type SortFunction = ((item: MaterialItem) => number)
@@ -353,7 +356,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @return the drop locations to display
    */
   getDropLocations(moves: MoveItem<P, M, L>[], _context: ItemContext<P, M, L>): Location<P, L>[] {
-    return moves.map(move => move.location as Location<P, L>)
+    return uniqWith(moves.map(move => (omit(move.location, ['rotation']) as Location<P, L>)), isEqual)
   }
 
   /**
