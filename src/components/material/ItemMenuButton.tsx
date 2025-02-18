@@ -7,6 +7,7 @@ import { usePlay } from '../../hooks'
 
 export type ItemButtonProps = {
   move?: any
+  moves?: any[]
   options?: PlayOptions
   label?: ReactNode
   labelPosition?: 'left' | 'right'
@@ -18,7 +19,7 @@ export type ItemButtonProps = {
 
 export const ItemMenuButton = (
   {
-    move, options, label,
+    move, moves = move ? [move] : [], options, label,
     angle = 0, radius = 3, x = radius * Math.sin(angle * Math.PI / 180), y = radius * -Math.cos(angle * Math.PI / 180),
     labelPosition = x > 0 ? 'left' : 'right',
     children, ...props
@@ -26,7 +27,9 @@ export const ItemMenuButton = (
 ) => {
   const play = usePlay()
   return <button css={[itemMenuButtonCss, transformCss('translate(-50%, -50%)', `translate(${x}em, ${y}em)`)]}
-                 onClick={() => play(move, options)} disabled={!move} {...props}>
+                 onClick={() => {
+                   for (const move of moves) play(move, options)
+                 }} disabled={moves.length > 0} {...props}>
     {children}
     {label && <span css={[buttonLabelCss, labelPosition === 'left' ? labelLeft : labelRight]}>{label}</span>}
   </button>
