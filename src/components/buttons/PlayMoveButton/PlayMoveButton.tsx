@@ -27,7 +27,7 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
   const { t } = useTranslation()
   const [showDialog, setShowDialog] = useState<boolean>(false)
   const [displayedLongEnough, setDisplayedLongEnough] = useState(false)
-  const disabled = moves.length > 0
+  const disabled = !moves.length
   useEffect(() => {
     if (disabled) {
       setDisplayedLongEnough(false)

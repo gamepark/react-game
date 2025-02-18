@@ -29,7 +29,7 @@ export const ItemMenuButton = (
   return <button css={[itemMenuButtonCss, transformCss('translate(-50%, -50%)', `translate(${x}em, ${y}em)`)]}
                  onClick={() => {
                    for (const move of moves) play(move, options)
-                 }} disabled={moves.length > 0} {...props}>
+                 }} disabled={!moves.length} {...props}>
     {children}
     {label && <span css={[buttonLabelCss, labelPosition === 'left' ? labelLeft : labelRight]}>{label}</span>}
   </button>
