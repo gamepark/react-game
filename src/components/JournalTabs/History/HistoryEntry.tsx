@@ -13,7 +13,7 @@ export type HistoryEntryProps<P extends number = number> = {
 
 export const HistoryEntry = <P extends number = number>({ player, depth = 0, backgroundColor, borderTop, borderBottom, children, ...props }: HistoryEntryProps<P>) => {
   return (
-    <div css={[historyEntryCss, backgroundColor && backgroundColorCss(backgroundColor), borderTop && borderTopCss, borderBottom && borderBottomCss]} {...props}>
+    <div css={[historyEntryCss, borderTop && borderTopCss, borderBottom && borderBottomCss]} {...props}>
       {player !== undefined && <div><Avatar css={avatarCss} playerId={player}/></div>}
       {depth > 0 && <div css={depthIconCss(depth)}>⤷</div>}
       <div css={css`flex: 1;`}>{children}</div>
@@ -27,10 +27,6 @@ const historyEntryCss = css`
   width: 100%;
   padding: 0.5em 0.5em 0.5em 0.7em;
   user-select: text;
-`
-
-const backgroundColorCss = (color: string) => css`
-  background-color: ${color};
 `
 
 const borderTopCss = css`

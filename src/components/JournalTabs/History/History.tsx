@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, ThemeProvider } from '@emotion/react'
-import { FC, Fragment, HTMLAttributes, useEffect, useRef } from 'react'
+import { FC, HTMLAttributes, useEffect, useRef } from 'react'
 import { linkButtonCss } from '../../../css'
 import { useHistory } from '../../../hooks/useHistory'
 import { GameOverHistory } from './GameOverHistory'
@@ -29,11 +29,14 @@ export const History: FC<HistoryProps> = (props) => {
         <div css={scrollContentCss}>
           <StartGameHistory/>
           {Array.from(histories.entries()).map(([id, actions = []]) => (
-            actions.map((action, index) => (
-              <Fragment key={`${id}_${index}`}>
-                {action}
-              </Fragment>
-            ))
+            actions.map((action, index) => {
+              console.log(action)
+              return (
+                <div key={`${id}_${index}`} css={entryCss}>
+                  {action}
+                </div>
+              )
+            })
           ))}
           <GameOverHistory/>
         </div>
@@ -42,10 +45,20 @@ export const History: FC<HistoryProps> = (props) => {
   )
 }
 
+const entryCss = css`
+    &:not(:empty) {
+        margin-bottom: 1em;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 1em;
+        color: white;
+        overflow: hidden;    
+    }
+`
 
 const scrollCss = css`
   overflow-x: hidden;
   overflow-y: scroll;
+    background-color: transparent;
   scrollbar-color: rgba(74, 74, 74, 0.3) transparent;
   scrollbar-width: thin;
   margin-top: 0.5em;

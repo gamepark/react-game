@@ -81,6 +81,8 @@ export class ListLocator<P extends number = number, M extends number = number, L
     return { x: x + mx / 2, y: y + my / 2, z }
   }
 
+
+
   protected getCurrentMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L>): XYCoordinates {
     const { x: gx = 0, y: gy = 0 } = this.getGap(location, context)
     const { x: mgx, y: mgy } = this.getMaxGap(location, context)
