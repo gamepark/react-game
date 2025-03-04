@@ -29,7 +29,7 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
     const itemLocator = context.locators[item.location.type]
     if (!itemLocator?.isItemToAnimate(item, context, animation.move)) return
     const stockTransforms = getFirstStockItemTransforms(context)
-    if (stockTransforms) {
+    if (stockTransforms.length) {
       const originTransforms = toSingleRotation(transformItem(context))
       const targetTransforms = toSingleRotation(stockTransforms)
       toClosestRotations(originTransforms, targetTransforms)
