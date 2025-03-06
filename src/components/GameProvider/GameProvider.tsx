@@ -90,12 +90,6 @@ const globalCss = (theme: Theme) => css`
   body {
     margin: 0;
     font-family: "${theme.root.fontFamily}", sans-serif;
-    font-size: 1vh;
-    font-size: 1dvh;
-    @media (max-aspect-ratio: 16/9) {
-      font-size: calc(9vw / 16);
-      font-size: calc(9dvw / 16);
-    }
   }
 
   #root {

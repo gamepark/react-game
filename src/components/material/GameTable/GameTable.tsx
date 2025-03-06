@@ -126,7 +126,7 @@ const computedWrapperClass = (margin: any, vm: number, hm: number, ratio: number
 `
 
 const ratioFontSize = (ratio: number) => css`
-  .react-transform-wrapper {
+  body {
     font-size: 1vh;
     font-size: 1dvh;
     @media (max-aspect-ratio: ${ratio}/1) {
