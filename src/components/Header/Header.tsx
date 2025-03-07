@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { css, Interpolation, keyframes, Theme, ThemeProvider } from '@emotion/react'
+import { css, Interpolation, Theme, ThemeProvider } from '@emotion/react'
 import { HTMLAttributes } from 'react'
 import { buttonCss } from '../../css'
 
@@ -18,15 +18,6 @@ export const Header = ({ buttonsCss = defaultButtonsCss, children, ...props }: H
 const headerPadding = 10 // em
 const fontSize = 4.5 // em
 
-const scrollLongTextKeyframe = keyframes`
-  0%, 30% {
-    transform: none;
-  }
-  70%, 100% {
-    transform: translateX(calc(100vw - ${headerPadding * 2 / fontSize}em - 100%));
-  }
-`
-
 const headerStyle = css`
   position: absolute;
   width: 100%;
@@ -40,11 +31,10 @@ const headerStyle = css`
 
 const titleStyle = css`
   white-space: nowrap;
-  width: fit-content;
-  min-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
   margin: 0.2em 0;
   font-size: ${fontSize}em;
-  animation: 8s ${scrollLongTextKeyframe} infinite linear;
 `
 
 const defaultButtonsCss = css`
