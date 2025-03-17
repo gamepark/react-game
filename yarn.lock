@@ -281,7 +281,7 @@
   dependencies:
     prop-types "^15.8.1"
 
-"@gamepark/avataaars@^2.2.0":
+"@gamepark/avataaars@~2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@gamepark/avataaars/-/avataaars-2.2.0.tgz#7bc2b8246d847d8f66b67935d0ab247a7cceb477"
   integrity sha512-3rTwo+v87EO/GHcHjmpTqRcOdbh5MbO2Vv27xIGWdT3H2+SFSGlMwSCnn7kDQv+rQJzfg5C2gRe6XImiKcYlxA==
