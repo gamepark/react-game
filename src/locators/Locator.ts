@@ -102,7 +102,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @returns true if the item must be hidden
    */
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
-    return this.limit ? this.getItemIndex(item, context) >= this.limit : false
+    return this.getItemIndex(item, context) < 0
   }
 
   /**
@@ -286,7 +286,11 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @returns the index of the item in the location area
    */
   getItemIndex(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
-    return this.getLocationIndex(item.location, context) ?? context.displayIndex
+    const index = this.getLocationIndex(item.location, context) ?? context.displayIndex
+    if (this.limit === undefined) return index
+    const count = this.countItems(item.location, context)
+    if (count <= this.limit) return index
+    return this.limit - count + index
   }
 
   /**
@@ -339,13 +343,13 @@ export class Locator<P extends number = number, M extends number = number, L ext
     if (quantity === movedQuantity) return true
     // If we move only a part of the quantity, we need to find which displayed items should move
     const droppedItem = rules.game.droppedItem
-    let itemsNotMoving = this.limit ? Math.min(quantity, this.limit) - movedQuantity : quantity - movedQuantity
+    let displayIndexMoving = quantity - movedQuantity
     if (droppedItem?.type === type && droppedItem.index === index) {
       const droppedIndex = droppedItem.displayIndex
       if (displayIndex === droppedIndex) return true
-      if (droppedIndex < itemsNotMoving) itemsNotMoving++
+      if (droppedIndex < displayIndexMoving) displayIndexMoving++
     }
-    return this.getItemIndex(item, context) >= itemsNotMoving
+    return context.displayIndex >= displayIndexMoving
   }
 
   /**
