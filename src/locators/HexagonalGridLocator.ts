@@ -1,8 +1,8 @@
 import {
   Coordinates,
   GridBoundaries,
-  HexGridSystem,
   hexFromAxial,
+  HexGridSystem,
   hexRotate,
   hexToAxial,
   Location,
@@ -72,7 +72,8 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
     const { xMin = 0, xMax = 0, yMin = 0, yMax = 0 } = boundaries
     switch (this.coordinatesSystem) {
       case HexGridSystem.Axial: {
-        throw new Error('Axial HexGridSystem is not yet implemented')
+        return { x: 0, y: 0 }
+        // throw new Error('Axial HexGridSystem is not yet implemented')
       }
       case HexGridSystem.OddQ: {
         const deltaX = (xMin + xMax) / 2
@@ -100,7 +101,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    * @returns The coordinates of the area
    */
   getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
-    const { x = 0, y = 0, z } = super.getCoordinates(location, context)
+    const { x = 0, y = 0, z } = this.getCoordinates(location, context)
     const { x: deltaX = 0, y: deltaY = 0 } = this.getAreaDelta(this.getBoundaries(location, context))
     return { x: x + deltaX, y: y + deltaY, z }
   }
@@ -115,23 +116,30 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
     if (location.x === undefined && location.y === undefined) {
       return this.getAreaCoordinates(location, context)
     }
+    const { x: baseX = 0, y: baseY = 0, z: baseZ } = this.getCoordinates(location, context)
     let { x = 0, y = 0 } = location
     switch (this.coordinatesSystem) {
       case HexGridSystem.Axial: {
-        throw new Error('Axial HexGridSystem is not yet implemented')
+        return {
+          x: baseX + (x * Math.sqrt(3) + y * Math.sqrt(3) / 2) * this.sizeX,
+          y: baseY + y * 3 / 2 * this.sizeY,
+          z: baseZ
+        }
       }
       case HexGridSystem.OddQ: {
         y += ((x % 2 + 2) % 2) / 2
         return {
-          x: x * 3 / 2 * this.sizeX,
-          y: y * Math.sqrt(3) * this.sizeY
+          x: baseX + x * 3 / 2 * this.sizeX,
+          y: baseY + y * Math.sqrt(3) * this.sizeY,
+          z: baseZ
         }
       }
       case HexGridSystem.EvenQ: {
         y -= ((x % 2 + 2) % 2) / 2
         return {
-          x: x * 3 / 2 * this.sizeX,
-          y: y * Math.sqrt(3) * this.sizeY
+          x: baseX + x * 3 / 2 * this.sizeX,
+          y: baseY + y * Math.sqrt(3) * this.sizeY,
+          z: baseZ
         }
       }
       case HexGridSystem.OddR: {
@@ -182,8 +190,12 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
   /**
    * Returns the drop locations for current dragged item. The hexagonal grid must be one simple drop location.
    */
-  getDropLocations(moves: MoveItem<P, M, L>[], _context: ItemContext<P, M, L>): Location<P, L>[] {
-    return uniqWith(moves.map(move => (omit(move.location, ['x', 'y', 'z', 'rotation']) as Location<P, L>)), isEqual)
+  getDropLocations(moves: MoveItem<P, M, L>[], context: ItemContext<P, M, L>): Location<P, L>[] {
+    if (!this.locationDescription || this.locationDescription.ignoreCoordinates) {
+      return uniqWith(moves.map(move => (omit(move.location, ['x', 'y', 'z', 'rotation']) as Location<P, L>)), isEqual)
+    } else {
+      return super.getDropLocations(moves, context)
+    }
   }
 
   dropPreview = true
@@ -193,6 +205,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    */
   getLocationDescription(location: Location<P, L>, context: MaterialContext<P, M, L> | ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
     if (this.locationDescription) return this.locationDescription
+    if (location.x !== undefined || location.y !== undefined) return super.getLocationDescription(location, context)
     const { xMin = 0, xMax = 0, yMin = 0, yMax = 0 } = this.getBoundaries(location, context)
     const borderRadius = this.sizeX / 3
     switch (this.coordinatesSystem) {

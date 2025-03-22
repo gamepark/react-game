@@ -12,6 +12,8 @@ export class HexGridDropAreaDescription<P extends number = number, M extends num
 
   Component: ElementType = SimpleDropArea
 
+  ignoreCoordinates = true
+
   canDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: ItemContext<P, M, L>): boolean {
     return this.isMoveToLocation(move, location, context)
   }

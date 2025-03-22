@@ -19,6 +19,8 @@ export class LocationDescription<P extends number = number, M extends number = n
 
   Component: ElementType = LocationComponent
 
+  ignoreCoordinates: boolean = false
+
   help?: ComponentType<LocationHelpProps<P, L>>
 
   getLocationSize(location: Location<P, L>, _context: MaterialContext<P, M, L>): ComponentSize {
