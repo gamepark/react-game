@@ -5,6 +5,7 @@ import { ItemContext, Locator } from '../../../locators'
 import { MaterialDescription } from '../MaterialDescription'
 import { CreateItemAnimations } from './CreateItemAnimations'
 import { DeleteItemAnimations } from './DeleteItemAnimations'
+import { DeleteItemAtOnceAnimations } from './DeleteItemAtOnceAnimations'
 import { ItemAnimations } from './ItemAnimations'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { MoveItemAnimations } from './MoveItemAnimations'
@@ -24,6 +25,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
       [ItemMoveType.Move]: new MoveItemAnimations(duration, droppedItemDuration),
       [ItemMoveType.MoveAtOnce]: new MoveItemAtOnceAnimations(duration),
       [ItemMoveType.Delete]: new DeleteItemAnimations(duration, droppedItemDuration),
+      [ItemMoveType.DeleteAtOnce]: new DeleteItemAtOnceAnimations(duration),
       [ItemMoveType.Shuffle]: new ShuffleAnimations(0),
       [ItemMoveType.Roll]: new RollItemAnimations(duration)
     }

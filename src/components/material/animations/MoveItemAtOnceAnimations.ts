@@ -1,6 +1,6 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
-import { MaterialItem, MaterialRulesCreator, MoveItemsAtOnce } from '@gamepark/rules-api'
+import { MaterialRulesCreator, MoveItemsAtOnce } from '@gamepark/rules-api'
 import { ItemContext } from '../../../locators'
 import { ItemAnimations } from './ItemAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
@@ -34,20 +34,6 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     const futureContext = { ...context, rules: futureRules, index: context.index, displayIndex: context.displayIndex }
     const originTransforms = toSingleRotation(transformItem(context))
     const targetTransforms = toSingleRotation(description?.getItemTransform(futureItem, futureContext) ?? [])
-    toClosestRotations(originTransforms, targetTransforms)
-    const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
-    return description?.getAnimationCss(animationKeyframes, animation.duration)
-  }
-
-  getChildItemAnimation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>): Interpolation<Theme> {
-    const { type, rules, material, player } = context
-    const description = material[type]
-    const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
-    const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
-    futureRules.play(animation.move)
-    const futureContext = { ...context, rules: futureRules }
-    const originTransforms = transformItem(context)
-    const targetTransforms = description?.getItemTransform(item, futureContext) ?? []
     toClosestRotations(originTransforms, targetTransforms)
     const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
     return description?.getAnimationCss(animationKeyframes, animation.duration)
