@@ -1,3 +1,4 @@
+import { Interpolation, Theme } from '@emotion/react'
 import { DisplayedAction } from '@gamepark/react-client'
 import { ComponentType } from 'react'
 
@@ -16,9 +17,7 @@ export type MovePlayedLogDescription<Move = any, Player = number> = {
   Component: ComponentType<MoveComponentProps<Move, Player>>,
   player?: Player;
   depth?: number;
-  backgroundColor?: string;
-  borderTop?: boolean;
-  borderBottom?: boolean;
+  extraCss?: Interpolation<Theme>
 }
 
 export interface LogDescription<Move = any, Player = number, Game = any> {

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes, ThemeProvider } from '@emotion/react'
-import { useLogControls } from '@gamepark/react-client/dist/Log'
+import { useLogControls } from '@gamepark/react-client'
 import { FC, HTMLAttributes, useEffect, useState } from 'react'
 import { linkButtonCss } from '../../css'
 import { MoveHistory, useFlatHistory } from '../../hooks/useFlatHistory'

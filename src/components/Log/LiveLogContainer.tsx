@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useLogControls } from '@gamepark/react-client/dist/Log'
+import { useLogControls } from '@gamepark/react-client'
 import { FC } from 'react'
 import { InternalLiveLogContainer, LiveLogContainerProps } from './InternalLiveLogContainer'
 

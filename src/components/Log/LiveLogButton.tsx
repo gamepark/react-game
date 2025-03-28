@@ -2,7 +2,7 @@
 import { faBell } from '@fortawesome/free-solid-svg-icons/faBell'
 import { faBellSlash } from '@fortawesome/free-solid-svg-icons/faBellSlash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useLogControls } from '@gamepark/react-client/dist/Log'
+import { useLogControls } from '@gamepark/react-client'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { gameContext } from '../GameProvider'

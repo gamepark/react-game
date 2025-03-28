@@ -10,7 +10,7 @@ type HistoryItemProps = {
 export const LogItem: FC<HistoryItemProps> = ({ history, ...rest }) => {
   return (
     <div { ...rest }>
-      <div css={entryCss}>
+      <div css={[entryCss, history.extraCss]}>
         <history.Component move={history.move} context={history} />
       </div>
     </div>
@@ -26,6 +26,7 @@ const entryCss = css`
     margin-bottom: 0.5em;
     min-height: 1em;
     padding-left: 1em;
+    margin-left: 0.05em;
     margin-top: 0.05em;
     padding-top: 0.5em;
     padding-bottom: 0.5em;

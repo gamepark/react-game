@@ -1,5 +1,5 @@
 import { DisplayedAction, GamePageState } from '@gamepark/react-client'
-import { PlayedMove } from '@gamepark/react-client/dist/Store/PlayedMove'
+import { PlayedMove } from '@gamepark/react-client'
 import { MaterialGame, MaterialMove, Rules } from '@gamepark/rules-api'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
