@@ -9,5 +9,5 @@ export type MaterialHistoryProps<Game = any, Move = any, PlayerId = number> = {
 export type HistoryEntryContext<Game = any, Move = any, PlayerId = number> = {
   action: DisplayedAction<Move, PlayerId>;
   consequenceIndex?: number;
-  game?: Game;
+  game: Game;
 }
