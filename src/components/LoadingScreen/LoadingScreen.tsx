@@ -86,6 +86,12 @@ const loadingScreenStyle = (theme: Theme) => css`
   left: 0;
   height: 100%;
   width: 100%;
+  font-size: 1vh;
+  font-size: 1dvh;
+  @media (max-aspect-ratio: 1) {
+    font-size: calc(1vw);
+    font-size: calc(1dvw);
+  }
   display: flex;
   flex-direction: column;
   align-items: center;
