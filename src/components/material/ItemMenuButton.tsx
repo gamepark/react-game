@@ -36,13 +36,16 @@ export const ItemMenuButton = (
 }
 
 const itemMenuButtonCss = css`
-  transform-style: preserve-3d;
-  width: 2em;
-  height: 2em;
-  border-radius: 1em;
-  background-color: white;
-  color: black;
-  cursor: pointer;
+    transform-style: preserve-3d;
+    width: 2em;
+    height: 2em;
+    border-radius: 1em;
+    background-color: white;
+    color: black;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 `
 
 const buttonLabelCss = css`
