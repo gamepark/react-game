@@ -21,5 +21,6 @@ export type MovePlayedLogDescription<Move = any, Player = number> = {
 }
 
 export interface LogDescription<Move = any, Player = number, Game = any> {
+  disableLiveCustomCss?: boolean
   getMovePlayedLogDescription(move: Move, context: MoveComponentContext<Move, Player, Game>): MovePlayedLogDescription | undefined
 }

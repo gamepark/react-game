@@ -7,16 +7,19 @@ import { Avatar } from '../Avatar'
 type HistoryItemProps = {
   history: MoveHistory
   customEntryCss?: Interpolation<Theme>
+  disableCustomCss?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
-export const LogItem: FC<HistoryItemProps> = ({ history, customEntryCss, ...rest }) => {
+export const LogItem: FC<HistoryItemProps> = ({ history, disableCustomCss, customEntryCss, ...rest }) => {
   const depth = history.depth ?? 0
   return (
     <div { ...rest }>
-      <div css={[entryCss, customEntryCss, history.extraCss]}>
+      <div css={[entryCss, customEntryCss, !disableCustomCss && history.extraCss]}>
         {history.player !== undefined && <div><Avatar css={avatarCss} playerId={history.player}/></div>}
         {depth > 0 && <div css={depthIconCss(depth)}>⤷</div>}
-        <history.Component move={history.move} context={history} />
+        <div>
+          <history.Component move={history.move} context={history} />
+        </div>
       </div>
     </div>
   )

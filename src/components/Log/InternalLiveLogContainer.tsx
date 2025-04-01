@@ -1,9 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes, ThemeProvider } from '@emotion/react'
 import { useLogControls } from '@gamepark/react-client'
-import { FC, HTMLAttributes, useEffect, useState } from 'react'
+import { FC, HTMLAttributes, useContext, useEffect, useState } from 'react'
 import { linkButtonCss } from '../../css'
 import { MoveHistory, useFlatHistory } from '../../hooks/useFlatHistory'
+import { gameContext } from '../GameProvider'
 import { LogItem } from './LogItem'
 
 export type LiveLogContainerProps = {
@@ -33,6 +34,7 @@ const getDelayBeforeDelete = (duration: number = DISPLAY_DURATION) => {
 export const InternalLiveLogContainer: FC<LiveLogContainerProps> = (props) => {
   const { history, isLoaded } = useFlatHistory()
   const { stopped } = useLogControls()
+  const logDescription = useContext(gameContext).logs
   const [displayed, setDisplayed] = useState<MoveHistoryDisplayed[]>([])
   const [nextDisplayed, setNextDisplayed] = useState<number>(-1)
   const [isJustDisplayed, setJustDisplayed] = useState(false)
@@ -77,7 +79,7 @@ export const InternalLiveLogContainer: FC<LiveLogContainerProps> = (props) => {
 
       <div css={scrollContentCss}  {...rest}>
         {displayed.map((h) => (
-          <LogItem key={`${h.action.id}_${h.consequenceIndex}`} history={h} css={[itemCss, h.deleting ? deletingCss(duration) : fadeInCss]}/>
+          <LogItem key={`${h.action.id}_${h.consequenceIndex}`} history={h} disableCustomCss={logDescription?.disableLiveCustomCss} css={[itemCss, h.deleting ? deletingCss(duration) : fadeInCss]}/>
         ))
         }
       </div>
