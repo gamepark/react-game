@@ -83,6 +83,7 @@ const buttonContainer = css`
   inset: 0;
   width: 100%;
   align-self: flex-start;
+    align-items: center;
   padding-left: 3em;
   padding-top: 0.3em;
   padding-right: 0.5em;
@@ -103,12 +104,13 @@ const flexEnd = css`
 `
 
 const button = css`
-  flex: 1;
-  border: 0.01em solid #28B8CE;
-  color: black;
-  cursor: pointer;
-  background: white;
-  height: 2em;
+    flex: 1;
+    border: 0.01em solid #28B8CE;
+    color: black;
+    cursor: pointer;
+    background: white;
+    height: 2em;
+    font-size: 0.7em;
 `
 
 const selected = css`

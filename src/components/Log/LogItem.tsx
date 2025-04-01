@@ -10,10 +10,12 @@ type HistoryItemProps = {
 } & HTMLAttributes<HTMLDivElement>
 
 export const LogItem: FC<HistoryItemProps> = ({ history, customEntryCss, ...rest }) => {
+  const depth = history.depth ?? 0
   return (
     <div { ...rest }>
       <div css={[entryCss, customEntryCss, history.extraCss]}>
         {history.player !== undefined && <div><Avatar css={avatarCss} playerId={history.player}/></div>}
+        {depth > 0 && <div css={depthIconCss(depth)}>⤷</div>}
         <history.Component move={history.move} context={history} />
       </div>
     </div>
@@ -33,7 +35,6 @@ const entryCss = css`
     margin-top: 0.05em;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
-    pointer-events: none;
     display: flex;
     align-items: center;
     font-size: 2em;
@@ -54,4 +55,12 @@ const avatarCss = css`
   margin-right: 1em;
   color: black;
   z-index: 1;
+`
+
+
+const depthIconCss = (depth: number) => css`
+  font-size: 1.5em;
+  margin-right: 0.4em;
+  margin-left: ${0.5 + (1.5 * (depth - 1))}em;
+  margin-top: -0.2em;
 `

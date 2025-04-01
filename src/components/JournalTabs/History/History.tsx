@@ -75,7 +75,9 @@ export const historyButtonCss = [linkButtonCss, css`
 
 const itemCss = css`
     margin-left: 0.7em;
-    font-size: 0.7em;
+    font-size: 0.5em;
+    user-select: text;
+    white-space: pre;
 `
 
 const customEntryCss = css`

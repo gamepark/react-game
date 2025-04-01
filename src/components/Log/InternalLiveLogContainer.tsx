@@ -101,6 +101,7 @@ const historyButtonCss = [linkButtonCss, css`
 const itemCss = css`
     display: grid;
     grid-template-rows: 1fr;
+    pointer-events: none;
 
     > div {
         overflow: hidden;
