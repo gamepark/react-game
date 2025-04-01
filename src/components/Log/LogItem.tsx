@@ -14,7 +14,7 @@ export const LogItem: FC<HistoryItemProps> = ({ history, disableCustomCss, custo
   const depth = history.depth ?? 0
   return (
     <div { ...rest }>
-      <div css={[entryCss, customEntryCss, !disableCustomCss && history.extraCss]}>
+      <div css={[entryCss, customEntryCss, !disableCustomCss && history.css]}>
         {history.player !== undefined && <div><Avatar css={avatarCss} playerId={history.player}/></div>}
         {depth > 0 && <div css={depthIconCss(depth)}>⤷</div>}
         <div>

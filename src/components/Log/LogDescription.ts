@@ -17,10 +17,10 @@ export type MovePlayedLogDescription<Move = any, Player = number> = {
   Component: ComponentType<MoveComponentProps<Move, Player>>,
   player?: Player;
   depth?: number;
-  extraCss?: Interpolation<Theme>
+  css?: Interpolation<Theme>
+  liveCss?: boolean
 }
 
 export interface LogDescription<Move = any, Player = number, Game = any> {
-  disableLiveCustomCss?: boolean
   getMovePlayedLogDescription(move: Move, context: MoveComponentContext<Move, Player, Game>): MovePlayedLogDescription | undefined
 }
