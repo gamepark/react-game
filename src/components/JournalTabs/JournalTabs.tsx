@@ -27,7 +27,7 @@ enum JournalTab {
 export const JournalTabs: FC<JournalTabsProps> = (props) => {
   const { t } = useTranslation()
   const { gameId } = props
-  const history = useContext(gameContext).MaterialHistory
+  const history = useContext(gameContext).logs
   const logEnabled = history !== undefined
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const chatEnabled = gameMode !== GameMode.COMPETITIVE && gameMode !== GameMode.TUTORIAL
