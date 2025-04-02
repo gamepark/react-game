@@ -29,7 +29,7 @@ export const History: FC<HistoryProps> = (props) => {
         <div css={scrollContentCss}>
           <StartGameHistory/>
           {history.map((h) => (
-            <LogItem  key={`${h.action.id}_${h.consequenceIndex}`} history={h} css={itemCss} customEntryCss={customEntryCss} />
+            <LogItem key={`${h.action.id}_${h.consequenceIndex}`} history={h} css={itemCss} customEntryCss={customEntryCss}/>
           ))}
           <GameOverHistory/>
         </div>
@@ -40,44 +40,44 @@ export const History: FC<HistoryProps> = (props) => {
 
 
 const scrollCss = css`
-  overflow-x: hidden;
-  overflow-y: scroll;
-  scrollbar-color: rgba(74, 74, 74, 0.3) transparent;
-  scrollbar-width: thin;
-  margin-top: 0.5em;
-  margin-right: 8px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    scrollbar-color: rgba(74, 74, 74, 0.3) transparent;
+    scrollbar-width: thin;
+    margin-top: 0.5em;
+    margin-right: 8px;
 
-  &::-webkit-scrollbar {
-    width: 6px
-  }
+    &::-webkit-scrollbar {
+        width: 6px
+    }
 
-  &::-webkit-scrollbar-thumb {
-    border-radius: 7px;
-    background-color: rgba(74, 74, 74, 0.3);
-  }
+    &::-webkit-scrollbar-thumb {
+        border-radius: 7px;
+        background-color: rgba(74, 74, 74, 0.3);
+    }
 
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
 `
 
 const scrollContentCss = css`
-  position: relative;
-  padding-bottom: 0.5em;
-  font-size: 0.5em;
+    position: relative;
+    padding-bottom: 0.5em;
+    font-size: 0.5em;
 `
 
 export const historyButtonCss = [linkButtonCss, css`
-  color: inherit;
-  background-color: transparent;
-  font-style: italic;
+    color: inherit;
+    background-color: transparent;
+    font-style: italic;
 `]
 
 const itemCss = css`
     margin-left: 0.7em;
     font-size: 0.5em;
     user-select: text;
-    white-space: pre;
+    white-space: pre-wrap;
 `
 
 const customEntryCss = css`

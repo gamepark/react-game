@@ -14,7 +14,7 @@ export type MoveHistory<Move = any, Player = any, Game = any> = MovePlayedLogDes
   consequenceIndex?: number
 }
 
-export const useFlatHistory = () => {
+export const  useFlatHistory = () => {
   const context = useContext(gameContext)
   const player = usePlayerId()
   const [history, setHistory] = useState<MoveHistory[]>([])
