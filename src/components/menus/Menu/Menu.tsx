@@ -12,6 +12,7 @@ import { ResultDialog } from '../../dialogs'
 import { GamePointIcon } from '../../GamePoints'
 import { gameContext } from '../../GameProvider'
 import { JournalTabs } from '../../JournalTabs/JournalTabs'
+import { LiveLogButton } from '../../Log/LiveLogButton'
 import { EjectPlayerButton, EjectPlayerDialog, EjectPlayerPopButton } from '../EjectPlayer'
 import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
 import { GiveUpButton } from '../GiveUpButton'
@@ -68,6 +69,7 @@ export const Menu = () => {
         <h2 css={titleCss}>{t('Menu')}</h2>
         {fscreen.fullscreenEnabled && <FullscreenButton/>}
         <SoundButton/>
+        <LiveLogButton />
         {couldUndo && <UndoButton/>}
         {canGiveUp && <GiveUpButton/>}
         {couldEject && <EjectPlayerButton onClick={() => setEjectPlayerDialogOpen(true)}/>}

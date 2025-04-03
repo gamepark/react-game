@@ -27,7 +27,7 @@ enum JournalTab {
 export const JournalTabs: FC<JournalTabsProps> = (props) => {
   const { t } = useTranslation()
   const { gameId } = props
-  const history = useContext(gameContext).MaterialHistory
+  const history = useContext(gameContext).logs
   const logEnabled = history !== undefined
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const chatEnabled = gameMode !== GameMode.COMPETITIVE && gameMode !== GameMode.TUTORIAL
@@ -83,6 +83,7 @@ const buttonContainer = css`
   inset: 0;
   width: 100%;
   align-self: flex-start;
+  align-items: center;
   padding-left: 3em;
   padding-top: 0.3em;
   padding-right: 0.5em;
@@ -109,6 +110,7 @@ const button = css`
   cursor: pointer;
   background: white;
   height: 2em;
+  font-size: 0.7em;
 `
 
 const selected = css`

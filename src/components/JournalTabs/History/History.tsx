@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css, ThemeProvider } from '@emotion/react'
-import { FC, Fragment, HTMLAttributes, useEffect, useRef } from 'react'
+import { FC, HTMLAttributes, useEffect, useRef } from 'react'
 import { linkButtonCss } from '../../../css'
-import { useHistory } from '../../../hooks/useHistory'
+import { useFlatHistory } from '../../../hooks/useFlatHistory'
+import { LogItem } from '../../Log'
 import { GameOverHistory } from './GameOverHistory'
 import { StartGameHistory } from './StartGameHistory'
 
@@ -12,10 +13,9 @@ type HistoryProps = {
 
 export const History: FC<HistoryProps> = (props) => {
 
-  const { histories } = useHistory()
+  const { history } = useFlatHistory()
   const { open, ...rest } = props
   const scrollRef = useRef<HTMLDivElement>(null)
-  // TODO: Add an icon to tell "there is more to see"
 
   useEffect(() => {
     if (!scrollRef.current) return
@@ -28,12 +28,8 @@ export const History: FC<HistoryProps> = (props) => {
       <div css={scrollCss} ref={scrollRef} {...rest}>
         <div css={scrollContentCss}>
           <StartGameHistory/>
-          {Array.from(histories.entries()).map(([id, actions = []]) => (
-            actions.map((action, index) => (
-              <Fragment key={`${id}_${index}`}>
-                {action}
-              </Fragment>
-            ))
+          {history.map((h) => (
+            <LogItem key={`${h.action.id}_${h.consequenceIndex}`} history={h} css={itemCss} customEntryCss={customEntryCss}/>
           ))}
           <GameOverHistory/>
         </div>
@@ -76,3 +72,15 @@ export const historyButtonCss = [linkButtonCss, css`
   background-color: transparent;
   font-style: italic;
 `]
+
+const itemCss = css`
+  margin-left: 0.7em;
+  font-size: 0.5em;
+  user-select: text;
+  white-space: pre-wrap;
+`
+
+const customEntryCss = css`
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+`
