@@ -13,12 +13,12 @@ type HistoryItemProps = {
 export const LogItem: FC<HistoryItemProps> = ({ history, disableCustomCss, customEntryCss, ...rest }) => {
   const depth = history.depth ?? 0
   return (
-    <div { ...rest }>
+    <div {...rest}>
       <div css={[entryCss, customEntryCss, !disableCustomCss && history.css]}>
         {history.player !== undefined && <div><Avatar css={avatarCss} playerId={history.player}/></div>}
         {depth > 0 && <div css={depthIconCss(depth)}>⤷</div>}
         <div>
-          <history.Component move={history.move} context={history} />
+          <history.Component move={history.move} context={history}/>
         </div>
       </div>
     </div>
@@ -28,25 +28,25 @@ export const LogItem: FC<HistoryItemProps> = ({ history, disableCustomCss, custo
 }
 
 const entryCss = css`
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: 1em;
-    margin-bottom: 0.5em;
-    min-height: 1em;
-    padding-left: 1em;
-    margin-left: 0.05em;
-    margin-top: 0.05em;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 1em;
+  margin-bottom: 0.5em;
+  min-height: 1em;
+  padding-left: 1em;
+  margin-left: 0.05em;
+  margin-top: 0.05em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  display: flex;
+  align-items: center;
+  font-size: 2em;
+
+  > picture {
     display: flex;
-    align-items: center;
-    font-size: 2em;
-    
-    > picture {
-        display: flex;
-        margin-left: 0.5em;
-        margin-right: 0.5em;
-    }
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
 `
 
 const avatarCss = css`

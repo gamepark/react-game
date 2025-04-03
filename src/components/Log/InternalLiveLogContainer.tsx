@@ -74,7 +74,8 @@ export const InternalLiveLogContainer: FC<LiveLogContainerProps> = (props) => {
 
       <div css={scrollContentCss}  {...rest}>
         {displayed.map((h) => (
-          <LogItem key={`${h.action.id}_${h.consequenceIndex}`} history={h} disableCustomCss={!h.liveCss} css={[itemCss, h.deleting ? deletingCss(duration) : fadeInCss]}/>
+          <LogItem key={`${h.action.id}_${h.consequenceIndex}`} history={h} disableCustomCss={!h.liveCss}
+                   css={[itemCss, h.deleting ? deletingCss(duration) : fadeInCss]}/>
         ))
         }
       </div>
@@ -83,51 +84,52 @@ export const InternalLiveLogContainer: FC<LiveLogContainerProps> = (props) => {
 }
 
 const scrollContentCss = css`
-    position: relative;
-    > &:not(button) {
-        pointer-events: none;
-    }
+  position: relative;
+
+  > &:not(button) {
+    pointer-events: none;
+  }
 `
 
 const historyButtonCss = [linkButtonCss, css`
-    color: inherit;
-    background-color: transparent;
-    font-style: italic;
+  color: inherit;
+  background-color: transparent;
+  font-style: italic;
 `]
 
 const itemCss = css`
-    display: grid;
-    grid-template-rows: 1fr;
-    pointer-events: none;
+  display: grid;
+  grid-template-rows: 1fr;
+  pointer-events: none;
 
-    > div {
-        overflow: hidden;
-    }
+  > div {
+    overflow: hidden;
+  }
 `
 
 const deletingAnimation = keyframes`
-    50% {
-        font-size: 1em;
-        opacity: 0;
-        grid-template-rows: 1fr;
-    }
-    100% {
-        font-size: 0;
-        opacity: 0;
-        grid-template-rows: 0fr;
-    }
+  50% {
+    font-size: 1em;
+    opacity: 0;
+    grid-template-rows: 1fr;
+  }
+  100% {
+    font-size: 0;
+    opacity: 0;
+    grid-template-rows: 0fr;
+  }
 `
 
 const fadeInAnimation = keyframes`
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+  }
 `
 
 const deletingCss = (duration: number) => css`
-    animation: ${deletingAnimation} ${getFadeOutDuration(duration) - 0.05}s forwards;
+  animation: ${deletingAnimation} ${getFadeOutDuration(duration) - 0.05}s forwards;
 `
 
 const fadeInCss = css`
-    animation: ${fadeInAnimation} 1000ms;
+  animation: ${fadeInAnimation} 1000ms;
 `

@@ -8,6 +8,6 @@ export const LiveLogContainer: FC<LiveLogContainerProps> = (props) => {
   const { stopped } = useLogControls()
   if (stopped) return null
   return (
-    <InternalLiveLogContainer { ...props } />
+    <InternalLiveLogContainer {...props} />
   )
 }

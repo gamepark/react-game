@@ -62,25 +62,25 @@ const scrollCss = css`
 `
 
 const scrollContentCss = css`
-    position: relative;
-    padding-bottom: 0.5em;
-    font-size: 0.5em;
+  position: relative;
+  padding-bottom: 0.5em;
+  font-size: 0.5em;
 `
 
 export const historyButtonCss = [linkButtonCss, css`
-    color: inherit;
-    background-color: transparent;
-    font-style: italic;
+  color: inherit;
+  background-color: transparent;
+  font-style: italic;
 `]
 
 const itemCss = css`
-    margin-left: 0.7em;
-    font-size: 0.5em;
-    user-select: text;
-    white-space: pre-wrap;
+  margin-left: 0.7em;
+  font-size: 0.5em;
+  user-select: text;
+  white-space: pre-wrap;
 `
 
 const customEntryCss = css`
-    background-color: rgba(0, 0, 0, 0.8);
-    color: white;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
 `
