@@ -27,7 +27,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@gamepark/avataaars": "~2.2.0",
-    "@gamepark/react-client": "~6.30.0",
+    "@gamepark/react-client": "~6.31.0",
     "@gamepark/rules-api": "~6.30.0",
     "dayjs": "^1.11.7",
     "emotion-normalize": "^11.0.1",
