@@ -40,25 +40,25 @@ export const History: FC<HistoryProps> = (props) => {
 
 
 const scrollCss = css`
-    overflow-x: hidden;
-    overflow-y: scroll;
-    scrollbar-color: rgba(74, 74, 74, 0.3) transparent;
-    scrollbar-width: thin;
-    margin-top: 0.5em;
-    margin-right: 8px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-color: rgba(74, 74, 74, 0.3) transparent;
+  scrollbar-width: thin;
+  margin-top: 0.5em;
+  margin-right: 8px;
 
-    &::-webkit-scrollbar {
-        width: 6px
-    }
+  &::-webkit-scrollbar {
+    width: 6px
+  }
 
-    &::-webkit-scrollbar-thumb {
-        border-radius: 7px;
-        background-color: rgba(74, 74, 74, 0.3);
-    }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+    background-color: rgba(74, 74, 74, 0.3);
+  }
 
-    align-self: stretch;
-    display: flex;
-    flex-direction: column;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
 `
 
 const scrollContentCss = css`

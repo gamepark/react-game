@@ -15,18 +15,15 @@ type MoveHistoryDisplayed = MoveHistory & {
   deleting?: boolean,
 }
 
-const MAX_ITEM_DISPLAYED = 5
-const DISPLAY_DURATION = 5000
-
-const getFadeOutDuration = (duration: number = DISPLAY_DURATION) => {
+const getFadeOutDuration = (duration: number) => {
   return 0.4 * duration
 }
 
-const getThrottleDuration = (maxItemDisplayed: number = MAX_ITEM_DISPLAYED, duration: number = DISPLAY_DURATION) => {
+const getThrottleDuration = (maxItemDisplayed: number, duration: number) => {
   return duration / maxItemDisplayed
 }
 
-const getDelayBeforeDelete = (duration: number = DISPLAY_DURATION) => {
+const getDelayBeforeDelete = (duration: number) => {
   return duration - getFadeOutDuration(duration)
 }
 
@@ -36,7 +33,7 @@ export const InternalLiveLogContainer: FC<LiveLogContainerProps> = (props) => {
   const [displayed, setDisplayed] = useState<MoveHistoryDisplayed[]>([])
   const [nextDisplayed, setNextDisplayed] = useState<number>(-1)
   const [isJustDisplayed, setJustDisplayed] = useState(false)
-  const { duration, maxItemDisplayed = MAX_ITEM_DISPLAYED, ...rest } = props
+  const { duration = 5, maxItemDisplayed = 5, ...rest } = props
 
   useEffect(() => {
     if (isLoaded) {
@@ -57,7 +54,7 @@ export const InternalLiveLogContainer: FC<LiveLogContainerProps> = (props) => {
       setNextDisplayed(nextDisplayed + 1)
       setDisplayed((d) => d.concat(next))
       setJustDisplayed(true)
-      setTimeout(() => setJustDisplayed(false), getThrottleDuration(maxItemDisplayed, duration))
+      setTimeout(() => setJustDisplayed(false), getThrottleDuration(maxItemDisplayed, duration) * 1000)
       setTimeout(() => {
         setDisplayed((d) => {
           next.deleting = true
@@ -66,8 +63,8 @@ export const InternalLiveLogContainer: FC<LiveLogContainerProps> = (props) => {
 
         setTimeout(() => {
           setDisplayed((d) => d.filter((h) => h !== next))
-        }, getFadeOutDuration(duration))
-      }, getDelayBeforeDelete(duration))
+        }, getFadeOutDuration(duration) * 1000)
+      }, getDelayBeforeDelete(duration) * 1000)
     }
   }
 
@@ -127,8 +124,8 @@ const fadeInAnimation = keyframes`
     }
 `
 
-const deletingCss = (duration: number = DISPLAY_DURATION) => css`
-    animation: ${deletingAnimation} ${getFadeOutDuration(duration) - 50}ms forwards;
+const deletingCss = (duration: number) => css`
+    animation: ${deletingAnimation} ${getFadeOutDuration(duration) - 0.05}s forwards;
 `
 
 const fadeInCss = css`
