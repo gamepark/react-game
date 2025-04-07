@@ -29,7 +29,7 @@ export const LogItem: FC<HistoryItemProps> = ({ history, disableCustomCss, custo
 
 const entryCss = css`
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.7);
   border-radius: 1em;
   margin-bottom: 0.5em;
   min-height: 1em;
@@ -41,11 +41,10 @@ const entryCss = css`
   display: flex;
   align-items: center;
   font-size: 2em;
+  white-space: pre-wrap;
 
-  > picture {
-    display: flex;
-    margin-left: 0.5em;
-    margin-right: 0.5em;
+  img, picture {
+    vertical-align: middle;
   }
 `
 
