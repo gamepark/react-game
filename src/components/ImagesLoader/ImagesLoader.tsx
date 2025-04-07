@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { useCallback, useRef } from 'react'
-import { Picture } from '../Picture'
+import { useRef } from 'react'
 import { useWebP } from '../../hooks'
+import { Picture } from '../Picture'
 
 export type ImagesLoaderProps = {
   images: string[]
@@ -11,12 +11,15 @@ export type ImagesLoaderProps = {
 export const ImagesLoader = ({ images, onImagesLoad }: ImagesLoaderProps) => {
   const webp = useWebP()
   const loadCount = useRef(0)
-  const onLoad = useCallback(() => {
+  const onLoad = () => {
     loadCount.current++
     if (onImagesLoad && loadCount.current === images.length) {
       onImagesLoad()
     }
-  }, [onImagesLoad])
+  }
+  if (onImagesLoad && images.length === 0) {
+    onImagesLoad()
+  }
   if (webp === undefined) return null
   return (
     <>
