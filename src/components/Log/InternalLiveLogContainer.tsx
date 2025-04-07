@@ -42,6 +42,12 @@ export const InternalLiveLogContainer: FC<LiveLogContainerProps> = (props) => {
   }, [isLoaded])
 
   useEffect(() => {
+    if (history.length < nextDisplayed) {
+      setNextDisplayed(history.length)
+    }
+  }, [history.length])
+
+  useEffect(() => {
     if (displayed.length < maxItemDisplayed && !stopped) {
       displayNextHistoryEntry()
     }
