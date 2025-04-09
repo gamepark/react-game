@@ -22,13 +22,12 @@ type StyledPlayerPanelProps = {
   countersPerLine?: number,
   backgroundImage?: string
   playerFocus?: MaterialFocus
-  color?: string
   activeRing?: boolean
   timerOnRight?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
-  const { player, activeRing, timerOnRight, color = '#28B8CE', playerFocus, backgroundImage, counters = [], countersPerLine = 2, mainCounter, ...rest } = props
+  const { player, activeRing, timerOnRight, playerFocus, backgroundImage, counters = [], countersPerLine = 2, mainCounter, ...rest } = props
   const allCounter = mainCounter ? [mainCounter, ...counters] : counters ?? []
   const { setFocus } = useFocusContext()
   const playerName = usePlayerName(player.id)
