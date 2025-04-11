@@ -28,9 +28,11 @@ export const History: FC<HistoryProps> = (props) => {
       <div css={scrollCss} ref={scrollRef} {...rest}>
         <div css={scrollContentCss}>
           <StartGameHistory/>
-          {history.map((h) => (
-            <LogItem key={`${h.action.id}_${h.consequenceIndex}`} history={h} css={itemCss} customEntryCss={customEntryCss}/>
-          ))}
+          {history.map((h) => {
+            if (!h.action.id) return null // wait for server action.id
+            const key = h.consequenceIndex !== undefined ? `${h.action.id}_${h.consequenceIndex}` : h.action.id
+            return <LogItem key={key} history={h} css={itemCss} customEntryCss={customEntryCss}/>
+          })}
           <GameOverHistory/>
         </div>
       </div>
