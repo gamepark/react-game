@@ -1,6 +1,6 @@
-import { DisplayedAction, GamePageState } from '@gamepark/react-client'
-import { PlayedMove } from '@gamepark/react-client'
-import { MaterialGame, MaterialMove, Rules } from '@gamepark/rules-api'
+import { DisplayedAction, GamePageState, PlayedMove } from '@gamepark/react-client'
+import { MaterialMove, Rules } from '@gamepark/rules-api'
+import findLastIndex from 'lodash/findLastIndex'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { gameContext, MovePlayedLogDescription } from '../components'
@@ -14,7 +14,7 @@ export type MoveHistory<Move = any, Player = any, Game = any> = MovePlayedLogDes
   consequenceIndex?: number
 }
 
-export const  useFlatHistory = () => {
+export const useFlatHistory = () => {
   const context = useContext(gameContext)
   const player = usePlayerId()
   const [history, setHistory] = useState<MoveHistory[]>([])
@@ -31,14 +31,14 @@ export const  useFlatHistory = () => {
     }
   }, [setup, gameOver])
 
-  const getMoveEntry = (playedMove: PlayedMove, game: MaterialGame): MoveHistory | undefined => {
+  const getMoveEntry = (playedMove: PlayedMove): MoveHistory | undefined => {
     const { move } = playedMove
-    const moveComponentContext = { ...playedMove, game }
+    const moveComponentContext = { ...playedMove, game: rules.current!.game }
     const description = context.logs?.getMovePlayedLogDescription(move, moveComponentContext)
     if (!description?.Component) return
     return {
       ...playedMove,
-      game: JSON.parse(JSON.stringify(game)),
+      game: JSON.parse(JSON.stringify(rules.current!.game)),
       ...description
     }
   }
@@ -54,7 +54,7 @@ export const  useFlatHistory = () => {
       const newMoves = playedMoves.slice(actualSize - playedMoves.length)
       const entries: MoveHistory[] = []
       for (const move of newMoves) {
-        const entry = getMoveEntry(move, rules.current!.game)
+        const entry = getMoveEntry(move)
         if (entry) entries.push(entry)
         rules.current?.play(move.move, { local: move.action.local })
       }
@@ -62,15 +62,20 @@ export const  useFlatHistory = () => {
     } else if (actualSize > playedMoves.length) {
       const newPlayedMoveActionId = new Set(playedMoves.map((m) => m.action.id))
       const firstDeletedActionIndex = history.findIndex((m) => !newPlayedMoveActionId.has(m.action.id))
-      const gameBefore = JSON.parse(JSON.stringify(firstDeletedActionIndex < 1? setup: history![firstDeletedActionIndex - 1].game))
-
-      rules.current = new context.Rules(gameBefore)
-      const followingMoves = history.slice(firstDeletedActionIndex).filter((h) => newPlayedMoveActionId.has(h.action.id))
+      if (firstDeletedActionIndex === -1) return // The action which was undone did not generate any history entry
+      const previousHistoryEntry = firstDeletedActionIndex > 0 ? history[firstDeletedActionIndex - 1] : undefined
+      const previousGameState = previousHistoryEntry ? previousHistoryEntry.game : setup
+      rules.current = new context.Rules(previousGameState)
+      const movesToReplay = previousHistoryEntry ?
+        playedMoves.slice(1 + findLastIndex(playedMoves, move =>
+          move.action.id === previousHistoryEntry.action.id && move.consequenceIndex === previousHistoryEntry.consequenceIndex
+        ))
+        : playedMoves
       const entries: MoveHistory[] = []
-      for (const move of followingMoves) {
-        const entry = getMoveEntry(move, rules.current!.game)
+      for (const move of movesToReplay) {
+        const entry = getMoveEntry(move)
         if (entry) entries.push(entry)
-        rules.current?.play(move.move, { local: move.action.local })
+        rules.current.play(move.move, { local: move.action.local })
       }
 
       setHistory((h) => h.slice(0, firstDeletedActionIndex).concat(entries))
