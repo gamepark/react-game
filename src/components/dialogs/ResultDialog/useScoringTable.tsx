@@ -1,7 +1,7 @@
-import { ScoringValue } from '@gamepark/react-client'
 import { useContext, useMemo } from 'react'
 import { useRules } from '../../../hooks'
 import { gameContext } from '../../GameProvider'
+import { ScoringValue } from '../../Scoring'
 
 export const useScoringHeader = () => {
   const rules = useRules()

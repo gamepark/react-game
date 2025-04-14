@@ -1,9 +1,10 @@
-import { Animations, ScoringDescription, TutorialDescription } from '@gamepark/react-client'
+import { Animations, TutorialDescription } from '@gamepark/react-client'
 import { RulesCreator } from '@gamepark/rules-api'
 import React, { ComponentType } from 'react'
 import { ItemLocatorRecord } from '../../locators'
 import { LogDescription } from '../Log'
 import { MaterialDescriptionRecord } from '../material'
+import { ScoringDescription } from '../Scoring'
 
 export type GameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   game: string
