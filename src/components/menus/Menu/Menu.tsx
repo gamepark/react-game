@@ -8,6 +8,7 @@ import fscreen from 'fscreen'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
+import { useRules } from '../../../hooks'
 import { ResultDialog } from '../../dialogs'
 import { GamePointIcon } from '../../GamePoints'
 import { gameContext } from '../../GameProvider'
@@ -35,7 +36,7 @@ export const Menu = () => {
   const locale = query.get('locale') || 'en'
   const gameMode = useSelector((state: GamePageState) => state.gameMode)
   const playerId = useSelector((state: GamePageState) => state.playerId)
-  const gameOver = useSelector((state: GamePageState) => state.gameOver && !state.actions?.some(action => action.animation))
+  const gameOver = useRules()?.isOver()
   const tournament = useSelector((state: GamePageState) => state.tournament)
   const couldEject = !gameOver && (playerId !== undefined || tournament?.signedUp === true)
   const couldUndo = !gameOver && playerId !== undefined

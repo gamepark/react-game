@@ -29,7 +29,7 @@ export const useFlatHistory = () => {
     if (!rules.current && setup) {
       rules.current = new context.Rules(JSON.parse(JSON.stringify(setup)), gameOver ? undefined : { player })
     }
-  }, [setup, gameOver])
+  }, [setup])
 
   const getMoveEntry = (playedMove: PlayedMove): MoveHistory | undefined => {
     const { move } = playedMove
@@ -65,7 +65,7 @@ export const useFlatHistory = () => {
       const lastValidHistoryIndex = findLastIndex(history, (moveHistory) => !invalidatedMoves.some((move) => move.action.id === moveHistory.action.id))
       const lastValidHistory = lastValidHistoryIndex !== -1 ? history[lastValidHistoryIndex] : undefined
       const previousGameState = lastValidHistory ? lastValidHistory.game : setup
-      rules.current = new context.Rules(JSON.parse(JSON.stringify(previousGameState)))
+      rules.current = new context.Rules(JSON.parse(JSON.stringify(previousGameState)), gameOver ? undefined : { player })
       const movesToReplay = lastValidHistory ?
         playedMoves.slice(findLastIndex(playedMoves, move =>
           move.action.id === lastValidHistory.action.id && move.consequenceIndex === lastValidHistory.consequenceIndex

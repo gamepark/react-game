@@ -1,9 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
-import { GamePageState, Player } from '@gamepark/react-client'
+import { Player } from '@gamepark/react-client'
 import { MaterialRules } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, RefObject, useCallback, useRef } from 'react'
-import { useSelector } from 'react-redux'
 import { usePlayerName, useRules } from '../../hooks'
 import { Avatar, SpeechBubbleDirection, SpeechBubbleProps } from '../Avatar'
 import { MaterialFocus, useFocusContext } from '../material'
@@ -31,7 +30,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
   const allCounter = mainCounter ? [mainCounter, ...counters] : counters ?? []
   const { setFocus } = useFocusContext()
   const playerName = usePlayerName(player.id)
-  const gameOver = useSelector((state: GamePageState) => state.gameOver)
+  const gameOver = useRules()?.isOver()
   const rules = useRules<MaterialRules>()
   const isTurnToPlay = rules?.isTurnToPlay(player.id) ?? false
   const panelRef = useRef<HTMLDivElement>(null)
