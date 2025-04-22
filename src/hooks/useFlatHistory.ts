@@ -22,6 +22,7 @@ export const useFlatHistory = () => {
   const setup = useSelector((state: GamePageState) => state.setup) ?? {}
   const playedMoves = useSelector((state: GamePageState) => state.playedMoves)
   const gameOver = useSelector((state: GamePageState) => state.gameOver)
+  const actions = useSelector((state: GamePageState) => state.actions)
 
   const moves = useRef<PlayedMove[]>([])
   const rules = useRef<Rules>()
@@ -31,16 +32,15 @@ export const useFlatHistory = () => {
     }
   }, [setup])
 
+  const getAction = (actionId: string) => actions!.find((action) => action.id === actionId)!
+
   const getMoveEntry = (playedMove: PlayedMove): MoveHistory | undefined => {
-    const { move } = playedMove
-    const moveComponentContext = { ...playedMove, game: rules.current!.game }
+    const { move, consequenceIndex } = playedMove
+    const action = getAction(playedMove.actionId)
+    const moveComponentContext = { move, consequenceIndex, action, game: JSON.parse(JSON.stringify(rules.current!.game)) }
     const description = context.logs?.getMovePlayedLogDescription(move, moveComponentContext)
     if (!description?.Component) return
-    return {
-      ...playedMove,
-      game: JSON.parse(JSON.stringify(rules.current!.game)),
-      ...description
-    }
+    return { ...moveComponentContext, ...description }
   }
 
   useEffect(() => {
@@ -56,30 +56,33 @@ export const useFlatHistory = () => {
       for (const move of newMoves) {
         const entry = getMoveEntry(move)
         if (entry) entries.push(entry)
-        rules.current?.play(move.move, { local: move.action.local })
+        const action = getAction(move.actionId)
+        rules.current?.play(move.move, { local: action.local })
       }
       setHistory((h) => h.concat(entries))
     } else if (actualSize > playedMoves.length) {
-      const firstIndexChange = moves.current.findIndex((currentMove, index) => currentMove.action.id !== playedMoves[index]?.action.id)
+      const firstIndexChange = moves.current.findIndex((currentMove, index) => currentMove.actionId !== playedMoves[index]?.actionId)
       const invalidatedMoves = moves.current.slice(firstIndexChange)
-      const lastValidHistoryIndex = findLastIndex(history, (moveHistory) => !invalidatedMoves.some((move) => move.action.id === moveHistory.action.id))
+      const lastValidHistoryIndex = findLastIndex(history, (moveHistory) => !invalidatedMoves.some((move) => move.actionId === moveHistory.action.id))
       const lastValidHistory = lastValidHistoryIndex !== -1 ? history[lastValidHistoryIndex] : undefined
       const previousGameState = lastValidHistory ? lastValidHistory.game : setup
       rules.current = new context.Rules(JSON.parse(JSON.stringify(previousGameState)), gameOver ? undefined : { player })
       const movesToReplay = lastValidHistory ?
         playedMoves.slice(findLastIndex(playedMoves, move =>
-          move.action.id === lastValidHistory.action.id && move.consequenceIndex === lastValidHistory.consequenceIndex
+          move.actionId === lastValidHistory.action.id && move.consequenceIndex === lastValidHistory.consequenceIndex
         ))
         : playedMoves
       if (lastValidHistory) {
         const move = movesToReplay.shift()!
-        rules.current.play(move.move, { local: move.action.local })
+        const action = getAction(move.actionId)
+        rules.current.play(move.move, { local: action.local })
       }
       const entries: MoveHistory[] = []
       for (const move of movesToReplay) {
         const entry = getMoveEntry(move)
         if (entry) entries.push(entry)
-        rules.current.play(move.move, { local: move.action.local })
+        const action = getAction(move.actionId)
+        rules.current.play(move.move, { local: action.local })
       }
 
       setHistory((h) => h.slice(0, lastValidHistoryIndex + 1).concat(entries))
