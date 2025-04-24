@@ -73,10 +73,12 @@ export const DraggableMaterial = <M extends number = number>(
     if (move !== undefined) return () => play(move)
   }, [itemContext, play, legalMoves])
 
+  const hadMenu = useRef(!!menu)
   useEffect(() => {
-    if (!menu && !menuAlwaysVisible && item.selected) {
+    if (hadMenu.current && !menu && !menuAlwaysVisible && item.selected) {
       play(rules.material(type).index(index).unselectItem(), { transient: true })
     }
+    hadMenu.current = !!menu
   }, [!menu])
 
   const disabled = useMemo(() => !legalMoves.some(move => description.canDrag(move, itemContext))
