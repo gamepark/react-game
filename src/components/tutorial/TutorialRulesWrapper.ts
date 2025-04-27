@@ -1,4 +1,5 @@
 import { Action, LocalMoveType, MaterialGame, MaterialMove, MoveKind, PlayMoveContext, RulesCreator, SetTutorialStep } from '@gamepark/rules-api'
+import { sample } from 'lodash'
 import { MaterialTutorial, TutorialStep } from './MaterialTutorial'
 
 export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCreator<any, any, any>) {
@@ -104,10 +105,16 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
 
   Rules.prototype.getAutomaticMoves = function () {
     const consequences = getAutomaticMoves.bind(this)() as MaterialMove[]
-    if (!consequences.length && (this.game as MaterialGame).tutorial?.stepComplete) {
+    if (consequences.length) return consequences
+    const game = this.game as MaterialGame
+    if (game.tutorial?.stepComplete) {
       return [{ kind: MoveKind.LocalMove, type: LocalMoveType.SetTutorialStep, step: this.game.tutorial.step + 1 }]
     }
-    return consequences
+    const tutorialStep = game.tutorial && tutorial.steps[game.tutorial.step]
+    if (tutorialStep?.move?.auto) {
+      return [sample(this.getLegalMoves(tutorialStep?.move?.player ?? this.game.players[0]))]
+    }
+    return []
   }
 
   Rules.prototype.canUndo = function (action: Action, consecutiveActions: Action[]) {
