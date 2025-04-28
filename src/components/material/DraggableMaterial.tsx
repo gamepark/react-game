@@ -1,7 +1,18 @@
 /** @jsxImportSource @emotion/react */
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
-import { DisplayedItem, isMoveItemType, isSelectItem, ItemMove, MaterialItem, MaterialMove, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
+import {
+  DisplayedItem, isMoveItem,
+  isMoveItemType,
+  isMoveItemTypeAtOnce,
+  isSelectItem,
+  ItemMove,
+  MaterialItem,
+  MaterialMove,
+  MaterialRules,
+  MoveItem, MoveItemsAtOnce,
+  XYCoordinates
+} from '@gamepark/rules-api'
 import merge from 'lodash/merge'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useTransformContext } from 'react-zoom-pan-pinch'
@@ -178,12 +189,14 @@ export function dataIsDisplayedItem<M extends number = number>(data?: Record<str
 const useRevealedItem = <P extends number = number, M extends number = number, L extends number = number>(
   type: M, index: number
 ): MaterialItem<P, L> => {
-  const animation = useAnimation<MoveItem<P, M, L>>(animation => isMoveItemType(type, index)(animation.move))
   const rules = useRules<MaterialRules<P, M, L>>()
   const item = rules?.material(type).getItem(index)
-  return useMemo(() =>
-      item && typeof animation?.move.reveal === 'object' ? merge(JSON.parse(JSON.stringify(item)), animation.move.reveal) : item
-    , [item, animation?.move.reveal])
+  const animation = useAnimation<MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>>(animation =>
+    (isMoveItemType(type, index)(animation.move) && animation.move.reveal !== undefined)
+    || (isMoveItemTypeAtOnce(type)(animation.move) && animation.move.reveal?.[index] !== undefined)
+  )
+  const reveal = animation ? (isMoveItem(animation.move) ? animation.move.reveal : animation.move.reveal?.[index]) : undefined
+  return useMemo(() => merge(JSON.parse(JSON.stringify(item)), reveal), [item, reveal])
 }
 
 const useItemAnimation = <P extends number = number, M extends number = number, L extends number = number>(
