@@ -102,7 +102,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
 
   getHoverTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     const locator = context.locators[item.location.type]
-    if (!locator || this.isFlippedOnTable(item, context)) return []
+    if (!locator || (this.backImage && this.isFlippedOnTable(item, context))) return []
     return locator.getHoverTransform(item, context)
   }
 
