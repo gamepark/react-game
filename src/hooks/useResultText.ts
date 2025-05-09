@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { isCompetitive, isCompetitiveScore, rankPlayers, Rules } from '@gamepark/rules-api'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePlayerId, usePlayerIds, usePlayerName, useRules } from './index'
-import { useMemo } from 'react'
 
 export const useResultText = <PlayerId = any>(): string => {
   const { t } = useTranslation()
@@ -26,33 +26,34 @@ export const useResultText = <PlayerId = any>(): string => {
   if (rules && isCompetitive(rules)) {
     if (isCompetitiveScore(rules)) {
       const score = rules.getScore(winners[0])
-      if (winners.length === 1) {
-        if (winners[0] === player) {
-          return t('result.score.victory', { score })
+      if (score !== undefined) {
+        if (winners.length === 1) {
+          if (winners[0] === player) {
+            return t('result.score.victory', { score })
+          } else {
+            return t('result.score.winner', { player: winnerName, score })
+          }
+        } else if (winners.length === players.length) {
+          return t('result.score.tie.all', { score })
+        } else if (player !== undefined && winners.includes(player)) {
+          return t('result.score.tie.you', { score, tied: winners.length - 1 })
         } else {
-          return t('result.score.winner', { player: winnerName, score })
+          return t('result.score.tie.other', { score, tied: winners.length })
         }
-      } else if (winners.length === players.length) {
-        return t('result.score.tie.all', { score })
-      } else if (player !== undefined && winners.includes(player)) {
-        return t('result.score.tie.you', { score, tied: winners.length - 1 })
-      } else {
-        return t('result.score.tie.other', { score, tied: winners.length })
       }
+    }
+    if (winners.length === 1) {
+      if (winners[0] === player) {
+        return t('result.comp.victory')
+      } else {
+        return t('result.comp.winner', { player: winnerName })
+      }
+    } else if (winners.length === players.length) {
+      return t('result.comp.tie.all')
+    } else if (player !== undefined && winners.includes(player)) {
+      return t('result.comp.tie.you', { tied: winners.length - 1 })
     } else {
-      if (winners.length === 1) {
-        if (winners[0] === player) {
-          return t('result.comp.victory')
-        } else {
-          return t('result.comp.winner', { player: winnerName })
-        }
-      } else if (winners.length === players.length) {
-        return t('result.comp.tie.all')
-      } else if (player !== undefined && winners.includes(player)) {
-        return t('result.comp.tie.you', { tied: winners.length - 1 })
-      } else {
-        return t('result.comp.tie.other', { tied: winners.length })
-      }
+      return t('result.comp.tie.other', { tied: winners.length })
     }
   }
 
