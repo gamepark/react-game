@@ -1,8 +1,11 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Animation, AnimationContext, Animations, DisplayedAction } from '@gamepark/react-client'
 import { MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
+import uniq from 'lodash/uniq'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { GameContext } from '../../GameProvider'
+import { MaterialSoundConfig } from '../sound/MaterialSoundConfig'
+import { ensureMaterialSoundConfig } from '../sound/sound.utils'
 import { ItemAnimations } from './ItemAnimations'
 import { MaterialAnimations } from './MaterialAnimations'
 
@@ -44,12 +47,20 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
     }
     return this.defaultAnimationConfig
   }
+
+  getSounds(): string[] {
+    return uniq(this.animationConfigs
+      .filter(animationConfig => !!animationConfig.s)
+      .map(animationConfig => ensureMaterialSoundConfig(animationConfig.s!)!.sound)
+    )
+  }
 }
 
 class AnimationConfig<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
   filters: ((move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>) => boolean)[] = []
   d: number = 1
+  s?: string | MaterialSoundConfig | false = undefined
 
   rule<RuleId extends number>(ruleId: RuleId): this {
     this.filters.push((_, context) => context.rules.game.rule?.id === ruleId)
@@ -68,6 +79,11 @@ class AnimationConfig<P extends number = number, M extends number = number, L ex
 
   duration(duration: number): this {
     this.d = duration
+    return this
+  }
+
+  sound(sound: string | MaterialSoundConfig | false): this {
+    this.s = sound
     return this
   }
 
