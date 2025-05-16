@@ -42,9 +42,7 @@ export class AudioLoader {
       sound.gainNode.connect(this.audioContext.destination)
     }
 
-
     sound.sourceNode.connect(sound.gainNode)
-    sound.volume =
     sound.gainNode.gain.value = config.volume ?? 1
 
     sound.sourceNode.start(0, config.startsAt ?? 0, config.duration)
