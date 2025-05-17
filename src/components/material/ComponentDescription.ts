@@ -1,3 +1,6 @@
+import { ItemMoveType } from '@gamepark/rules-api'
+import { MaterialSoundConfig } from './sound'
+
 /**
  * Base class for components displayed on the game table by the framework.
  * Contains all features common to items and locations display.
@@ -10,6 +13,11 @@ export abstract class ComponentDescription<Id = any> {
     this.ratio = clone?.ratio
     this.borderRadius = clone?.borderRadius ?? 0
   }
+
+  /**
+   * All the sounds for each move type
+   */
+  sounds?: Partial<Record<ItemMoveType, string | MaterialSoundConfig>>
 
   /**
    * All the images that can be used to display the component, and therefore should be preloaded with the web page.
