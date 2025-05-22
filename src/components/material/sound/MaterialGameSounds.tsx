@@ -1,3 +1,4 @@
+import { Animation } from '@gamepark/react-client'
 import { MaterialMove, MoveKind } from '@gamepark/rules-api'
 import { FC, useContext, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -27,16 +28,16 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, 
   useEffect(() => {
     if (!animation) return
     const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
+    let materialSoundConfig: MaterialSoundConfig | undefined
     if (config?.s !== undefined) {
-      const materialSoundConfig = ensureMaterialSoundConfig(config.s)
-      if (!materialSoundConfig) return
-      materialSoundConfig.duration = animation.duration ?? materialSoundConfig.duration
-      playSound(audioLoader, materialSoundConfig)
+      materialSoundConfig = ensureMaterialSoundConfig(config.s)
     } else if (animation.move.kind === MoveKind.ItemMove) {
-      const materialSoundConfig = ensureMaterialSoundConfig(material![animation.move.itemType]?.sounds?.[animation.move.type])
-      if (!materialSoundConfig) return
-      playSound(audioLoader, materialSoundConfig)
+      materialSoundConfig = ensureMaterialSoundConfig(material![animation.move.itemType]?.sounds?.[animation.move.type])
     }
+
+    if (!materialSoundConfig) return
+    prepareConfig(materialSoundConfig, animation)
+    playSound(audioLoader, materialSoundConfig)
   }, [animation?.move])
 
 
@@ -100,4 +101,9 @@ const playSound = (audioLoader: AudioLoader, config: MaterialSoundConfig) => {
   } else {
     audioLoader.play(config)
   }
+}
+
+const prepareConfig = (materialSoundConfig: MaterialSoundConfig, animation: Animation) => {
+  materialSoundConfig.delay = Math.min(animation.duration - 0.2, materialSoundConfig.delay ?? 0)
+  materialSoundConfig.duration = materialSoundConfig.duration ?? animation.duration
 }
