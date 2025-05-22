@@ -6,6 +6,7 @@ import { faLaptopCode } from '@fortawesome/free-solid-svg-icons/faLaptopCode'
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb'
 import { faPaintbrush } from '@fortawesome/free-solid-svg-icons/faPaintbrush'
 import { faWrench } from '@fortawesome/free-solid-svg-icons/faWrench'
+import { faMusic } from '@fortawesome/free-solid-svg-icons/faMusic'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { HTMLAttributes, useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
@@ -19,6 +20,7 @@ export type LoadingScreenProps = {
   graphicDesigner?: string | string[]
   publisher?: string | string[]
   developer?: string | string[]
+  musician?: string | string[]
   display: boolean
 } & HTMLAttributes<HTMLDivElement>
 
@@ -29,6 +31,7 @@ export const LoadingScreen = ({
                                 graphicDesigner,
                                 publisher,
                                 developer,
+                                musician,
                                 display,
                                 ...props
                               }: LoadingScreenProps) => {
@@ -48,6 +51,7 @@ export const LoadingScreen = ({
   const graphicDesigners = typeof graphicDesigner === 'string' ? [graphicDesigner] : graphicDesigner ?? []
   const publishers = typeof publisher === 'string' ? [publisher] : publisher ?? []
   const developers = typeof developer === 'string' ? [developer] : developer ?? []
+  const musicians = typeof musician === 'string' ? [musician] : musician ?? []
   return (
     <div css={[loadingScreenStyle, !display && hiddenStyle]} {...props}>
       {gameBox && <Picture css={gameBoxStyle} src={gameBox} alt={t('Name')!}/>}
@@ -58,6 +62,7 @@ export const LoadingScreen = ({
         <PeopleLine type="graphics" people={graphicDesigners} icon={faImage}/>
         <PeopleLine type="publishers" people={publishers} icon={faWrench}/>
         <PeopleLine type="developers" people={developers} icon={faLaptopCode}/>
+        <PeopleLine type="musician" people={musicians} icon={faMusic}/>
       </p>
     </div>
   )
