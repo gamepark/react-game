@@ -26,12 +26,12 @@ export class AudioLoader {
   }
 
   public play(soundConfig: string | MaterialSoundConfig) {
-    if (this.muted) return
     const config = typeof soundConfig === 'string' ? new MaterialSoundConfig(soundConfig) : soundConfig
     const id = config.sound
     this.sounds[id] = this.sounds[id] || {}
 
     const sound = this.sounds[id]
+    sound.volume = config.volume ?? 1
     sound.sourceNode = this.audioContext.createBufferSource()
     sound.sourceNode.buffer = this.buffers[id]
     sound.sourceNode.loop = config.loop ?? false
@@ -43,7 +43,7 @@ export class AudioLoader {
     }
 
     sound.sourceNode.connect(sound.gainNode)
-    sound.gainNode.gain.value = config.volume ?? 1
+    sound.gainNode.gain.value = this.muted? 0: (config.volume ?? 1)
 
     sound.sourceNode.start(0, config.startsAt ?? 0, config.duration)
   }
