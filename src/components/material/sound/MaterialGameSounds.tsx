@@ -1,6 +1,6 @@
 import { Animation } from '@gamepark/react-client'
 import { MaterialMove, MoveKind } from '@gamepark/rules-api'
-import { FC, useContext, useEffect, useMemo, useState } from 'react'
+import { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useAnimation, useMaterialContext } from '../../../hooks'
 import { gameContext } from '../../GameProvider'
@@ -64,20 +64,22 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, 
     }
   }, [audioLoaderStatus, audioLoaded])
 
-  const changeAudioLoaderStatus = () => {
+  const changeAudioLoaderStatus = useCallback(()  => {
+    if (audioLoaded) return
     audioLoader.resume().then(() => {
       setAudioLoaderStatus(audioLoader.status())
+      document.removeEventListener('mousedown', changeAudioLoaderStatus)
     })
-  }
+  }, [audioLoaded])
 
   useEffect(() => {
-    if (!ambiance) return
+    if (!ambiance || audioLoaded) return
     getAmbianceLoadPromise(audioLoader, ambiance).then(() => setAudioLoaded(true))
 
-    document.addEventListener('click', changeAudioLoaderStatus)
+    document.addEventListener('mousedown', changeAudioLoaderStatus)
 
     return () => {
-      document.removeEventListener('click', changeAudioLoaderStatus)
+      document.removeEventListener('mousedown', changeAudioLoaderStatus)
     }
     // eslint-disable-next-line
   }, [])
