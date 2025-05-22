@@ -15,16 +15,23 @@ type MaterialGameSoundsProps = {
   ambiance?: string | MaterialSoundConfig
 }
 
+let ambianceLoadPromise: Promise<void> | undefined
+const getAmbianceLoadPromise = (audioLoader: AudioLoader, sound: string | MaterialSoundConfig) => {
+  if (!ambianceLoadPromise) {
+    ambianceLoadPromise = audioLoader.load([sound])
+  }
+
+  return ambianceLoadPromise
+}
 export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, ambiance }) => {
   const context = useMaterialContext()
-  const [ambianceEnabled, setAmbianceEnabled] = useState(false)
-  const [ambianceFail, setAmbianceFail] = useState(false)
-  const [ambianceLoading, setAmbianceLoading] = useState(false)
+  const audioLoader = useMemo(() => new AudioLoader(), [])
+  const [audioLoaderStatus, setAudioLoaderStatus] = useState(audioLoader.status())
+  const [audioLoaded, setAudioLoaded] = useState(false)
   const animationsConfig = useContext(gameContext).animations as MaterialGameAnimations
   const material = useContext(gameContext).material
   const animation = useAnimation<MaterialMove>()
   const muted = useSelector((state: { soundsMuted: boolean }) => state.soundsMuted)
-  const audioLoader = useMemo(() => new AudioLoader(), [])
   useEffect(() => {
     if (!animation) return
     const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
@@ -52,42 +59,28 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, 
 
 
   useEffect(() => {
-    if (!ambiance || ambianceEnabled) return
-    // If the user hasn't click on the page before the audio context is loaded, the ambiance sound won't be run.
-    // Then we add an event on the document to enable the ambiance only if it has failed.
-    if (audioLoader.status() === 'suspended') {
-      setAmbianceFail(true)
-    } else {
-      if (ambianceEnabled) return
-      audioLoader.load([ambiance])
-        .then(() => {
-          audioLoader.loop(ambiance)
-        })
+    if (audioLoaderStatus === 'running' && audioLoaded) {
+      audioLoader.loop(ambiance!)
     }
-    // eslint-disable-next-line
-  }, [ambiance])
+  }, [audioLoaderStatus, audioLoaded])
+
+  const changeAudioLoaderStatus = () => {
+    audioLoader.resume().then(() => {
+      setAudioLoaderStatus(audioLoader.status())
+    })
+  }
 
   useEffect(() => {
-    const enableAmbiance = () => {
-      if (!ambiance || ambianceLoading || ambianceEnabled) return
-      setAmbianceLoading(true)
-      audioLoader.load([ambiance])
-        .then(() => {
-          audioLoader.loop(ambiance)
-          setAmbianceEnabled(true)
-          setAmbianceLoading(false)
-        }).catch(() => setAmbianceLoading(false))
-    }
+    if (!ambiance) return
+    getAmbianceLoadPromise(audioLoader, ambiance).then(() => setAudioLoaded(true))
 
-    if (ambianceFail && !ambianceEnabled) {
-      document.addEventListener('click', enableAmbiance)
-    }
+    document.addEventListener('click', changeAudioLoaderStatus)
 
     return () => {
-      document.removeEventListener('click', enableAmbiance)
+      document.removeEventListener('click', changeAudioLoaderStatus)
     }
     // eslint-disable-next-line
-  }, [ambianceFail, ambianceEnabled, ambianceLoading])
+  }, [])
 
 
   return (

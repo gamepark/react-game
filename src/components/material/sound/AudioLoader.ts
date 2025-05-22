@@ -61,7 +61,7 @@ export class AudioLoader {
   }
 
   public resume() {
-    this.audioContext.resume()
+    return this.audioContext.resume()
   }
 
   /**
