@@ -1,5 +1,5 @@
 import { Action, LocalMoveType, MaterialGame, MaterialMove, MoveKind, PlayMoveContext, RulesCreator, SetTutorialStep } from '@gamepark/rules-api'
-import { sample } from 'lodash'
+import sample from 'lodash/sample'
 import { MaterialTutorial, TutorialStep } from './MaterialTutorial'
 
 export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCreator<any, any, any>) {

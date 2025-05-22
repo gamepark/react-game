@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { MaterialItem } from '@gamepark/rules-api'
-import { flatten, values } from 'lodash'
+import flatten from 'lodash/flatten'
+import values from 'lodash/values'
 import sumBy from 'lodash/sumBy'
 import { createContext, FC, useCallback, useContext, useRef, useState } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
