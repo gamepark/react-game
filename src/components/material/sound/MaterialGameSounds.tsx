@@ -31,12 +31,11 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, 
       const materialSoundConfig = ensureMaterialSoundConfig(config.s)
       if (!materialSoundConfig) return
       materialSoundConfig.duration = animation.duration ?? materialSoundConfig.duration
-      audioLoader.play(materialSoundConfig)
+      playSound(audioLoader, materialSoundConfig)
     } else if (animation.move.kind === MoveKind.ItemMove) {
-      const materialSoundConfig = material![animation.move.itemType]?.sounds?.[animation.move.type]
-      if (materialSoundConfig) {
-        audioLoader.play(materialSoundConfig)
-      }
+      const materialSoundConfig = ensureMaterialSoundConfig(material![animation.move.itemType]?.sounds?.[animation.move.type])
+      if (!materialSoundConfig) return
+      playSound(audioLoader, materialSoundConfig)
     }
   }, [animation?.move])
 
@@ -93,4 +92,12 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, 
   return (
     <MaterialSoundLoader onSoundsLoad={onSoundsLoad} audioLoader={audioLoader}/>
   )
+}
+
+const playSound = (audioLoader: AudioLoader, config: MaterialSoundConfig) => {
+  if (config.delay) {
+    setTimeout(() => audioLoader.play(config), config.delay * 1000)
+  } else {
+    audioLoader.play(config)
+  }
 }

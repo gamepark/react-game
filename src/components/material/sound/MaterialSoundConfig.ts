@@ -6,6 +6,7 @@ export class MaterialSoundConfig {
   public endsAt?: number
   public duration?: number
   public speed?: number
+  public delay?: number
 
   constructor(sound: string) {
     this.sound = sound
