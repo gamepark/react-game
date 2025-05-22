@@ -5,13 +5,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   isDeleteItem,
   isMoveItem,
+  isMoveItemsAtOnce,
   isRoll,
   isSelectItem,
   Location,
   MaterialHelpDisplay,
   MaterialItem,
   MaterialMove,
-  MaterialMoveBuilder
+  MaterialMoveBuilder,
+  MoveItem,
+  MoveItemsAtOnce
 } from '@gamepark/rules-api'
 import { TFunction } from 'i18next'
 import groupBy from 'lodash/groupBy'
@@ -240,8 +243,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    */
   getDropLocations(context: ItemContext<P, M, L>, dragMoves: MaterialMove<P, M, L>[]): Location<P, L>[] {
     const locations: Location<P, L>[] = []
-    const [itemMoves, otherMoves] = partition(dragMoves, isMoveItem)
-    const itemMovesByType = groupBy(itemMoves, 'location.type')
+    const [itemMoves, otherMoves] = partition(dragMoves, isMovementOfItem)
+    const itemMovesByType = groupBy(itemMoves, (move) =>
+      move.location.type ?? context.rules.material(move.itemType).getItem(isMoveItem(move) ? move.itemIndex : move.indexes[0]).location.type
+    )
     for (const type in itemMovesByType) {
       const locator: Locator<P, M, L> | undefined = context.locators[parseInt(type) as L]
       if (locator) {
@@ -302,6 +307,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   getHelpDisplayExtraCss(_item: Partial<MaterialItem<P, L>>, _context: ItemContext<P, M, L>): Interpolation<Theme> {
     return
   }
+}
+
+function isMovementOfItem<P extends number, M extends number, L extends number>(move: MaterialMove<P, M, L>): move is (MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>) {
+  return isMoveItem(move) || isMoveItemsAtOnce(move)
 }
 
 const upAndDown = keyframes`

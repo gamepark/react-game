@@ -2,7 +2,7 @@
 import { CollisionDetection, DndContext, DragEndEvent, getClientRect, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { css, Global } from '@emotion/react'
-import { MaterialMoveBuilder } from '@gamepark/rules-api'
+import { isMoveItemsAtOnce, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
@@ -56,7 +56,11 @@ export const GameTable: FC<GameTableProps> = (
     setDragging(false)
     const move = getBestDropMove(event, context, legalMoves)
     if (move !== undefined) {
-      if (dataIsDisplayedItem(event.active.data.current)) {
+      if (isMoveItemsAtOnce(move)) {
+        for (const index of move.indexes) {
+          play(dropItemMove(move.itemType, index, 0), { transient: true })
+        }
+      } else if (dataIsDisplayedItem(event.active.data.current)) {
         const item = event.active.data.current
         const { type, index, displayIndex } = item
         play(dropItemMove(type, index, displayIndex), { transient: true })

@@ -1,5 +1,15 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { isCreateItem, isDeleteItem, isMoveItem, Location, MaterialMove, MaterialMoveBuilder } from '@gamepark/rules-api'
+import {
+  isCreateItem,
+  isDeleteItem,
+  isMoveItem,
+  isMoveItemsAtOnce,
+  Location,
+  MaterialMove,
+  MaterialMoveBuilder,
+  MoveItem,
+  MoveItemsAtOnce
+} from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import { ComponentType, ElementType } from 'react'
 import { LocationContext, MaterialContext } from '../../../locators'
@@ -79,12 +89,18 @@ export class LocationDescription<P extends number = number, M extends number = n
   }
 
   isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
-    return (isMoveItem(move) && isLocationSubset(move.location, location) && !isRotationMove(move, context)
+    return (isMoveItem(move) && isLocationSubset(this.getMoveLocation(move, context), location) && !isRotationMove(move, context)
     ) || (
       isDeleteItem(move) && isEqual(location, context.material[move.itemType]?.getStockLocation(
         context.rules.material(move.itemType).getItem(move.itemIndex)!, context)
       )
-    )
+    ) || (isMoveItemsAtOnce(move) && isLocationSubset(this.getMoveLocation(move, context), location))
+  }
+
+  getMoveLocation(move: MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>, context: MaterialContext<P, M, L>): Location<P, L> {
+    const itemIndex = isMoveItem(move) ? move.itemIndex : move.indexes[0]
+    const type = move.location.type ?? context.rules.material(move.itemType).getItem(itemIndex).location.type
+    return { type, ...move.location }
   }
 
   getShortClickMove(_location: Location<P, L>, _context: MaterialContext<P, M, L>): MaterialMove<P, M, L> | undefined {

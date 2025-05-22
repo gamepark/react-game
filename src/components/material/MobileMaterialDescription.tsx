@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { DeleteItem, isDeleteItem, isMoveItem, MaterialMove, MoveItem } from '@gamepark/rules-api'
+import { DeleteItem, isDeleteItem, isMoveItem, isMoveItemsAtOnce, MaterialMove, MoveItem, MoveItemsAtOnce } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
 import { getItemFromContext, ItemContext } from '../../locators'
 import { MaterialDescription } from './MaterialDescription'
@@ -13,12 +13,14 @@ export abstract class MobileMaterialDescription<P extends number = number, M ext
       return move.location?.type !== undefined && move.itemType === context.type && move.itemIndex === context.index && this.canDragToMove(move, context)
     } else if (isDeleteItem(move)) {
       return move.itemType === context.type && move.itemIndex === context.index && this.canDragToDelete(move, context)
+    } else if (isMoveItemsAtOnce(move)) {
+      return move.itemType === context.type && move.indexes.includes(context.index) && this.canDragToMove(move, context)
     } else {
       return false
     }
   }
 
-  protected canDragToMove(move: MoveItem<P, M, L>, context: ItemContext<P, M, L>): boolean {
+  protected canDragToMove(move: MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>, context: ItemContext<P, M, L>): boolean {
     const { rotation, ...actualLocation } = getItemFromContext(context).location
     const { rotation: nextRotation, ...nextLocation } = move.location
     return !isEqual(actualLocation, nextLocation)

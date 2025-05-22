@@ -2,7 +2,9 @@
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
 import {
-  DisplayedItem, isMoveItem,
+  DisplayedItem,
+  isMoveItem,
+  isMoveItemsAtOnce,
   isMoveItemType,
   isMoveItemTypeAtOnce,
   isSelectItem,
@@ -10,7 +12,8 @@ import {
   MaterialItem,
   MaterialMove,
   MaterialRules,
-  MoveItem, MoveItemsAtOnce,
+  MoveItem,
+  MoveItemsAtOnce,
   XYCoordinates
 } from '@gamepark/rules-api'
 import merge from 'lodash/merge'
@@ -103,7 +106,11 @@ export const DraggableMaterial = <M extends number = number>(
 
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
   const draggedItemContext = useMemo<ItemContext | undefined>(() => draggedItem && { ...context, ...draggedItem }, [draggedItem, context])
-  const isDraggingParent = useMemo(() => !!item && !!draggedItemContext && isPlacedOnItem(item, draggedItemContext), [item, draggedItemContext])
+  const isDraggingParent = useMemo(() => !!item && !!draggedItemContext &&
+      (isPlacedOnItem(item, draggedItemContext) || legalMoves.some((move) =>
+        isMoveItemsAtOnce(move) && move.itemType === type && move.indexes.includes(index) && move.indexes.includes(draggedItemContext.index)
+      ))
+    , [item, draggedItemContext, legalMoves])
   const [parentTransform, setParentTransform] = useState<XYCoordinates>()
   const transform = selfTransform ?? parentTransform
 
