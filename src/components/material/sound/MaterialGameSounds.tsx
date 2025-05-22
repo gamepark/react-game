@@ -14,29 +14,30 @@ type MaterialGameSoundsProps = {
   ambiance?: string | MaterialSoundConfig
 }
 
-export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({  onSoundsLoad, ambiance }) => {
+export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, ambiance }) => {
   const context = useMaterialContext()
-  const [ambianceEnabled, setAmbianceEnabled] = useState(false);
-  const [ambianceFail, setAmbianceFail] = useState(false);
+  const [ambianceEnabled, setAmbianceEnabled] = useState(false)
+  const [ambianceFail, setAmbianceFail] = useState(false)
+  const [ambianceLoading, setAmbianceLoading] = useState(false)
   const animationsConfig = useContext(gameContext).animations as MaterialGameAnimations
   const material = useContext(gameContext).material
   const animation = useAnimation<MaterialMove>()
-  const muted = useSelector((state: {soundsMuted: boolean}) => state.soundsMuted)
+  const muted = useSelector((state: { soundsMuted: boolean }) => state.soundsMuted)
   const audioLoader = useMemo(() => new AudioLoader(), [])
   useEffect(() => {
     if (!animation) return
-      const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
-      if (config?.s !== undefined) {
-        const materialSoundConfig = ensureMaterialSoundConfig(config.s)
-        if (!materialSoundConfig) return
-        materialSoundConfig.duration = animation.duration ?? materialSoundConfig.duration
-        audioLoader.play(materialSoundConfig);
-      } else if (animation.move.kind === MoveKind.ItemMove){
-        const materialSoundConfig = material![animation.move.itemType]?.sounds?.[animation.move.type]
-        if (materialSoundConfig) {
-          audioLoader.play(materialSoundConfig)
-        }
+    const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
+    if (config?.s !== undefined) {
+      const materialSoundConfig = ensureMaterialSoundConfig(config.s)
+      if (!materialSoundConfig) return
+      materialSoundConfig.duration = animation.duration ?? materialSoundConfig.duration
+      audioLoader.play(materialSoundConfig)
+    } else if (animation.move.kind === MoveKind.ItemMove) {
+      const materialSoundConfig = material![animation.move.itemType]?.sounds?.[animation.move.type]
+      if (materialSoundConfig) {
+        audioLoader.play(materialSoundConfig)
       }
+    }
   }, [animation?.move])
 
 
@@ -44,29 +45,38 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({  onSoundsLoad,
     if (!muted) {
       audioLoader.unmute()
     } else {
-      audioLoader.mute();
+      audioLoader.mute()
     }
     // eslint-disable-next-line
   }, [muted])
 
 
   useEffect(() => {
-    if (!ambiance) return
+    if (!ambiance || ambianceEnabled) return
     // If the user hasn't click on the page before the audio context is loaded, the ambiance sound won't be run.
     // Then we add an event on the document to enable the ambiance only if it has failed.
     if (audioLoader.status() === 'suspended') {
       setAmbianceFail(true)
     } else {
-      audioLoader.load([ambiance]).then(() => audioLoader.loop(ambiance));
+      if (ambianceEnabled) return
+      audioLoader.load([ambiance])
+        .then(() => {
+          audioLoader.loop(ambiance)
+        })
     }
     // eslint-disable-next-line
   }, [ambiance])
 
   useEffect(() => {
     const enableAmbiance = () => {
-      if (!ambiance) return
-      audioLoader.load([ambiance]).then(() => audioLoader.loop(ambiance));
-      setAmbianceEnabled(true);
+      if (!ambiance || ambianceLoading || ambianceEnabled) return
+      setAmbianceLoading(true)
+      audioLoader.load([ambiance])
+        .then(() => {
+          audioLoader.loop(ambiance)
+          setAmbianceEnabled(true)
+          setAmbianceLoading(false)
+        }).catch(() => setAmbianceLoading(false))
     }
 
     if (ambianceFail && !ambianceEnabled) {
@@ -77,10 +87,10 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({  onSoundsLoad,
       document.removeEventListener('click', enableAmbiance)
     }
     // eslint-disable-next-line
-  }, [ambianceFail, ambianceEnabled])
+  }, [ambianceFail, ambianceEnabled, ambianceLoading])
 
 
   return (
-    <MaterialSoundLoader onSoundsLoad={onSoundsLoad} audioLoader={audioLoader} />
-  );
+    <MaterialSoundLoader onSoundsLoad={onSoundsLoad} audioLoader={audioLoader}/>
+  )
 }
