@@ -8,15 +8,14 @@ import { MaterialSoundConfig } from './MaterialSoundConfig'
 type MaterialSoundLoaderProps = {
   audioLoader: AudioLoader
   onSoundsLoad?: () => void,
-  ambiance?: string
 }
 
-export const MaterialSoundLoader: React.FunctionComponent<MaterialSoundLoaderProps> = ({ audioLoader, onSoundsLoad, ambiance }) => {
+export const MaterialSoundLoader: React.FunctionComponent<MaterialSoundLoaderProps> = ({ audioLoader, onSoundsLoad }) => {
   const context = useContext(gameContext)
   const animationsConfig = context.animations as MaterialGameAnimations
 
   const sounds = useMemo(() => {
-    const sounds: (string | MaterialSoundConfig)[] = ambiance? [ambiance]: []
+    const sounds: (string | MaterialSoundConfig)[] = []
     for (const description of Object.values(context.material ?? {})) {
       if (description) sounds.push(...Object.values(description.sounds ?? {}))
     }

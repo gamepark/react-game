@@ -5,12 +5,13 @@ import { useAnimation, useMaterialContext } from '../../../hooks'
 import { gameContext } from '../../GameProvider'
 import { MaterialGameAnimations } from '../animations'
 import { AudioLoader } from './AudioLoader'
+import { MaterialSoundConfig } from './MaterialSoundConfig'
 import { MaterialSoundLoader } from './MaterialSoundLoader'
 import { ensureMaterialSoundConfig } from './sound.utils'
 
 type MaterialGameSoundsProps = {
   onSoundsLoad?: () => void
-  ambiance?: string
+  ambiance?: string | MaterialSoundConfig
 }
 
 export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({  onSoundsLoad, ambiance }) => {
@@ -26,14 +27,14 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({  onSoundsLoad,
     if (!animation) return
       const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
       if (config?.s !== undefined) {
-        const materialSound = ensureMaterialSoundConfig(config.s)
-        if (!materialSound) return
-        materialSound.duration = animation.duration ?? materialSound.duration
-        audioLoader.play(materialSound);
+        const materialSoundConfig = ensureMaterialSoundConfig(config.s)
+        if (!materialSoundConfig) return
+        materialSoundConfig.duration = animation.duration ?? materialSoundConfig.duration
+        audioLoader.play(materialSoundConfig);
       } else if (animation.move.kind === MoveKind.ItemMove){
-        const materialSound = material![animation.move.itemType]?.sounds?.[animation.move.type]
-        if (materialSound) {
-          audioLoader.play(materialSound)
+        const materialSoundConfig = material![animation.move.itemType]?.sounds?.[animation.move.type]
+        if (materialSoundConfig) {
+          audioLoader.play(materialSoundConfig)
         }
       }
   }, [animation?.move])
@@ -56,7 +57,7 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({  onSoundsLoad,
     if (audioLoader.status() === 'suspended') {
       setAmbianceFail(true)
     } else {
-      audioLoader.loop(ambiance);
+      audioLoader.load([ambiance]).then(() => audioLoader.loop(ambiance));
     }
     // eslint-disable-next-line
   }, [ambiance])
@@ -64,7 +65,7 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({  onSoundsLoad,
   useEffect(() => {
     const enableAmbiance = () => {
       if (!ambiance) return
-      audioLoader.loop(ambiance);
+      audioLoader.load([ambiance]).then(() => audioLoader.loop(ambiance));
       setAmbianceEnabled(true);
     }
 
@@ -80,6 +81,6 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({  onSoundsLoad,
 
 
   return (
-    <MaterialSoundLoader onSoundsLoad={onSoundsLoad} audioLoader={audioLoader} ambiance={ambiance} />
+    <MaterialSoundLoader onSoundsLoad={onSoundsLoad} audioLoader={audioLoader} />
   );
 }
