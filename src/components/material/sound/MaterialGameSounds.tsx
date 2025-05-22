@@ -43,8 +43,8 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, 
     }
 
     if (!materialSoundConfig) return
-    prepareConfig(materialSoundConfig, animation)
-    playSound(audioLoader, materialSoundConfig)
+
+    playSound(audioLoader, prepareConfig(materialSoundConfig, animation))
   }, [animation?.move])
 
 
@@ -99,6 +99,8 @@ const playSound = (audioLoader: AudioLoader, config: MaterialSoundConfig) => {
 }
 
 const prepareConfig = (materialSoundConfig: MaterialSoundConfig, animation: Animation) => {
-  materialSoundConfig.delay = Math.min(animation.duration - 0.2, materialSoundConfig.delay ?? 0)
-  materialSoundConfig.duration = materialSoundConfig.duration ?? animation.duration
+  const newConfig = JSON.parse(JSON.stringify(materialSoundConfig))
+  newConfig.delay = Math.min(animation.duration - 0.2, materialSoundConfig.delay ?? 0)
+  newConfig.duration = materialSoundConfig.duration ?? animation.duration
+  return newConfig
 }
