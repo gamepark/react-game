@@ -2,18 +2,24 @@ import { Interpolation, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
 import { MaterialRulesCreator, MoveItemsAtOnce } from '@gamepark/rules-api'
 import { ItemContext } from '../../../locators'
+import { isDroppedItem } from '../utils/isDroppedItem'
 import { ItemAnimations } from './ItemAnimations'
+import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { transformItem } from './transformItem.util'
 
 export class MoveItemAtOnceAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
 
-  constructor(protected duration = 1) {
+  constructor(protected duration = 1, protected droppedItemDuration = 0.2) {
     super()
   }
 
-  override getPreDuration(): number {
+  override getPreDuration(move: MoveItemsAtOnce<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
+    const potentialDroppedItems = move.indexes.map((index => ({ type: move.itemType, index })))
+    if (potentialDroppedItems.some((item) => isDroppedItem(this.getItemContext(context, item)))) {
+      return this.droppedItemDuration
+    }
     return this.duration
   }
 

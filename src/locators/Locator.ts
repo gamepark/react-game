@@ -1,7 +1,18 @@
 /** @jsxImportSource @emotion/react */
-import { Coordinates, DeleteItem, DisplayedItem, isSameLocationArea, Location, MaterialItem, MaterialRules, MoveItem, XYCoordinates } from '@gamepark/rules-api'
+import {
+  Coordinates,
+  DeleteItem,
+  DisplayedItem,
+  isMoveItem,
+  isSameLocationArea,
+  Location,
+  MaterialItem,
+  MaterialRules,
+  MoveItem,
+  MoveItemsAtOnce,
+  XYCoordinates
+} from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
-import omit from 'lodash/omit'
 import sumBy from 'lodash/sumBy'
 import uniqWith from 'lodash/uniqWith'
 import { DropAreaDescription, LocationDescription, MaterialDescriptionRecord } from '../components'
@@ -342,12 +353,14 @@ export class Locator<P extends number = number, M extends number = number, L ext
     const movedQuantity = move.quantity ?? 1
     if (quantity === movedQuantity) return true
     // If we move only a part of the quantity, we need to find which displayed items should move
-    const droppedItem = rules.game.droppedItem
+    const droppedItems = rules.game.droppedItems ?? []
     let displayIndexMoving = quantity - movedQuantity
-    if (droppedItem?.type === type && droppedItem.index === index) {
-      const droppedIndex = droppedItem.displayIndex
-      if (displayIndex === droppedIndex) return true
-      if (droppedIndex < displayIndexMoving) displayIndexMoving++
+    for (const droppedItem of droppedItems) {
+      if (droppedItem.type === type && droppedItem.index === index) {
+        const droppedIndex = droppedItem.displayIndex
+        if (displayIndex === droppedIndex) return true
+        if (droppedIndex < displayIndexMoving) displayIndexMoving++
+      }
     }
     return context.displayIndex >= displayIndexMoving
   }
@@ -356,11 +369,16 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * Given an item being dragged, and all the moves for this item going to this location type, this function must return the list of valid drop locations
    * for the item
    * @param moves Legal movements for the item
-   * @param _context Context of the item
+   * @param context Context of the item
    * @return the drop locations to display
    */
-  getDropLocations(moves: MoveItem<P, M, L>[], _context: ItemContext<P, M, L>): Location<P, L>[] {
-    return uniqWith(moves.map(move => (omit(move.location, ['rotation']) as Location<P, L>)), isEqual)
+  getDropLocations(moves: (MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>)[], context: ItemContext<P, M, L>): Location<P, L>[] {
+    return uniqWith(moves.map(move => {
+      const { rotation, ...location } = move.location
+      const itemIndex = isMoveItem(move) ? move.itemIndex : move.indexes[0]
+      const type = location.type ?? context.rules.material(move.itemType).getItem(itemIndex).location.type
+      return { type, ...location }
+    }), isEqual)
   }
 
   /**
@@ -424,7 +442,7 @@ export function isItemContext<P extends number = number, M extends number = numb
  * @return The item
  */
 export function getItemFromContext<Id = any, P extends number = number, M extends number = number, L extends number = number>(
-  context: ItemContext<P, M, L>
+  context: Omit<ItemContext<P, M, L>, 'displayIndex'>
 ): MaterialItem<P, L, Id> {
   return context.rules.material(context.type).getItem<Id>(context.index)
 }
