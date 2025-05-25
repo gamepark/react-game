@@ -39,11 +39,10 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, 
     if (config?.s !== undefined) {
       materialSoundConfig = ensureMaterialSoundConfig(config.s)
     } else if (animation.move.kind === MoveKind.ItemMove) {
-      materialSoundConfig = ensureMaterialSoundConfig(material![animation.move.itemType]?.sounds?.[animation.move.type])
+      materialSoundConfig = ensureMaterialSoundConfig(material![animation.move.itemType]?.getSound(animation.move.type))
     }
 
     if (!materialSoundConfig) return
-
     playSound(audioLoader, prepareConfig(materialSoundConfig, animation))
   }, [animation?.move])
 
@@ -64,7 +63,7 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, 
     }
   }, [audioLoaderStatus, audioLoaded])
 
-  const changeAudioLoaderStatus = useCallback(()  => {
+  const changeAudioLoaderStatus = useCallback(() => {
     if (audioLoaded) return
     audioLoader.resume().then(() => {
       setAudioLoaderStatus(audioLoader.status())
@@ -100,7 +99,13 @@ const playSound = (audioLoader: AudioLoader, config: MaterialSoundConfig) => {
 
 const prepareConfig = (materialSoundConfig: MaterialSoundConfig, animation: Animation) => {
   const newConfig = JSON.parse(JSON.stringify(materialSoundConfig))
-  newConfig.delay = Math.min(animation.duration - 0.2, materialSoundConfig.delay ?? 0)
+  const defaultDelay = Math.max(animation.duration - 0.2, 0)
+  if (materialSoundConfig.delay === undefined && animation.duration) {
+    newConfig.delay = defaultDelay
+  } else {
+    newConfig.delay = Math.min(defaultDelay, materialSoundConfig.delay ?? 0)
+  }
+
   newConfig.duration = materialSoundConfig.duration ?? animation.duration
   return newConfig
 }

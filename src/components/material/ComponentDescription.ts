@@ -1,4 +1,4 @@
-import { ItemMoveType } from '@gamepark/rules-api'
+import { getEnumValues, ItemMoveType } from '@gamepark/rules-api'
 import { MaterialSoundConfig } from './sound'
 
 /**
@@ -17,7 +17,33 @@ export abstract class ComponentDescription<Id = any> {
   /**
    * All the sounds for each move type
    */
-  sounds?: Partial<Record<ItemMoveType, string | MaterialSoundConfig>>
+  sounds?: Partial<Record<ItemMoveType, string | MaterialSoundConfig | false>>
+
+  /**
+   * The default sounds used for given {@link ItemMoveType}
+   */
+  readonly defaultSounds: Partial<Record<ItemMoveType, MaterialSoundConfig>> = {}
+
+  /**
+   * All the sounds that can be used during animations, will be a merge between {@link sounds} and {@link defaultSounds}
+   */
+  getSounds(): Partial<Record<ItemMoveType, string | MaterialSoundConfig>> {
+    const sounds = JSON.parse(JSON.stringify(this.defaultSounds))
+    for (const type of getEnumValues(ItemMoveType)) {
+      const overrideSound = this.sounds?.[type]
+      if (overrideSound === false) delete sounds[type]
+      if (overrideSound && !sounds[type]) sounds[type] = overrideSound
+    }
+
+    return sounds
+  }
+
+  getSound(type: ItemMoveType): string | MaterialSoundConfig | undefined {
+    const sounds = this.getSounds()
+    const sound = sounds[type]
+    if (!sound) return
+    return sound
+  }
 
   /**
    * All the images that can be used to display the component, and therefore should be preloaded with the web page.

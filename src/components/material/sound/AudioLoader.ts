@@ -21,7 +21,7 @@ export class AudioLoader {
         .then(response => response.arrayBuffer())
         .then((buffer) => this.audioContext.decodeAudioData(buffer, (b) => {
           this.buffers[source.id] = b
-        }))
+        })).catch((e) => console.error("Unable to download sound file: ", e))
     ))
   }
 

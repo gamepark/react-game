@@ -17,7 +17,7 @@ export const MaterialSoundLoader: React.FunctionComponent<MaterialSoundLoaderPro
   const sounds = useMemo(() => {
     const sounds: (string | MaterialSoundConfig)[] = []
     for (const description of Object.values(context.material ?? {})) {
-      if (description) sounds.push(...Object.values(description.sounds ?? {}))
+      if (description) sounds.push(...Object.values(description.getSounds()))
     }
 
     sounds.push(...animationsConfig.getSounds())
