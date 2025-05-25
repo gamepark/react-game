@@ -178,13 +178,13 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
   }
 
   /**
-   * Rotate the item. On a hexagonal grid, by default the item's rotation is multiplied by 60 degrees.
-   * @param item Item to rotate
+   * Rotate the location. On a hexagonal grid, by default the rotation is expected to be [0, 5] and it is multiplied by 60 degrees.
+   * @param location Location to rotate
    * @param _context Context of the item
-   * @return the item's rotation in degrees
+   * @return the location's rotation in degrees
    */
-  getItemRotateZ(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
-    return (item.location.rotation ?? 0) * 60
+  getRotateZ(location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+    return (location.rotation ?? 0) * 60
   }
 
   /**
