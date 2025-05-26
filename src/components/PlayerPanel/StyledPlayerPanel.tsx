@@ -2,7 +2,7 @@
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { Player } from '@gamepark/react-client'
 import { MaterialRules } from '@gamepark/rules-api'
-import { FC, HTMLAttributes, RefObject, useCallback, useRef } from 'react'
+import { FC, HTMLAttributes, ReactNode, RefObject, useCallback, useRef } from 'react'
 import { usePlayerName, useRules } from '../../hooks'
 import { Avatar, SpeechBubbleDirection, SpeechBubbleProps } from '../Avatar'
 import { MaterialFocus, useFocusContext } from '../material'
@@ -23,10 +23,11 @@ type StyledPlayerPanelProps = {
   playerFocus?: MaterialFocus
   activeRing?: boolean
   timerOnRight?: boolean
+  speak?: string | ReactNode
 } & HTMLAttributes<HTMLDivElement>
 
 export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
-  const { player, activeRing, timerOnRight, playerFocus, backgroundImage, counters = [], countersPerLine = 2, mainCounter, ...rest } = props
+  const { player, activeRing, timerOnRight, playerFocus, backgroundImage, counters = [], countersPerLine = 2, mainCounter, speak, ...rest } = props
   const allCounter = mainCounter ? [mainCounter, ...counters] : counters ?? []
   const { setFocus } = useFocusContext()
   const playerName = usePlayerName(player.id)
@@ -40,8 +41,11 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
   }, [playerFocus])
 
   return (
-    <div ref={panelRef} css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !allCounter.length && noCounterCss]} onClick={focusPlayer} {...rest}>
-      <Avatar css={avatarStyle} playerId={player.id} speechBubbleProps={getSpeechBubbleDirection(panelRef)}/>
+    <div ref={panelRef}
+         css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !allCounter.length && noCounterCss]}
+         onClick={focusPlayer} {...rest}>
+      <Avatar css={avatarStyle} playerId={player.id}
+              speechBubbleProps={{ ...getSpeechBubbleDirection(panelRef), children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
         <div css={isTurnToPlay && circle}/>
       </div>}
@@ -82,17 +86,17 @@ const getSpeechBubbleDirection = (element: RefObject<HTMLDivElement>): SpeechBub
     }
 
     if (coordinates.left < 100) {
-      if (coordinates.top < 200) return { direction: SpeechBubbleDirection.BOTTOM_RIGHT}
-      if (coordinates.bottom < 100) return { direction: SpeechBubbleDirection.TOP_RIGHT}
+      if (coordinates.top < 200) return { direction: SpeechBubbleDirection.BOTTOM_RIGHT }
+      if (coordinates.bottom < 100) return { direction: SpeechBubbleDirection.TOP_RIGHT }
     }
 
     if (coordinates.right < 100) {
-      if (coordinates.top < 200) return { direction: SpeechBubbleDirection.BOTTOM_LEFT}
-      if (coordinates.bottom < 100) return { direction: SpeechBubbleDirection.TOP_LEFT}
+      if (coordinates.top < 200) return { direction: SpeechBubbleDirection.BOTTOM_LEFT }
+      if (coordinates.bottom < 100) return { direction: SpeechBubbleDirection.TOP_LEFT }
     }
   }
 
-  return { direction: SpeechBubbleDirection.BOTTOM_RIGHT}
+  return { direction: SpeechBubbleDirection.BOTTOM_RIGHT }
 }
 
 const noCounterCss = css`
@@ -108,9 +112,9 @@ const groupTimerAndCounter = css`
 
 const groupTimerAndCounters = css`
   min-height: 7.6em;
-  width: 100%; 
+  width: 100%;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   justify-content: flex-end;
 `
 
@@ -215,8 +219,8 @@ const circleAnimation = keyframes`
 const inset = 0.8
 const circle = css`
   background-image: linear-gradient(
-          to bottom, gold 0%,
-          rgb(40, 184, 206) 100%);
+      to bottom, gold 0%,
+      rgb(40, 184, 206) 100%);
   position: absolute;
   top: -${inset}em;
   bottom: -${inset}em;

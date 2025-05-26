@@ -12,7 +12,7 @@ type AvatarProps = {
   speechBubbleProps?: SpeechBubbleProps
 } & HTMLAttributes<HTMLDivElement>
 
-export const Avatar= forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
+export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
   const { playerId, speechBubbleProps, children, ...rest } = props
   const player = usePlayer(playerId)
   const me = useMe()

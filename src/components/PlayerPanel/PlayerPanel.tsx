@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react'
 import { MaterialRules } from '@gamepark/rules-api'
-import { FC, HTMLAttributes } from 'react'
+import { FC, HTMLAttributes, ReactNode } from 'react'
 import { usePlayerName, useRules } from '../../hooks'
 import { Avatar, SpeechBubbleDirection } from '../Avatar'
 import { GamePoints } from '../GamePoints'
@@ -11,16 +11,18 @@ export type PlayerPanelProps<PlayerId extends number = number> = {
   playerId: PlayerId
   color?: string,
   activeRing?: boolean
+  speak?: string | ReactNode
 } & HTMLAttributes<HTMLDivElement>
 
 export const PlayerPanel: FC<PlayerPanelProps> = (p) => {
-  const { playerId, activeRing, color = '#28B8CE', children, ...props } = p
+  const { playerId, activeRing, color = '#28B8CE', children, speak, ...props } = p
   const playerName = usePlayerName(playerId)
   const rules = useRules<MaterialRules>()
   const isTurnToPlay = rules?.isTurnToPlay(playerId) ?? false
   return (
     <div css={panelPlayerStyle(color, isTurnToPlay)} {...props}>
-      <Avatar css={avatarStyle} playerId={playerId} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }}/>
+      <Avatar css={avatarStyle} playerId={playerId}
+              speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT, children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
         <div css={isTurnToPlay && circle}/>
       </div>}
