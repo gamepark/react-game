@@ -78,21 +78,12 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
 const getSpeechBubbleDirection = (element: RefObject<HTMLDivElement>): SpeechBubbleProps | undefined => {
   if (element.current) {
     const rect = element.current.getBoundingClientRect()
-    const coordinates = {
-      left: rect.left,
-      top: rect.top,
-      right: (window.visualViewport?.width ?? window.innerWidth ?? 0) - rect.right,
-      bottom: (window.visualViewport?.height ?? window.innerHeight ?? 0) - rect.bottom
-    }
-
-    if (coordinates.left < 100) {
-      if (coordinates.top < 200) return { direction: SpeechBubbleDirection.BOTTOM_RIGHT }
-      if (coordinates.bottom < 100) return { direction: SpeechBubbleDirection.TOP_RIGHT }
-    }
-
-    if (coordinates.right < 100) {
-      if (coordinates.top < 200) return { direction: SpeechBubbleDirection.BOTTOM_LEFT }
-      if (coordinates.bottom < 100) return { direction: SpeechBubbleDirection.TOP_LEFT }
+    const left = rect.left / (window.visualViewport?.width ?? window.innerWidth)
+    const top = rect.top / (window.visualViewport?.height ?? window.innerHeight)
+    if (left < 0.5) {
+      return top < 0.5 ? { direction: SpeechBubbleDirection.BOTTOM_RIGHT } : { direction: SpeechBubbleDirection.TOP_RIGHT }
+    } else {
+      return top < 0.5 ? { direction: SpeechBubbleDirection.BOTTOM_LEFT } : { direction: SpeechBubbleDirection.TOP_LEFT }
     }
   }
 
