@@ -1,10 +1,10 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { Animation, AnimationContext, Animations, DisplayedAction } from '@gamepark/react-client'
+import { Animation, AnimationContext, Animations, AnimationStep, DisplayedAction } from '@gamepark/react-client'
 import { MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
 import uniq from 'lodash/uniq'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { GameContext } from '../../GameProvider'
-import { MaterialSoundConfig } from '../sound/MaterialSoundConfig'
+import { MaterialSoundConfig } from '../sound'
 import { ensureMaterialSoundConfig } from '../sound/sound.utils'
 import { ItemAnimations } from './ItemAnimations'
 import { MaterialAnimations } from './MaterialAnimations'
@@ -92,7 +92,7 @@ class AnimationConfig<P extends number = number, M extends number = number, L ex
   }
 
   getDuration(move: MaterialMove<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
-    if (move.kind !== MoveKind.ItemMove) return 0
+    if (move.kind !== MoveKind.ItemMove) return context.step === AnimationStep.BEFORE_MOVE ? this.d : 0
     return new MaterialAnimations<P, M, L>(this.d).getDuration(move, context)
   }
 
