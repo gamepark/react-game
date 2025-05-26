@@ -50,6 +50,8 @@ export class PileLocator<P extends number = number, M extends number = number, L
     return this.maxAngle
   }
 
+  minimumDistance = 0
+
   /**
    * Identifier of the pile. By default, distinct location areas (different player, id or parent) forms distinct piles.
    * @param item Item to position
@@ -67,17 +69,39 @@ export class PileLocator<P extends number = number, M extends number = number, L
     const pileId = this.getPileId(item, context)
     if (!this.positions.has(pileId)) this.positions.set(pileId, new Map())
     const pilePositions = this.positions.get(pileId)!
-    const radius = this.getRadius(location, context)
     const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)
     if (!pilePositions.has(itemUniqueId)) {
-      const distance = Math.random()
-      const direction = Math.random() * 2 * Math.PI
-      pilePositions.set(itemUniqueId, {
-        x: x + Math.cos(direction) * Math.sqrt(distance) * (typeof radius === 'number' ? radius : radius.x),
-        y: y + Math.sin(direction) * Math.sqrt(distance) * (typeof radius === 'number' ? radius : radius.y),
-      })
+      let loopLimit = 100
+      do {
+        pilePositions.set(itemUniqueId, this.generateItemPosition(item, context))
+      } while (--loopLimit > 0 && this.itemIsTooCloseToAnotherOne(pilePositions, itemUniqueId))
+      if (loopLimit === 0) {
+        console.warn('Could not generate a position far enough from every other items in PileLocator after 100 attempts!')
+      }
     }
-    return {...pilePositions.get(itemUniqueId)!, z: z + index * 0.05}
+    const itemPosition = pilePositions.get(itemUniqueId)!
+    return { x: x + itemPosition.x, y: y + itemPosition.y, z: z + index * 0.05 }
+  }
+
+  generateItemPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>) {
+    const distance = Math.random()
+    const direction = Math.random() * 2 * Math.PI
+    const radius = this.getRadius(item.location, context)
+    return {
+      x: Math.cos(direction) * Math.sqrt(distance) * (typeof radius === 'number' ? radius : radius.x),
+      y: Math.sin(direction) * Math.sqrt(distance) * (typeof radius === 'number' ? radius : radius.y)
+    }
+  }
+
+  itemIsTooCloseToAnotherOne(pilePositions: Map<number, XYCoordinates>, itemUniqueId: number) {
+    if (!this.minimumDistance) return false
+    const itemPosition = pilePositions.get(itemUniqueId)!
+    for (const [id, { x, y }] of pilePositions) {
+      if (id !== itemUniqueId && Math.sqrt(Math.pow((itemPosition.x - x), 2) + Math.pow((itemPosition.y - y), 2)) < this.minimumDistance) {
+        return true
+      }
+    }
+    return false
   }
 
   getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
