@@ -59,7 +59,7 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
 class AnimationConfig<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
   filters: ((move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>) => boolean)[] = []
-  d: number = 1
+  d?: number
   s?: string | MaterialSoundConfig | false = undefined
 
   rule<RuleId extends number>(ruleId: RuleId): this {
@@ -92,7 +92,7 @@ class AnimationConfig<P extends number = number, M extends number = number, L ex
   }
 
   getDuration(move: MaterialMove<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
-    if (move.kind !== MoveKind.ItemMove) return context.step === AnimationStep.BEFORE_MOVE ? this.d : 0
+    if (move.kind !== MoveKind.ItemMove) return context.step === AnimationStep.BEFORE_MOVE ? this.d ?? 0 : 0
     return new MaterialAnimations<P, M, L>(this.d).getDuration(move, context)
   }
 
