@@ -147,7 +147,7 @@ const avatarStyle = css`
   height: 6em;
   width: 6em;
   color: black;
-  z-index: 1;
+  z-index: 3;
 `
 const nameStyle = css`
   align-self: end;
@@ -188,7 +188,7 @@ const data = css`
   background-color: rgba(0, 0, 0, 0.7);
   padding: 0.1em 0.3em;
   border-radius: 0.4em;
-  z-index: 2;
+  z-index: 1;
 `
 
 const timerStyle = css`
@@ -204,7 +204,7 @@ const isPlaying = css`
   height: 6em;
   width: 6em;
   color: black;
-  z-index: 0;
+  z-index: 2;
 `
 
 const circleAnimation = keyframes`
