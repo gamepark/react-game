@@ -55,11 +55,12 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
 
   /**
    * Based on the coordinates of each hexagon in an area, return the delta coordinates to place the area properly
-   * @param areaCoordinates Coordinates of each hexagon composing the area
+   * @param polyhex Matrix representing the polyhex. Falsy values will be considered are blank spots
    * @param coordinatesSystem System of coordinates to consider
    * @return delta x and y to apply to the position of the area
    */
-  getAreaDelta(areaCoordinates: XYCoordinates[], coordinatesSystem = this.coordinatesSystem): XYCoordinates {
+  getPolyhexDelta<T = any>(polyhex: T[][], coordinatesSystem = this.coordinatesSystem): XYCoordinates {
+    const areaCoordinates = polyhex.flatMap((line, y) => line.flatMap((value, x) => !!value ? [{ x, y }] : []))
     const areaDeltaCoordinates = areaCoordinates.map((coordinates) => this.getHexagonPosition(coordinates, coordinatesSystem))
     const xMin = minBy(areaDeltaCoordinates, 'x')?.x ?? 0
     const xMax = maxBy(areaDeltaCoordinates, 'x')?.x ?? 0
@@ -77,8 +78,8 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
   getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
     const { x = 0, y = 0, z } = this.getCoordinates(location, context)
     const { xMax = 0, xMin = 0, yMax = 0, yMin = 0 } = this.getBoundaries(location, context)
-    const areaCoordinates = range(xMin, xMax + 1).flatMap((x) => range(yMin, yMax + 1).map((y) => ({ x, y })))
-    const { x: deltaX, y: deltaY } = this.getAreaDelta(areaCoordinates)
+    const polyhex = range(yMin, yMax + 1).map((_) => range(xMin, xMax + 1).map((_) => true))
+    const { x: deltaX, y: deltaY } = this.getPolyhexDelta(polyhex)
     return { x: x + deltaX, y: y + deltaY, z }
   }
 
@@ -149,7 +150,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
       return { x, y, z }
     }
     const shape = description.getPolyhexShape(item, context)
-    const areaDelta = this.getAreaDelta(shape, description.coordinatesSystem)
+    const areaDelta = this.getPolyhexDelta(shape, description.coordinatesSystem)
     const { x: deltaX, y: deltaY } = rotateVector(areaDelta, item.location.rotation * 60)
     return { x: x + deltaX, y: y + deltaY, z }
   }
