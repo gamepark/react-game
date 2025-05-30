@@ -8,8 +8,10 @@ export abstract class PolyhexDescription<P extends number = number, M extends nu
 
   abstract coordinatesSystem: HexGridSystem
 
+  polyhexShape = [{ x: 0, y: 0 }]
+
   getPolyhexShape(_item: MaterialItem<P, L, ItemId>, _context: ItemContext<P, M, L>): XYCoordinates[] {
-    return [{ x: 0, y: 0 }]
+    return this.polyhexShape
   }
 }
 
