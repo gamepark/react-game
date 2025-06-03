@@ -1,9 +1,6 @@
-import { Coordinates, GridBoundaries, HexGridSystem, Location, MaterialItem, MoveItem, XYCoordinates } from '@gamepark/rules-api'
+import { Coordinates, HexGridSystem, Location, MaterialItem, MoveItem, Polyhex, XYCoordinates } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
-import maxBy from 'lodash/maxBy'
-import minBy from 'lodash/minBy'
 import omit from 'lodash/omit'
-import range from 'lodash/range'
 import uniqWith from 'lodash/uniqWith'
 import { HexGridDropAreaDescription, isPolyhexDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
@@ -11,7 +8,7 @@ import { ItemContext, Locator, MaterialContext } from './Locator'
 /**
  * This locator is responsible for placing locations and items on a hexagonal grid.
  */
-export abstract class HexagonalGridLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+export abstract class HexagonalGridLocator<P extends number = number, M extends number = number, L extends number = number, T = any> extends Locator<P, M, L> {
   /**
    * The coordinates system used by the location and items to place
    */
@@ -38,35 +35,18 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
   }
 
   /**
-   * The min and max X and Y coordinates of the grid, if any.
-   * Define the boundaries to get the drop area automatically sized and centered.
+   * Polyhex of the drop area
    */
-  boundaries: Partial<GridBoundaries> = {}
+  dropArea?: Polyhex<T>
 
   /**
-   * Override if you need dynamic {@link boundaries}.
+   * Override if you need a dynamic drop area
    * @param _location The location to consider
    * @param _context Context of the game
-   * @return current grid boundaries
+   * @return the current drop area
    */
-  getBoundaries(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<GridBoundaries> {
-    return this.boundaries
-  }
-
-  /**
-   * Based on the coordinates of each hexagon in an area, return the delta coordinates to place the area properly
-   * @param polyhex Matrix representing the polyhex. Falsy values will be considered are blank spots
-   * @param coordinatesSystem System of coordinates to consider
-   * @return delta x and y to apply to the position of the area
-   */
-  getPolyhexDelta<T = any>(polyhex: T[][], coordinatesSystem = this.coordinatesSystem): XYCoordinates {
-    const areaCoordinates = polyhex.flatMap((line, y) => line.flatMap((value, x) => !!value ? [{ x, y }] : []))
-    const areaDeltaCoordinates = areaCoordinates.map((coordinates) => this.getHexagonPosition(coordinates, coordinatesSystem))
-    const xMin = minBy(areaDeltaCoordinates, 'x')?.x ?? 0
-    const xMax = maxBy(areaDeltaCoordinates, 'x')?.x ?? 0
-    const yMin = minBy(areaDeltaCoordinates, 'y')?.y ?? 0
-    const yMax = maxBy(areaDeltaCoordinates, 'y')?.y ?? 0
-    return { x: (xMin + xMax) / 2, y: (yMin + yMax) / 2 }
+  getDropArea(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Polyhex<T> | undefined {
+    return this.dropArea
   }
 
   /**
@@ -77,10 +57,10 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    */
   getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
     const { x = 0, y = 0, z } = this.getCoordinates(location, context)
-    const { xMax = 0, xMin = 0, yMax = 0, yMin = 0 } = this.getBoundaries(location, context)
-    const polyhex = range(yMin, yMax + 1).map((_) => range(xMin, xMax + 1).map((_) => true))
-    const { x: deltaX, y: deltaY } = this.getPolyhexDelta(polyhex)
-    return { x: x + deltaX, y: y + deltaY, z }
+    const dropArea = this.getDropArea(location, context)
+    if (!dropArea) return { x, y, z }
+    const { xMin, xMax, yMin, yMax } = this.getBoundaries(dropArea)
+    return { x: (xMin + xMax) / 2, y: (yMin + yMax) / 2, z }
   }
 
   /**
@@ -149,9 +129,9 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
     if (!description || !isPolyhexDescription<P, M, L>(description)) {
       return { x, y, z }
     }
-    const shape = description.getPolyhexShape(item, context)
-    const areaDelta = this.getPolyhexDelta(shape, description.coordinatesSystem)
-    const { x: deltaX, y: deltaY } = rotateVector(areaDelta, item.location.rotation * 60)
+    const polyhex = description.getPolyhex(item, context)
+    const { xMax, xMin, yMin, yMax } = this.getBoundaries(polyhex)
+    const { x: deltaX, y: deltaY } = rotateVector({ x: (xMin + xMax) / 2, y: (yMin + yMax) / 2 }, item.location.rotation * 60)
     return { x: x + deltaX, y: y + deltaY, z }
   }
 
@@ -184,19 +164,50 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
   getLocationDescription(location: Location<P, L>, context: MaterialContext<P, M, L> | ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
     if (this.locationDescription) return this.locationDescription
     if (location.x !== undefined || location.y !== undefined) return super.getLocationDescription(location, context)
-    const { xMin = 0, xMax = 0, yMin = 0, yMax = 0 } = this.getBoundaries(location, context)
+    const dropArea = this.getDropArea(location, context)
+    if (!dropArea) return super.getLocationDescription(location, context)
+    const { xMin, xMax, yMin, yMax } = this.getBoundaries(dropArea)
     const borderRadius = this.sizeX / 3
-    switch (this.coordinatesSystem) {
+    return new HexGridDropAreaDescription({
+      width: xMax - xMin,
+      height: yMax - yMin,
+      borderRadius
+    })
+  }
+
+  getBoundaries(polyhex: Polyhex<T>) {
+    const boundaries = { xMin: 0, xMax: 0, yMin: 0, yMax: 0 }
+    if (!polyhex) {
+      return boundaries
+    }
+    switch (polyhex.system) {
       case HexGridSystem.Axial: {
         throw new Error('Axial HexGridSystem is not yet implemented')
       }
       case HexGridSystem.OddQ:
-      case HexGridSystem.EvenQ:
-        return new HexGridDropAreaDescription({
-          width: (xMax - xMin + 1) * 3 / 2 * this.sizeX,
-          height: (yMax - yMin + 1) * Math.sqrt(3) * this.sizeY,
-          borderRadius
-        })
+      case HexGridSystem.EvenQ: {
+        boundaries.xMin = polyhex.xMin * 3 / 2 * this.sizeX - this.sizeX
+        const xMax = Math.max(...polyhex.grid.map((line) => line.length)) - 1
+        boundaries.xMax = (xMax + polyhex.xMin) * 3 / 2 * this.sizeX + this.sizeX
+        const swapSystem = polyhex.xMin % 2 !== 0
+        let yMin = polyhex.yMin - 0.5
+        const firstLine = polyhex.grid[0]
+        if (polyhex.system === HexGridSystem.OddQ && firstLine.every((value, y) => polyhex.isEmpty(value) || (swapSystem ? !(y % 2) : y % 2))) {
+          yMin += 0.5
+        } else if (polyhex.system === HexGridSystem.EvenQ && firstLine.some((value, y) => !polyhex.isEmpty(value) && (swapSystem ? !(y % 2) : y % 2))) {
+          yMin -= 0.5
+        }
+        boundaries.yMin = yMin * Math.sqrt(3) * this.sizeY
+        let yMax = polyhex.grid.length + polyhex.yMin - 0.5
+        const lastLine = polyhex.grid[polyhex.grid.length - 1]
+        if (polyhex.system === HexGridSystem.OddQ && lastLine.some((value, y) => !polyhex.isEmpty(value) && (swapSystem ? !(y % 2) : y % 2))) {
+          yMax += 0.5
+        } else if (polyhex.system === HexGridSystem.EvenQ && lastLine.every((value, y) => polyhex.isEmpty(value) || (swapSystem ? !(y % 2) : y % 2))) {
+          yMax -= 0.5
+        }
+        boundaries.yMax = yMax * Math.sqrt(3) * this.sizeY
+        break
+      }
       case HexGridSystem.OddR: {
         throw new Error('OddR HexGridSystem is not yet implemented')
       }
@@ -204,6 +215,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
         throw new Error('EvenR HexGridSystem is not yet implemented')
       }
     }
+    return boundaries
   }
 }
 
