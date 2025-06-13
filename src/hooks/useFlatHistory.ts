@@ -43,6 +43,15 @@ export const useFlatHistory = () => {
     return { ...moveComponentContext, ...description }
   }
 
+  const playMove = (move: PlayedMove) => {
+    try {
+      const action = getAction(move.actionId)
+      rules.current?.play(move.move, { local: action.local })
+    } catch (error) {
+      console.error('Error while playing a move in useFlatHistory', rules.current?.game, move)
+    }
+  }
+
   useEffect(() => {
     if (playedMoves !== undefined && !isLoaded) setLoaded(true)
   }, [playedMoves])
@@ -56,8 +65,7 @@ export const useFlatHistory = () => {
       for (const move of newMoves) {
         const entry = getMoveEntry(move)
         if (entry) entries.push(entry)
-        const action = getAction(move.actionId)
-        rules.current?.play(move.move, { local: action.local })
+        playMove(move)
       }
       setHistory((h) => h.concat(entries))
     } else if (actualSize > playedMoves.length) {
@@ -74,15 +82,13 @@ export const useFlatHistory = () => {
         : playedMoves
       if (lastValidHistory) {
         const move = movesToReplay.shift()!
-        const action = getAction(move.actionId)
-        rules.current.play(move.move, { local: action.local })
+        playMove(move)
       }
       const entries: MoveHistory[] = []
       for (const move of movesToReplay) {
         const entry = getMoveEntry(move)
         if (entry) entries.push(entry)
-        const action = getAction(move.actionId)
-        rules.current.play(move.move, { local: action.local })
+        playMove(move)
       }
 
       setHistory((h) => h.slice(0, lastValidHistoryIndex + 1).concat(entries))
