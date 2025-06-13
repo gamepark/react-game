@@ -75,7 +75,9 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         image && [backgroundCss(image), shadowCss(image)],
         borderRadius && borderRadiusCss(borderRadius),
         highlight ? shineEffect : (playDown && playDownCss(image)),
-        preview && previewCss
+        preview && previewCss,
+        // We must add a little of translateZ since Safari/Chrome on iOS consider the two faces at the same level, so the backface-visibility is wrongly applied
+        transformCss('translateZ(0.001px)')
       ]}>
         {children}
       </div>
@@ -115,6 +117,7 @@ const faceCss = css`
   position: absolute;
   transform-style: preserve-3d;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 `
 
 const playDownCss = (image?: string) => {
