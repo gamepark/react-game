@@ -207,7 +207,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param context Context of the item
    * @return The move to play to open the help dialog
    */
-  displayHelp(item: MaterialItem<P, L>, context: ItemContext<P, M, L>) {
+  displayHelp(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): MaterialMove<P, M, L> | undefined {
     const { type, index, displayIndex } = context
     return displayMaterialHelp(type, item, index, displayIndex)
   }

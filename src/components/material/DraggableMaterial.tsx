@@ -19,7 +19,7 @@ import {
 import merge from 'lodash/merge'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useTransformContext } from 'react-zoom-pan-pinch'
-import { grabbingCursor, grabCursor, pointerCursorCss } from '../../css'
+import { grabbingCursor, grabCursor } from '../../css'
 import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
 import { ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
@@ -157,7 +157,7 @@ export const DraggableMaterial = <M extends number = number>(
                  css={[
                    !applyTransform && !animating && transformTransition,
                    !disabled && noTouchAction,
-                   disabled ? pointerCursorCss : transform ? grabbingCursor : grabCursor,
+                   !disabled && (transform ? grabbingCursor : grabCursor),
                    animationWrapperCss
                  ]}
                  dragTransform={applyTransform ? transformRef.current : undefined}
