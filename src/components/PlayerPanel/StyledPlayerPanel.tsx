@@ -4,7 +4,7 @@ import { Player } from '@gamepark/react-client'
 import { MaterialRules } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, ReactNode, RefObject, useCallback, useRef } from 'react'
 import { usePlayerName, useRules } from '../../hooks'
-import { Avatar, SpeechBubbleDirection, SpeechBubbleProps } from '../Avatar'
+import { Avatar, SpeechBubbleDirection } from '../Avatar'
 import { MaterialFocus, useFocusContext } from '../material'
 import { blinkOnRunningTimeout, PlayerTimer } from '../PlayerTimer'
 import { Counters } from './Counters'
@@ -45,7 +45,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
          css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !allCounter.length && noCounterCss]}
          onClick={focusPlayer} {...rest}>
       <Avatar css={avatarStyle} playerId={player.id}
-              speechBubbleProps={{ ...getSpeechBubbleDirection(panelRef), children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
+              speechBubbleProps={{ direction: getSpeechBubbleDirection(panelRef), children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
         <div css={isTurnToPlay && circle}/>
       </div>}
@@ -75,19 +75,21 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
   )
 }
 
-const getSpeechBubbleDirection = (element: RefObject<HTMLDivElement>): SpeechBubbleProps | undefined => {
+const getSpeechBubbleDirection = (element: RefObject<HTMLDivElement>): SpeechBubbleDirection => {
   if (element.current) {
     const rect = element.current.getBoundingClientRect()
     const left = rect.left / (window.visualViewport?.width ?? window.innerWidth)
     const top = rect.top / (window.visualViewport?.height ?? window.innerHeight)
-    if (left < 0.5) {
-      return top < 0.5 ? { direction: SpeechBubbleDirection.BOTTOM_RIGHT } : { direction: SpeechBubbleDirection.TOP_RIGHT }
+    const isLeft = (left > 0.2 && left < 0.5) || left > 0.8
+    const isTop = (top > 0.2 && top < 0.5) || top > 0.8
+    if (isLeft) {
+      return isTop ? SpeechBubbleDirection.TOP_LEFT : SpeechBubbleDirection.BOTTOM_LEFT
     } else {
-      return top < 0.5 ? { direction: SpeechBubbleDirection.BOTTOM_LEFT } : { direction: SpeechBubbleDirection.TOP_LEFT }
+      return isTop ? SpeechBubbleDirection.TOP_RIGHT : SpeechBubbleDirection.BOTTOM_RIGHT
     }
   }
 
-  return { direction: SpeechBubbleDirection.BOTTOM_RIGHT }
+  return SpeechBubbleDirection.BOTTOM_RIGHT
 }
 
 const noCounterCss = css`
