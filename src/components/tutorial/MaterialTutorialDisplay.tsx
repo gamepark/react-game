@@ -47,7 +47,9 @@ export const MaterialTutorialDisplay = () => {
       if (tutorialStep?.focus) {
         setFocus({ materials: [], staticItems: [], locations: [], highlight: true, ...tutorialStep.focus(game, context) })
       } else {
-        setFocus(undefined)
+        const move = tutorialStep?.move
+        const isMyTurn = move !== undefined && !game.tutorial?.interrupt && (!move?.player || move?.player === game.players[0])
+        setFocus(undefined, !isMyTurn)
       }
     } else {
       setFocus(undefined, false)
@@ -59,7 +61,7 @@ export const MaterialTutorialDisplay = () => {
             css={[
               tutorialDialogCss,
               popup?.position && transformCss(`translate(${popup.position.x ?? 0}em, ${popup.position.y ?? 0}em)`),
-              sizeCss(popup?.size),
+              sizeCss(popup?.size)
             ]}
             backdropCss={backdropCss}>
       {popup &&
