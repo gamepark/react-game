@@ -26,26 +26,28 @@ export const ItemMenuButton = (
   }: ItemButtonProps & HTMLAttributes<HTMLButtonElement>
 ) => {
   const play = usePlay()
-  return <button css={[itemMenuButtonCss, transformCss('translate(-50%, -50%)', `translate(${x}em, ${y}em)`)]}
-                 onClick={() => {
-                   for (const move of moves) play(move, options)
-                 }} disabled={!moves.length} {...props}>
+  if (!props.onClick && moves.length) {
+    props.onClick = () => {
+      for (const move of moves) play(move, options)
+    }
+  }
+  return <button css={[itemMenuButtonCss, transformCss('translate(-50%, -50%)', `translate(${x}em, ${y}em)`)]} disabled={!props.onClick} {...props}>
     {children}
     {label && <span css={[buttonLabelCss, labelPosition === 'left' ? labelLeft : labelRight]}>{label}</span>}
   </button>
 }
 
 const itemMenuButtonCss = css`
-    transform-style: preserve-3d;
-    width: 2em;
-    height: 2em;
-    border-radius: 1em;
-    background-color: white;
-    color: black;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  transform-style: preserve-3d;
+  width: 2em;
+  height: 2em;
+  border-radius: 1em;
+  background-color: white;
+  color: black;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `
 
 const buttonLabelCss = css`
