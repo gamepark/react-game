@@ -109,6 +109,7 @@ export const DraggableMaterial = <M extends number = number>(
   const isDraggingParent = useMemo(() => !!item && !!draggedItemContext &&
       (isPlacedOnItem(item, draggedItemContext) || legalMoves.some((move) =>
         isMoveItemsAtOnce(move) && move.itemType === type && move.indexes.includes(index) && move.indexes.includes(draggedItemContext.index)
+        && description.canDrag(move, draggedItemContext) && description.canDrag(move, itemContext)
       ))
     , [item, draggedItemContext, legalMoves])
   const [parentTransform, setParentTransform] = useState<XYCoordinates>()
