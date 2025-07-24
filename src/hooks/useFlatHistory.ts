@@ -32,11 +32,12 @@ export const useFlatHistory = () => {
     }
   }, [setup])
 
-  const getAction = (actionId: string) => actions!.find((action) => action.id === actionId)!
+  const getAction = (actionId: string) => actions?.find((action) => action.id === actionId)
 
   const getMoveEntry = (playedMove: PlayedMove): MoveHistory | undefined => {
     const { move, consequenceIndex } = playedMove
     const action = getAction(playedMove.actionId)
+    if (!action) return undefined
     const moveComponentContext = { move, consequenceIndex, action, game: JSON.parse(JSON.stringify(rules.current!.game)) }
     const description = context.logs?.getMovePlayedLogDescription(move, moveComponentContext)
     if (!description?.Component) return
@@ -46,7 +47,7 @@ export const useFlatHistory = () => {
   const playMove = (move: PlayedMove) => {
     try {
       const action = getAction(move.actionId)
-      rules.current?.play(move.move, { local: action.local })
+      rules.current?.play(move.move, { local: action?.local })
     } catch (error) {
       console.error('Error while playing a move in useFlatHistory', rules.current?.game, move)
     }
