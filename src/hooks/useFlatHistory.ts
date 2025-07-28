@@ -47,9 +47,9 @@ export const useFlatHistory = () => {
   const playMove = (move: PlayedMove) => {
     try {
       const action = getAction(move.actionId)
-      rules.current?.play(move.move, { local: action?.local })
+      rules.current?.play(JSON.parse(JSON.stringify(move.move)), { local: action?.local })
     } catch (error) {
-      console.error('Error while playing a move in useFlatHistory', rules.current?.game, move)
+      console.error('Error while playing a move in useFlatHistory', rules.current?.game, move, error)
     }
   }
 
