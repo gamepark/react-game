@@ -286,10 +286,10 @@
   resolved "https://registry.yarnpkg.com/@gamepark/avataaars/-/avataaars-2.2.0.tgz#7bc2b8246d847d8f66b67935d0ab247a7cceb477"
   integrity sha512-3rTwo+v87EO/GHcHjmpTqRcOdbh5MbO2Vv27xIGWdT3H2+SFSGlMwSCnn7kDQv+rQJzfg5C2gRe6XImiKcYlxA==
 
-"@gamepark/react-client@~6.37.6":
-  version "6.37.6"
-  resolved "https://registry.yarnpkg.com/@gamepark/react-client/-/react-client-6.37.6.tgz#233c465ece7225d183a59dae0c60fb2d8a987b18"
-  integrity sha512-54gXOTbutz4jmvm2J7KnPbmM4h7mh58anlZlYHsNGBLql4gY9T0YKbhSRnWzivrRwq/uTXoHvtK3wXS1XQuG8g==
+"@gamepark/react-client@~6.37.8":
+  version "6.37.8"
+  resolved "https://registry.yarnpkg.com/@gamepark/react-client/-/react-client-6.37.8.tgz#ed972be5fa3d4826c03aa80a2fd2a47898a56b33"
+  integrity sha512-8gysHaISrEYV2Ny1zReGS2pP3Fg3vcqfWhhwT0aPuATedsj+Z91TRKHEDtTe05ybj/gYtcc48FtLU9Ei/qy7Wg==
   dependencies:
     "@harelpls/use-pusher" "^7.2.1"
     assert "^2.0.0"
@@ -298,10 +298,10 @@
     pusher-js "^7.0.0"
     redux "^4.2.1"
 
-"@gamepark/rules-api@~6.37.5":
-  version "6.37.5"
-  resolved "https://registry.yarnpkg.com/@gamepark/rules-api/-/rules-api-6.37.5.tgz#4b219cf88049c0f6f20c9aa3dce69f48213987fa"
-  integrity sha512-u3lCB9IMWZGYwziab44PQVMbO5YcSCh5Yq2vMG8k+ogOAFd6/xWL40hEcaEbrgiQn8l6ExK++J0E0zG3TPxMHA==
+"@gamepark/rules-api@~6.37.8":
+  version "6.37.8"
+  resolved "https://registry.yarnpkg.com/@gamepark/rules-api/-/rules-api-6.37.8.tgz#1c18439e9c49c8f510794a93a716a9381d98ae6e"
+  integrity sha512-n68Ez5VxBxNBaiImrzWZC0vwaW8albHzkEaV6c4l0AXOWfzaEkdrasBX0Hdvue+mEx7vwg7U91hBr8+vo8UCng==
 
 "@graphql-typed-document-node/core@^3.1.1":
   version "3.2.0"
