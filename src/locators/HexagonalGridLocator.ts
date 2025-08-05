@@ -212,8 +212,8 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
             return (boundaries.yMin + index + xMin / 2) * Math.sqrt(3) * this.sizeY
           }))
           boundaries.yMax = Math.max(...polyhex.grid.map((line, index) => {
-            const xMax = boundaries.xMin + findLastIndex(line, (value) => !polyhex.isEmpty(value))
-            return (boundaries.yMin + index + xMax / 2) * Math.sqrt(3) * this.sizeY
+            const xMax = polyhex.xMin + findLastIndex(line, (value) => !polyhex.isEmpty(value))
+            return (polyhex.yMin + index + xMax / 2) * Math.sqrt(3) * this.sizeY
           }))
         } else {
           throw new Error('Axial HexGridSystem for pointy top orientation is not yet implemented')
