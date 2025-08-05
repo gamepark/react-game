@@ -1,4 +1,5 @@
 import { Coordinates, HexGridSystem, Location, MaterialItem, MoveItem, Polyhex, XYCoordinates } from '@gamepark/rules-api'
+import findLastIndex from 'lodash/findLastIndex'
 import isEqual from 'lodash/isEqual'
 import omit from 'lodash/omit'
 import uniqWith from 'lodash/uniqWith'
@@ -13,6 +14,11 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    * The coordinates system used by the location and items to place
    */
   abstract coordinatesSystem: HexGridSystem
+
+  /**
+   * When using Axial coordinates system, you must specify the hexagons orientation
+   */
+  orientation?: 'flat' | 'pointy'
 
   /**
    * The size of one hexagon, i.e. the distance between the center of the hexagon and its vertices.
@@ -182,7 +188,23 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
     }
     switch (polyhex.system) {
       case HexGridSystem.Axial: {
-        throw new Error('Axial HexGridSystem is not yet implemented')
+        if (!this.orientation) {
+          throw new Error('You must specify the orientation (flat or pointy) when using the Axial HexGridSystem')
+        } else if (this.orientation === 'flat') {
+          boundaries.xMin = polyhex.xMin * 3 / 2 * this.sizeX - this.sizeX
+          boundaries.xMax = polyhex.xMax * 3 / 2 * this.sizeX + this.sizeX
+          boundaries.yMin = Math.min(...polyhex.grid.map((line, index) => {
+            const xMin = boundaries.xMin + line.findIndex((value) => !polyhex.isEmpty(value))
+            return (boundaries.yMin + index + xMin / 2) * Math.sqrt(3) * this.sizeY
+          }))
+          boundaries.yMax = Math.max(...polyhex.grid.map((line, index) => {
+            const xMax = boundaries.xMax + findLastIndex(line, (value) => !polyhex.isEmpty(value))
+            return (boundaries.yMax + index + xMax / 2) * Math.sqrt(3) * this.sizeY
+          }))
+        } else {
+          throw new Error('Axial HexGridSystem for pointy top orientation is not yet implemented')
+        }
+        break
       }
       case HexGridSystem.OddQ:
       case HexGridSystem.EvenQ: {
