@@ -94,9 +94,18 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
     let { x = 0, y = 0 } = coordinates
     switch (coordinatesSystem) {
       case HexGridSystem.Axial: {
-        return {
-          x: (x * Math.sqrt(3) + y * Math.sqrt(3) / 2) * this.sizeX,
-          y: y * 3 / 2 * this.sizeY
+        if (!this.orientation) {
+          throw new Error('You must specify the orientation (flat or pointy) when using the Axial HexGridSystem')
+        } else if (this.orientation === 'flat') {
+          return {
+            x: x * 3 / 2 * this.sizeX,
+            y: (x * Math.sqrt(3) / 2 + y * Math.sqrt(3)) * this.sizeY
+          }
+        } else {
+          return {
+            x: (x * Math.sqrt(3) + y * Math.sqrt(3) / 2) * this.sizeX,
+            y: y * 3 / 2 * this.sizeY
+          }
         }
       }
       case HexGridSystem.OddQ: {
