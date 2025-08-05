@@ -6,6 +6,11 @@ import uniqWith from 'lodash/uniqWith'
 import { HexGridDropAreaDescription, isPolyhexDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 
+export enum HexOrientation {
+  Flat = 1,
+  Pointy = 2
+}
+
 /**
  * This locator is responsible for placing locations and items on a hexagonal grid.
  */
@@ -18,7 +23,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
   /**
    * When using Axial coordinates system, you must specify the hexagons orientation
    */
-  orientation?: 'flat' | 'pointy'
+  orientation?: HexOrientation
 
   /**
    * The size of one hexagon, i.e. the distance between the center of the hexagon and its vertices.
@@ -96,7 +101,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
       case HexGridSystem.Axial: {
         if (!this.orientation) {
           throw new Error('You must specify the orientation (flat or pointy) when using the Axial HexGridSystem')
-        } else if (this.orientation === 'flat') {
+        } else if (this.orientation === HexOrientation.Flat) {
           return {
             x: x * 3 / 2 * this.sizeX,
             y: (x * Math.sqrt(3) / 2 + y * Math.sqrt(3)) * this.sizeY
@@ -199,7 +204,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
       case HexGridSystem.Axial: {
         if (!this.orientation) {
           throw new Error('You must specify the orientation (flat or pointy) when using the Axial HexGridSystem')
-        } else if (this.orientation === 'flat') {
+        } else if (this.orientation === HexOrientation.Flat) {
           boundaries.xMin = polyhex.xMin * 3 / 2 * this.sizeX - this.sizeX
           boundaries.xMax = polyhex.xMax * 3 / 2 * this.sizeX + this.sizeX
           boundaries.yMin = Math.min(...polyhex.grid.map((line, index) => {
