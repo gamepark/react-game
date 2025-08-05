@@ -212,7 +212,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
             return (boundaries.yMin + index + xMin / 2) * Math.sqrt(3) * this.sizeY
           }))
           boundaries.yMax = Math.max(...polyhex.grid.map((line, index) => {
-            const xMax = boundaries.xMax + findLastIndex(line, (value) => !polyhex.isEmpty(value))
+            const xMax = boundaries.xMin + findLastIndex(line, (value) => !polyhex.isEmpty(value))
             return (boundaries.yMin + index + xMax / 2) * Math.sqrt(3) * this.sizeY
           }))
         } else {
