@@ -151,7 +151,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
     }
     const polyhex = description.getPolyhex(item, context)
     const { xMax, xMin, yMin, yMax } = this.getBoundaries(polyhex)
-    const { x: deltaX, y: deltaY } = rotateVector({ x: (xMin + xMax) / 2, y: (yMin + yMax) / 2 }, item.location.rotation * 60)
+    const { x: deltaX, y: deltaY } = rotateVector({ x: (xMin + xMax) / 2, y: (yMin + yMax) / 2 }, this.getItemRotateZ(item, context))
     return { x: x + deltaX, y: y + deltaY, z }
   }
 
@@ -162,6 +162,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    * @return the location's rotation in degrees
    */
   getRotateZ(location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+    // TODO: the real rotation depends on the sizeX / sizeY ratio for 1, 2, 4 & 5 rotations (custom override applied for King of Tokyo Duel)
     return (location.rotation ?? 0) * 60
   }
 
