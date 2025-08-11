@@ -7,7 +7,7 @@ import { PlayMoveButton } from '../buttons'
 
 type Props = {
   code: string
-  values?: Record<string, string>
+  values?: Record<string, any>
   components?: Record<string, ReactElement>
   moves?: Record<string, (move: MaterialMove) => boolean>
 }
