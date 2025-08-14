@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react'
 import { HelpDisplayType, MaterialGame } from '@gamepark/rules-api'
 import { FC } from 'react'
 import { useGame } from '../../../hooks'
@@ -11,7 +12,7 @@ export const MaterialRulesDialog: FC<RulesDialogProps> = (props: RulesDialogProp
   const game = useGame<MaterialGame>()
   if (!game?.helpDisplay) return null
   return (
-    <RulesDialog {...props}>
+    <RulesDialog {...props} css={inlineImg}>
       {game.helpDisplay.type === HelpDisplayType.Material &&
         <MaterialRulesDialogContent helpDisplay={game.helpDisplay}/>
       }
@@ -24,3 +25,11 @@ export const MaterialRulesDialog: FC<RulesDialogProps> = (props: RulesDialogProp
     </RulesDialog>
   )
 }
+
+const inlineImg = css`
+  p img {
+    height: 1em;
+    position: relative;
+    top: 0.1em;
+  }
+`
