@@ -17,15 +17,16 @@ export const LocationRulesDialogContent = <P extends number = number, M extends 
   const context = useMaterialContext<P, M, L>()
   const locator = useItemLocator<P, M, L>(location.type)
   const description = locator?.getLocationDescription(location, context)
-  if (!description?.help) return null
-  const image = description.getHelpImage(location, context)
-  const { width, height } = description.getLocationSize(location, context)
+  const Help = description?.help ?? locator?.help
+  if (!Help) return null
+  const image = description?.getHelpImage(location, context)
+  const { width, height } = description?.getLocationSize(location, context) ?? { width: 0, height: 0 }
   return <div css={flex}>
     {!!image &&
       <div css={[noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)), backgroundImage(image, height, width)]}/>
     }
     <div css={helpDialogContentCss}>
-      <description.help location={location} closeDialog={() => play(displayHelp(undefined), { transient: true })}/>
+      <Help location={location} closeDialog={() => play(displayHelp(undefined), { transient: true })}/>
     </div>
   </div>
 }

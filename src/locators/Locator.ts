@@ -15,7 +15,8 @@ import {
 import isEqual from 'lodash/isEqual'
 import sumBy from 'lodash/sumBy'
 import uniqWith from 'lodash/uniqWith'
-import { DropAreaDescription, LocationDescription, MaterialDescriptionRecord } from '../components'
+import { ComponentType } from 'react'
+import { DropAreaDescription, LocationDescription, LocationHelpProps, MaterialDescriptionRecord } from '../components'
 
 export type SortFunction = ((item: MaterialItem) => number)
 
@@ -395,6 +396,8 @@ export class Locator<P extends number = number, M extends number = number, L ext
   showDropPreview(_move: MoveItem<P, M, L>, _context: MaterialContext<P, M, L>): boolean {
     return this.dropPreview
   }
+
+  help?: ComponentType<LocationHelpProps<P, L>>
 }
 
 /**
