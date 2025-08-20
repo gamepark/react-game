@@ -1,10 +1,13 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { DisplayedAction } from '@gamepark/react-client'
+import { MaterialGame, MaterialMove } from '@gamepark/rules-api'
 import { ComponentType } from 'react'
 
-export type MoveComponentProps<Move = any, Player = number> = {
+export type MaterialLogProps<M extends MaterialMove = MaterialMove, P extends number = number> = MoveComponentProps<M, P, MaterialGame>
+
+export type MoveComponentProps<Move = any, Player = number, Game = any> = {
   move: Move,
-  context: MoveComponentContext<Move, Player>
+  context: MoveComponentContext<Move, Player, Game>
 }
 
 export type MoveComponentContext<Move = any, Player = number, Game = any> = {
