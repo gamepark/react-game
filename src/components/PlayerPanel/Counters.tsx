@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
-import { css, Interpolation, Theme } from "@emotion/react";
-import { FC } from "react";
+import { css, Interpolation, Theme } from '@emotion/react'
+import { FC } from 'react'
 
 export type CounterProps = {
   image: string;
@@ -9,11 +9,11 @@ export type CounterProps = {
 
 export type CountersProps = {
   counters: CounterProps[];
-  lineSize?: number;
+  lineSize: number;
 };
 
 export const Counters: FC<CountersProps> = (props) => {
-  const { counters, lineSize = 3 } = props;
+  const { counters, lineSize } = props;
   if (!counters.length) return null;
   if (counters.length === 1) return <Counter {...counters[0]} unique />;
 
@@ -47,15 +47,20 @@ const Counter: FC<{ unique?: boolean } & CounterProps> = (props) => {
 const counterGridCss = (size: number) => css`
   display: grid;
   grid-template-columns: repeat(${size}, 1fr);
-  gap: 0.5em;
-  margin-top: 1em;
+  gap: 0.4em;
+  margin-top: 0.4em;
   align-items: flex-end;
+  direction: rtl;
+  > span {
+    direction: ltr;
+  }
 `;
 
 const mainIconBackground = (image: string) => css`
   background-image: url(${image});
   background-repeat: no-repeat;
   background-size: contain;
+  background-position: center;
 `;
 const mini = css`
   height: 1em;

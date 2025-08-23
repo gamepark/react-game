@@ -41,7 +41,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
     playerFocus,
     backgroundImage,
     counters = [],
-    countersPerLine = 3,
+      countersPerLine = 3,
     mainCounter,
     speak,
     ...rest
