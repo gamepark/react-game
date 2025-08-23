@@ -18,7 +18,7 @@ export const ImagesLoader = ({ images, onImagesLoad }: ImagesLoaderProps) => {
     }
   }
   if (onImagesLoad && images.length === 0) {
-    onImagesLoad()
+    setTimeout(onImagesLoad)
   }
   if (webp === undefined) return null
   return (

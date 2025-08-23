@@ -6,6 +6,7 @@ import partition from 'lodash/partition'
 import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
+import { pointerCursorCss } from '../../../css'
 import { useDraggedItem, useMaterialContext, usePlay } from '../../../hooks'
 import { LocationFocusRef, useExpectedDropLocations, useItemLocations } from '../../../hooks/useItemLocations'
 import { combineEventListeners } from '../../../utilities'
@@ -40,8 +41,12 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const hoverTransform = useMemo(() => description.getHoverTransform(item, itemContext).join(' '), [description, item, itemContext])
 
   const play = usePlay()
-  const displayHelp = useMemo(() => () => play(description.displayHelp(item, itemContext), { transient: true }), [description, item, itemContext])
+
+  const displayHelpMove = description.displayHelp(item, itemContext)
+  const displayHelp = displayHelpMove ? () => play(displayHelpMove, { transient: true }) : undefined
+
   onLongClick = onLongClick ?? (onShortClick ? displayHelp : undefined)
+  onShortClick = onShortClick ?? displayHelp
 
   const lastShortClick = useRef(new Date().getTime())
   const listeners = useLongPress(() => onLongClick && onLongClick(), {
@@ -53,7 +58,9 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
         const time = new Date().getTime()
         if (time - lastShortClick.current < 300) return
         lastShortClick.current = time
-        setTimeout(onShortClick ?? displayHelp)
+        if (onShortClick) {
+          setTimeout(onShortClick)
+        }
       }
     },
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
@@ -64,7 +71,8 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   return <>
     <div css={[
       itemCss, animation,
-      hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, !!animation || !!dragTransform)
+      hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, !!animation || !!dragTransform),
+      (onShortClick || onLongClick) && pointerCursorCss
     ]} {...props} {...combineEventListeners(listeners, props)}>
       <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                          itemIndex={index}

@@ -27,7 +27,7 @@ export const SpeechBubble: FC<SpeechBubbleProps> = ({ children, direction = Spee
 const speechBubbleCss = css`
   position: absolute;
   width: max-content;
-  max-width: 20em;
+  max-width: 15em;
   background: white;
   border-radius: .4em;
   font-size: 3em;

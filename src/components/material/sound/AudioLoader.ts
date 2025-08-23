@@ -45,7 +45,9 @@ export class AudioLoader {
     sound.sourceNode.connect(sound.gainNode)
     sound.gainNode.gain.value = this.muted? 0: (config.volume ?? 1)
 
-    sound.sourceNode.start(0, config.startsAt ?? 0, config.duration)
+    if (config.duration !== Infinity) {
+      sound.sourceNode.start(0, config.startsAt ?? 0, config.duration)
+    }
   }
 
   public status() {

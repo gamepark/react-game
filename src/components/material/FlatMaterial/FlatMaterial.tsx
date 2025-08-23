@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
+import { ReactNode } from 'react'
 import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { MaterialContentProps } from '../MaterialDescription'
@@ -62,7 +63,9 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return transform
   }
 
-  content = ({ itemId, highlight, playDown, preview, children }: MaterialContentProps<ItemId>) => {
+  content = (props: MaterialContentProps<ItemId>) => this.contentWithBackChildren(props)
+
+  contentWithBackChildren = ({ itemId, highlight, playDown, preview, children, backChildren }: MaterialContentProps<ItemId> & { backChildren?: ReactNode }) => {
     const image = this.getImage(itemId)
     const backImage = this.getBackImage(itemId)
     const size = this.getSize(itemId)
@@ -75,7 +78,9 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         image && [backgroundCss(image), shadowCss(image)],
         borderRadius && borderRadiusCss(borderRadius),
         highlight ? shineEffect : (playDown && playDownCss(image)),
-        preview && previewCss
+        preview && previewCss,
+        // We must add a little of translateZ since Safari/Chrome on iOS consider the two faces at the same level, so the backface-visibility is wrongly applied
+        transformCss('translateZ(0.001px)')
       ]}>
         {children}
       </div>
@@ -88,7 +93,9 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         transformCss('rotateY(-180deg)'),
         highlight ? shineEffect : (playDown && playDownCss(backImage)),
         preview && previewCss
-      ]}/>}
+      ]}>
+        {backChildren}
+      </div>}
     </>
   }
 
@@ -115,6 +122,7 @@ const faceCss = css`
   position: absolute;
   transform-style: preserve-3d;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 `
 
 const playDownCss = (image?: string) => {

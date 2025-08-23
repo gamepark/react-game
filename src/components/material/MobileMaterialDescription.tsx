@@ -26,7 +26,7 @@ export abstract class MobileMaterialDescription<P extends number = number, M ext
     return !isEqual(actualLocation, nextLocation)
   }
 
-  protected canDragToDelete(_move: DeleteItem<M>, _context: ItemContext<P, M, L>): boolean {
-    return this.stockLocation !== undefined
+  protected canDragToDelete(_move: DeleteItem<M>, context: ItemContext<P, M, L>): boolean {
+    return this.getStockLocation(getItemFromContext(context), context) !== undefined
   }
 }

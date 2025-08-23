@@ -2,7 +2,6 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import isEqual from 'lodash/isEqual'
-import { pointerCursorCss } from '../../../css'
 import { useLegalMoves, useMaterialContext } from '../../../hooks'
 import { ItemMenuWrapper } from '../ItemMenuWrapper'
 import { MaterialDescription } from '../MaterialDescription'
@@ -49,7 +48,6 @@ const StaticItemDisplay = ({ type, description, index, displayIndex, item, ...pr
   return <>
     <ItemDisplay type={type} index={index} displayIndex={displayIndex} item={item}
                  isFocused={isFocused} highlight={description.highlight(item, itemContext)}
-                 css={pointerCursorCss}
                  {...props}/>
     {menu && <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props}>{menu}</ItemMenuWrapper>}
   </>

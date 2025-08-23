@@ -35,6 +35,12 @@ const titleStyle = css`
   overflow: hidden;
   margin: 0.2em 0;
   font-size: ${fontSize}em;
+  
+  img {
+    height: 1em;
+    position: relative;
+    top: 0.1em;
+  }
 `
 
 const defaultButtonsCss = css`
