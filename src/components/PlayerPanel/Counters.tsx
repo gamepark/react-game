@@ -4,21 +4,21 @@ import { FC } from 'react'
 
 export type CounterProps = {
   image: string
-  value: number | string,
-} & { imageCss?: Interpolation<Theme> }
+  value: number | string
+} & { imageCss?: Interpolation<Theme> };
 
 export type CountersProps = {
   counters: CounterProps[]
-  lineSize?: number
-}
+  lineSize: number
+};
 
 export const Counters: FC<CountersProps> = (props) => {
-  const { counters, lineSize = 2 } = props
+  const { counters, lineSize } = props
   if (!counters.length) return null
-  if (counters.length === 1) return <Counter {...counters[0]} unique />
+  if (counters.length === 1) return <Counter {...counters[0]} unique/>
 
   return (
-    <div css={counterGridCss(Math.min(counters.length, lineSize))}>
+    <div css={counterGridCss(lineSize)}>
       {counters.map((counter, i) => (
         <Counter key={i} {...counter} />
       ))}
@@ -30,7 +30,14 @@ const Counter: FC<{ unique?: boolean } & CounterProps> = (props) => {
   const { image, value, imageCss, unique } = props
   if (image === undefined && value === undefined) return null
   return (
-    <span css={[data, unique && uniqCounterCss, !unique && counterCss]}>
+    <span
+      css={[
+        data,
+        rightAlignment,
+        unique && uniqCounterCss,
+        !unique && counterCss
+      ]}
+    >
       <div css={[mini, mainIconBackground(image), imageCss]}/>
       <span>{value}</span>
     </span>
@@ -40,21 +47,27 @@ const Counter: FC<{ unique?: boolean } & CounterProps> = (props) => {
 const counterGridCss = (size: number) => css`
   display: grid;
   grid-template-columns: repeat(${size}, 1fr);
-  gap: 0.5em;
-  margin-top: 1em;
+  gap: 0.4em;
+  margin-top: 0.4em;
+  align-items: flex-end;
+  direction: rtl;
+
+  > span {
+    direction: ltr;
+  }
 `
 
 const mainIconBackground = (image: string) => css`
   background-image: url(${image});
   background-repeat: no-repeat;
   background-size: contain;
+  background-position: center;
 `
 const mini = css`
   height: 1em;
   width: 1em;
   align-self: center;
 `
-
 
 const data = css`
   color: white;
@@ -89,7 +102,6 @@ const uniqCounterCss = css`
 `
 
 const counterCss = css`
-  font-size: 3.5em;
   justify-self: end;
   display: flex;
   align-items: center;

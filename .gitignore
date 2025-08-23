@@ -10,3 +10,5 @@
 
 # TypeScript cache
 *.tsbuildinfo
+
+.history/

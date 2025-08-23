@@ -27,7 +27,18 @@ type StyledPlayerPanelProps = {
 } & HTMLAttributes<HTMLDivElement>
 
 export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
-  const { player, activeRing, timerOnRight, playerFocus, backgroundImage, counters = [], countersPerLine = 2, mainCounter, speak, ...rest } = props
+  const {
+    player,
+    activeRing,
+    timerOnRight,
+    playerFocus,
+    backgroundImage,
+    counters = [],
+    countersPerLine = 3,
+    mainCounter,
+    speak,
+    ...rest
+  } = props
   const allCounter = mainCounter ? [mainCounter, ...counters] : counters ?? []
   const { setFocus } = useFocusContext()
   const playerName = usePlayerName(player.id)
@@ -50,24 +61,35 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
         <div css={isTurnToPlay && circle}/>
       </div>}
       <h2 css={[nameStyle, data]}>{playerName}</h2>
-      {!allCounter.length && !gameOver &&
-        (
-          <PlayerTimer playerId={player.id} css={[timerStyle, data, rightAlignment]}
-                       customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>
-        )
-      }
+      {!allCounter.length && !gameOver && (
+        <PlayerTimer
+          playerId={player.id}
+          css={[timerStyle, data, rightAlignment]}
+          customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
+        />
+      )}
 
       {allCounter.length === 1 && (
         <div css={groupTimerAndCounter}>
-          {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, rightAlignment]}
-                                     customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>}
+          {!gameOver && (
+            <PlayerTimer
+              playerId={player.id}
+              css={[timerStyle, data, rightAlignment]}
+              customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
+            />
+          )}
           <Counters counters={allCounter} lineSize={countersPerLine}/>
         </div>
       )}
       {allCounter.length > 1 && (
         <div css={groupTimerAndCounters}>
-          {!gameOver && <PlayerTimer playerId={player.id} css={[timerStyle, data, rightAlignment]}
-                                     customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}/>}
+          {!gameOver && (
+            <PlayerTimer
+              playerId={player.id}
+              css={[timerStyle, data, rightAlignment]}
+              customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
+            />
+          )}
           <Counters counters={allCounter} lineSize={countersPerLine}/>
         </div>
       )}
@@ -104,7 +126,6 @@ const groupTimerAndCounter = css`
 `
 
 const groupTimerAndCounters = css`
-  min-height: 7.6em;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -212,8 +233,8 @@ const circleAnimation = keyframes`
 const inset = 0.8
 const circle = css`
   background-image: linear-gradient(
-      to bottom, gold 0%,
-      rgb(40, 184, 206) 100%);
+          to bottom, gold 0%,
+          rgb(40, 184, 206) 100%);
   position: absolute;
   top: -${inset}em;
   bottom: -${inset}em;
