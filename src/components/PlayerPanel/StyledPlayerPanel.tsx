@@ -126,7 +126,6 @@ const groupTimerAndCounter = css`
 `
 
 const groupTimerAndCounters = css`
-  min-height: 7.6em;
   width: 100%;
   display: flex;
   flex-direction: column;
