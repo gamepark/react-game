@@ -48,13 +48,7 @@ const counterGridCss = (size: number) => css`
   display: grid;
   grid-template-columns: repeat(${size}, 1fr);
   gap: 0.4em;
-  margin-top: 0.4em;
   align-items: flex-end;
-  direction: rtl;
-
-  > span {
-    direction: ltr;
-  }
 `
 
 const mainIconBackground = (image: string) => css`

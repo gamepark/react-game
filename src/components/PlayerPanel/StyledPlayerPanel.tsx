@@ -39,7 +39,6 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
     speak,
     ...rest
   } = props
-  const allCounter = mainCounter ? [mainCounter, ...counters] : counters ?? []
   const { setFocus } = useFocusContext()
   const playerName = usePlayerName(player.id)
   const gameOver = useRules()?.isOver()
@@ -50,10 +49,14 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
     if (!playerFocus) return
     setFocus(playerFocus)
   }, [playerFocus])
+  const allCounters = mainCounter? [mainCounter, ...counters]: counters
+  const main = mainCounter? mainCounter: counters.length === 1? allCounters[0]: undefined
+  const secondaryCounters = allCounters.length > 1 ? allCounters.slice(1) : []
+  const hasCounter = counters.length > 0 || !!mainCounter
 
   return (
     <div ref={panelRef}
-         css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !allCounter.length && noCounterCss]}
+         css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !hasCounter && noCounterCss]}
          onClick={focusPlayer} {...rest}>
       <Avatar css={avatarStyle} playerId={player.id}
               speechBubbleProps={{ direction: getSpeechBubbleDirection(panelRef), children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
@@ -61,7 +64,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
         <div css={isTurnToPlay && circle}/>
       </div>}
       <h2 css={[nameStyle, data]}>{playerName}</h2>
-      {!allCounter.length && !gameOver && (
+      {!main && !gameOver && (
         <PlayerTimer
           playerId={player.id}
           css={[timerStyle, data, rightAlignment]}
@@ -69,7 +72,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
         />
       )}
 
-      {allCounter.length === 1 && (
+      {main && !gameOver && (
         <div css={groupTimerAndCounter}>
           {!gameOver && (
             <PlayerTimer
@@ -78,19 +81,12 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
               customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
             />
           )}
-          <Counters counters={allCounter} lineSize={countersPerLine}/>
+          <Counters counters={[main]} lineSize={1}/>
         </div>
       )}
-      {allCounter.length > 1 && (
+      {secondaryCounters.length > 0 && (
         <div css={groupTimerAndCounters}>
-          {!gameOver && (
-            <PlayerTimer
-              playerId={player.id}
-              css={[timerStyle, data, rightAlignment]}
-              customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
-            />
-          )}
-          <Counters counters={allCounter} lineSize={countersPerLine}/>
+          <Counters counters={secondaryCounters} lineSize={countersPerLine}/>
         </div>
       )}
     </div>
