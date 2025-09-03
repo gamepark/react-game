@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.5.0",
-    "@datadog/browser-logs": "^4.42.0",
+    "@datadog/browser-logs": "^6.18.1",
     "@dnd-kit/modifiers": "^6.0.1",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-regular-svg-icons": "^6.6.0",

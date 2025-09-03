@@ -71,17 +71,17 @@
     "@babel/helper-validator-identifier" "^7.22.20"
     to-fast-properties "^2.0.0"
 
-"@datadog/browser-core@4.50.1":
-  version "4.50.1"
-  resolved "https://registry.yarnpkg.com/@datadog/browser-core/-/browser-core-4.50.1.tgz#f9014628c697c1cedfd85103094934286c4339ca"
-  integrity sha512-2ypS19XngsMu6W4qUBtDwvImFz886Im+PziOnEycO1w41TVS5LH8/vWBMvjSf8Suer+CeRjRN9IOu0ocRx9BVw==
+"@datadog/browser-core@6.18.1":
+  version "6.18.1"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-core/-/browser-core-6.18.1.tgz#9d86ac2b0929d12abb55ec2a10fa2eee2fb5634f"
+  integrity sha512-1JzFXU6E1cs4n0+avg9JLtlXVwN4J1r8x6CwXcNdC/JXRB2AB3Q5sG03CGni7yHm0yG8KjGVOpKvSl5pCypVfg==
 
-"@datadog/browser-logs@^4.42.0":
-  version "4.50.1"
-  resolved "https://registry.yarnpkg.com/@datadog/browser-logs/-/browser-logs-4.50.1.tgz#238b4562de657aed9b4804f97467c8282fb12708"
-  integrity sha512-uSM+T+hAQDH4lUjWNNyj8MfhQKp+sFo88UBaHUzpg0Kio/gZ+tIL7/HmTLCN5eLDWNJfH8eJuCb5Gtcvo14Pkg==
+"@datadog/browser-logs@^6.18.1":
+  version "6.18.1"
+  resolved "https://registry.yarnpkg.com/@datadog/browser-logs/-/browser-logs-6.18.1.tgz#decc702c82d54843bf9a4c71b7ed5a0cc3c85058"
+  integrity sha512-vYaOWZBLRvmj/k6vPGcXkSh7F2ry+XYFMTnalsX3uboxG36j9fR70kcGH3D5PP9om4JIi80GvA+XD0RCi0O6Fg==
   dependencies:
-    "@datadog/browser-core" "4.50.1"
+    "@datadog/browser-core" "6.18.1"
 
 "@dnd-kit/accessibility@^3.1.0":
   version "3.1.0"
