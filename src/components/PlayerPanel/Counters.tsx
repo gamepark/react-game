@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, Interpolation, Theme } from '@emotion/react'
+import { times } from 'lodash'
 import { FC } from 'react'
 
 export type CounterProps = {
@@ -19,6 +20,7 @@ export const Counters: FC<CountersProps> = (props) => {
 
   return (
     <div css={counterGridCss(lineSize)}>
+      {times(Math.max(lineSize - counters.length), () => <span />)}
       {counters.map((counter, i) => (
         <Counter key={i} {...counter} />
       ))}

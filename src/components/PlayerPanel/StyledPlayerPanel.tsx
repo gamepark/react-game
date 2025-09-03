@@ -49,9 +49,8 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
     if (!playerFocus) return
     setFocus(playerFocus)
   }, [playerFocus])
-  const allCounters = mainCounter? [mainCounter, ...counters]: counters
-  const main = mainCounter? mainCounter: counters.length === 1? allCounters[0]: undefined
-  const secondaryCounters = allCounters.length > 1 ? allCounters.slice(1) : []
+  const main = mainCounter? mainCounter: counters.length === 1? counters[0]: undefined
+  const secondaryCounters = !mainCounter && counters.length === 1 ? []: counters
   const hasCounter = counters.length > 0 || !!mainCounter
 
   return (
