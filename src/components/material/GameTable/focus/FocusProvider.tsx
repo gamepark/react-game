@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { MaterialItem } from '@gamepark/rules-api'
 import flatten from 'lodash/flatten'
-import values from 'lodash/values'
 import sumBy from 'lodash/sumBy'
-import { createContext, FC, useCallback, useContext, useRef, useState } from 'react'
+import values from 'lodash/values'
+import { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
 import { useZoomToElements } from '../../../../hooks'
 import { useLocators } from '../../../../hooks/useLocators'
@@ -26,7 +26,7 @@ export const useFocusContext = <P extends number = number, M extends number = nu
   return focusContext
 }
 
-export const FocusProvider: FC = ({ children }) => {
+export function FocusProvider({ children }: { children?: ReactNode }) {
   const zoomToElements = useZoomToElements()
   const { resetTransform } = useControls()
   const locators = useLocators()

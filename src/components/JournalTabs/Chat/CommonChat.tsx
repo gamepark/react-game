@@ -1,10 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { FC, MutableRefObject, ReactElement, useEffect, useRef } from 'react'
+import { MutableRefObject, ReactElement, ReactNode, useEffect, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
 import { ChatMessage } from './ChatMessage'
 
 type CommonChatProps = {
+  children?: ReactNode
   gameId?: string
   loading?: boolean
   hasMoreMessages?: boolean
@@ -14,7 +15,7 @@ type CommonChatProps = {
   shouldScroll: MutableRefObject<boolean>
 }
 
-export const CommonChat: FC<CommonChatProps> = (props) => {
+export function CommonChat(props: CommonChatProps) {
   const { loading, hasMoreMessages, messages, shouldScroll, Input, fetchMore, ...rest } = props
   const scrollRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -28,7 +29,7 @@ export const CommonChat: FC<CommonChatProps> = (props) => {
 
   return (
     <>
-      <div ref={scrollRef} id="fui" css={scrollCss} { ...rest }>
+      <div ref={scrollRef} id="fui" css={scrollCss} {...rest}>
         <InfiniteScroll css={scrollContentCss} useWindow={false} isReverse getScrollParent={() => scrollRef.current}
                         hasMore={!loading && hasMoreMessages && messages.length > 0}
                         loadMore={fetchMore ? fetchMore : (() => undefined)}>
