@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react'
-import { Message, Player } from '@gamepark/react-client'
-import { useChannel, useEvent } from '@harelpls/use-pusher'
+import { Message, Player, pusherClient } from '@gamepark/react-client'
 import { MouseEvent, useEffect, useState } from 'react'
 import { SpeechBubble, SpeechBubbleProps } from './SpeechBubble'
 
@@ -11,13 +10,16 @@ type Props = {
 } & SpeechBubbleProps
 
 export const ChatSpeechBubble = ({ gameId, player, ...props }: Props) => {
-  const channel = useChannel(`game=${gameId}`)
+  useEffect(() => {
+    const channel = pusherClient.subscribe(`game=${gameId}`)
+    channel.bind('message', (message: Message) => {
+      if (message && player.userId === message.userId) {
+        setMessage(message.text)
+      }
+    })
+    return () => pusherClient.unsubscribe(`game=${gameId}`)
+  }, [])
   const [message, setMessage] = useState('')
-  useEvent<Message>(channel, 'message', message => {
-    if (message && player.userId === message.userId) {
-      setMessage(message.text)
-    }
-  })
   const hideMessage = () => setMessage('')
   useEffect(() => {
     if (message) {

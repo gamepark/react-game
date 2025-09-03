@@ -1,11 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { useMutation } from '@apollo/client'
 import { css } from '@emotion/react'
-import { ACCEPT_REMATCH, PLATFORM_URI, REFUSE_REMATCH, RematchData, useMe } from '@gamepark/react-client'
-import { useChannel, useEvent } from '@harelpls/use-pusher'
+import { ACCEPT_REMATCH, PLATFORM_URI, pusherClient, REFUSE_REMATCH, RematchData, useMe } from '@gamepark/react-client'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { menuButtonCss } from '../../menus/menuCss'
 import { NavButton } from '../../menus/Menu/NavButton'
+import { menuButtonCss } from '../../menus/menuCss'
 
 type Props = {
   rematch: RematchData
@@ -17,12 +17,15 @@ export const RematchDisplay = ({ rematch }: Props) => {
   const [acceptRematch] = useMutation(ACCEPT_REMATCH)
   const [refuseRematch] = useMutation(REFUSE_REMATCH)
   const player = me?.user && rematch.players.find(p => p.userId === me.user.id)
-  const channel = useChannel('game-state=' + rematch.id)
-  useEvent(channel, 'game-started', () => {
-    if (player) {
-      window.location.href = getGameLocation(rematch)
-    }
-  })
+  useEffect(() => {
+    const channel = pusherClient.subscribe('game-state=' + rematch.id)
+    channel.bind('game-started', () => {
+      if (player) {
+        window.location.href = getGameLocation(rematch)
+      }
+    })
+    return () => pusherClient.unsubscribe('game-state=' + rematch.id)
+  }, [])
   return (
     <>
       <h3 css={rematchTitle}>{
