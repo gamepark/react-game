@@ -33,8 +33,8 @@
     "emotion-normalize": "^11.0.1",
     "fscreen": "^1.2.0",
     "graphql": "^15.3.0",
-    "i18next": "^22.4.15",
-    "i18next-icu": "^2.3.0",
+    "i18next": "^25.5.0",
+    "i18next-icu": "^2.4.0",
     "intl-messageformat": "^10.3.5",
     "lodash": "^4.17.21",
     "nosleep.js": "^0.12.0",
@@ -51,16 +51,16 @@
     "@emotion/react": "^11.11.1",
     "@types/fscreen": "^1.0.1",
     "@types/lodash": "^4.14.195",
-    "@types/node": "^18.16.0",
+    "@types/node": "^24.3.0",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
     "@types/react-infinite-scroller": "^1.2.3",
     "@types/stylis": "^4.0.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-i18next": "^12.2.2",
+    "react-i18next": "^15.7.3",
     "react-redux": "^8.0.5",
-    "typescript": "^4.4.4"
+    "typescript": "^5.9.2"
   },
   "resolutions": {
     "@types/react": "^18"
@@ -70,7 +70,7 @@
     "@emotion/react": "^11.10.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-i18next": "^12.2.2",
+    "react-i18next": "^15.7.3",
     "react-redux": "^8.0.5"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
