@@ -1,5 +1,5 @@
 import { MoveItem } from '@gamepark/rules-api'
-import isEqual from 'lodash/isEqual'
+import { isEqual } from 'es-toolkit'
 import { MaterialContext } from '../../../locators'
 
 export const isRotationMove = <P extends number = number, M extends number = number, L extends number = number>(

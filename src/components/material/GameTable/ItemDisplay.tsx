@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
-import isEqual from 'lodash/isEqual'
-import partition from 'lodash/partition'
+import { isEqual } from 'es-toolkit'
+import { partition } from 'es-toolkit/compat'
 import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'

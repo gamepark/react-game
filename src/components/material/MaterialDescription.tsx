@@ -16,9 +16,9 @@ import {
   MoveItem,
   MoveItemsAtOnce
 } from '@gamepark/rules-api'
+import { groupBy } from 'es-toolkit'
+import { partition } from 'es-toolkit/compat'
 import { TFunction } from 'i18next'
-import groupBy from 'lodash/groupBy'
-import partition from 'lodash/partition'
 import { ComponentType, FC, HTMLAttributes, ReactNode } from 'react'
 import { Trans } from 'react-i18next'
 import { getItemFromContext, ItemContext, Locator, MaterialContext } from '../../locators'

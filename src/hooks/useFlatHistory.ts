@@ -1,6 +1,6 @@
 import { DisplayedAction, GamePageState, PlayedMove } from '@gamepark/react-client'
 import { MaterialMove, Rules } from '@gamepark/rules-api'
-import findLastIndex from 'lodash/findLastIndex'
+import { findLastIndex } from 'es-toolkit/compat'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { gameContext, MovePlayedLogDescription } from '../components'

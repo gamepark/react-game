@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
 import { MaterialItem, MaterialMove } from '@gamepark/rules-api'
-import isEqual from 'lodash/isEqual'
+import { isEqual } from 'es-toolkit'
 import { useLegalMoves, useMaterialContext } from '../../../hooks'
 import { ItemMenuWrapper } from '../ItemMenuWrapper'
 import { MaterialDescription } from '../MaterialDescription'

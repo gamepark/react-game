@@ -1,7 +1,7 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
 import { MaterialItem, MaterialRulesCreator, MoveItem } from '@gamepark/rules-api'
-import isEqual from 'lodash/isEqual'
+import { isEqual } from 'es-toolkit'
 import { getItemFromContext, ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'

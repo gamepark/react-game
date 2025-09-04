@@ -1,7 +1,7 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Animation, AnimationContext, Animations, AnimationStep, DisplayedAction } from '@gamepark/react-client'
 import { MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
-import uniq from 'lodash/uniq'
+import { uniq } from 'es-toolkit'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { GameContext } from '../../GameProvider'
 import { MaterialSoundConfig } from '../sound'

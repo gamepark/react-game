@@ -16,7 +16,7 @@ import {
   MoveItemsAtOnce,
   XYCoordinates
 } from '@gamepark/rules-api'
-import merge from 'lodash/merge'
+import { merge } from 'es-toolkit'
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor } from '../../css'
@@ -204,7 +204,7 @@ const useRevealedItem = <P extends number = number, M extends number = number, L
     || (isMoveItemTypeAtOnce(type)(animation.move) && animation.move.reveal?.[index] !== undefined)
   )
   const reveal = animation ? (isMoveItem(animation.move) ? animation.move.reveal : animation.move.reveal?.[index]) : undefined
-  return useMemo(() => merge(JSON.parse(JSON.stringify(item)), reveal), [item, reveal])
+  return useMemo(() => reveal ? merge(JSON.parse(JSON.stringify(item)), reveal) : item, [item, reveal])
 }
 
 const useItemAnimation = <P extends number = number, M extends number = number, L extends number = number>(

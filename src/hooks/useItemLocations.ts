@@ -1,6 +1,5 @@
 import { Location, MaterialItem, MaterialMove } from '@gamepark/rules-api'
-import uniqWith from 'lodash/uniqWith'
-import isEqual from 'lodash/isEqual'
+import { isEqual, uniqWith } from 'es-toolkit'
 import { useMemo } from 'react'
 import { useFocusContext } from '../components'
 import { ItemContext, Locator, MaterialContext } from '../locators'

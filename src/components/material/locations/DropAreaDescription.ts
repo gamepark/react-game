@@ -1,7 +1,7 @@
 import { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
 import { isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
-import isEqual from 'lodash/isEqual'
+import { isEqual } from 'es-toolkit'
 import { ElementType } from 'react'
 import { ItemContext } from '../../../locators'
 import { LocationDescription } from './LocationDescription'

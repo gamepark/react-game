@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
-import range from 'lodash/range'
+import { range } from 'es-toolkit'
 import { backgroundCss, borderRadiusCss, shadowEffect, shineEffect, transformCss } from '../../../css'
 import { ItemContext } from '../../../locators'
 import { MaterialContentProps } from '../MaterialDescription'

@@ -10,7 +10,7 @@ import {
   MoveItem,
   MoveItemsAtOnce
 } from '@gamepark/rules-api'
-import isEqual from 'lodash/isEqual'
+import { isEqual } from 'es-toolkit'
 import { ComponentType, ElementType } from 'react'
 import { LocationContext, MaterialContext } from '../../../locators'
 import { ComponentDescription, ComponentSize } from '../ComponentDescription'

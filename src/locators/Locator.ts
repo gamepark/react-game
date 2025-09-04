@@ -12,9 +12,7 @@ import {
   MoveItemsAtOnce,
   XYCoordinates
 } from '@gamepark/rules-api'
-import isEqual from 'lodash/isEqual'
-import sumBy from 'lodash/sumBy'
-import uniqWith from 'lodash/uniqWith'
+import { isEqual, sumBy, uniqWith } from 'es-toolkit'
 import { ComponentType } from 'react'
 import { DropAreaDescription, LocationDescription, LocationHelpProps, MaterialDescriptionRecord } from '../components'
 

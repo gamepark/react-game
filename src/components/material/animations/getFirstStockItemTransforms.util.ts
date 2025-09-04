@@ -1,4 +1,4 @@
-import isEqual from 'lodash/isEqual'
+import { isEqual } from 'es-toolkit'
 import { getItemFromContext, ItemContext } from '../../../locators'
 
 export const getFirstStockItemTransforms = <P extends number = number, M extends number = number, L extends number = number>(

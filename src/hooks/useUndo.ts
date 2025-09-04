@@ -1,6 +1,6 @@
 import { DisplayedAction, GamePageState, isActionToAnimate, moveUndone } from '@gamepark/react-client'
 import { hasUndo } from '@gamepark/rules-api'
-import findLastIndex from 'lodash/findLastIndex'
+import { findLastIndex } from 'es-toolkit/compat'
 import { useCallback, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { gameContext } from '../components'

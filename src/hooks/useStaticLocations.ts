@@ -1,4 +1,4 @@
-import isEqual from 'lodash/isEqual'
+import { isEqual } from 'es-toolkit'
 import { isLocationSubset, useFocusContext } from '../components'
 import { Locator } from '../locators'
 import { LocationFocusRef, useExpectedDropLocations } from './useItemLocations'

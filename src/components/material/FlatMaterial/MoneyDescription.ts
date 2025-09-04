@@ -1,6 +1,6 @@
 import { isSameLocationArea, MaterialItem } from '@gamepark/rules-api'
+import { sumBy } from 'es-toolkit'
 import { TFunction } from 'i18next'
-import sumBy from 'lodash/sumBy'
 import { ItemContext } from '../../../locators'
 import { FlatMaterialDescription } from './FlatMaterial'
 

@@ -1,7 +1,7 @@
 import { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
 import { Interpolation, Theme } from '@emotion/react'
 import { isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
-import minBy from 'lodash/minBy'
+import { minBy } from 'es-toolkit'
 import { ElementType } from 'react'
 import { getItemFromContext, HexagonalGridLocator, ItemContext, Locator } from '../../../locators'
 import { DropAreaDescription } from './DropAreaDescription'

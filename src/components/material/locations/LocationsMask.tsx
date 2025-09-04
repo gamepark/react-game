@@ -1,5 +1,5 @@
 import { Location } from '@gamepark/rules-api'
-import uniqueId from 'lodash/uniqueId'
+import { uniqueId } from 'es-toolkit/compat'
 import { useMemo } from 'react'
 import { useItemLocator, useMaterialContext } from '../../../hooks'
 

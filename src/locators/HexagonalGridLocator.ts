@@ -1,8 +1,6 @@
 import { Coordinates, HexGridSystem, Location, MaterialItem, MoveItem, Polyhex, XYCoordinates } from '@gamepark/rules-api'
-import findLastIndex from 'lodash/findLastIndex'
-import isEqual from 'lodash/isEqual'
-import omit from 'lodash/omit'
-import uniqWith from 'lodash/uniqWith'
+import { isEqual, omit, uniqWith } from 'es-toolkit'
+import { findLastIndex } from 'es-toolkit/compat'
 import { HexGridDropAreaDescription, isPolyhexDescription, LocationDescription } from '../components'
 import { ItemContext, Locator, MaterialContext } from './Locator'
 

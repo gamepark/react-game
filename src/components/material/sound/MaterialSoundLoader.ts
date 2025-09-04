@@ -1,4 +1,4 @@
-import uniqBy from 'lodash/uniqBy'
+import { uniqBy } from 'es-toolkit'
 import React, { useContext, useEffect, useMemo } from 'react'
 import { gameContext } from '../../GameProvider'
 import { MaterialGameAnimations } from '../animations'
