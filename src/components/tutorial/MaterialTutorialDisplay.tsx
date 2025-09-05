@@ -28,7 +28,7 @@ export const MaterialTutorialDisplay = () => {
 
   const popup = tutorialStep?.popup
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<any>()
   useEffect(() => {
     dispatch(playTutorialMovesAction(Infinity))
   }, [])

@@ -14,7 +14,7 @@ export const useUndo = <Move = any, PlayerId extends number = number, Game = any
   const actions = useSelector<GamePageState<Game, Move, PlayerId>, DisplayedAction<Move, PlayerId>[] | undefined>(state => state.actions)
   const game = useSelector<GamePageState<Game, Move, PlayerId>, Game | undefined>(state => state.state)
   const playerId = useSelector<GamePageState<Game, Move, PlayerId>, PlayerId | undefined>(state => state.playerId)
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<any>()
   const Rules = useContext(gameContext)?.Rules
   if (!Rules) throw new Error('Cannot useUndo outside a GameProvider')
 

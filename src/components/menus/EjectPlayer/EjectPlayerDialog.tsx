@@ -21,7 +21,7 @@ export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: ()
   const maxExceedTime = useSelector((state: GamePageState) => state.options?.maxExceedTime ?? 60000)
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   const opponentThatCanBeEjected = useOpponentWithMaxTime()
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<any>()
   const opponentName = usePlayerName(opponentWithNegativeTime?.id)
   useEffect(() => {
     if (!opponentWithNegativeTime) {

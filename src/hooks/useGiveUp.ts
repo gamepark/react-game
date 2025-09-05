@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { usePlayerId } from './usePlayerId'
 
 export const useGiveUp = (): [() => void, boolean] => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<any>()
   const giveUp = () => dispatch(giveUpAction)
   const playerId = usePlayerId()
   const gameOver = useSelector((state: GamePageState) => state.gameOver)

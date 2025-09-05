@@ -1,9 +1,9 @@
+import { MOVE_PLAYED, PlayOptions } from '@gamepark/react-client'
 import { useDispatch } from 'react-redux'
-import { ActionType, PlayOptions } from '@gamepark/react-client'
 
 export const usePlay = <M>() => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<any>()
   return (move: M, options?: PlayOptions) => {
-    dispatch({ type: ActionType.MOVE_PLAYED, move, ...options })
+    dispatch({ type: MOVE_PLAYED, move, ...options })
   }
 }
