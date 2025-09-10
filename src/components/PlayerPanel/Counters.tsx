@@ -20,7 +20,7 @@ export const Counters: FC<CountersProps> = (props) => {
 
   return (
     <div css={counterGridCss(lineSize)}>
-      {times(Math.max(lineSize - counters.length), () => <span />)}
+      {times(Math.max(lineSize - counters.length), (i) => <span key={i} />)}
       {counters.map((counter, i) => (
         <Counter key={i} {...counter} />
       ))}
