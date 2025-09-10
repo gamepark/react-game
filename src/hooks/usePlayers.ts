@@ -1,5 +1,5 @@
 import { GamePageState, Player } from '@gamepark/react-client'
-import produce from 'immer'
+import { produce } from 'immer'
 import { useSelector } from 'react-redux'
 import { useNow } from './useNow'
 import { usePlayerId } from './usePlayerId'

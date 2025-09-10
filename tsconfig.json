@@ -3,13 +3,12 @@
     "rootDir": "src",
     "outDir": "dist",
     "jsx": "react-jsx",
-    "module": "commonjs",
-    "target": "es5",
+    "module": "esnext",
+    "target": "esnext",
     "lib": [
       "dom",
       "esnext"
     ],
-    "baseUrl": "src",
     "moduleResolution": "node",
     "strict": true,
     "allowJs": false,
@@ -29,11 +28,5 @@
     "downlevelIteration": true
   },
   "include": ["src"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "__tests__",
-    "**/*.test*",
-    "**/*.spec*"
-  ]
+  "exclude": ["**/*.test.ts"]
 }

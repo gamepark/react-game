@@ -66,10 +66,10 @@ const webPReplace = (element: Element, _index: number, _children: Array<Element 
 // Init Datadog logs
 if (process.env.NODE_ENV === 'production') {
   datadogLogs.init({
-    clientToken: process.env.REACT_APP_DATADOG_CLIENT_TOKEN ?? 'pubdb04a43151132f11ed7347e785e3902a',
+    clientToken: process.env.DATADOG_CLIENT_TOKEN ?? 'pubdb04a43151132f11ed7347e785e3902a',
     site: 'datadoghq.eu'
   })
-  datadogLogs.logger.setLevel(process.env.REACT_APP_LOGGER_LEVEL as StatusType || StatusType.error)
+  datadogLogs.logger.setLevel(process.env.LOGGER_LEVEL as StatusType || StatusType.error)
   // The following code may be removed later, see: https://github.com/DataDog/browser-sdk/issues/400
   const buildMessage = (message?: any, ...optionalParams: any[]) => [message, ...optionalParams].map(param => JSON.stringify(param, undefined, 2)).join(' ')
   console.log = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.log(buildMessage(message, optionalParams), { origin: 'console' })
