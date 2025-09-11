@@ -25,7 +25,7 @@ export type LoadingScreenProps = {
 } & HTMLAttributes<HTMLDivElement>
 
 export const LoadingScreen = ({
-                                gameBox = process.env.PUBLIC_URL + '/box-640.png',
+                                gameBox = '/box-640.png',
                                 author,
                                 artist,
                                 graphicDesigner,

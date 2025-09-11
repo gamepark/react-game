@@ -33,7 +33,7 @@ export const defaultTheme: GameTheme = {
   root: {
     fontFamily: 'Mulish',
     background: {
-      image: process.env.PUBLIC_URL + '/cover-1920.jpg',
+      image: '/cover-1920.jpg',
       overlay: 'rgba(0, 0, 0, 0.8)'
     }
   },
