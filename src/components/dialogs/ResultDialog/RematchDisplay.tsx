@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client/react'
 import { css } from '@emotion/react'
 import { ACCEPT_REMATCH, PLATFORM_URI, pusherClient, REFUSE_REMATCH, RematchData, useMe } from '@gamepark/react-client'
 import { useEffect } from 'react'

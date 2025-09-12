@@ -19,15 +19,13 @@ export const RemoteChat: FC<RemoteChatProps> = (props) => {
     shouldScroll.current = true
   })
 
-  const doFetchMore = () => fetchMore({ variables: { channel: `game=${gameId}`, maxDate: messages[0].date } })
-
   return <CommonChat
     loading={loading}
     hasMoreMessages={hasMoreMessages}
     messages={messages}
     shouldScroll={shouldScroll}
-    fetchMore={doFetchMore}
+    fetchMore={fetchMore}
     Input={playerId || me?.user?.id ? <RemoteChatTextInput channel={`game=${gameId}`} open={open}/> : <SignInToChat/>}
-    { ...rest }
+    {...rest}
   />
 }

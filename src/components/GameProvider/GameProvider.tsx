@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { ApolloProvider } from '@apollo/client'
+import { ApolloProvider } from '@apollo/client/react'
 import { datadogLogs, StatusType } from '@datadog/browser-logs'
 import createCache, { StylisPlugin } from '@emotion/cache'
 import { CacheProvider, css, Global, Theme, ThemeProvider } from '@emotion/react'
@@ -106,8 +106,9 @@ const globalCss = (theme: Theme) => css`
     touch-action: none;
     ${backgroundCss(theme.root.background)};
   }
-  
+
   /* Chrome, Edge, and Safari */
+
   *::-webkit-scrollbar {
     width: 6px;
   }
