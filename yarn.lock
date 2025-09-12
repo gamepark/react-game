@@ -429,7 +429,6 @@ __metadata:
     "@types/node": "npm:^24.3.0"
     "@types/react": "npm:^18.3.24"
     "@types/react-dom": "npm:^18.3.7"
-    "@types/react-infinite-scroller": "npm:^1.2.3"
     "@types/stylis": "npm:^4.0.2"
     dayjs: "npm:^1.11.7"
     emotion-normalize: "npm:^11.0.1"
@@ -445,7 +444,7 @@ __metadata:
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     react-i18next: "npm:^15.7.3"
-    react-infinite-scroller: "npm:^1.2.6"
+    react-infinite-scroll-component: "npm:^6.1.0"
     react-merge-refs: "npm:^2.0.2"
     react-redux: "npm:^9.2.0"
     react-zoom-pan-pinch: "npm:3.6.0"
@@ -457,7 +456,12 @@ __metadata:
   peerDependencies:
     "@dnd-kit/core": ^6.3.1
     "@emotion/react": ^11.10.8
+    "@fortawesome/fontawesome-svg-core": ^7.0.1
+    "@fortawesome/free-regular-svg-icons": ^7.0.1
+    "@fortawesome/free-solid-svg-icons": ^7.0.1
+    "@fortawesome/react-fontawesome": ^3.0.2
     es-toolkit: ^1.39.10
+    i18next: ^25.5.0
     react: ^18.3.1
     react-dom: ^18.3.1
     react-i18next: ^15.7.3
@@ -554,15 +558,6 @@ __metadata:
   peerDependencies:
     "@types/react": ^18.0.0
   checksum: 10c0/8bd309e2c3d1604a28a736a24f96cbadf6c05d5288cfef8883b74f4054c961b6b3a5e997fd5686e492be903c8f3380dba5ec017eff3906b1256529cd2d39603e
-  languageName: node
-  linkType: hard
-
-"@types/react-infinite-scroller@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "@types/react-infinite-scroller@npm:1.2.3"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/bcf25f2045ba3e25ec97185016832e1c01d9b38b087f35cce2048f0b2f8c1fb9cdb43ea63a774c9f8de708d915153c50c47d002bae66e37b0f92e40dc404f009
   languageName: node
   linkType: hard
 
@@ -1084,7 +1079,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.1.0, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.1.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -1106,13 +1101,6 @@ __metadata:
   version: 2.1.1
   resolution: "o9n@npm:2.1.1"
   checksum: 10c0/cfae60dac8bcfa223349ab758c27f764c83c71fa626d1659df4dbfa603d4b4a5580e586fdaa8f6bc82e8660ad4098f029eb61f091cc1c05f2544f9b333bf0253
-  languageName: node
-  linkType: hard
-
-"object-assign@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "object-assign@npm:4.1.1"
-  checksum: 10c0/1f4df9945120325d041ccf7b86f31e8bcc14e73d29171e37a7903050e96b81323784ec59f93f102ec635bcf6fa8034ba3ea0a8c7e69fa202b87ae3b6cec5a414
   languageName: node
   linkType: hard
 
@@ -1192,17 +1180,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.8":
-  version: 15.8.1
-  resolution: "prop-types@npm:15.8.1"
-  dependencies:
-    loose-envify: "npm:^1.4.0"
-    object-assign: "npm:^4.1.1"
-    react-is: "npm:^16.13.1"
-  checksum: 10c0/59ece7ca2fb9838031d73a48d4becb9a7cc1ed10e610517c7d8f19a1e02fa47f7c27d557d8a5702bec3cfeccddc853579832b43f449e54635803f277b1c78077
-  languageName: node
-  linkType: hard
-
 "pusher-js@npm:^8.4.0":
   version: 8.4.0
   resolution: "pusher-js@npm:8.4.0"
@@ -1245,18 +1222,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-infinite-scroller@npm:^1.2.6":
-  version: 1.2.6
-  resolution: "react-infinite-scroller@npm:1.2.6"
+"react-infinite-scroll-component@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "react-infinite-scroll-component@npm:6.1.0"
   dependencies:
-    prop-types: "npm:^15.5.8"
+    throttle-debounce: "npm:^2.1.0"
   peerDependencies:
-    react: ^0.14.9 || ^15.3.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/dc269b873603a1acff3fe78d6f9a073623205cd9317da71e62306302d18ba1f89a78d8b13654d52efb289d4bf769ea803aeff6ee0afd26f6576c1e4a935a238d
+    react: ">=16.0.0"
+  checksum: 10c0/8de02f178ae861880dddbd0c882dc70b55e21737b87fe428140d81a2c5d13c5eeba8a4fc260b1e86e4c556fdea333d6babaed55a9e5987a42b181b2d92f69cd8
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.13.1, react-is@npm:^16.7.0":
+"react-is@npm:^16.7.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 10c0/33977da7a5f1a287936a0c85639fec6ca74f4f15ef1e59a6bc20338fc73dc69555381e211f7a3529b8150a1f71e4225525b41b60b52965bda53ce7d47377ada1
@@ -1423,6 +1400,13 @@ __metadata:
   version: 3.0.0
   resolution: "supports-webp@npm:3.0.0"
   checksum: 10c0/fa5483bfc363869377f7704ca17615abc7aa964a396073b64e731ac67a9eb34197ec07edd178260c66155d072231a0ef7faae2eddaf83cd1129a5d225084ff6f
+  languageName: node
+  linkType: hard
+
+"throttle-debounce@npm:^2.1.0":
+  version: 2.3.0
+  resolution: "throttle-debounce@npm:2.3.0"
+  checksum: 10c0/41648e4cf46f935818af32ecac34f9876c618f24e300551cbe3a0ca2c5828cb8d2f9b73e6e1e2f8c64237f70fbc8c541f9b5c9114da70b33b1ed10ba4cc6b15f
   languageName: node
   linkType: hard
 

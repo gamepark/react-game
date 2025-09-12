@@ -20,8 +20,9 @@ export const LocalChat: FC<RemoteChatProps> = (props) => {
   return <CommonChat
     messages={messages}
     shouldScroll={shouldScroll}
-    Input={<LocalChatTextInput open={open} messages={messages.length} onMessageSent={(m: Message) => setMessages((messages) => [...messages, m])} { ...rest }/>}
-    { ...rest }
+    fetchMore={() => undefined}
+    Input={<LocalChatTextInput open={open} messages={messages.length} onMessageSent={(m: Message) => setMessages((messages) => [...messages, m])} {...rest}/>}
+    {...rest}
   >
   </CommonChat>
 }

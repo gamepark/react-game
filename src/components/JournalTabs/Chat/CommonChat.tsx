@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { MutableRefObject, ReactElement, ReactNode, useEffect, useRef } from 'react'
-import InfiniteScroll from 'react-infinite-scroller'
+import InfiniteScroll from 'react-infinite-scroll-component'
 import { ChatMessage } from './ChatMessage'
 
 type CommonChatProps = {
@@ -10,7 +10,7 @@ type CommonChatProps = {
   loading?: boolean
   hasMoreMessages?: boolean
   messages: any[]
-  fetchMore?: () => void
+  fetchMore: () => void
   Input: ReactElement,
   shouldScroll: MutableRefObject<boolean>
 }
@@ -29,12 +29,16 @@ export function CommonChat(props: CommonChatProps) {
 
   return (
     <>
-      <div ref={scrollRef} id="fui" css={scrollCss} {...rest}>
-        <InfiniteScroll css={scrollContentCss} useWindow={false} isReverse getScrollParent={() => scrollRef.current}
-                        hasMore={!loading && hasMoreMessages && messages.length > 0}
-                        loadMore={fetchMore ? fetchMore : (() => undefined)}>
+      <div ref={scrollRef} id="chat" css={scrollCss} {...rest}>
+        <InfiniteScroll dataLength={messages.length}
+                        next={fetchMore}
+                        css={scrollContentCss}
+                        inverse
+                        hasMore={!loading && !!hasMoreMessages && messages.length > 0}
+                        loader={<p>...</p>}
+                        scrollableTarget="chat">
           {messages.map((message, index) =>
-            <ChatMessage key={message.id} message={message} showAuthor={index === 0 || messages[index - 1].userId !== message.userId}/>
+            <ChatMessage key={message.id} message={message} showAuthor={index === messages.length - 1 || messages[index + 1].userId !== message.userId}/>
           )}
         </InfiniteScroll>
       </div>
@@ -45,8 +49,11 @@ export function CommonChat(props: CommonChatProps) {
 
 
 const scrollCss = css`
+  height: 100%;
   overflow-x: hidden;
   overflow-y: scroll;
+  display: flex;
+  flex-direction: column-reverse;
   scrollbar-color: rgba(74, 74, 74, 0.3) transparent;
   scrollbar-width: thin;
   margin-top: 0.5em;
@@ -63,8 +70,6 @@ const scrollCss = css`
   }
 
   align-self: stretch;
-  display: flex;
-  flex-direction: column;
 `
 
 const scrollContentCss = css`
@@ -73,4 +78,6 @@ const scrollContentCss = css`
   padding-right: 1em;
   padding-bottom: 0.5em;
   font-size: 0.7em;
+  display: flex;
+  flex-direction: column-reverse;
 `

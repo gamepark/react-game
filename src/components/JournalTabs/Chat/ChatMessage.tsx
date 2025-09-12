@@ -8,14 +8,19 @@ type Props = {
   showAuthor: boolean
 }
 
-export const ChatMessage = ({ message, showAuthor }: Props) => <>
-  {showAuthor && <ChatMessageAuthor author={message.userId}/>}
-  <p css={textCss}>{message.text}</p>
-</>
+export const ChatMessage = ({ message, showAuthor }: Props) => (
+  <div css={chatMessageCss}>
+    {showAuthor && <ChatMessageAuthor author={message.userId}/>}
+    <p css={textCss}>{message.text}</p>
+  </div>
+)
+
+const chatMessageCss = css`
+`
 
 const textCss = css`
   line-height: 1.5;
   margin: 0;
   word-break: break-word;
-  font-size: 0.7em
+  font-size: 0.7em;
 `
