@@ -6,7 +6,10 @@ import { FC } from 'react'
 export type CounterProps = {
   image: string
   value: number | string
-} & { imageCss?: Interpolation<Theme> };
+  imageCss?: Interpolation<Theme>
+  extraCss?: Interpolation<Theme>
+  onClick?: () => void
+};
 
 export type CountersProps = {
   counters: CounterProps[]
@@ -29,7 +32,7 @@ export const Counters: FC<CountersProps> = (props) => {
 }
 
 const Counter: FC<{ unique?: boolean } & CounterProps> = (props) => {
-  const { image, value, imageCss, unique } = props
+  const { image, value, imageCss, unique, onClick, extraCss } = props
   if (image === undefined && value === undefined) return null
   return (
     <span
@@ -37,14 +40,28 @@ const Counter: FC<{ unique?: boolean } & CounterProps> = (props) => {
         data,
         rightAlignment,
         unique && uniqCounterCss,
-        !unique && counterCss
+        !unique && counterCss,
+        extraCss,
+        onClick && hoverCss,
       ]}
+      onClick={onClick}
     >
       <div css={[mini, mainIconBackground(image), imageCss]}/>
       <span>{value}</span>
     </span>
   )
 }
+
+const hoverCss = css`
+  overflow: hidden;
+  position: relative;
+  left: 0;
+  right: 0;
+  &:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+`
 
 const counterGridCss = (size: number) => css`
   display: grid;
