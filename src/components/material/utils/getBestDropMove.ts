@@ -1,5 +1,5 @@
 import { DragEndEvent, DragMoveEvent } from '@dnd-kit/core'
-import { Location, MaterialMove } from '../../../../../rules-api'
+import { Location, MaterialMove } from '@gamepark/rules-api'
 import { MaterialContext } from '../../../locators'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { DropAreaDescription } from '../locations'
