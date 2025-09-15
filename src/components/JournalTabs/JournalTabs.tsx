@@ -4,10 +4,9 @@ import { css } from '@emotion/react'
 import { faCommentDots } from '@fortawesome/free-regular-svg-icons/faCommentDots'
 import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GameMode, GamePageState } from '@gamepark/react-client'
+import { GameMode, useGameSelector } from '@gamepark/react-client'
 import { FC, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
 import { useKeyDown } from '../../hooks'
 import { gameContext } from '../GameProvider'
 import { backdrop, displayBackdrop } from '../menus'
@@ -29,7 +28,7 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
   const { gameId } = props
   const history = useContext(gameContext).logs
   const logEnabled = history !== undefined
-  const gameMode = useSelector((state: GamePageState) => state.gameMode)
+  const gameMode = useGameSelector((state) => state.gameMode)
   const chatEnabled = gameMode !== GameMode.COMPETITIVE && gameMode !== GameMode.TUTORIAL
   const [tab, setTab] = useState<JournalTab | undefined>()
   const [isOpen, setOpen] = useState(false)

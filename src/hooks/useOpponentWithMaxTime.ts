@@ -1,15 +1,14 @@
-import { GamePageState, Player } from '@gamepark/react-client'
+import { Player, useGameSelector } from '@gamepark/react-client'
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 
 /**
  * Returns true if I wait an opponent with negative time
  */
 export const useOpponentWithMaxTime = (time?: number) => {
-  const options = useSelector((state: GamePageState) => state.options)
-  const playerId = useSelector((state: GamePageState) => state.playerId)
-  const players = useSelector((state: GamePageState) => state.players)
-  const clientTimeDelta = useSelector((state: GamePageState) => state.clientTimeDelta)
+  const options = useGameSelector((state) => state.options)
+  const playerId = useGameSelector((state) => state.playerId)
+  const players = useGameSelector((state) => state.players)
+  const clientTimeDelta = useGameSelector((state) => state.clientTimeDelta)
   const player = players.find(p => p.id === playerId)
   const awaitedPlayers = players.filter(p => p.time?.playing && p.time?.availableTime !== null).sort((a, b) => getPlayerTimeout(a) - getPlayerTimeout(b))
   const opponent = awaitedPlayers.find(p => p.id !== playerId)

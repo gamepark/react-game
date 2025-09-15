@@ -1,13 +1,13 @@
-import { GamePageState } from '@gamepark/react-client'
+import { useGameSelector } from '@gamepark/react-client'
 import { isCompetitive, rankPlayers } from '@gamepark/rules-api'
-import { shallowEqual, useSelector } from 'react-redux'
+import { shallowEqual } from 'react-redux'
 import { usePlayerIds } from './usePlayerId'
 import { useRules } from './useRules'
 
 export const useRankedPlayers = <PlayerId = any>(): { id: PlayerId, rank: number, quit: boolean }[] => {
   const rules = useRules()
   const playerIds = usePlayerIds()
-  const ejectedPlayers = useSelector((state: GamePageState<any, any, PlayerId>) =>
+  const ejectedPlayers = useGameSelector((state) =>
     state.players.filter(p => p.quit).map(p => p.id), shallowEqual)
   const rankedPlayers = playerIds.map(id => ({ id, rank: 1, quit: ejectedPlayers.includes(id) }))
   if (rules && isCompetitive(rules)) {

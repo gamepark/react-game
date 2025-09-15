@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { useDroppable } from '@dnd-kit/core'
-import { GamePageState } from '@gamepark/react-client'
+import { useGameSelector } from '@gamepark/react-client'
 import { Location, MaterialMove } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, useMemo } from 'react'
 import { mergeRefs } from 'react-merge-refs'
-import { useSelector } from 'react-redux'
 import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { findIfUnique } from '../../../utilities'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
@@ -65,7 +64,7 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     )
     , [draggedItemContext, dropMoves])
 
-  const isAnimatingPlayerAction = useSelector((state: GamePageState) =>
+  const isAnimatingPlayerAction = useGameSelector((state) =>
     state.actions?.some(action => action.playerId === state.playerId && action.animation !== undefined)
   )
 

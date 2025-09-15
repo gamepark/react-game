@@ -1,8 +1,7 @@
-import { DisplayedAction, GamePageState, PlayedMove } from '@gamepark/react-client'
+import { DisplayedAction, PlayedMove, useGameSelector } from '@gamepark/react-client'
 import { MaterialMove, Rules } from '@gamepark/rules-api'
 import { findLastIndex } from 'es-toolkit/compat'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { gameContext, MovePlayedLogDescription } from '../components'
 import { usePlayerId } from './usePlayerId'
 
@@ -19,10 +18,10 @@ export const useFlatHistory = () => {
   const player = usePlayerId()
   const [history, setHistory] = useState<MoveHistory[]>([])
   const [isLoaded, setLoaded] = useState(false)
-  const setup = useSelector((state: GamePageState) => state.setup) ?? {}
-  const playedMoves = useSelector((state: GamePageState) => state.playedMoves)
-  const gameOver = useSelector((state: GamePageState) => state.gameOver)
-  const actions = useSelector((state: GamePageState) => state.actions)
+  const setup = useGameSelector((state) => state.setup) ?? {}
+  const playedMoves = useGameSelector((state) => state.playedMoves)
+  const gameOver = useGameSelector((state) => state.gameOver)
+  const actions = useGameSelector((state) => state.actions)
 
   const moves = useRef<PlayedMove[]>([])
   const rules = useRef<Rules>()

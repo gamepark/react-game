@@ -4,11 +4,10 @@ import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
+import { GameMode, PLATFORM_URI, useGameSelector } from '@gamepark/react-client'
 import { isCompetitive } from '@gamepark/rules-api'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
 import { usePlayerName, useRankedPlayers, useResultText, useRules } from '../../../hooks'
 import { Avatar } from '../../Avatar'
 import { GamePoints } from '../../GamePoints'
@@ -35,8 +34,8 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const rankedPlayers = useRankedPlayers()
   const context = useContext(gameContext)
   const rules = useRules()!
-  const gameMode = useSelector((state: GamePageState) => state.gameMode)
-  const tournament = useSelector((state: GamePageState) => state.tournament)
+  const gameMode = useGameSelector((state) => state.gameMode)
+  const tournament = useGameSelector((state) => state.tournament)
   const scoringCells = useScoringHeader()
   let row = (gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1) + (scoringCells?.length ?? 0)
 
@@ -105,7 +104,7 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border }: {
   border: boolean
 }) => {
   const playerName = usePlayerName(playerId)
-  const tournamentPoints = useSelector((state: GamePageState) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
+  const tournamentPoints = useGameSelector((state) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
   const playerData = usePlayerScoring(playerId)
   return <>
     <div css={[relative, border && borderLeft]}>

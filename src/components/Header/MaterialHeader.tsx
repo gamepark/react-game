@@ -1,11 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons/faCircleQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GamePageState } from '@gamepark/react-client'
+import { useGameSelector } from '@gamepark/react-client'
 import { MaterialGame, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { ComponentType, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
 import { pointerCursorCss } from '../../css'
 import { useGame, usePlay, usePlayerId, usePlayerName, useResultText } from '../../hooks'
 import { RulesDialog } from '../dialogs'
@@ -40,8 +39,8 @@ const MaterialHeaderContent = <RulesStep extends number = number>(
   const game = useGame<MaterialGame>()
   const play = usePlay()
   const context = useContext(gameContext)
-  const cancelled = useSelector<GamePageState, boolean>(state => state.players.every(player => player.quit))
-  const victoryClaim = useSelector<GamePageState, boolean>(state =>
+  const cancelled = useGameSelector((state) => state.players.every(player => player.quit))
+  const victoryClaim = useGameSelector((state) =>
     state.gameOver === true && state.players.length > 1 && state.players.filter(player => !player.quit).length === 1
   )
   const RulesStepsHeader = game?.rule ? rulesStepsHeaders[game.rule.id as RulesStep] as ComponentType : undefined
@@ -82,7 +81,7 @@ const GameOverHeader = ({ GameOverRule }: { GameOverRule?: ComponentType }) => {
 
 const ShowVictoryClaim = () => {
   const { t } = useTranslation()
-  const winnerId = useSelector<GamePageState>(state => state.players.find(p => !p.quit)?.id)
+  const winnerId = useGameSelector((state) => state.players.find(p => !p.quit)?.id)
   const player = usePlayerName(winnerId)
   const playerId = usePlayerId()
   if (playerId === winnerId) {

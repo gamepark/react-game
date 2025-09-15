@@ -1,5 +1,4 @@
-import { DisplayedAction, GamePageState } from '@gamepark/react-client'
-import { useSelector } from 'react-redux'
+import { DisplayedAction, useGameSelector } from '@gamepark/react-client'
 
 export const useActions = <Move = any, PlayerId = any>(): DisplayedAction<Move, PlayerId>[] | undefined =>
-  useSelector((state: GamePageState<any, Move, PlayerId>) => state.actions)
+  useGameSelector((state) => state.actions)

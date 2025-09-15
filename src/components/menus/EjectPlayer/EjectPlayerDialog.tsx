@@ -2,26 +2,25 @@
 import { css } from '@emotion/react'
 import { faUserSlash } from '@fortawesome/free-solid-svg-icons/faUserSlash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ejectPlayerAction, GamePageState } from '@gamepark/react-client'
+import { ejectPlayer, useGameDispatch, useGameSelector } from '@gamepark/react-client'
 import dayjs from 'dayjs'
-import { useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useDispatch, useSelector } from 'react-redux'
-import { Dialog, DialogProps } from '../../dialogs'
-import { menuButtonCss, menuDialogCss } from '../menuCss'
-import { useOpponentWithMaxTime, usePlayerName } from '../../../hooks'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useOpponentWithMaxTime, usePlayerName } from '../../../hooks'
+import { Dialog, DialogProps } from '../../dialogs'
+import { menuButtonCss, menuDialogCss } from '../menuCss'
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
 
 export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: () => void }) => {
   const { t } = useTranslation()
-  const maxExceedTime = useSelector((state: GamePageState) => state.options?.maxExceedTime ?? 60000)
+  const maxExceedTime = useGameSelector((state) => state.options?.maxExceedTime ?? 60000)
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   const opponentThatCanBeEjected = useOpponentWithMaxTime()
-  const dispatch = useDispatch<any>()
+  const dispatch = useGameDispatch()
   const opponentName = usePlayerName(opponentWithNegativeTime?.id)
   useEffect(() => {
     if (!opponentWithNegativeTime) {
@@ -39,7 +38,7 @@ export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: ()
       <div css={buttonLineCss}>
         <button css={[menuButtonCss, inDialogButton]} onClick={close}>{t('Close')}</button>
         {opponentThatCanBeEjected &&
-          <button css={[menuButtonCss, buttonCss, inDialogButton]} onClick={() => dispatch(ejectPlayerAction(opponentThatCanBeEjected.id))}>
+          <button css={[menuButtonCss, buttonCss, inDialogButton]} onClick={() => dispatch(ejectPlayer(opponentThatCanBeEjected.id))}>
             <FontAwesomeIcon icon={faUserSlash}/>
             {t('Eject {player}', { player: opponentName })}
           </button>

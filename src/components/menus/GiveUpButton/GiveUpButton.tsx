@@ -2,10 +2,9 @@
 import { css } from '@emotion/react'
 import { faFlag } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GameClientAPI, GameMode, GamePageState } from '@gamepark/react-client'
+import { GameClientAPI, GameMode, useGameSelector } from '@gamepark/react-client'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
 import { useGiveUp } from '../../../hooks'
 import { Dialog } from '../../dialogs'
 import { menuButtonCss, menuDialogCss } from '../menuCss'
@@ -21,8 +20,8 @@ export const GiveUpButton = () => {
     giveUp()
     setDisplayPopup(false)
   }
-  const gameMode = useSelector<GamePageState, GameMode | undefined>(state => state.gameMode)
-  const playerIsLast = useSelector<GamePageState, boolean>(state =>
+  const gameMode = useGameSelector((state) => state.gameMode)
+  const playerIsLast = useGameSelector((state) =>
     state.playerId !== undefined && state.players.length > 1
     && state.players.every(player => player.quit || player.id === state.playerId)
   )

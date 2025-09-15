@@ -1,12 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
-import { HTMLAttributes } from 'react'
-import { useSelector } from 'react-redux'
+import { useGameSelector } from '@gamepark/react-client'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
+import { HTMLAttributes } from 'react'
 import { usePlayerTime } from '../../hooks'
-import { GamePageState } from '@gamepark/react-client'
 
 dayjs.extend(duration)
 dayjs.extend(utc)
@@ -29,7 +28,7 @@ export type PlayerTimerDisplayProps<PlayerId> = PlayerTimerProps<PlayerId> & {
 export const PlayerTimerDisplay = <PlayerId extends any>(
   { playerTime, playerId, customStyle = [halfOpacityOnPause, blinkOnRunningTimeout], ...props }: PlayerTimerDisplayProps<PlayerId>
 ) => {
-  const playing = useSelector((state: GamePageState) => state.players.find(p => p.id === playerId)?.time?.playing ?? false)
+  const playing = useGameSelector((state) => state.players.find(p => p.id === playerId)?.time?.playing ?? false)
   return (
     <span {...props} css={customStyle.map(fc => fc(playing, playerTime))}>
       {playerTime < 0 && '-'}{humanizeTimer(Math.abs(playerTime))}

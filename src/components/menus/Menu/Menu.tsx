@@ -3,11 +3,10 @@ import { css } from '@emotion/react'
 import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GameMode, GamePageState, PLATFORM_URI } from '@gamepark/react-client'
+import { GameMode, PLATFORM_URI, useGameSelector } from '@gamepark/react-client'
 import fscreen from 'fscreen'
 import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
 import { useRules } from '../../../hooks'
 import { ResultDialog } from '../../dialogs'
 import { GamePointIcon } from '../../GamePoints'
@@ -34,10 +33,10 @@ export const Menu = () => {
   const query = new URLSearchParams(window.location.search)
   const gameId = query.get('game') ?? undefined
   const locale = query.get('locale') || 'en'
-  const gameMode = useSelector((state: GamePageState) => state.gameMode)
-  const playerId = useSelector((state: GamePageState) => state.playerId)
+  const gameMode = useGameSelector((state) => state.gameMode)
+  const playerId = useGameSelector((state) => state.playerId)
   const gameOver = useRules()?.isOver()
-  const tournament = useSelector((state: GamePageState) => state.tournament)
+  const tournament = useGameSelector((state) => state.tournament)
   const couldEject = !gameOver && (playerId !== undefined || tournament?.signedUp === true)
   const couldUndo = !gameOver && playerId !== undefined
   const canGiveUp = !gameOver && playerId !== undefined && gameId !== undefined

@@ -1,7 +1,6 @@
-import { GamePageState } from '@gamepark/react-client'
-import { shallowEqual, useSelector } from 'react-redux'
+import { useGameSelector } from '@gamepark/react-client'
+import { shallowEqual } from 'react-redux'
 
-export const usePlayerId = <PlayerId = any>(): PlayerId | undefined => useSelector((state: GamePageState<any, any, PlayerId>) => state.playerId)
+export const usePlayerId = <PlayerId = any>(): PlayerId | undefined => useGameSelector((state) => state.playerId)
 
-export const usePlayerIds = <PlayerId = any>(): PlayerId[] =>
-  useSelector((state: GamePageState<any, any, PlayerId>) => state.players.map(p => p.id), shallowEqual)
+export const usePlayerIds = <PlayerId = any>(): PlayerId[] => useGameSelector((state) => state.players.map(p => p.id), shallowEqual)

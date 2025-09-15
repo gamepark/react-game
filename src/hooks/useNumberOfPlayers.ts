@@ -1,4 +1,3 @@
-import { GamePageState } from '@gamepark/react-client'
-import { useSelector } from 'react-redux'
+import { useGameSelector } from '@gamepark/react-client'
 
-export const useNumberOfPlayers = (): number => useSelector((state: GamePageState) => state.players.length)
+export const useNumberOfPlayers = (): number => useGameSelector((state) => state.players.length)

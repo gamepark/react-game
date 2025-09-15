@@ -1,8 +1,7 @@
-import { GamePageState } from '@gamepark/react-client'
-import { useSelector } from 'react-redux'
+import { useGameSelector } from '@gamepark/react-client'
 
 export const useIsAnimatingPlayerAction = (): boolean => {
-  return useSelector((state: GamePageState) => {
+  return useGameSelector((state) => {
     if (state.playerId === undefined || !state.actions) return false
     return state.actions.some(action =>
       action.playerId === state.playerId && (action.pending || action.animation !== undefined)

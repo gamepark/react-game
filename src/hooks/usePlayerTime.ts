@@ -1,6 +1,5 @@
-import { GamePageState } from '@gamepark/react-client'
+import { useGameSelector } from '@gamepark/react-client'
 import { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { usePlayer } from './usePlayers'
 
 const isLocalDev = process.env.NODE_ENV !== 'production' && !new URLSearchParams(window.location.search).get('game')
@@ -8,7 +7,7 @@ const isLocalDev = process.env.NODE_ENV !== 'production' && !new URLSearchParams
 export const usePlayerTime = <PlayerId>(playerId: PlayerId) => {
   const [result, setResult] = useState<number>()
   const player = usePlayer(playerId)
-  const clientTimeDelta = useSelector((state: GamePageState) => state.clientTimeDelta)
+  const clientTimeDelta = useGameSelector((state) => state.clientTimeDelta)
   const running = player?.time?.playing
 
   const getPlayerTime = useCallback(() => {

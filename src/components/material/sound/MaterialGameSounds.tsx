@@ -1,7 +1,6 @@
-import { Animation } from '@gamepark/react-client'
+import { Animation, useGameSelector } from '@gamepark/react-client'
 import { MaterialMove, MoveKind } from '@gamepark/rules-api'
 import { FC, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useAnimation, useMaterialContext } from '../../../hooks'
 import { gameContext } from '../../GameProvider'
 import { MaterialGameAnimations } from '../animations'
@@ -31,7 +30,7 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, 
   const animationsConfig = useContext(gameContext).animations as MaterialGameAnimations
   const material = useContext(gameContext).material
   const animation = useAnimation<MaterialMove>()
-  const muted = useSelector((state: { soundsMuted: boolean }) => state.soundsMuted)
+  const muted = useGameSelector((state) => state.soundsMuted)
   useEffect(() => {
     if (!animation) return
     const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })

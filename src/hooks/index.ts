@@ -1,7 +1,6 @@
 export * from './useActions'
 export * from './useAnimations'
 export * from './useDraggedItem'
-export * from './useFailures'
 export * from './useFullscreen'
 export * from './useGame'
 export * from './useGiveUp'

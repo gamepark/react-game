@@ -1,6 +1,5 @@
-import { GamePageState } from '@gamepark/react-client'
-import { useSelector } from 'react-redux'
+import { useGameSelector } from '@gamepark/react-client'
 
 export function useGame<Game>(): Game | undefined {
-  return useSelector((state: GamePageState<Game>) => state.state)
+  return useGameSelector((state) => state.state)
 }

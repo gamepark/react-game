@@ -1,8 +1,7 @@
-import { DisplayedAction, GamePageState, isActionToAnimate, moveUndone } from '@gamepark/react-client'
+import { isActionToAnimate, undoMove, useGameDispatch, useGameSelector } from '@gamepark/react-client'
 import { hasUndo } from '@gamepark/rules-api'
 import { findLastIndex } from 'es-toolkit/compat'
 import { useCallback, useContext } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { gameContext } from '../components'
 
 export type UndoOptions = { delayed?: boolean }
@@ -10,17 +9,17 @@ export type MovePredicate<Move> = (move: Move) => boolean
 export type CanUndo<Move> = (movePredicate?: MovePredicate<Move>) => boolean
 export type UndoFunction<Move> = ((arg?: string | number | MovePredicate<Move> | UndoOptions, options?: UndoOptions) => void)
 
-export const useUndo = <Move = any, PlayerId extends number = number, Game = any>(): [UndoFunction<Move>, CanUndo<Move>] => {
-  const actions = useSelector<GamePageState<Game, Move, PlayerId>, DisplayedAction<Move, PlayerId>[] | undefined>(state => state.actions)
-  const game = useSelector<GamePageState<Game, Move, PlayerId>, Game | undefined>(state => state.state)
-  const playerId = useSelector<GamePageState<Game, Move, PlayerId>, PlayerId | undefined>(state => state.playerId)
-  const dispatch = useDispatch<any>()
+export const useUndo = <Move = any>(): [UndoFunction<Move>, CanUndo<Move>] => {
+  const actions = useGameSelector((state) => state.actions)
+  const game = useGameSelector((state) => state.state)
+  const playerId = useGameSelector((state) => state.playerId)
+  const dispatch = useGameDispatch()
   const Rules = useContext(gameContext)?.Rules
   if (!Rules) throw new Error('Cannot useUndo outside a GameProvider')
 
   const undo: UndoFunction<Move> = useCallback((arg?: string | number | MovePredicate<Move> | UndoOptions, options?: UndoOptions) => {
     if (typeof arg === 'string') {
-      dispatch(moveUndone(arg, options?.delayed))
+      dispatch(undoMove({ actionId: arg, delayed: options?.delayed }))
     } else {
       if (!actions) return console.error('Cannot undo before actions history is loaded')
       const actionToUndo = findLastN(actions, action =>
@@ -31,7 +30,7 @@ export const useUndo = <Move = any, PlayerId extends number = number, Game = any
       const delayed = typeof arg === 'object' ? arg?.delayed : options?.delayed
       for (const action of actionToUndo) {
         if (action.id) {
-          dispatch(moveUndone(action.id, delayed))
+          dispatch(undoMove({ actionId: action.id, delayed }))
         }
       }
     }

@@ -1,14 +1,13 @@
 /** @jsxImportSource @emotion/react */
-import { GamePageState, Player, PlayerQuitReason, useMe } from '@gamepark/react-client'
+import { Player, PlayerQuitReason, useGameSelector, useMe } from '@gamepark/react-client'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
 import { usePlayerName } from '../../../hooks'
 import { Dialog } from '../../dialogs'
 import { menuButtonCss, menuDialogCss } from '../menuCss'
 
 export const TrackPlayersQuit = () => {
-  const players = useSelector<GamePageState, Player[]>(state => state.players)
+  const players = useGameSelector((state) => state.players)
   return <>{players.map(player => <TrackPlayerQuit key={player.id} player={player}/>)}</>
 }
 

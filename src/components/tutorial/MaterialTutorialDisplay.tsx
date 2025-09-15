@@ -5,12 +5,11 @@ import { faForward } from '@fortawesome/free-solid-svg-icons/faForward'
 import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { playTutorialMovesAction } from '@gamepark/react-client'
+import { playTutorialMoves, useGameDispatch } from '@gamepark/react-client'
 import { isCloseTutorialPopup, isSetTutorialStep, SetTutorialStep } from '@gamepark/rules-api'
 import { maxBy, minBy } from 'es-toolkit'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDispatch } from 'react-redux'
 import { buttonCss, transformCss } from '../../css'
 import { useLegalMove, useLegalMoves, useMaterialContext, useUndo } from '../../hooks'
 import { useTutorialStep } from '../../hooks/useTutorialStep'
@@ -28,9 +27,9 @@ export const MaterialTutorialDisplay = () => {
 
   const popup = tutorialStep?.popup
 
-  const dispatch = useDispatch<any>()
+  const dispatch = useGameDispatch()
   useEffect(() => {
-    dispatch(playTutorialMovesAction(Infinity))
+    dispatch(playTutorialMoves(Infinity))
   }, [])
 
   const nextStepMove = minBy(tutorialMoves, move => move.step)

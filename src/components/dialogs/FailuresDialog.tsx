@@ -1,16 +1,16 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
+import { clearFailures, Failure, useGameDispatch, useGameSelector } from '@gamepark/react-client'
 import { TFunction } from 'i18next'
 import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
-import { Dialog, DialogProps } from './Dialog'
-import { useFailures } from '../../hooks'
-import { Failure } from '@gamepark/react-client'
 import { menuButtonCss, menuDialogCss } from '../menus/menuCss'
+import { Dialog, DialogProps } from './Dialog'
 
 export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
   const { t } = useTranslation()
-  const [failures, clearFailures] = useFailures()
+  const failures = useGameSelector((state) => state.failures)
+  const dispatch = useGameDispatch()
   const [displayedFailure, setDisplayedFailure] = useState('')
   useEffect(() => {
     if (failures.length) {
@@ -24,7 +24,7 @@ export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
     <Dialog open={failures.length > 0} css={menuDialogCss} {...props}>
       <h2>{description.title(t)}</h2>
       <p>{description.text(t)}</p>
-      <button css={[menuButtonCss, inDialogButton]} onClick={() => clearFailures()}>{t('OK')}</button>
+      <button css={[menuButtonCss, inDialogButton]} onClick={() => dispatch(clearFailures())}>{t('OK')}</button>
       {displayedFailure === Failure.MOVE_FORBIDDEN && <p>
         <Trans defaults="failure.dialog.play2"
                components={[<button css={[menuButtonCss, css`display: inline-block`]} onClick={() => window.location.reload()}/>]}/>

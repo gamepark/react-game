@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { GamePageState } from '@gamepark/react-client'
+import { useGameSelector } from '@gamepark/react-client'
 import { HTMLAttributes, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { GamePointIcon } from './index'
 
 type Props<PlayerId> = {
@@ -12,7 +11,7 @@ type Props<PlayerId> = {
 } & HTMLAttributes<HTMLSpanElement>
 
 export const GamePoints = <PlayerId extends any>({ playerId, suspense = 0.1, test, ...props }: Props<PlayerId>) => {
-  const player = useSelector((state: GamePageState) => state.players.find(p => p.id === playerId))
+  const player = useGameSelector((state) => state.players.find(p => p.id === playerId))
   const gamePointsDelta = player?.gamePointsDelta ?? test
   const [hidden, setHidden] = useState(false)
   useEffect(() => {

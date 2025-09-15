@@ -1,9 +1,8 @@
-import { GamePageState, Player } from '@gamepark/react-client'
+import { Player, useGameSelector } from '@gamepark/react-client'
 import { produce } from 'immer'
-import { useSelector } from 'react-redux'
+import { useMemo } from 'react'
 import { useNow } from './useNow'
 import { usePlayerId } from './usePlayerId'
-import { useMemo } from 'react'
 
 type Options = {
   sortFromMe?: boolean
@@ -14,8 +13,8 @@ type Options = {
 export const usePlayers = <PlayerId = any>(options?: Options): Player<PlayerId>[] => {
   const now = useNow({ standby: !options?.withTimeUpdate })
   const playerId = usePlayerId<PlayerId>()
-  const rawPlayers = [...useSelector((state: GamePageState<any, any, PlayerId>) => state.players)]
-  const playerIds = useSelector((state: GamePageState<any, any, PlayerId>) => state.state?.players)
+  const rawPlayers = [...useGameSelector((state) => state.players)]
+  const playerIds = useGameSelector((state) => state.state?.players)
   if (Array.isArray(playerIds)) {
     rawPlayers.sort((a, b) => playerIds.indexOf(a.id) - playerIds.indexOf(b.id))
   }
@@ -35,7 +34,7 @@ export const usePlayers = <PlayerId = any>(options?: Options): Player<PlayerId>[
 export const usePlayer = <PlayerId = any>(playerId?: PlayerId, { withTimeUpdate }: Options = { withTimeUpdate: false }): Player<PlayerId> | undefined => {
   const defaultPlayerId = usePlayerId()
   playerId = playerId ?? defaultPlayerId
-  let players = useSelector((state: GamePageState<any, any, PlayerId>) => state.players)
+  let players = useGameSelector((state) => state.players)
   const standby = !withTimeUpdate || players.every(player => !player.time?.playing)
   const now = useNow({ standby })
   if (!standby && players.every(player => player.time)) {
