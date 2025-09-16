@@ -71,7 +71,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
         />
       )}
 
-      {main && !gameOver && (
+      {main && (
         <div css={groupTimerAndCounter}>
           {!gameOver && (
             <PlayerTimer
