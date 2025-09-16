@@ -128,7 +128,7 @@ export const DraggableMaterial = <M extends number = number>(
   }, [!transform])
 
   const transformContext = useTransformContext()
-  const transformRef = useRef<string>()
+  const transformRef = useRef<string>('')
   if (transform && !ignoreTransform) {
     const { x, y } = transform
     const scale = transformContext.transformState.scale
@@ -137,7 +137,7 @@ export const DraggableMaterial = <M extends number = number>(
 
   const isDropped = useMemo(() => isDroppedItem(itemContext), [itemContext])
   const applyTransform = isDropped || isDraggingParent || (!disabled && !ignoreTransform)
-  if (!applyTransform) transformRef.current = undefined
+  if (!applyTransform) transformRef.current = ''
   const animation = useItemAnimation(displayedItem, transformRef.current)
 
   // Firefox bugs when the animation is immediately followed by the transition: we need to delay by 1 rerender putting back the transition
@@ -214,7 +214,7 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
   const context = useMaterialContext<P, M, L>()
   const animationsConfig = useContext(gameContext).animations as MaterialGameAnimations<P, M, L>
   const animations = useAnimations<ItemMove<P, M, L>, P>()
-  const animationCache = useRef<{ move: MaterialMove<P, M, L>, itemAnimation: Interpolation<Theme> }>()
+  const animationCache = useRef<{ move: MaterialMove<P, M, L>, itemAnimation: Interpolation<Theme> }>(undefined)
   if (!animations.length) return
   const item = context.rules.material(type).getItem(index)
   if (!item || !animationsConfig) return

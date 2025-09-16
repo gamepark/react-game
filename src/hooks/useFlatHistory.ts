@@ -24,7 +24,7 @@ export const useFlatHistory = () => {
   const actions = useGameSelector((state) => state.actions)
 
   const moves = useRef<PlayedMove[]>([])
-  const rules = useRef<Rules>()
+  const rules = useRef<Rules>(null)
   useEffect(() => {
     if (!rules.current && setup) {
       rules.current = new context.Rules(JSON.parse(JSON.stringify(setup)), gameOver ? undefined : { player })

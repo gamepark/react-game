@@ -19,7 +19,7 @@ import {
 import { groupBy } from 'es-toolkit'
 import { partition } from 'es-toolkit/compat'
 import { TFunction } from 'i18next'
-import { ComponentType, FC, HTMLAttributes, ReactNode } from 'react'
+import { ComponentType, HTMLAttributes, ReactNode } from 'react'
 import { Trans } from 'react-i18next'
 import { getItemFromContext, ItemContext, Locator, MaterialContext } from '../../locators'
 import { ComponentDescription } from './ComponentDescription'
@@ -52,7 +52,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   /**
    * The React component to display
    */
-  abstract content: FC<MaterialContentProps<ItemId>>
+  abstract content: (props: MaterialContentProps<ItemId>) => ReactNode
 
   /**
    * If the component can be moved (token, cards...) or not (writing)

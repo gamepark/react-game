@@ -25,7 +25,8 @@
     "noUnusedParameters": true,
     "removeComments": false,
     "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": ["**/*.test.ts"]

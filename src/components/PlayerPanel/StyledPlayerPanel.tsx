@@ -92,7 +92,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
   )
 }
 
-const getSpeechBubbleDirection = (element: RefObject<HTMLDivElement>): SpeechBubbleDirection => {
+const getSpeechBubbleDirection = (element: RefObject<HTMLDivElement | null>): SpeechBubbleDirection => {
   if (element.current) {
     const rect = element.current.getBoundingClientRect()
     const left = rect.left / (window.visualViewport?.width ?? window.innerWidth)
