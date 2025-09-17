@@ -380,12 +380,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gamepark/avataaars@npm:~2.3.1":
-  version: 2.3.1
-  resolution: "@gamepark/avataaars@npm:2.3.1"
+"@gamepark/avataaars@npm:~3.0.0":
+  version: 3.0.0
+  resolution: "@gamepark/avataaars@npm:3.0.0"
   peerDependencies:
     react: ">=18"
-  checksum: 10c0/0e8113ed1909fbb4d23c36ed526ba6b658f1afbb2129a0fcc251eb18aab44620e9810892a91d772bf7976c5a11fb1d0788ddd76fde2f1d914db7dff2b97e28dc
+  checksum: 10c0/52b8ba5c804908f61f9b7a12bce44d9e1c55025c290a327d103b70549f0fe4ed0332a4a0ed9a10b3c93543c58194b80534fb743b7ad515fd2fee53c5cb422ba1
   languageName: node
   linkType: hard
 
@@ -424,7 +424,7 @@ __metadata:
     "@fortawesome/free-regular-svg-icons": "npm:^7.0.1"
     "@fortawesome/free-solid-svg-icons": "npm:^7.0.1"
     "@fortawesome/react-fontawesome": "npm:^3.0.2"
-    "@gamepark/avataaars": "npm:~2.3.1"
+    "@gamepark/avataaars": "npm:~3.0.0"
     "@gamepark/react-client": "npm:~7.0.0-beta.2"
     "@gamepark/rules-api": "npm:~7.0.0-beta.2"
     "@types/fscreen": "npm:^1.0.4"

@@ -21,7 +21,7 @@
     "@apollo/client": "^4.0.5",
     "@datadog/browser-logs": "^6.19.0",
     "@dnd-kit/modifiers": "^9.0.0",
-    "@gamepark/avataaars": "~2.3.1",
+    "@gamepark/avataaars": "~3.0.0",
     "@gamepark/react-client": "~7.0.0-beta.2",
     "@gamepark/rules-api": "~7.0.0-beta.2",
     "dayjs": "^1.11.18",
