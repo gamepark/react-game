@@ -11,13 +11,8 @@
     "dist"
   ],
   "scripts": {
-    "linkall": "yarn link react react-dom react-redux @apollo/client @types/react @gamepark/react-client @gamepark/rules-api",
-    "unlinkall": "yarn unlink react react-dom react-redux @apollo/client @types/react @gamepark/react-client @gamepark/rules-api",
-    "linkgp": "yarn link @gamepark/react-client @gamepark/rules-api",
-    "unlinkgp": "yarn unlink @gamepark/react-client @gamepark/rules-api",
-    "test": "yarn test",
-    "build": "tsc -p tsconfig.json",
-    "prepublishOnly": "tsc -p tsconfig.json"
+    "build": "tsc",
+    "prepack": "yarn build"
   },
   "dependencies": {
     "@apollo/client": "^4.0.5",
