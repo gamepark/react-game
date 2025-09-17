@@ -1,6 +1,6 @@
 {
   "name": "@gamepark/react-game",
-  "version": "7.0.0-beta.0",
+  "version": "7.0.0-beta.2",
   "type": "module",
   "description": "React components & tools to create a Board Game user interface for Game Park",
   "author": "Romain Fromi <romain@game-park.com> (https://game-park.com/)",
@@ -24,8 +24,8 @@
     "@datadog/browser-logs": "^6.19.0",
     "@dnd-kit/modifiers": "^9.0.0",
     "@gamepark/avataaars": "~2.3.1",
-    "@gamepark/react-client": "~7.0.0-beta.0",
-    "@gamepark/rules-api": "~7.0.0-beta.0",
+    "@gamepark/react-client": "~7.0.0-beta.2",
+    "@gamepark/rules-api": "~7.0.0-beta.2",
     "dayjs": "^1.11.18",
     "emotion-normalize": "^11.0.1",
     "fscreen": "^1.2.0",
