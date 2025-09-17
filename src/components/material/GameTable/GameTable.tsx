@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { CollisionDetection, DndContext, DragEndEvent, getClientRect, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { css, Global } from '@emotion/react'

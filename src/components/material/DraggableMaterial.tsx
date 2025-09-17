@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
 import {

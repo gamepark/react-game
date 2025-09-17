@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { HTMLAttributes, PropsWithChildren } from 'react'
 import { menuButtonCss } from '../menuCss'
 

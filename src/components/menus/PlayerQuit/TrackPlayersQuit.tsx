@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { Player, PlayerQuitReason, useGameSelector, useMe } from '@gamepark/react-client'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'

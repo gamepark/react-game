@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
 import { MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { isEqual } from 'es-toolkit'

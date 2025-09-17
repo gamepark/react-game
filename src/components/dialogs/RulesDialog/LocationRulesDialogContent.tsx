@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { LocationHelpDisplay, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { fontSizeCss } from '../../../css'

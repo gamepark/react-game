@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { MaterialItem } from '@gamepark/rules-api'
 import { flatten, sumBy } from 'es-toolkit'
 import { values } from 'es-toolkit/compat'

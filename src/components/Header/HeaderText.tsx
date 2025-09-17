@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { MaterialMove, MaterialRules } from '@gamepark/rules-api'
 import { ReactElement } from 'react'
 import { Trans } from 'react-i18next'

@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { faSearchMinus } from '@fortawesome/free-solid-svg-icons/faSearchMinus'
 import { faSearchPlus } from '@fortawesome/free-solid-svg-icons/faSearchPlus'

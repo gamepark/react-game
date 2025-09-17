@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { HTMLAttributes, MouseEventHandler, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'

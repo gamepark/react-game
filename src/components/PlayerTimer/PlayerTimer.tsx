@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { useGameSelector } from '@gamepark/react-client'
 import dayjs from 'dayjs'

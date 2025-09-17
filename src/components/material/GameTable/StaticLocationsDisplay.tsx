@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { Interpolation, Theme } from '@emotion/react'
 import { useDraggedItem, useMaterialContext } from '../../../hooks'
 import { useStaticLocations } from '../../../hooks/useStaticLocations'

@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, Theme } from '@emotion/react'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faImage } from '@fortawesome/free-solid-svg-icons/faImage'

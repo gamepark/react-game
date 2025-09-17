@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { DragMoveEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'

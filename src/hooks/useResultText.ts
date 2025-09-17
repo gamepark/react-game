@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { isCompetitive, isCompetitiveScore, rankPlayers, Rules } from '@gamepark/rules-api'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'

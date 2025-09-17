@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { FC } from 'react'
 import { useTranslation } from 'react-i18next'

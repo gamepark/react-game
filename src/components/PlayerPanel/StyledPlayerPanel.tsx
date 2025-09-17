@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { Player } from '@gamepark/react-client'
 import { MaterialRules } from '@gamepark/rules-api'

@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { Message } from '@gamepark/react-client'
 import { FC, HTMLAttributes, useEffect, useRef, useState } from 'react'
 import { LocalChatTextInput } from './ChatTextInput'

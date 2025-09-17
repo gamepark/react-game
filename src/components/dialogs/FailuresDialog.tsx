@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { clearFailures, Failure, useGameDispatch, useGameSelector } from '@gamepark/react-client'
 import { TFunction } from 'i18next'

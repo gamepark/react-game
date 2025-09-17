@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { Message } from '@gamepark/react-client'
 import { ChatMessageAuthor } from './ChatMessageAuthor'

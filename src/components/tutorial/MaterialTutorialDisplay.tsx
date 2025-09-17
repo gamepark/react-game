@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, ThemeProvider } from '@emotion/react'
 import { faBackward } from '@fortawesome/free-solid-svg-icons/faBackward'
 import { faForward } from '@fortawesome/free-solid-svg-icons/faForward'

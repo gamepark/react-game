@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { forwardRef, HTMLAttributes, ImgHTMLAttributes, useMemo } from 'react'
 
 export type PictureAttributes = ImgHTMLAttributes<HTMLImageElement> & {

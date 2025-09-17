@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { DeleteItem, isDeleteItem, isMoveItem, isMoveItemsAtOnce, MaterialMove, MoveItem, MoveItemsAtOnce } from '@gamepark/rules-api'
 import { isEqual } from 'es-toolkit'
 import { getItemFromContext, ItemContext } from '../../locators'

@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { MaterialMoveBuilder, MaterialRules } from '@gamepark/rules-api'
 import { PropsWithChildren } from 'react'

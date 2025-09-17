@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, keyframes, Theme } from '@emotion/react'
 import { MaterialMove } from '@gamepark/rules-api'
 import { forwardRef, MouseEvent, useMemo, useRef, useState } from 'react'

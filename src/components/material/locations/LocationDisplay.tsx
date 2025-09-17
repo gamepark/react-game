@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { Location, XYCoordinates } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, useMemo } from 'react'

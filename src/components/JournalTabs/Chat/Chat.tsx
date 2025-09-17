@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { FC, HTMLAttributes } from 'react'
 import { LocalChat } from './LocalChat'
 import { RemoteChat } from './RemoteChat'

@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react'
 import { Message, Player, pusherClient } from '@gamepark/react-client'
 import { MouseEvent, useEffect, useState } from 'react'

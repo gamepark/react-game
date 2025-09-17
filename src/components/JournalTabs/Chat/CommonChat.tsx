@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { MutableRefObject, ReactElement, ReactNode, useEffect, useRef } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'

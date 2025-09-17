@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { PlayOptions } from '@gamepark/react-client'
 import { ButtonHTMLAttributes, FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useUndo } from '../../../hooks'

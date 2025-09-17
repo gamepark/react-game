@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { HTMLAttributes, useMemo } from 'react'

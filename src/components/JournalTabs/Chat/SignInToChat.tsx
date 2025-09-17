@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { PLATFORM_URI } from '@gamepark/react-client'
 import { useTranslation } from 'react-i18next'

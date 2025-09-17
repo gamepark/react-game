@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { useRef } from 'react'
 import { useWebP } from '../../hooks'
 import { Picture } from '../Picture'

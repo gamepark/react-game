@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons/faCircleQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useGameSelector } from '@gamepark/react-client'

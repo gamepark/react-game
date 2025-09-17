@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { faVolumeMute } from '@fortawesome/free-solid-svg-icons/faVolumeMute'
 import { faVolumeUp } from '@fortawesome/free-solid-svg-icons/faVolumeUp'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

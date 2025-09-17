@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { ApolloProvider } from '@apollo/client/react'
 import { datadogLogs, StatusType } from '@datadog/browser-logs'
 import createCache, { StylisPlugin } from '@emotion/cache'

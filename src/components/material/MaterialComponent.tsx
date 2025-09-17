@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { forwardRef, HTMLAttributes, memo, useMemo } from 'react'
 import { sizeCss } from '../../css'

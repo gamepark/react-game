@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, Interpolation, Theme } from '@emotion/react'
 import { FC, HTMLAttributes } from 'react'
 import { MoveHistory } from '../../hooks/useFlatHistory'

@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, ThemeProvider } from '@emotion/react'
 import { FC, HTMLAttributes, useEffect, useRef } from 'react'
 import { linkButtonCss } from '../../../css'

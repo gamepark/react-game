@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { useDroppable } from '@dnd-kit/core'
 import { useGameSelector } from '@gamepark/react-client'
 import { Location, MaterialMove } from '@gamepark/rules-api'

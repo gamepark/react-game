@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { faRankingStar } from '@fortawesome/free-solid-svg-icons/faRankingStar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { HTMLAttributes } from 'react'

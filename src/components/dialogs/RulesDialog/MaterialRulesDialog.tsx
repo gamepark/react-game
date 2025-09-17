@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { HelpDisplayType, MaterialGame } from '@gamepark/rules-api'
 import { FC } from 'react'

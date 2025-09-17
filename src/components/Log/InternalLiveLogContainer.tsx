@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, keyframes, ThemeProvider } from '@emotion/react'
 import { useLogControls } from '@gamepark/react-client'
 import { FC, HTMLAttributes, useEffect, useState } from 'react'

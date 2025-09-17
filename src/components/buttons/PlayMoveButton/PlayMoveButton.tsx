@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, ThemeProvider } from '@emotion/react'
 import { PlayOptions } from '@gamepark/react-client'
 import { ButtonHTMLAttributes, FC, ReactNode, useCallback, useEffect, useState } from 'react'

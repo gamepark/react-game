@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { faClock } from '@fortawesome/free-solid-svg-icons/faClock'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'

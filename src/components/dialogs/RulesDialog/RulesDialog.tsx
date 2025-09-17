@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, ThemeProvider } from '@emotion/react'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

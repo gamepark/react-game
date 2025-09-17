@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css, Interpolation, Theme } from '@emotion/react'
 import { times } from 'es-toolkit/compat'
 import { FC } from 'react'
