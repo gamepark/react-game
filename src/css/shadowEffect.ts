@@ -14,3 +14,9 @@ export const shadowEffect = css`
     background: rgba(0, 0, 0, 0.5);
   }
 `
+
+export const transparencyShadowEffect = css`
+  filter: brightness(0.5);
+`
+
+export const playDownCss = (transparency: boolean) => transparency ? transparencyShadowEffect : shadowEffect

@@ -1,5 +1,4 @@
 import { useRef } from 'react'
-import { useWebP } from '../../hooks'
 import { Picture } from '../Picture'
 
 export type ImagesLoaderProps = {
@@ -8,7 +7,6 @@ export type ImagesLoaderProps = {
 }
 
 export const ImagesLoader = ({ images, onImagesLoad }: ImagesLoaderProps) => {
-  const webp = useWebP()
   const loadCount = useRef(0)
   const onLoad = () => {
     loadCount.current++
@@ -19,7 +17,6 @@ export const ImagesLoader = ({ images, onImagesLoad }: ImagesLoaderProps) => {
   if (onImagesLoad && images.length === 0) {
     setTimeout(onImagesLoad)
   }
-  if (webp === undefined) return null
   return (
     <>
       {images.map((image, index) => <Picture key={index} src={image} alt="" style={{ display: 'none' }} onLoad={onLoad}/>)}

@@ -431,7 +431,6 @@ __metadata:
     "@types/node": "npm:^24.5.0"
     "@types/react": "npm:^19.1.13"
     "@types/react-dom": "npm:^19.1.9"
-    "@types/stylis": "npm:^4.2.7"
     dayjs: "npm:^1.11.18"
     emotion-normalize: "npm:^11.0.1"
     es-toolkit: "npm:^1.39.10"
@@ -451,8 +450,6 @@ __metadata:
     react-redux: "npm:^9.2.0"
     react-zoom-pan-pinch: "npm:3.7.0"
     rxjs: "npm:^7.8.2"
-    stylis: "npm:^4.3.6"
-    supports-webp: "npm:^3.0.0"
     typescript: "npm:^5.9.2"
     use-long-press: "npm:^3.3.0"
   peerDependencies:
@@ -562,13 +559,6 @@ __metadata:
   dependencies:
     csstype: "npm:^3.0.2"
   checksum: 10c0/75e35b54883f5ed07d3b5cb16a4711b6dbb7ec6b74301bcb9bfa697c9d9fff022ec508e1719e7b2c69e2e8b042faac1125be7717b5e5e084f816a2c88e136920
-  languageName: node
-  linkType: hard
-
-"@types/stylis@npm:^4.2.7":
-  version: 4.2.7
-  resolution: "@types/stylis@npm:4.2.7"
-  checksum: 10c0/01a9679addb3f63951a9c09729564e2205581f2db40875a28b25cc461efc52ba17a711cc50cdb5e7d3a67c5f2cd60580e078c8a69b8df7b67699d89060d2a977
   languageName: node
   linkType: hard
 
@@ -1364,13 +1354,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"stylis@npm:^4.3.6":
-  version: 4.3.6
-  resolution: "stylis@npm:4.3.6"
-  checksum: 10c0/e736d484983a34f7c65d362c67dc79b7bce388054b261c2b7b23d02eaaf280617033f65d44b1ea341854f4331a5074b885668ac8741f98c13a6cfd6443ae85d0
-  languageName: node
-  linkType: hard
-
 "supports-color@npm:^5.3.0":
   version: 5.5.0
   resolution: "supports-color@npm:5.5.0"
@@ -1384,13 +1367,6 @@ __metadata:
   version: 1.0.0
   resolution: "supports-preserve-symlinks-flag@npm:1.0.0"
   checksum: 10c0/6c4032340701a9950865f7ae8ef38578d8d7053f5e10518076e6554a9381fa91bd9c6850193695c141f32b21f979c985db07265a758867bac95de05f7d8aeb39
-  languageName: node
-  linkType: hard
-
-"supports-webp@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "supports-webp@npm:3.0.0"
-  checksum: 10c0/fa5483bfc363869377f7704ca17615abc7aa964a396073b64e731ac67a9eb34197ec07edd178260c66155d072231a0ef7faae2eddaf83cd1129a5d225084ff6f
   languageName: node
   linkType: hard
 

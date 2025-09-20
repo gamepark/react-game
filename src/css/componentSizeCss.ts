@@ -9,7 +9,7 @@ export const borderRadiusCss = (radius: number = 0) => radius && css`
   border-radius: ${radius}em;
 `
 
-export const shadowCss = (image?: string) => image?.endsWith('.jpg') && css`
+export const shadowCss = css`
   box-shadow: 0 0 0.1em black, 0 0 0.1em black;
 `
 

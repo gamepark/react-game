@@ -1,7 +1,7 @@
 import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { ReactNode } from 'react'
-import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss, transformCss } from '../../../css'
+import { backgroundCss, borderRadiusCss, playDownCss, shadowCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { MaterialContentProps } from '../MaterialDescription'
 import { MobileMaterialDescription } from '../MobileMaterialDescription'
@@ -44,6 +44,19 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return !!this.backImage || !!this.backImages
   }
 
+  /**
+   * If the items image has transparency (shadows must be handled inside the image if there is transparency)
+   */
+  transparency = false
+
+  /**
+   * Whether a specific item has transparency. Default to {@link transparency}
+   * @param _itemId the item id
+   */
+  hasTransparency(_itemId: ItemId): boolean {
+    return this.transparency
+  }
+
   isFlipped(item: Partial<MaterialItem<P, L>>, _context: MaterialContext<P, M, L>): boolean {
     return this.hasBackFace() && this.getFrontId(item.id) === undefined
   }
@@ -69,14 +82,15 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     const backImage = this.getBackImage(itemId)
     const size = this.getSize(itemId)
     const borderRadius = this.getBorderRadius(itemId)
+    const transparency = this.hasTransparency(itemId)
     return <>
       <div css={[
         faceCss,
         this.getFrontExtraCss(itemId),
         sizeCss(size.width, size.height),
-        image && [backgroundCss(image), shadowCss(image)],
+        image && [backgroundCss(image), !transparency && shadowCss],
         borderRadius && borderRadiusCss(borderRadius),
-        highlight ? shineEffect : (playDown && playDownCss(image)),
+        highlight ? shineEffect : (playDown && playDownCss(transparency)),
         preview && previewCss,
         // We must add a little of translateZ since Safari/Chrome on iOS consider the two faces at the same level, so the backface-visibility is wrongly applied
         transformCss('translateZ(0.001px)')
@@ -87,10 +101,10 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         faceCss,
         this.getBackExtraCss(itemId),
         sizeCss(size.width, size.height),
-        backgroundCss(backImage), shadowCss(backImage),
+        backgroundCss(backImage), !transparency && shadowCss,
         borderRadius && borderRadiusCss(borderRadius),
         transformCss('rotateY(-180deg)'),
-        highlight ? shineEffect : (playDown && playDownCss(backImage)),
+        highlight ? shineEffect : (playDown && playDownCss(transparency)),
         preview && previewCss
       ]}>
         {backChildren}
@@ -123,16 +137,6 @@ const faceCss = css`
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 `
-
-const playDownCss = (image?: string) => {
-  if (image?.endsWith('.jpg')) {
-    return shadowEffect
-  } else {
-    return css`
-      filter: brightness(0.5);
-    `
-  }
-}
 
 const previewCss = css`
   opacity: 0.7;

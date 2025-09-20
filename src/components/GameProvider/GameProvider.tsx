@@ -1,14 +1,11 @@
 import { ApolloProvider } from '@apollo/client/react'
 import { datadogLogs, StatusType } from '@datadog/browser-logs'
-import createCache, { StylisPlugin } from '@emotion/cache'
-import { CacheProvider, css, Global, Theme, ThemeProvider } from '@emotion/react'
+import { css, Global, Theme, ThemeProvider } from '@emotion/react'
 import { getApolloClient, LocalGameProvider, LocalGameProviderProps, RemoteGameProvider } from '@gamepark/react-client'
 import normalize from 'emotion-normalize'
 import { merge } from 'es-toolkit'
-import { PropsWithChildren, useEffect, useMemo } from 'react'
-import { DECLARATION, Element, Middleware, prefixer } from 'stylis'
+import { PropsWithChildren, useEffect } from 'react'
 import { BackgroundTheme, defaultTheme } from '../../css'
-import { useWebP } from '../../hooks'
 import { DeepPartial } from '../../utilities'
 import { isMaterialTutorial } from '../tutorial'
 import { wrapRulesWithTutorial } from '../tutorial/TutorialRulesWrapper'
@@ -32,16 +29,11 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
     }
   }, [props.tutorial, props.Rules])
 
-  const webP = useWebP()
-  const emotionCache = useMemo(() => createCache({
-    key: 'css', stylisPlugins: (webP ? [webPReplace, prefixer] : [prefixer]) as Array<StylisPlugin>
-  }), [webP])
   if (props.material && materialI18n && locale in materialI18n) {
     merge(props.material, materialI18n[locale])
   }
   return (
     <gameContext.Provider value={props as GameContext}>
-      <CacheProvider value={emotionCache}>
         <ThemeProvider theme={merge(defaultTheme, theme)}>
           <Global styles={[normalize, globalCss]}/>
           <ApolloProvider client={getApolloClient()}>
@@ -51,15 +43,8 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
             }
           </ApolloProvider>
         </ThemeProvider>
-      </CacheProvider>
     </gameContext.Provider>
   )
-}
-
-const webPReplace = (element: Element, _index: number, _children: Array<Element | string>, _callback: Middleware) => {
-  if (element.type === DECLARATION) {
-    element.value = element.value.replace(/url\((.*)(?:\.png|\.jpg)("|'?)\)/g, 'url($1.webp$2)')
-  }
 }
 
 // Init Datadog logs

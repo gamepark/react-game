@@ -2,7 +2,7 @@ import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
 import { isMoveItemType, MoveItem } from '@gamepark/rules-api'
 import { FC } from 'react'
-import { backgroundCss, borderRadiusCss, shadowCss, shadowEffect, shineEffect, sizeCss } from '../../../css'
+import { backgroundCss, borderRadiusCss, shineEffect, sizeCss, transparencyShadowEffect } from '../../../css'
 import { useAnimation, useMaterialContext } from '../../../hooks'
 import { ComponentSize } from '../ComponentDescription'
 import { MaterialContentProps } from '../MaterialDescription'
@@ -28,9 +28,9 @@ export const WheelItem: FC<WheelItemProps> = (props) => {
     <div css={[
       wheelExtraCss,
       sizeCss(size.width, size.height),
-      wheelImage && [backgroundCss(wheelImage), shadowCss(wheelImage)],
+      wheelImage && [backgroundCss(wheelImage)],
       borderRadius && borderRadiusCss(borderRadius),
-      highlight ? shineEffect : (playDown && playDownCss(wheelImage)),
+      highlight ? shineEffect : (playDown && transparencyShadowEffect),
       wheelRotationCss(item?.location.rotation ?? 0, angles),
       !!animation && !!item && animateWheelCss(animation, angles)
     ]}>
@@ -41,7 +41,7 @@ export const WheelItem: FC<WheelItemProps> = (props) => {
       sizeCss(size.width, size.height),
       backgroundCss(image),
       borderRadius && borderRadiusCss(borderRadius),
-      highlight ? shineEffect : (playDown && playDownCss(image))
+      highlight ? shineEffect : (playDown && transparencyShadowEffect)
     ]}/>}
   </>
 }
@@ -65,13 +65,3 @@ const coverCss = css`
   top: 0;
   left: 0;
 `
-
-const playDownCss = (image?: string) => {
-  if (image?.endsWith('.jpg')) {
-    return shadowEffect
-  } else {
-    return css`
-      filter: brightness(0.5);
-    `
-  }
-}

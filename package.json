@@ -37,8 +37,6 @@
     "react-merge-refs": "^3.0.2",
     "react-zoom-pan-pinch": "3.7.0",
     "rxjs": "^7.8.2",
-    "stylis": "^4.3.6",
-    "supports-webp": "^3.0.0",
     "use-long-press": "^3.3.0"
   },
   "devDependencies": {
@@ -52,7 +50,6 @@
     "@types/node": "^24.5.0",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
-    "@types/stylis": "^4.2.7",
     "es-toolkit": "^1.39.10",
     "i18next": "^25.5.2",
     "react": "^19.1.1",
