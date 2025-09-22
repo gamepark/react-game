@@ -4,6 +4,8 @@ import { MaterialTutorial, TutorialStep } from './MaterialTutorial'
 
 export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCreator<any, any, any>) {
 
+  if (Rules.prototype.wrapped === true) return
+  Rules.prototype.wrapped = true
   const isLegalMove = Rules.prototype.isLegalMove
   const getLegalMoves = Rules.prototype.getLegalMoves
   const isTurnToPlay = Rules.prototype.isTurnToPlay
