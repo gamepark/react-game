@@ -432,7 +432,6 @@ __metadata:
     "@types/react": "npm:^19.1.13"
     "@types/react-dom": "npm:^19.1.9"
     dayjs: "npm:^1.11.18"
-    emotion-normalize: "npm:^11.0.1"
     es-toolkit: "npm:^1.39.10"
     fscreen: "npm:^1.2.0"
     graphql: "npm:^16.11.0"
@@ -750,16 +749,6 @@ __metadata:
     has-property-descriptors: "npm:^1.0.0"
     object-keys: "npm:^1.1.1"
   checksum: 10c0/88a152319ffe1396ccc6ded510a3896e77efac7a1bfbaa174a7b00414a1747377e0bb525d303794a47cf30e805c2ec84e575758512c6e44a993076d29fd4e6c3
-  languageName: node
-  linkType: hard
-
-"emotion-normalize@npm:^11.0.1":
-  version: 11.0.1
-  resolution: "emotion-normalize@npm:11.0.1"
-  peerDependencies:
-    "@emotion/react": ^11.0.0
-    react: ">=16.3.0"
-  checksum: 10c0/19254ff13d12f463b5dc91b33c1a961f6bf4cefd1011979c1f8889cb84d8e86b83c770b516ec22a379142f9e8833e3d1e99e1c6052947d24ed13cc2abe8f5779
   languageName: node
   linkType: hard
 

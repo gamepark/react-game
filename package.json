@@ -24,7 +24,6 @@
     "@gamepark/avataaars": "~3.0.0",
     "@gamepark/react-client": "~7.0.0",
     "dayjs": "^1.11.18",
-    "emotion-normalize": "^11.0.1",
     "fscreen": "^1.2.0",
     "graphql": "^16.11.0",
     "i18next-icu": "^2.4.0",
