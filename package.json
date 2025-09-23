@@ -15,7 +15,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepack": "yarn build"
+    "prepack": "yarn build",
+    "linkgp": "yarn link ../rules-api ../react-client -r",
+    "unlinkgp": "yarn unlink ../react-client ../rules-api"
   },
   "dependencies": {
     "@apollo/client": "^4.0.5",
