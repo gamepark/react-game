@@ -16,7 +16,7 @@ import {
   XYCoordinates
 } from '@gamepark/rules-api'
 import { merge } from 'es-toolkit'
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { forwardRef, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor } from '../../css'
 import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
@@ -37,7 +37,30 @@ export type DraggableMaterialProps<M extends number = number> = {
 } & MaterialComponentProps<M>
 
 export const DraggableMaterial = <M extends number = number>(
-  { highlight, type, index, displayIndex, isFocused, ...props }: DraggableMaterialProps<M>
+  props: DraggableMaterialProps<M>
+) => {
+  const { type, index, displayIndex } = props
+  const context = useMaterialContext()
+  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
+  const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
+  const legalMoves = useLegalMoves<MaterialMove>()
+  const disabled = useMemo(
+    () => !legalMoves.some(move => itemContext.material[type]!.canDrag(move, itemContext)),
+    [legalMoves, itemContext]
+  )
+  const { attributes, listeners, transform, setNodeRef } = useDraggable({ id: `${type}_${index}_${displayIndex}`, data: displayedItem, disabled })
+
+  return <DraggableMaterialMemo  ref={setNodeRef} transform={transform ?? undefined} disabled={disabled} {...props} {...attributes}
+                                {...combineEventListeners(listeners ?? {}, props)}/>
+}
+
+type DraggableMaterialMemoProps<M extends number = number> = DraggableMaterialProps<M> & {
+  transform?: XYCoordinates
+  disabled?: boolean
+}
+
+const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialMemoProps>((
+  { highlight, type, index, displayIndex, isFocused, transform, disabled, ...props }: DraggableMaterialMemoProps, ref
 ) => {
 
   const context = useMaterialContext()
@@ -94,14 +117,6 @@ export const DraggableMaterial = <M extends number = number>(
     hadMenu.current = !!menu
   }, [!menu])
 
-  const disabled = useMemo(() => !legalMoves.some(move => description.canDrag(move, itemContext))
-    , [legalMoves, itemContext])
-
-  const { attributes, listeners, transform: selfTransform, setNodeRef } = useDraggable({
-    id: `${type}_${index}_${displayIndex}`,
-    data: displayedItem,
-    disabled
-  })
 
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
   const draggedItemContext = useMemo<ItemContext | undefined>(() => draggedItem && { ...context, ...draggedItem }, [draggedItem, context])
@@ -112,7 +127,7 @@ export const DraggableMaterial = <M extends number = number>(
       ))
     , [item, draggedItemContext, legalMoves])
   const [parentTransform, setParentTransform] = useState<XYCoordinates>()
-  const transform = selfTransform ?? parentTransform
+  transform = transform ?? parentTransform
 
   // We need to delay a little the default transition removal when dragging starts, otherwise dnd-kit suffers from transform side effect
   // because we opted out from ignoring transform in the configuration (using: "draggable: { measure: getClientRect }")
@@ -152,7 +167,7 @@ export const DraggableMaterial = <M extends number = number>(
   useDndMonitor({ onDragStart, onDragEnd, onDragMove })
 
   return <>
-    <ItemDisplay ref={setNodeRef} type={type} index={index} displayIndex={displayIndex} item={item}
+    <ItemDisplay ref={ref} type={type} index={index} displayIndex={displayIndex} item={item}
                  isFocused={isFocused}
                  css={[
                    !applyTransform && !animating && transformTransition,
@@ -163,13 +178,13 @@ export const DraggableMaterial = <M extends number = number>(
                  dragTransform={applyTransform ? transformRef.current : undefined}
                  animation={animation}
                  highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
-                 {...props} {...attributes} {...combineEventListeners(listeners ?? {}, props)}
+                 {...props}
                  onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>
     {menu && (menuAlwaysVisible || item.selected) &&
       <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props}>{menu}</ItemMenuWrapper>
     }
   </>
-}
+}))
 
 const animationWrapperCss = css`
   transform-style: preserve-3d;
