@@ -1,6 +1,6 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Animation, AnimationContext, Animations, AnimationStep, DisplayedAction } from '@gamepark/react-client'
-import { MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
+import { isEndPlayerTurn, MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
 import { uniq } from 'es-toolkit'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { GameContext } from '../../GameProvider'
@@ -53,6 +53,10 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
       .filter(animationConfig => !!animationConfig.s)
       .map(animationConfig => ensureMaterialSoundConfig(animationConfig.s!)!.sound)
     )
+  }
+
+  pauseNextConsequenceAnimation(move: MaterialMove<P, M, L>, _context: AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>): boolean {
+    return isEndPlayerTurn(move)
   }
 }
 

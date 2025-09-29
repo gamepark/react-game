@@ -425,7 +425,7 @@ __metadata:
     "@fortawesome/free-solid-svg-icons": "npm:^7.0.1"
     "@fortawesome/react-fontawesome": "npm:^3.0.2"
     "@gamepark/avataaars": "npm:~3.0.0"
-    "@gamepark/react-client": "npm:~7.0.0"
+    "@gamepark/react-client": "npm:~7.0.3"
     "@gamepark/rules-api": "npm:~7.0.0"
     "@types/fscreen": "npm:^1.0.4"
     "@types/node": "npm:^24.5.0"
