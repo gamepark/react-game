@@ -1,17 +1,18 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { GridBoundaries, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { isEqual } from 'es-toolkit'
 import { useLegalMoves, useMaterialContext } from '../../../hooks'
+import { getLocationOriginCss } from '../../../locators'
 import { ItemMenuWrapper } from '../ItemMenuWrapper'
 import { MaterialDescription } from '../MaterialDescription'
 import { StaticItem, useFocusContext } from './focus'
 import { ItemDisplay } from './ItemDisplay'
 
-export const StaticItemsDisplay = (props: { css?: Interpolation<Theme> }) => {
+export const StaticItemsDisplay = ({ boundaries }: { boundaries: GridBoundaries }) => {
   const material = useMaterialContext().material
   return <>
     {Object.entries(material).map(([stringType, description]) =>
-      description && <StaticItemsTypeDisplay key={stringType} type={parseInt(stringType)} description={description} {...props}/>
+      description && <StaticItemsTypeDisplay key={stringType} type={parseInt(stringType)} description={description} boundaries={boundaries}/>
     )}
   </>
 }
@@ -19,6 +20,7 @@ export const StaticItemsDisplay = (props: { css?: Interpolation<Theme> }) => {
 type StaticItemsTypeDisplayProps = {
   type: number
   description: MaterialDescription
+  boundaries: GridBoundaries
   css?: Interpolation<Theme>
 }
 
@@ -35,10 +37,12 @@ type StaticItemDisplay = StaticItemsTypeDisplayProps & {
   index: number
   displayIndex: number
   item: MaterialItem
+  boundaries: GridBoundaries
 }
 
-const StaticItemDisplay = ({ type, description, index, displayIndex, item, ...props }: StaticItemDisplay) => {
+const StaticItemDisplay = ({ type, description, index, displayIndex, item, boundaries, ...props }: StaticItemDisplay) => {
   const context = useMaterialContext()
+  const locator = context.locators[item.location.type]
   const { focus } = useFocusContext()
   const isFocused = focus && getStaticItemsOfType(focus.staticItems, type).some(focusedItem => isEqual(focusedItem, item))
   const legalMoves = useLegalMoves<MaterialMove>()
@@ -47,6 +51,7 @@ const StaticItemDisplay = ({ type, description, index, displayIndex, item, ...pr
   return <>
     <ItemDisplay type={type} index={index} displayIndex={displayIndex} item={item}
                  isFocused={isFocused} highlight={description.highlight(item, itemContext)}
+                 css={getLocationOriginCss(boundaries, locator?.getLocationOrigin(item.location, context))}
                  {...props}/>
     {menu && <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props}>{menu}</ItemMenuWrapper>}
   </>

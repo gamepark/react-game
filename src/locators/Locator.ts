@@ -14,6 +14,7 @@ import {
 import { isEqual, sumBy, uniqWith } from 'es-toolkit'
 import { ComponentType } from 'react'
 import { DropAreaDescription, LocationDescription, LocationHelpProps, MaterialDescriptionRecord } from '../components'
+import { LocationOrigin, OriginType } from './LocationOrigin'
 
 export type SortFunction = ((item: MaterialItem) => number)
 
@@ -112,6 +113,25 @@ export class Locator<P extends number = number, M extends number = number, L ext
    */
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
     return this.limit !== undefined && this.getItemIndex(item, context) < 0
+  }
+
+  /**
+   * Value returned by {@link getLocationOrigin} default implementation
+   */
+  locationOrigin: LocationOrigin = { x: OriginType.Origin, y: OriginType.Origin }
+
+  /**
+   * Return the origin position or the location on x and y axes before it is placed using css transform
+   * Origin: the (0, 0) coordinates
+   * Center: (xMax - xMin) / 2 or (yMax - yMin) / 2
+   * Min: xMin or yMin
+   * Max: xMax or yMax
+   * @param _location Location to place
+   * @param _context Context of the location in the game
+   * @returns the origin for the location
+   */
+  getLocationOrigin(_location: Location<P, L>, _context: LocationContext<P, M, L>): LocationOrigin {
+    return this.locationOrigin
   }
 
   /**

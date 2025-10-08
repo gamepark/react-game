@@ -1,7 +1,7 @@
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
 import {
-  DisplayedItem,
+  DisplayedItem, GridBoundaries,
   isMoveItem,
   isMoveItemsAtOnce,
   isMoveItemType,
@@ -20,7 +20,7 @@ import { forwardRef, memo, useCallback, useContext, useEffect, useMemo, useRef, 
 import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor } from '../../css'
 import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
-import { ItemContext } from '../../locators'
+import { getLocationOriginCss, ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
 import { gameContext } from '../GameProvider'
 import { MaterialGameAnimations } from './animations'
@@ -33,6 +33,7 @@ import { isPlacedOnItem } from './utils/isPlacedOnItem'
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
   displayIndex: number
+  boundaries: GridBoundaries
   isFocused?: boolean
 } & MaterialComponentProps<M>
 
@@ -60,7 +61,7 @@ type DraggableMaterialMemoProps<M extends number = number> = DraggableMaterialPr
 }
 
 const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialMemoProps>((
-  { highlight, type, index, displayIndex, isFocused, transform, disabled, ...props }: DraggableMaterialMemoProps, ref
+  { highlight, type, index, displayIndex, boundaries, isFocused, transform, disabled, ...props }: DraggableMaterialMemoProps, ref
 ) => {
 
   const context = useMaterialContext()
@@ -68,6 +69,7 @@ const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialM
   const description = material[type]!
   const item = useRevealedItem(type, index)
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
+  const locator = context.locators[item.location.type]
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const play = usePlay()
   const legalMoves = useLegalMoves<MaterialMove>()
@@ -170,6 +172,7 @@ const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialM
     <ItemDisplay ref={ref} type={type} index={index} displayIndex={displayIndex} item={item}
                  isFocused={isFocused}
                  css={[
+                   getLocationOriginCss(boundaries, locator?.getLocationOrigin(item.location, itemContext)),
                    !applyTransform && !animating && transformTransition,
                    !disabled && noTouchAction,
                    !disabled && (transform ? grabbingCursor : grabCursor),

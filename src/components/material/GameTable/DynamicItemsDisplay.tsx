@@ -1,17 +1,17 @@
 import { Interpolation, Theme } from '@emotion/react'
-import { MaterialItem } from '@gamepark/rules-api'
+import { GridBoundaries, MaterialItem } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
 import { useMaterialContext } from '../../../hooks'
 import { ItemContext } from '../../../locators'
 import { DraggableMaterial } from '../DraggableMaterial'
 import { useFocusContext } from './focus'
 
-export const DynamicItemsDisplay = (props: { css?: Interpolation<Theme> }) => {
+export const DynamicItemsDisplay = ({ boundaries }: { boundaries: GridBoundaries }) => {
   const context = useMaterialContext()
   const items = context.rules.game.items
   return <>
     {Object.entries(items).map(([stringType, items]) =>
-      items && <DynamicItemsTypeDisplay key={stringType} type={parseInt(stringType)} items={items} {...props}/>
+      items && <DynamicItemsTypeDisplay key={stringType} type={parseInt(stringType)} items={items} boundaries={boundaries}/>
     )}
   </>
 }
@@ -19,6 +19,7 @@ export const DynamicItemsDisplay = (props: { css?: Interpolation<Theme> }) => {
 type DynamicItemsTypeDisplayProps = {
   type: number
   items: MaterialItem[]
+  boundaries: GridBoundaries
   css?: Interpolation<Theme>
 }
 
