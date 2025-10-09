@@ -34,7 +34,7 @@ function getPosition(min: number, max: number, origin = OriginType.Origin) {
 }
 
 export function getOriginDeltaPosition(min: number, max: number, before: OriginType, after: OriginType) {
-  return getPosition(min, max, after) - getPosition(min, max, before)
+  return getPosition(min, max, before) - getPosition(min, max, after)
 }
 
 const positionCss = (left: number, top: number) => css`
