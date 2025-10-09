@@ -27,22 +27,17 @@ export const DropPreview = ({ boundaries }: { boundaries: GridBoundaries }) => {
     const index = bestMove.itemIndex
     const item = context.rules.material(type).getItem(index)
     const futureItem = { ...item, location: { type: location.type, ...bestMove.location } }
-    console.log(item.location.type, futureItem.location.type)
     const description = context.material[type]!
     const locator = context.locators[futureItem.location.type]
     const itemContext = { ...context, type, index, displayIndex: 0 }
-    const locationOriginCss = getLocationOriginCss(boundaries, locator?.getLocationOrigin(futureItem.location, itemContext))
-    console.log(locationOriginCss)
-    return <div>
-      <div css={locationOriginCss}>
-        <MaterialComponent type={type} itemIndex={index} itemId={item.id} css={previewCss} preview
-                           style={{ transform: 'translateZ(5em) ' + description.getItemTransform(futureItem, itemContext).join(' ') }}
-        />
-      </div>
+    return <div css={getLocationOriginCss(boundaries, locator?.getLocationOrigin(futureItem.location, itemContext))}>
+      <MaterialComponent type={type} itemIndex={index} itemId={item.id} css={previewCss} preview
+                         style={{ transform: 'translateZ(5em) ' + description.getItemTransform(futureItem, itemContext).join(' ') }}
+      />
     </div>
   }
 
-  return <div></div>
+  return null
 }
 
 const previewCss = css`

@@ -1,3 +1,4 @@
+import { css } from '@emotion/react'
 import { GridBoundaries, MaterialMoveBuilder, MaterialRules } from '@gamepark/rules-api'
 import { ReactNode } from 'react'
 import { usePlay, useRules } from '../../../hooks'
@@ -26,9 +27,14 @@ export const GameMaterialDisplay = ({ boundaries, children }: GameMaterialDispla
     <StaticLocationsDisplay boundaries={boundaries}/>
     <StaticItemsDisplay boundaries={boundaries}/>
     <DynamicItemsDisplay boundaries={boundaries}/>
-    <DropPreview boundaries={boundaries}/>
+    <div css={dropPreviewWrapper}><DropPreview boundaries={boundaries}/></div>
     <MaterialRulesDialog open={!!game?.helpDisplay} close={() => play(displayHelp(undefined), { transient: true })}/>
     {game?.tutorial && <MaterialTutorialDisplay/>}
     {children}
   </FocusProvider>
 }
+
+const dropPreviewWrapper = css`
+  position: absolute;
+  transform-style: preserve-3d;
+`
