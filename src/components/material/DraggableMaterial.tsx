@@ -168,11 +168,13 @@ const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialM
   }, [])
   useDndMonitor({ onDragStart, onDragEnd, onDragMove })
 
+  const locationOriginCss = getLocationOriginCss(boundaries, locator?.getLocationOrigin(item.location, itemContext))
+
   return <>
     <ItemDisplay ref={ref} type={type} index={index} displayIndex={displayIndex} item={item}
                  isFocused={isFocused}
                  css={[
-                   getLocationOriginCss(boundaries, locator?.getLocationOrigin(item.location, itemContext)),
+                   locationOriginCss,
                    !applyTransform && !animating && transformTransition,
                    !disabled && noTouchAction,
                    !disabled && (transform ? grabbingCursor : grabCursor),
@@ -184,7 +186,7 @@ const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialM
                  {...props}
                  onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>
     {menu && (menuAlwaysVisible || item.selected) &&
-      <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props}>{menu}</ItemMenuWrapper>
+      <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props} css={locationOriginCss}>{menu}</ItemMenuWrapper>
     }
   </>
 }))

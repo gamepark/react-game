@@ -48,12 +48,13 @@ const StaticItemDisplay = ({ type, description, index, displayIndex, item, bound
   const legalMoves = useLegalMoves<MaterialMove>()
   const itemContext = { ...context, type, index, displayIndex }
   const menu = description.getItemMenu(item, itemContext, legalMoves)
+  const locationOriginCss = getLocationOriginCss(boundaries, locator?.getLocationOrigin(item.location, context))
   return <>
     <ItemDisplay type={type} index={index} displayIndex={displayIndex} item={item}
                  isFocused={isFocused} highlight={description.highlight(item, itemContext)}
-                 css={getLocationOriginCss(boundaries, locator?.getLocationOrigin(item.location, context))}
+                 css={locationOriginCss}
                  {...props}/>
-    {menu && <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props}>{menu}</ItemMenuWrapper>}
+    {menu && <ItemMenuWrapper item={item} itemContext={itemContext} description={description} css={locationOriginCss} {...props}>{menu}</ItemMenuWrapper>}
   </>
 }
 
