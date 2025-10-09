@@ -93,8 +93,8 @@ export const GameTable: FC<GameTableProps> = (
   const ratioWithMargins = ((100 - vm) * ratio + hm) / 100
   const panning = useMemo(() => ({ disabled: dragging }), [dragging])
   const wrapperStyle = useMemo(() => computedWrapperClass(margin, vm, hm, ratio, verticalCenter), [margin, vm, hm, ratio])
-
   const modifiers = useMemo(() => snapToCenter ? [snapCenterToCursor] : undefined, [snapToCenter])
+  const boundaries = useMemo(() => ({xMin, xMax, yMin, yMax}), [xMin, xMax, yMin, yMax])
 
   return (
     <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
@@ -105,7 +105,7 @@ export const GameTable: FC<GameTableProps> = (
                         centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
         <TransformComponent wrapperClass="wrapperClass">
           <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
-            <GameMaterialDisplay left={-xMin} top={-yMin}>
+            <GameMaterialDisplay boundaries={boundaries}>
               {children}
             </GameMaterialDisplay>
           </div>

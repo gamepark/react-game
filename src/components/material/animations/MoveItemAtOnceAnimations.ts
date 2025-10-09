@@ -1,7 +1,7 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
-import { MaterialRulesCreator, MoveItemsAtOnce } from '@gamepark/rules-api'
-import { ItemContext } from '../../../locators'
+import { GridBoundaries, MaterialRulesCreator, MoveItemsAtOnce } from '@gamepark/rules-api'
+import { defaultOrigin, getItemFromContext, getOriginDeltaPosition, ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { ItemAnimations } from './ItemAnimations'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
@@ -23,13 +23,13 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     return this.duration
   }
 
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>): Interpolation<Theme> {
+  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
     if (context.type === animation.move.itemType && animation.move.indexes.includes(context.index)) {
-      return this.getMovedItemAnimation(context, animation)
+      return this.getMovedItemAnimation(context, animation, boundaries)
     }
   }
 
-  getMovedItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>): Interpolation<Theme> {
+  getMovedItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
     const { type, rules, material, player } = context
     const description = material[type]
     const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
@@ -41,6 +41,15 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     const originTransforms = toSingleRotation(transformItem(context))
     const targetTransforms = toSingleRotation(description?.getItemTransform(futureItem, futureContext) ?? [])
     toClosestRotations(originTransforms, targetTransforms)
+    const item = getItemFromContext(context)
+    const currentOrigin = context.locators[item.location.type]?.getLocationOrigin(item.location, context) ?? defaultOrigin
+    const futureOrigin = context.locators[futureItem.location.type]?.getLocationOrigin(futureItem.location, futureContext) ?? defaultOrigin
+    if (currentOrigin.x !== futureOrigin.x) {
+      targetTransforms.unshift(`translateX(${getOriginDeltaPosition(boundaries.xMin, boundaries.xMax, futureOrigin.x, currentOrigin.x)}em)`)
+    }
+    if (currentOrigin.y !== futureOrigin.y) {
+      targetTransforms.unshift(`translateY(${getOriginDeltaPosition(boundaries.yMin, boundaries.yMax, futureOrigin.y, currentOrigin.y)}em)`)
+    }
     const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
     return description?.getAnimationCss(animationKeyframes, animation.duration)
   }

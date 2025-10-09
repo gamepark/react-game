@@ -1,6 +1,6 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Animation, AnimationContext, Animations, AnimationStep, DisplayedAction } from '@gamepark/react-client'
-import { isEndPlayerTurn, MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
+import { GridBoundaries, isEndPlayerTurn, MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
 import { uniq } from 'es-toolkit'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { GameContext } from '../../GameProvider'
@@ -100,7 +100,7 @@ class AnimationConfig<P extends number = number, M extends number = number, L ex
     return new MaterialAnimations<P, M, L>(this.d).getDuration(move, context)
   }
 
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>): Interpolation<Theme> {
-    return new MaterialAnimations<P, M, L>(this.d).getItemAnimation(context, animation)
+  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
+    return new MaterialAnimations<P, M, L>(this.d).getItemAnimation(context, animation, boundaries)
   }
 }
