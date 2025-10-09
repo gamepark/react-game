@@ -204,6 +204,8 @@ const noTouchAction = css`
 `
 
 const transformTransition = css`
+  transition: top 0.2s, left 0.2s;
+  
   > * {
     transition: transform 0.2s ease-in-out;
   }
