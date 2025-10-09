@@ -13,6 +13,8 @@ export type LocationOrigin = {
   y: OriginType
 }
 
+export const defaultOrigin = { x: OriginType.Origin, y: OriginType.Origin }
+
 export function getLocationOriginCss(tableBoundaries: GridBoundaries, origin?: LocationOrigin) {
   const { xMin, xMax, yMin, yMax } = tableBoundaries
   return positionCss(getPosition(xMin, xMax, origin?.x), getPosition(yMin, yMax, origin?.y))
@@ -29,6 +31,10 @@ function getPosition(min: number, max: number, origin = OriginType.Origin) {
     case OriginType.Max:
       return max - min
   }
+}
+
+export function getOriginDeltaPosition(min: number, max: number, before: OriginType, after: OriginType) {
+  return getPosition(min, max, after) - getPosition(min, max, before)
 }
 
 const positionCss = (left: number, top: number) => css`

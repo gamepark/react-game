@@ -14,7 +14,7 @@ import {
 import { isEqual, sumBy, uniqWith } from 'es-toolkit'
 import { ComponentType } from 'react'
 import { DropAreaDescription, LocationDescription, LocationHelpProps, MaterialDescriptionRecord } from '../components'
-import { LocationOrigin, OriginType } from './LocationOrigin'
+import { defaultOrigin, LocationOrigin } from './LocationOrigin'
 
 export type SortFunction = ((item: MaterialItem) => number)
 
@@ -118,7 +118,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
   /**
    * Value returned by {@link getLocationOrigin} default implementation
    */
-  locationOrigin: LocationOrigin = { x: OriginType.Origin, y: OriginType.Origin }
+  locationOrigin: LocationOrigin = defaultOrigin
 
   /**
    * Return the origin position or the location on x and y axes before it is placed using css transform

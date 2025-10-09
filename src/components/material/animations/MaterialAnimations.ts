@@ -1,6 +1,6 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { Animation, Animations } from '@gamepark/react-client'
-import { ItemMove, ItemMoveType, MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
+import { GridBoundaries, ItemMove, ItemMoveType, MaterialGame, MaterialMove, MaterialRules, MoveKind } from '@gamepark/rules-api'
 import { ItemContext, Locator } from '../../../locators'
 import { MaterialDescription } from '../MaterialDescription'
 import { CreateItemAnimations } from './CreateItemAnimations'
@@ -35,9 +35,9 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     return this.animations[move.type]?.getDuration(move, context) ?? 0
   }
 
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>): Interpolation<Theme> {
+  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
     if (animation.move.kind !== MoveKind.ItemMove) return
-    return this.animations[animation.move.type]?.getItemAnimation(context, animation)
+    return this.animations[animation.move.type]?.getItemAnimation(context, animation, boundaries)
   }
 }
 

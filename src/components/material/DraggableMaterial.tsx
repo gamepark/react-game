@@ -154,7 +154,7 @@ const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialM
   const isDropped = useMemo(() => isDroppedItem(itemContext), [itemContext])
   const applyTransform = isDropped || isDraggingParent || (!disabled && !ignoreTransform)
   if (!applyTransform) transformRef.current = ''
-  const animation = useItemAnimation(displayedItem, transformRef.current)
+  const animation = useItemAnimation(displayedItem, transformRef.current, boundaries)
 
   // Firefox bugs when the animation is immediately followed by the transition: we need to delay by 1 rerender putting back the transition
   const [animating, setAnimating] = useState(!!animation)
@@ -227,7 +227,7 @@ const useRevealedItem = <P extends number = number, M extends number = number, L
 }
 
 const useItemAnimation = <P extends number = number, M extends number = number, L extends number = number>(
-  displayedItem: DisplayedItem<M>, dragTransform?: string
+  displayedItem: DisplayedItem<M>, dragTransform: string, boundaries: GridBoundaries
 ): Interpolation<Theme> => {
   const { type, index } = displayedItem
   const context = useMaterialContext<P, M, L>()
@@ -240,7 +240,7 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
   const itemContext: ItemContext<P, M, L> = { ...context, ...displayedItem, dragTransform }
   for (const animation of animations) {
     const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
-    const itemAnimation = config.getItemAnimation(itemContext, animation)
+    const itemAnimation = config.getItemAnimation(itemContext, animation, boundaries)
     if (itemAnimation) {
       if (animationCache.current?.move !== animation.move) {
         // Remember current item animation for each move so that it does not restart if the item's origin changes in between
