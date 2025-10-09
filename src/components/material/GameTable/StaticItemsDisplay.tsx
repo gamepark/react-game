@@ -1,4 +1,4 @@
-import { css, Interpolation, Theme } from '@emotion/react'
+import { Interpolation, Theme } from '@emotion/react'
 import { GridBoundaries, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { isEqual } from 'es-toolkit'
 import { useLegalMoves, useMaterialContext } from '../../../hooks'
@@ -52,15 +52,11 @@ const StaticItemDisplay = ({ type, description, index, displayIndex, item, bound
   return <>
     <ItemDisplay type={type} index={index} displayIndex={displayIndex} item={item}
                  isFocused={isFocused} highlight={description.highlight(item, itemContext)}
-                 css={[locationOriginCss, topLeftTransition]}
+                 css={locationOriginCss}
                  {...props}/>
     {menu && <ItemMenuWrapper item={item} itemContext={itemContext} description={description} css={locationOriginCss} {...props}>{menu}</ItemMenuWrapper>}
   </>
 }
-
-const topLeftTransition = css`
-  transition: top 0.2s, left 0.2s;
-`
 
 function getStaticItemsOfType<P extends number = number, M extends number = number, L extends number = number>(
   staticItems: StaticItem<P, M, L>[] | Partial<Record<M, MaterialItem<P, L>[]>>, type: M
