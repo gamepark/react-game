@@ -39,6 +39,7 @@ export const linkButtonCss = css`
   ${buttonResetCss};
 
   border: none;
+  color: inherit;
   text-decoration: underline;
   padding: 0;
 
