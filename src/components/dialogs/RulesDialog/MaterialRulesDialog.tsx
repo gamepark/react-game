@@ -26,7 +26,7 @@ export const MaterialRulesDialog: FC<RulesDialogProps> = (props: RulesDialogProp
 }
 
 const inlineImg = css`
-  p img, h2 img, h3 img, h4 img {
+  p img, li img, h2 img, h3 img, h4 img {
     height: 1em;
     position: relative;
     top: 0.1em;
