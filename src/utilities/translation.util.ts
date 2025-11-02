@@ -16,6 +16,7 @@ export const setupTranslation = (translations: Resource, options?: InitOptions) 
 
   const query = new URLSearchParams(window.location.search)
   const locale = query.get('locale') || 'en'
+  document.documentElement.lang = locale
 
   i18next.init({
     lng: locale,
