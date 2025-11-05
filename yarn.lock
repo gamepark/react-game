@@ -389,9 +389,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gamepark/react-client@portal:../react-client::locator=%40gamepark%2Freact-game%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@gamepark/react-client@portal:../react-client::locator=%40gamepark%2Freact-game%40workspace%3A."
+"@gamepark/react-client@npm:~7.1.0":
+  version: 7.1.0
+  resolution: "@gamepark/react-client@npm:7.1.0"
   dependencies:
     "@reduxjs/toolkit": "npm:^2.9.0"
     assert: "npm:^2.1.0"
@@ -408,8 +408,9 @@ __metadata:
     react-dom: ^19.1.1
     react-redux: ^9.2.0
     rxjs: ^7.8.2
+  checksum: 10c0/c9e30a89a6abcdf98f05ff7e420d5296062d1c091ce0e3fd18311686418939b83b72d8d0693e02c7aec945059a908921d284ff0c58e01c5e42b8bda9c7d16793
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@gamepark/react-game@workspace:.":
   version: 0.0.0-use.local
@@ -468,13 +469,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gamepark/rules-api@portal:../rules-api::locator=%40gamepark%2Freact-game%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@gamepark/rules-api@portal:../rules-api::locator=%40gamepark%2Freact-game%40workspace%3A."
+"@gamepark/rules-api@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "@gamepark/rules-api@npm:7.1.0"
   peerDependencies:
     es-toolkit: ^1.39.10
+  checksum: 10c0/01715a38256f0bb1210b14c0e7fc6cc9355a404fc5a9717efe16440b43a33eaff3483207b60aa2abfd930f095459ec0b8b6d8ccdfcbfbacc11ae9e5fef903b74
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@graphql-typed-document-node/core@npm:^3.1.1":
   version: 3.2.0

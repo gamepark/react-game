@@ -74,9 +74,5 @@
     "react-i18next": "^15.7.3",
     "react-redux": "^9.2.0"
   },
-  "resolutions": {
-    "@gamepark/rules-api": "portal:../rules-api",
-    "@gamepark/react-client": "portal:../react-client"
-  },
   "packageManager": "yarn@4.9.4"
 }
