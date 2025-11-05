@@ -7,7 +7,7 @@ export type CounterProps = {
   value: number | string
   imageCss?: Interpolation<Theme>
   extraCss?: Interpolation<Theme>
-  onClick?: () => void
+  onClick?: (e: any) => void
 };
 
 export type CountersProps = {
