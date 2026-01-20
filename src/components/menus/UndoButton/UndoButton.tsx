@@ -5,7 +5,7 @@ import { useUndo } from '../../../hooks'
 import { menuButtonCss } from '../menuCss'
 
 export const UndoButton = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [undo, canUndo] = useUndo()
   const canUndoLastMove = canUndo()
 

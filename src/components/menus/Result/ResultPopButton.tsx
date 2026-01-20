@@ -7,7 +7,7 @@ import { useRules } from '../../../hooks'
 import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const ResultPopButton = (props: HTMLAttributes<HTMLButtonElement>) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const gameOver = useRules()?.isOver()
 
   return (

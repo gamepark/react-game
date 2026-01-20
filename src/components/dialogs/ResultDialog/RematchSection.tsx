@@ -12,7 +12,7 @@ type Props = {
 }
 
 export const RematchSection = ({ openDialog }: Props) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { game, rematch } = useRematch()
   useEffect(() => {
     if (game?.rematch) openDialog()

@@ -4,7 +4,7 @@ import { useMessageAuthor } from '@gamepark/react-client'
 import { useTranslation } from 'react-i18next'
 
 export const ChatMessageAuthor = ({ author }: { author: string }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { avatar, name } = useMessageAuthor(author)
 
   return <>

@@ -7,7 +7,7 @@ import { menuButtonCss } from '../menuCss'
 import { useOpponentWithMaxTime } from '../../../hooks'
 
 export const EjectPlayerButton = (props: HTMLAttributes<HTMLButtonElement>) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   return (
     <button css={[menuButtonCss, buttonCss]} disabled={!opponentWithNegativeTime} {...props}>

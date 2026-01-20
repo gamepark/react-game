@@ -16,7 +16,7 @@ dayjs.extend(duration)
 dayjs.extend(utc)
 
 export const TimeStatsButton = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [displayPopup, setDisplayPopup] = useState(false)
   const players = usePlayers()
 

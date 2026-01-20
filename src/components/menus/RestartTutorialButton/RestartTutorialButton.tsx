@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { menuButtonCss } from '../menuCss'
 
 export const RestartTutorialButton = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const game = useContext(gameContext)?.game
   if (!game) throw new Error('Cannot use TutorialButton outside a GameProvider context')
 

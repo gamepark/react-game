@@ -23,7 +23,7 @@ enum JournalTab {
 }
 
 export const JournalTabs: FC<JournalTabsProps> = (props) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { gameId } = props
   const history = useContext(gameContext).logs
   const logEnabled = history !== undefined

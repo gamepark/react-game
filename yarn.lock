@@ -389,15 +389,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gamepark/react-client@npm:~7.2.0":
-  version: 7.2.0
-  resolution: "@gamepark/react-client@npm:7.2.0"
+"@gamepark/react-client@portal:../react-client::locator=%40gamepark%2Freact-game%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@gamepark/react-client@portal:../react-client::locator=%40gamepark%2Freact-game%40workspace%3A."
   dependencies:
     "@reduxjs/toolkit": "npm:^2.9.0"
+    "@trpc/client": "npm:^11.7.1"
     assert: "npm:^2.1.0"
     immer: "npm:^10.1.3"
     pusher-js: "npm:^8.4.0"
     redux: "npm:^5.0.1"
+    superjson: "npm:^2.2.5"
   peerDependencies:
     "@apollo/client": ^4.0.5
     "@gamepark/rules-api": ^7.2.0
@@ -408,9 +410,8 @@ __metadata:
     react-dom: ^19.1.1
     react-redux: ^9.2.0
     rxjs: ^7.8.2
-  checksum: 10c0/e574161b3b0e9c06f851d822cb2d93a1ab640e2c14273ca9083c790bf0121d21b1af79d579ac193914f2e092a6c2e9ace7fc4edda8fe99f527b7a0d25c0ca1ac
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@gamepark/react-game@workspace:.":
   version: 0.0.0-use.local
@@ -437,6 +438,7 @@ __metadata:
     fscreen: "npm:^1.2.0"
     graphql: "npm:^16.11.0"
     i18next: "npm:^25.5.2"
+    i18next-http-backend: "npm:^3.0.2"
     i18next-icu: "npm:^2.4.0"
     immer: "npm:^10.1.3"
     intl-messageformat: "npm:^10.7.16"
@@ -469,14 +471,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gamepark/rules-api@npm:^7.2.0":
-  version: 7.2.0
-  resolution: "@gamepark/rules-api@npm:7.2.0"
+"@gamepark/rules-api@portal:../rules-api::locator=%40gamepark%2Freact-game%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@gamepark/rules-api@portal:../rules-api::locator=%40gamepark%2Freact-game%40workspace%3A."
   peerDependencies:
     es-toolkit: ^1.39.10
-  checksum: 10c0/5e007d94038b5eee9fa63594fce381645244cae82bafb074f172dadfc0d8d161fde74c58c5e6bce21bedcfa0fa1c96d3a23be1bb04119e272a96c4ce65d55019
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@graphql-typed-document-node/core@npm:^3.1.1":
   version: 3.2.0
@@ -520,6 +521,16 @@ __metadata:
   version: 0.3.0
   resolution: "@standard-schema/utils@npm:0.3.0"
   checksum: 10c0/6eb74cd13e52d5fc74054df51e37d947ef53f3ab9e02c085665dcca3c38c60ece8d735cebbdf18fbb13c775fbcb9becb3f53109b0e092a63f0f7389ce0993fd0
+  languageName: node
+  linkType: hard
+
+"@trpc/client@npm:^11.7.1":
+  version: 11.8.1
+  resolution: "@trpc/client@npm:11.8.1"
+  peerDependencies:
+    "@trpc/server": 11.8.1
+    typescript: ">=5.7.2"
+  checksum: 10c0/2b015230e7f289fac98a2d146fe67bcfe60f3392871f967fa15afb56f8da898f8f6bc4d81672b60dfe414a5007fecd09547e1a8e878d2fd76e6eba6241d63bad
   languageName: node
   linkType: hard
 
@@ -698,6 +709,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"copy-anything@npm:^4":
+  version: 4.0.5
+  resolution: "copy-anything@npm:4.0.5"
+  dependencies:
+    is-what: "npm:^5.2.0"
+  checksum: 10c0/d0a4a4102334399dae8504a2c2e13f45ad05746a9fd5cc0df349a554e3749a05e8a6d62b3724a8049cd59fc0bbbf4f54c4edc94a428edc76211dffe3ac0af586
+  languageName: node
+  linkType: hard
+
 "cosmiconfig@npm:^7.0.0":
   version: 7.1.0
   resolution: "cosmiconfig@npm:7.1.0"
@@ -708,6 +728,15 @@ __metadata:
     path-type: "npm:^4.0.0"
     yaml: "npm:^1.10.0"
   checksum: 10c0/b923ff6af581638128e5f074a5450ba12c0300b71302398ea38dbeabd33bbcaa0245ca9adbedfcf284a07da50f99ede5658c80bb3e39e2ce770a99d28a21ef03
+  languageName: node
+  linkType: hard
+
+"cross-fetch@npm:4.0.0":
+  version: 4.0.0
+  resolution: "cross-fetch@npm:4.0.0"
+  dependencies:
+    node-fetch: "npm:^2.6.12"
+  checksum: 10c0/386727dc4c6b044746086aced959ff21101abb85c43df5e1d151547ccb6f338f86dec3f28b9dbddfa8ff5b9ec8662ed2263ad4607a93b2dc354fb7fe3bbb898a
   languageName: node
   linkType: hard
 
@@ -922,6 +951,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"i18next-http-backend@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "i18next-http-backend@npm:3.0.2"
+  dependencies:
+    cross-fetch: "npm:4.0.0"
+  checksum: 10c0/2a08b018e4924fefae6ba4c09dfd1ca3aa892f2442779d77d2db52b086af7afe7fbb6f178743d7e02014ea12a711ad20fc03fb55c01bd80f1bc97ba2b3c6bc29
+  languageName: node
+  linkType: hard
+
 "i18next-icu@npm:^2.4.0":
   version: 2.4.0
   resolution: "i18next-icu@npm:2.4.0"
@@ -1042,6 +1080,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-what@npm:^5.2.0":
+  version: 5.5.0
+  resolution: "is-what@npm:5.5.0"
+  checksum: 10c0/065c8a4ac651988a495cc0211c2754c198788383c9fe1bbfdf6d237c423114a0c5f2fc3e26ad7ea43a63cd4169f4503f584305acbac91706d5308cc14dedd1bd
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -1060,6 +1105,20 @@ __metadata:
   version: 1.2.4
   resolution: "lines-and-columns@npm:1.2.4"
   checksum: 10c0/3da6ee62d4cd9f03f5dc90b4df2540fb85b352081bee77fe4bbcd12c9000ead7f35e0a38b8d09a9bb99b13223446dd8689ff3c4959807620726d788701a83d2d
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:^2.6.12":
+  version: 2.7.0
+  resolution: "node-fetch@npm:2.7.0"
+  dependencies:
+    whatwg-url: "npm:^5.0.0"
+  peerDependencies:
+    encoding: ^0.1.0
+  peerDependenciesMeta:
+    encoding:
+      optional: true
+  checksum: 10c0/b55786b6028208e6fbe594ccccc213cab67a72899c9234eb59dba51062a299ea853210fcf526998eaa2867b0963ad72338824450905679ff0fa304b8c5093ae8
   languageName: node
   linkType: hard
 
@@ -1346,6 +1405,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"superjson@npm:^2.2.5":
+  version: 2.2.6
+  resolution: "superjson@npm:2.2.6"
+  dependencies:
+    copy-anything: "npm:^4"
+  checksum: 10c0/b63587656cc27effd12c9e13a66da673a7a1b3e1af41f17820fd37f07a4f29503e1f58eae6bd229039331b475e1be6990336fa887654e6adc80684ae4eed7965
+  languageName: node
+  linkType: hard
+
 "supports-color@npm:^5.3.0":
   version: 5.5.0
   resolution: "supports-color@npm:5.5.0"
@@ -1373,6 +1441,13 @@ __metadata:
   version: 2.0.0
   resolution: "to-fast-properties@npm:2.0.0"
   checksum: 10c0/b214d21dbfb4bce3452b6244b336806ffea9c05297148d32ebb428d5c43ce7545bdfc65a1ceb58c9ef4376a65c0cb2854d645f33961658b3e3b4f84910ddcdd7
+  languageName: node
+  linkType: hard
+
+"tr46@npm:~0.0.3":
+  version: 0.0.3
+  resolution: "tr46@npm:0.0.3"
+  checksum: 10c0/047cb209a6b60c742f05c9d3ace8fa510bff609995c129a37ace03476a9b12db4dbf975e74600830ef0796e18882b2381fb5fb1f6b4f96b832c374de3ab91a11
   languageName: node
   linkType: hard
 
@@ -1459,6 +1534,23 @@ __metadata:
   version: 3.1.0
   resolution: "void-elements@npm:3.1.0"
   checksum: 10c0/0b8686f9f9aa44012e9bd5eabf287ae0cde409b9a2854c5a2335cb83920c957668ac5876e3f0d158dd424744ac411a7270e64128556b451ed3bec875ef18534d
+  languageName: node
+  linkType: hard
+
+"webidl-conversions@npm:^3.0.0":
+  version: 3.0.1
+  resolution: "webidl-conversions@npm:3.0.1"
+  checksum: 10c0/5612d5f3e54760a797052eb4927f0ddc01383550f542ccd33d5238cfd65aeed392a45ad38364970d0a0f4fea32e1f4d231b3d8dac4a3bdd385e5cf802ae097db
+  languageName: node
+  linkType: hard
+
+"whatwg-url@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "whatwg-url@npm:5.0.0"
+  dependencies:
+    tr46: "npm:~0.0.3"
+    webidl-conversions: "npm:^3.0.0"
+  checksum: 10c0/1588bed84d10b72d5eec1d0faa0722ba1962f1821e7539c535558fb5398d223b0c50d8acab950b8c488b4ba69043fd833cc2697056b167d8ad46fac3995a55d5
   languageName: node
   linkType: hard
 

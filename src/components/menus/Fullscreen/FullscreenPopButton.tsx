@@ -8,7 +8,7 @@ import { useFullscreen } from '../../../hooks'
 import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const FullscreenPopButton = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [pop, setPop] = useState(true)
 
   useEffect(() => {

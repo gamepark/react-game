@@ -269,7 +269,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   getTooltip(item: MaterialItem<P, L>, t: TFunction, _context: ItemContext<P, M, L>): string | null | undefined {
-    if (item.quantity) return t('quantity.tooltip', { n: item.quantity })
+    if (item.quantity) return t('quantity.tooltip', { n: item.quantity, ns: 'common' })
     return
   }
 
@@ -285,7 +285,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
 
   getHelpButton(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, props: Partial<ItemButtonProps> = {}) {
     return <ItemMenuButton
-      label={<Trans defaults="Help"/>}
+      label={<Trans ns="common" i18nKey="Help"/>}
       move={this.displayHelp(item, context)}
       options={{ transient: true }}
       angle={30} {...props}>

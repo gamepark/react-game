@@ -26,7 +26,7 @@ import { LogoIcon } from './LogoIcon'
 import { NavButton } from './NavButton'
 
 export const Menu = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [isOpen, setOpen] = useState(false)
   const game = useContext(gameContext)?.game ?? ''
   const query = new URLSearchParams(window.location.search)

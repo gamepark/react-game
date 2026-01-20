@@ -12,7 +12,7 @@ const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
 
 export const GiveUpButton = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [giveUp] = useGiveUp()
   const [displayPopup, setDisplayPopup] = useState(false)
   const onGiveUp = () => {

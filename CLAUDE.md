@@ -139,11 +139,16 @@ Always maintain these type parameters when extending classes or using hooks.
 
 ### Internationalization
 
-- i18next with ICU message format support
-- `setupTranslation()` helper in `src/utilities/translation.util.ts`
+- i18next with ICU message format support and HttpBackend for remote translations
+- `setupTranslation(gameId)` helper in `src/utilities/translation.util.ts` loads translations from `https://translations.game-park.com/{{lng}}/{{ns}}.json`
+- Three namespaces are loaded: game-specific (gameId), "common", and "credits"
+- **Default namespace**: game-specific (gameId)
+- **IMPORTANT**: All `useTranslation()` calls in this library must specify `'common'` namespace: `useTranslation('common')`
+  - **Exception**: LoadingScreen uses the default namespace (gameId) for the game name, and waits for 'credits' namespace to load before displaying credits
 - Material descriptions support `materialI18n` for localized content
 - RTL support built-in
-- Document language auto-updates from URL locale
+- Document language auto-updates from URL locale parameter
+- Components can use `useSuspense: false` option to check if translations are ready with the `ready` property
 
 ### Drag & Drop
 

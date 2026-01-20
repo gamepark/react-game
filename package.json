@@ -28,6 +28,7 @@
     "dayjs": "^1.11.18",
     "fscreen": "^1.2.0",
     "graphql": "^16.11.0",
+    "i18next-http-backend": "^3.0.2",
     "i18next-icu": "^2.4.0",
     "immer": "^10.1.3",
     "intl-messageformat": "^10.7.16",
@@ -74,5 +75,9 @@
     "react-i18next": "^15.7.3",
     "react-redux": "^9.2.0"
   },
-  "packageManager": "yarn@4.9.4"
+  "packageManager": "yarn@4.9.4",
+  "resolutions": {
+    "@gamepark/rules-api": "portal:../rules-api",
+    "@gamepark/react-client": "portal:../react-client"
+  }
 }

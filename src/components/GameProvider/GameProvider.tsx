@@ -7,6 +7,7 @@ import { PropsWithChildren, useEffect } from 'react'
 import { BackgroundTheme, defaultTheme } from '../../css'
 import { normalize } from '../../css/normalize'
 import { DeepPartial } from '../../utilities'
+import { setupTranslation } from '../../utilities/translation.util'
 import { isMaterialTutorial } from '../tutorial'
 import { wrapRulesWithTutorial } from '../tutorial/TutorialRulesWrapper'
 import { GameContext, gameContext } from './GameContext'
@@ -23,6 +24,10 @@ export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveVi
 export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId extends number = number>(
   { materialI18n, theme = {}, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
+  useEffect(() => {
+    setupTranslation(props.game)
+  }, [props.game])
+
   useEffect(() => {
     if (isMaterialTutorial(props.tutorial)) {
       wrapRulesWithTutorial(props.tutorial, props.Rules)

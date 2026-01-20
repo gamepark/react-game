@@ -9,7 +9,7 @@ import { useFullscreen } from '../../../hooks'
 import { menuButtonCss, menuDialogCss } from '../menuCss'
 
 export const FullscreenDialog = (props: Omit<DialogProps, 'open'>) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { fullscreen, toggleFullscreen } = useFullscreen()
   const [open, setOpen] = useState(true)
   return (

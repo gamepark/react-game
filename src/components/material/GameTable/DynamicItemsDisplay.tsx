@@ -1,8 +1,10 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { GridBoundaries, MaterialItem } from '@gamepark/rules-api'
+import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useMaterialContext } from '../../../hooks'
 import { ItemContext } from '../../../locators'
+import { gameContext } from '../../GameProvider'
 import { DraggableMaterial } from '../DraggableMaterial'
 import { useFocusContext } from './focus'
 
@@ -24,10 +26,11 @@ type DynamicItemsTypeDisplayProps = {
 }
 
 const DynamicItemsTypeDisplay = ({ type, items, ...props }: DynamicItemsTypeDisplayProps) => {
+  const game = useContext(gameContext).game
   const context = useMaterialContext()
   const { focus } = useFocusContext()
   const locators = context.locators
-  const { t } = useTranslation()
+  const { t } = useTranslation([game, 'common'])
   const description = context.material[type]
   if (!description) return null
   return <>{items.map((item, index) => {

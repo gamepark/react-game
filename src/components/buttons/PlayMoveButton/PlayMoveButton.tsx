@@ -23,7 +23,7 @@ export type PlayMoveButtonProps = {
 export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
   const { move, moves = move ? [move] : [], confirmation, delayed, skipAnimation, local, transient, onPlay, auto, ...rest } = props
   const play = usePlay()
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [showDialog, setShowDialog] = useState<boolean>(false)
   const [displayedLongEnough, setDisplayedLongEnough] = useState(false)
   const disabled = !moves.length

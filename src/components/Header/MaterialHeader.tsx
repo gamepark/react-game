@@ -34,7 +34,7 @@ type MaterialHeaderContentProps<RulesStep extends number = number> = {
 const MaterialHeaderContent = <RulesStep extends number = number>(
   { loading, rulesStepsHeaders, GameOver, GameOverRule }: MaterialHeaderProps<RulesStep>
 ) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const game = useGame<MaterialGame>()
   const play = usePlay()
   const context = useContext(gameContext)
@@ -79,7 +79,7 @@ const GameOverHeader = ({ GameOverRule }: { GameOverRule?: ComponentType }) => {
 }
 
 const ShowVictoryClaim = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const winnerId = useGameSelector((state) => state.players.find(p => !p.quit)?.id)
   const player = usePlayerName(winnerId)
   const playerId = usePlayerId()

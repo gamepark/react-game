@@ -7,7 +7,7 @@ import { useOpponentWithMaxTime, useUndo } from '../../../hooks'
 import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const EjectPlayerPopButton = (props: HTMLAttributes<HTMLButtonElement>) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   const [, canUndo] = useUndo()
   const canUndoLastMove = canUndo()

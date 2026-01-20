@@ -15,7 +15,7 @@ dayjs.extend(duration)
 dayjs.extend(relativeTime)
 
 export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: () => void }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const maxExceedTime = useGameSelector((state) => state.options?.maxExceedTime ?? 60000)
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   const opponentThatCanBeEjected = useOpponentWithMaxTime()

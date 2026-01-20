@@ -13,3 +13,6 @@
 *.tsbuildinfo
 
 .history/
+
+# Claude
+/.claude/settings.local.json

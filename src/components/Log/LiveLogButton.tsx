@@ -8,7 +8,7 @@ import { gameContext } from '../GameProvider'
 import { menuButtonCss } from '../menus/menuCss'
 
 export const LiveLogButton = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { start, stop, stopped } = useLogControls()
   const hasLogs = useContext(gameContext)?.logs
   if (!hasLogs) return null

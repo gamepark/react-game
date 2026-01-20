@@ -6,7 +6,7 @@ import { useFullscreen } from '../../../hooks'
 import { menuButtonCss } from '../menuCss'
 
 export const FullscreenButton = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { fullscreen, toggleFullscreen } = useFullscreen()
 
   return (

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { menuButtonCss } from '../menuCss'
 
 export const SoundButton = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const { mute, unmute, muted } = useSoundControls()
   return (
     <button css={menuButtonCss} onClick={() => muted ? unmute() : mute()}>

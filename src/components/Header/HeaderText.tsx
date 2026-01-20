@@ -21,10 +21,10 @@ export const HeaderText = ({ code, values = {}, components = {}, moves = {} }: P
     for (const key in moves) {
       components[key] = <PlayMoveButton move={legalMoves.find(moves[key])}/>
     }
-    return <Trans defaults={`header.${code}.you`} values={values} components={components}/>
+    return <Trans i18nKey={`header.${code}.you`} values={values} components={components}/>
   } else if (activePlayers.length === 1) {
-    return <Trans defaults={`header.${code}.player`} values={{ ...values, player }} components={components}/>
+    return <Trans i18nKey={`header.${code}.player`} values={{ ...values, player }} components={components}/>
   } else {
-    return <Trans defaults={`header.${code}.players`} values={values} components={components}/>
+    return <Trans i18nKey={`header.${code}.players`} values={values} components={components}/>
   }
 }

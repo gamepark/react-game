@@ -18,6 +18,7 @@ import { useFocusContext } from '../material'
 
 export const MaterialTutorialDisplay = () => {
   const { t } = useTranslation()
+  const { t: tCommon } = useTranslation('common')
   const context = useMaterialContext()
   const game = context.rules.game
   const tutorialStep = useTutorialStep()
@@ -64,13 +65,13 @@ export const MaterialTutorialDisplay = () => {
       {popup &&
         <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
           <div css={rules}>
-            {passMove && <PlayMoveButton move={passMove} css={passButton}>{t('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>}
+            {passMove && <PlayMoveButton move={passMove} css={passButton}>{tCommon('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>}
             <p>{popup.text(t, game!)}</p>
             <p css={buttonsLine}>
-              <ThemeButton disabled={!canUndoLastMove} onClick={() => undo()}><FontAwesomeIcon icon={faBackward}/>&nbsp;{t('Previous')}</ThemeButton>
+              <ThemeButton disabled={!canUndoLastMove} onClick={() => undo()}><FontAwesomeIcon icon={faBackward}/>&nbsp;{tCommon('Previous')}</ThemeButton>
               {closeTutorialPopup ?
-                <PlayMoveButton move={closeTutorialPopup}>{t('OK')}&nbsp;<FontAwesomeIcon icon={faPlay}/></PlayMoveButton>
-                : <PlayMoveButton move={nextStepMove} disabled={!nextStepMove}>{t('Next')}&nbsp;<FontAwesomeIcon icon={faForward}/></PlayMoveButton>
+                <PlayMoveButton move={closeTutorialPopup}>{tCommon('OK')}&nbsp;<FontAwesomeIcon icon={faPlay}/></PlayMoveButton>
+                : <PlayMoveButton move={nextStepMove} disabled={!nextStepMove}>{tCommon('Next')}&nbsp;<FontAwesomeIcon icon={faForward}/></PlayMoveButton>
               }
             </p>
           </div>

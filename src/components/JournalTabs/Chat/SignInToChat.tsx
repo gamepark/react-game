@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { buttonResetCss } from '../../../css'
 
 export const SignInToChat = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const query = new URLSearchParams(window.location.search)
   const locale = query.get('locale') || 'en'
   return (

@@ -3,13 +3,15 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faImage } from '@fortawesome/free-solid-svg-icons/faImage'
 import { faLaptopCode } from '@fortawesome/free-solid-svg-icons/faLaptopCode'
 import { faLightbulb } from '@fortawesome/free-solid-svg-icons/faLightbulb'
+import { faMusic } from '@fortawesome/free-solid-svg-icons/faMusic'
 import { faPaintbrush } from '@fortawesome/free-solid-svg-icons/faPaintbrush'
 import { faWrench } from '@fortawesome/free-solid-svg-icons/faWrench'
-import { faMusic } from '@fortawesome/free-solid-svg-icons/faMusic'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { HTMLAttributes, useEffect, useState } from 'react'
+import { useGetBoardGameName } from '@gamepark/react-client'
+import { HTMLAttributes, useContext, useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { BackgroundTheme } from '../../css'
+import { gameContext } from '../GameProvider'
 import { Picture } from '../Picture'
 
 export type LoadingScreenProps = {
@@ -34,7 +36,11 @@ export const LoadingScreen = ({
                                 display,
                                 ...props
                               }: LoadingScreenProps) => {
-  const { t } = useTranslation()
+  const game = useContext(gameContext).game
+  const { ready: creditsReady } = useTranslation('credits', { useSuspense: false })
+  const query = new URLSearchParams(window.location.search)
+  const locale = query.get('locale') || 'en'
+  const { name: boardGameName } = useGetBoardGameName(game, locale)
   const [includeInLayout, setIncludeInLayout] = useState(display)
   useEffect(() => {
     if (display) {
@@ -53,29 +59,31 @@ export const LoadingScreen = ({
   const musicians = typeof musician === 'string' ? [musician] : musician ?? []
   return (
     <div css={[loadingScreenStyle, !display && hiddenStyle]} {...props}>
-      {gameBox && <Picture css={gameBoxStyle} src={gameBox} alt={t('Name')!}/>}
-      <h2 css={gameTitle}>{t('Name')}</h2>
-      <p css={gamePeople}>
-        <PeopleLine type="authors" people={authors} icon={faLightbulb}/>
-        <PeopleLine type="artists" people={artists} icon={faPaintbrush}/>
-        <PeopleLine type="graphics" people={graphicDesigners} icon={faImage}/>
-        <PeopleLine type="publishers" people={publishers} icon={faWrench}/>
-        <PeopleLine type="developers" people={developers} icon={faLaptopCode}/>
-        <PeopleLine type="musician" people={musicians} icon={faMusic}/>
-      </p>
+      {gameBox && <Picture css={gameBoxStyle} src={gameBox} alt={boardGameName ?? game}/>}
+      <h2 css={gameTitle}>{boardGameName ?? ' '}</h2>
+      {creditsReady && (
+        <p css={gamePeople}>
+          <PeopleLine type="authors" people={authors} icon={faLightbulb}/>
+          <PeopleLine type="artists" people={artists} icon={faPaintbrush}/>
+          <PeopleLine type="graphics" people={graphicDesigners} icon={faImage}/>
+          <PeopleLine type="publishers" people={publishers} icon={faWrench}/>
+          <PeopleLine type="developers" people={developers} icon={faLaptopCode}/>
+          <PeopleLine type="musician" people={musicians} icon={faMusic}/>
+        </p>
+      )}
     </div>
   )
 }
 
-const PeopleLine = ({type, icon, people}: {type: string, icon: IconProp, people: string[]}) => {
+const PeopleLine = ({ type, icon, people }: { type: string, icon: IconProp, people: string[] }) => {
   if (!people.length) return null
   return <>
     <FontAwesomeIcon css={iconStyle} icon={icon}/>
     {people.length === 1 &&
-      <Trans defaults={`${type}.1`} values={{ name: people[0] }} components={[<strong/>]}/>
+      <Trans ns="credits" i18nKey={`${type}.1`} values={{ name: people[0] }} components={[<strong/>]}/>
     }
     {people.length === 2 &&
-      <Trans defaults={`${type}.2`} values={{ name1: people[0], name2: people[1] }}
+      <Trans ns="credits" i18nKey={`${type}.2`} values={{ name1: people[0], name2: people[1] }}
              components={[<strong/>]}/>
     }
     <br/>

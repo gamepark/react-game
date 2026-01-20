@@ -6,7 +6,7 @@ import { useUndo } from '../../../hooks'
 import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const UndoPopButton = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [undo, canUndo] = useUndo()
   const canUndoLastMove = canUndo()
 

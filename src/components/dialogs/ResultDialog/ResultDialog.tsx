@@ -29,7 +29,7 @@ const gameId = query.get('game')
 
 
 export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const rankedPlayers = useRankedPlayers()
   const context = useContext(gameContext)
   const rules = useRules()!

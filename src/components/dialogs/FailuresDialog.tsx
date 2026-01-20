@@ -7,7 +7,7 @@ import { menuButtonCss, menuDialogCss } from '../menus/menuCss'
 import { Dialog, DialogProps } from './Dialog'
 
 export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const failures = useGameSelector((state) => state.failures)
   const dispatch = useGameDispatch()
   const [displayedFailure, setDisplayedFailure] = useState('')
@@ -25,7 +25,7 @@ export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
       <p>{description.text(t)}</p>
       <button css={[menuButtonCss, inDialogButton]} onClick={() => dispatch(clearFailures())}>{t('OK')}</button>
       {displayedFailure === Failure.MOVE_FORBIDDEN && <p>
-        <Trans defaults="failure.dialog.play2"
+        <Trans ns="common" i18nKey="failure.dialog.play2"
                components={[<button css={[menuButtonCss, css`display: inline-block`]} onClick={() => window.location.reload()}/>]}/>
       </p>}
     </Dialog>

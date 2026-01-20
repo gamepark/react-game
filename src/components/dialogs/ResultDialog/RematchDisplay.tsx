@@ -11,7 +11,7 @@ type Props = {
 }
 
 export const RematchDisplay = ({ rematch }: Props) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const me = useMe()
   const [acceptRematch] = useMutation(ACCEPT_REMATCH)
   const [refuseRematch] = useMutation(REFUSE_REMATCH)

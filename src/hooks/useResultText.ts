@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { usePlayerId, usePlayerIds, usePlayerName, useRules } from './index'
 
 export const useResultText = <PlayerId = any>(): string => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const rules = useRules<Rules>()
   const player = usePlayerId<PlayerId>()
   const players = usePlayerIds<PlayerId>()

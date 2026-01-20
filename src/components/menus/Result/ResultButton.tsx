@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { menuButtonCss } from '../menuCss'
 
 export const ResultButton = (props: HTMLAttributes<HTMLButtonElement>) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
 
   return (
     <button css={menuButtonCss} {...props}>

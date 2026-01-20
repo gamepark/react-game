@@ -11,7 +11,7 @@ export const TrackPlayersQuit = () => {
 }
 
 const TrackPlayerQuit = ({ player }: { player: Player }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const [open, setOpen] = useState(false)
   const me = useMe()
   const playerName = usePlayerName(player.id)

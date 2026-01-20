@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { HistoryEntry } from './HistoryEntry'
 
 export const StartGameHistory: FC = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   return (
     <HistoryEntry>
       <div css={startOfGameStyle}>{t('history.game.start')}</div>

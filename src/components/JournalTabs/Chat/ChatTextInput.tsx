@@ -48,7 +48,7 @@ type ChatInputProps = {
 export const ChatInput: FC<ChatInputProps> = (props) => {
   const { open, onSubmit } = props
   const [text, setText] = useState('')
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {

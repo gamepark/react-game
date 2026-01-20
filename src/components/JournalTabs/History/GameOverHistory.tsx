@@ -4,7 +4,7 @@ import { useRules } from '../../../hooks'
 import { HistoryEntry } from './HistoryEntry'
 
 export const GameOverHistory = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const gameOver = useRules()?.isOver()
   if (!gameOver) return null
   return (
