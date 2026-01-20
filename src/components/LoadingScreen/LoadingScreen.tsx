@@ -7,7 +7,7 @@ import { faMusic } from '@fortawesome/free-solid-svg-icons/faMusic'
 import { faPaintbrush } from '@fortawesome/free-solid-svg-icons/faPaintbrush'
 import { faWrench } from '@fortawesome/free-solid-svg-icons/faWrench'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useGetBoardGameName } from '@gamepark/react-client'
+import { useGetBoardGameCredits, useGetBoardGameName } from '@gamepark/react-client'
 import { HTMLAttributes, useContext, useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { BackgroundTheme } from '../../css'
@@ -16,23 +16,11 @@ import { Picture } from '../Picture'
 
 export type LoadingScreenProps = {
   gameBox?: string
-  author?: string | string[]
-  artist?: string | string[]
-  graphicDesigner?: string | string[]
-  publisher?: string | string[]
-  developer?: string | string[]
-  musician?: string | string[]
   display: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 export const LoadingScreen = ({
                                 gameBox = '/box-640.png',
-                                author,
-                                artist,
-                                graphicDesigner,
-                                publisher,
-                                developer,
-                                musician,
                                 display,
                                 ...props
                               }: LoadingScreenProps) => {
@@ -41,6 +29,7 @@ export const LoadingScreen = ({
   const query = new URLSearchParams(window.location.search)
   const locale = query.get('locale') || 'en'
   const { name: boardGameName } = useGetBoardGameName(game, locale)
+  const { credits } = useGetBoardGameCredits(game)
   const [includeInLayout, setIncludeInLayout] = useState(display)
   useEffect(() => {
     if (display) {
@@ -51,12 +40,12 @@ export const LoadingScreen = ({
     }
   }, [display])
   if (!includeInLayout) return null
-  const authors = typeof author === 'string' ? [author] : author ?? []
-  const artists = typeof artist === 'string' ? [artist] : artist ?? []
-  const graphicDesigners = typeof graphicDesigner === 'string' ? [graphicDesigner] : graphicDesigner ?? []
-  const publishers = typeof publisher === 'string' ? [publisher] : publisher ?? []
-  const developers = typeof developer === 'string' ? [developer] : developer ?? []
-  const musicians = typeof musician === 'string' ? [musician] : musician ?? []
+  const authors = credits?.authors ?? []
+  const artists = credits?.illustrators ?? []
+  const graphicDesigners = credits?.graphics ?? []
+  const publishers = credits?.publishers ?? []
+  const developers = credits?.developers ?? []
+  const musicians = credits?.musicians ?? []
   return (
     <div css={[loadingScreenStyle, !display && hiddenStyle]} {...props}>
       {gameBox && <Picture css={gameBoxStyle} src={gameBox} alt={boardGameName ?? game}/>}
