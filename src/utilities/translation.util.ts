@@ -1,11 +1,12 @@
-import i18next, {InitOptions} from 'i18next'
-import ICU from 'i18next-icu'
-import HttpBackend from 'i18next-http-backend'
+import { PLATFORM_URI } from '@gamepark/react-client'
 import dayjs from 'dayjs'
 import 'dayjs/locale/de'
 import 'dayjs/locale/fr'
 import 'dayjs/locale/ru'
-import {initReactI18next} from 'react-i18next'
+import i18next, { InitOptions } from 'i18next'
+import HttpBackend from 'i18next-http-backend'
+import ICU from 'i18next-icu'
+import { initReactI18next } from 'react-i18next'
 
 let translationInitialized = false
 
@@ -35,6 +36,20 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
     defaultNS: gameId,
     backend: {
       loadPath: 'https://translations.game-park.com/{{lng}}/{{ns}}.json'
+    },
+    saveMissing: process.env.NODE_ENV === 'production',
+    missingKeyHandler: (lngs, namespace, key, defaultValue) => {
+      const locale = lngs[0]
+      if (!locale || !namespace || !key) return
+      // Client-side: send to API endpoint via fetch
+      const origin = window.location.href
+      fetch(`${PLATFORM_URI}/api/translations/missing`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locale, namespace, key, defaultValue, origin })
+      }).catch((error) => {
+        console.error('[Translation] Failed to report missing key (client):', error)
+      })
     },
     ...options
   }).catch(error => console.error(error))
