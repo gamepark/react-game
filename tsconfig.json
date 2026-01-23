@@ -10,7 +10,7 @@
       "dom",
       "esnext"
     ],
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
     "allowJs": false,
     "sourceMap": true,

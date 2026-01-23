@@ -18,7 +18,7 @@ export const LocalChatTextInput: FC<LocalChatTextInputProps> = (props) => {
 
   const onSubmit = (t: string) => {
     if (!t) return
-    onMessageSent({ id: `${messages}`, text: t, date: new Date().toISOString(), userId: 'dev' })
+    onMessageSent({ id: `${messages}`, text: t, date: new Date(), userId: 'dev' })
   }
 
   return <ChatInput open={open} onSubmit={onSubmit}/>
