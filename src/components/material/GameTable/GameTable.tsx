@@ -21,6 +21,7 @@ export type GameTableProps = {
   yMax: number
   perspective?: number
   margin?: { left: number, top: number, right: number, bottom: number }
+  tableFontSize?: number
   verticalCenter?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
@@ -37,6 +38,7 @@ export const GameTable: FC<GameTableProps> = (
     yMin,
     yMax,
     margin = { left: 0, right: 0, top: 7, bottom: 0 },
+    tableFontSize = 5,
     verticalCenter,
     children,
     ...props
@@ -86,7 +88,6 @@ export const GameTable: FC<GameTableProps> = (
 
   const hm = margin.left + margin.right
   const vm = margin.top + margin.bottom
-  const tableFontSize = 5
   const minScale = (100 - vm) / tableFontSize / (yMax - yMin)
   const maxScale = minScale > 0.9 ? minScale : 1
   const ratio = (xMax - xMin) / (yMax - yMin)
