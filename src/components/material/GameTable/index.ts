@@ -1,3 +1,5 @@
 export * from './focus'
 export * from './GameTable'
+export * from './GameTableContext'
 export * from './GameTableNavigation'
+export * from './ScaleContext'

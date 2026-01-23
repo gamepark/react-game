@@ -6,12 +6,19 @@ import { FC, HTMLAttributes, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useControls, useTransformEffect } from 'react-zoom-pan-pinch'
 import { buttonResetCss } from '../../../css'
+import { useGameTableContext } from './GameTableContext'
 
 type GameTableNavigationProps = {
   scaleStep?: number
 } & HTMLAttributes<HTMLDivElement>
 
 export const GameTableNavigation: FC<GameTableNavigationProps> = (props) => {
+  const { zoom } = useGameTableContext()
+  if (!zoom) return null
+  return <GameTableNavigationInner {...props} />
+}
+
+const GameTableNavigationInner: FC<GameTableNavigationProps> = (props) => {
   const { scaleStep = 0.1, ...rest } = props
   const { zoomIn, zoomOut } = useControls()
   const [isMin, setIsMin] = useState(false)

@@ -10,6 +10,8 @@ import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/zoo
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { getBestDropMove } from '../utils/getBestDropMove'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
+import { GameTableContext } from './GameTableContext'
+import { NoZoomScaleProvider, ZoomScaleProvider } from './ScaleContext'
 import dropItemMove = MaterialMoveBuilder.dropItemMove
 
 export type GameTableProps = {
@@ -23,6 +25,7 @@ export type GameTableProps = {
   margin?: { left: number, top: number, right: number, bottom: number }
   tableFontSize?: number
   verticalCenter?: boolean
+  zoom?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 const wheel = { step: 0.05 }
@@ -40,6 +43,7 @@ export const GameTable: FC<GameTableProps> = (
     margin = { left: 0, right: 0, top: 7, bottom: 0 },
     tableFontSize = 5,
     verticalCenter,
+    zoom = true,
     children,
     ...props
   }
@@ -97,22 +101,44 @@ export const GameTable: FC<GameTableProps> = (
   const modifiers = useMemo(() => snapToCenter ? [snapCenterToCursor] : undefined, [snapToCenter])
   const boundaries = useMemo(() => ({xMin, xMax, yMin, yMax}), [xMin, xMax, yMin, yMax])
 
+  const tableContent = (
+    <div css={[
+      tableCss(xMin, xMax, yMin, yMax),
+      zoom ? fontSizeCss(tableFontSize) : noZoomTableCss(xMin, xMax, yMin, yMax, vm, hm),
+      perspective && perspectiveCss(perspective)
+    ]} {...props}>
+      <GameMaterialDisplay boundaries={boundaries}>
+        {children}
+      </GameMaterialDisplay>
+    </div>
+  )
+
+  const contextValue = useMemo(() => ({ zoom }), [zoom])
+
   return (
-    <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
-                modifiers={modifiers} sensors={sensors}
-                onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
-      <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle]}/>
-      <TransformWrapper ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
-                        centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
-        <TransformComponent wrapperClass="wrapperClass">
-          <div css={[tableCss(xMin, xMax, yMin, yMax), fontSizeCss(tableFontSize), perspective && perspectiveCss(perspective)]} {...props}>
-            <GameMaterialDisplay boundaries={boundaries}>
-              {children}
-            </GameMaterialDisplay>
+    <GameTableContext.Provider value={contextValue}>
+      <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
+                  modifiers={modifiers} sensors={sensors}
+                  onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
+        <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle]}/>
+        {zoom ? (
+          <TransformWrapper ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
+                            centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
+            <TransformComponent wrapperClass="wrapperClass">
+              <ZoomScaleProvider>
+                {tableContent}
+              </ZoomScaleProvider>
+            </TransformComponent>
+          </TransformWrapper>
+        ) : (
+          <div className="wrapperClass" css={noZoomContainerCss}>
+            <NoZoomScaleProvider>
+              {tableContent}
+            </NoZoomScaleProvider>
           </div>
-        </TransformComponent>
-      </TransformWrapper>
-    </DndContext>
+        )}
+      </DndContext>
+    </GameTableContext.Provider>
   )
 }
 
@@ -145,3 +171,19 @@ const tableCss = (xMin: number, xMax: number, yMin: number, yMax: number) => css
   width: ${xMax - xMin}em;
   height: ${yMax - yMin}em;
 `
+
+const noZoomContainerCss = css`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const noZoomTableCss = (xMin: number, xMax: number, yMin: number, yMax: number, vm: number, hm: number) => {
+  const tableWidth = xMax - xMin
+  const tableHeight = yMax - yMin
+  // Margins are in em relative to body font-size (1dvh), so vm em = vm dvh
+  const heightBasedFontSize = (100 - vm) / tableHeight
+  return css`
+    font-size: min(${heightBasedFontSize}dvh, calc((100dvw - ${hm}dvh) / ${tableWidth}));
+  `
+}

@@ -6,7 +6,8 @@ import { MaterialRulesDialog } from '../../dialogs'
 import { MaterialTutorialDisplay } from '../../tutorial/MaterialTutorialDisplay'
 import { DropPreview } from './DropPreview'
 import { DynamicItemsDisplay } from './DynamicItemsDisplay'
-import { FocusProvider } from './focus'
+import { FocusProvider, NoZoomFocusProvider } from './focus'
+import { useGameTableContext } from './GameTableContext'
 import { StaticItemsDisplay } from './StaticItemsDisplay'
 import { StaticLocationsDisplay } from './StaticLocationsDisplay'
 import displayHelp = MaterialMoveBuilder.displayHelp
@@ -19,11 +20,14 @@ type GameMaterialDisplayProps = {
 export const GameMaterialDisplay = ({ boundaries, children }: GameMaterialDisplayProps) => {
   const rules = useRules<MaterialRules>()
   const play = usePlay()
+  const { zoom } = useGameTableContext()
 
   if (!rules || !rules.game) return <></>
   const game = rules.game
 
-  return <FocusProvider>
+  const Provider = zoom ? FocusProvider : NoZoomFocusProvider
+
+  return <Provider>
     <StaticLocationsDisplay boundaries={boundaries}/>
     <StaticItemsDisplay boundaries={boundaries}/>
     <DynamicItemsDisplay boundaries={boundaries}/>
@@ -31,7 +35,7 @@ export const GameMaterialDisplay = ({ boundaries, children }: GameMaterialDispla
     <MaterialRulesDialog open={!!game?.helpDisplay} close={() => play(displayHelp(undefined), { transient: true })}/>
     {game?.tutorial && <MaterialTutorialDisplay/>}
     {children}
-  </FocusProvider>
+  </Provider>
 }
 
 const dropPreviewWrapper = css`

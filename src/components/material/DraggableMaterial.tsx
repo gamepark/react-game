@@ -17,13 +17,13 @@ import {
 } from '@gamepark/rules-api'
 import { merge } from 'es-toolkit'
 import { forwardRef, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { useTransformContext } from 'react-zoom-pan-pinch'
 import { grabbingCursor, grabCursor } from '../../css'
 import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
 import { getLocationOriginCss, ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
 import { gameContext } from '../GameProvider'
 import { MaterialGameAnimations } from './animations'
+import { useScale } from './GameTable'
 import { ItemDisplay } from './GameTable/ItemDisplay'
 import { ItemMenuWrapper } from './ItemMenuWrapper'
 import { MaterialComponentProps } from './MaterialComponent'
@@ -143,11 +143,10 @@ const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialM
     }
   }, [!transform])
 
-  const transformContext = useTransformContext()
+  const scale = useScale()
   const transformRef = useRef<string>('')
   if (transform && !ignoreTransform) {
     const { x, y } = transform
-    const scale = transformContext.transformState.scale
     transformRef.current = `translate3d(${Math.round(x / scale)}px, ${y ? Math.round(y / scale) : 0}px, 20em)`
   }
 
