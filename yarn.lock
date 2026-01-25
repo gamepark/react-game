@@ -367,14 +367,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gamepark/react-client@npm:~7.3.1":
-  version: 7.3.1
-  resolution: "@gamepark/react-client@npm:7.3.1"
+"@gamepark/react-client@npm:~7.3.2":
+  version: 7.3.2
+  resolution: "@gamepark/react-client@npm:7.3.2"
   dependencies:
     "@reduxjs/toolkit": "npm:^2.9.0"
     "@tanstack/react-query": "npm:^5.62.13"
     "@trpc/client": "npm:^11.7.1"
     "@trpc/react-query": "npm:^11.7.1"
+    "@trpc/server": "npm:^11.8.1"
     assert: "npm:^2.1.0"
     immer: "npm:^10.1.3"
     pusher-js: "npm:^8.4.0"
@@ -388,7 +389,7 @@ __metadata:
     react-dom: ^19.1.1
     react-redux: ^9.2.0
     rxjs: ^7.8.2
-  checksum: 10c0/cddf871d5e952dc7b5078c92cdfea9252f636417298dfefef32151c5d7e1990c6b1ebb6d4b4364e66d10a57fbb63922808d808473e43d04c23ddb29dcf1e4130
+  checksum: 10c0/3da01f8144c9d7640ee09339c2ec6e5331c51b9f568e7aef2bf045b3c6758438cf14fa117c3de4c5c84ceebfc67ac9263a8dff25394e7335d49b7c637b1078ce
   languageName: node
   linkType: hard
 
@@ -406,7 +407,7 @@ __metadata:
     "@fortawesome/react-fontawesome": "npm:^3.0.2"
     "@gamepark/api-types": "npm:^1.0.0"
     "@gamepark/avataaars": "npm:~3.0.0"
-    "@gamepark/react-client": "npm:~7.3.1"
+    "@gamepark/react-client": "npm:~7.3.2"
     "@gamepark/rules-api": "npm:^7.2.0"
     "@types/fscreen": "npm:^1.0.4"
     "@types/node": "npm:^24.5.0"
@@ -533,6 +534,15 @@ __metadata:
     react-dom: ">=18.2.0"
     typescript: ">=5.7.2"
   checksum: 10c0/316be1cae71caeb43e4543f0a3230ece7cee2ed797a9a5fa0dbd6b32d6c8bfe32912db9fc7d6b89cdc658d96a1133e79294dea162ba93c456c526298b2aa3296
+  languageName: node
+  linkType: hard
+
+"@trpc/server@npm:^11.8.1":
+  version: 11.8.1
+  resolution: "@trpc/server@npm:11.8.1"
+  peerDependencies:
+    typescript: ">=5.7.2"
+  checksum: 10c0/82099e2230f25ea9253c3d54f1c216930d688db47c73a4141b7ec4f439e1fd53c3e8e5e47684c0bfa4e576c7b1df0820f28a85f48797d8cee7b570dc46035402
   languageName: node
   linkType: hard
 
