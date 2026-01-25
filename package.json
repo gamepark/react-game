@@ -20,14 +20,12 @@
     "unlinkgp": "yarn unlink ../react-client ../rules-api"
   },
   "dependencies": {
-    "@apollo/client": "^4.0.5",
     "@datadog/browser-logs": "^6.19.0",
     "@dnd-kit/modifiers": "^9.0.0",
     "@gamepark/avataaars": "~3.0.0",
     "@gamepark/react-client": "~7.2.0",
     "dayjs": "^1.11.18",
     "fscreen": "^1.2.0",
-    "graphql": "^16.11.0",
     "i18next-http-backend": "^3.0.2",
     "i18next-icu": "^2.4.0",
     "immer": "^10.1.3",

@@ -1,7 +1,6 @@
-import { ApolloProvider } from '@apollo/client/react'
 import { datadogLogs, StatusType } from '@datadog/browser-logs'
 import { css, Global, Theme, ThemeProvider } from '@emotion/react'
-import { getApolloClient, LocalGameProvider, LocalGameProviderProps, RemoteGameProvider, TRPCProvider } from '@gamepark/react-client'
+import { LocalGameProvider, LocalGameProviderProps, RemoteGameProvider, TRPCProvider } from '@gamepark/react-client'
 import { merge } from 'es-toolkit'
 import { PropsWithChildren, useEffect } from 'react'
 import { BackgroundTheme, defaultTheme } from '../../css'
@@ -42,12 +41,10 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
         <ThemeProvider theme={merge(defaultTheme, theme)}>
           <Global styles={[normalize, globalCss]}/>
           <TRPCProvider>
-            <ApolloProvider client={getApolloClient()}>
-              {gameId ?
-                <RemoteGameProvider gameId={gameId} {...props}>{children}</RemoteGameProvider> :
-                <LocalGameProvider {...props}>{children}</LocalGameProvider>
-              }
-            </ApolloProvider>
+            {gameId ?
+              <RemoteGameProvider gameId={gameId} {...props}>{children}</RemoteGameProvider> :
+              <LocalGameProvider {...props}>{children}</LocalGameProvider>
+            }
           </TRPCProvider>
         </ThemeProvider>
     </gameContext.Provider>
