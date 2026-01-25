@@ -349,6 +349,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gamepark/api-types@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@gamepark/api-types@npm:1.0.0"
+  peerDependencies:
+    "@trpc/server": ^11.8.0
+  checksum: 10c0/8d89e4007599d348657df72e2b3caafddb99dd4abbdb3e4c6b2dce07dc65aa98a4adad167877de1db8b454722e8e477bf8dfc3b7e17780ad3fd93a11d3e47135
+  languageName: node
+  linkType: hard
+
 "@gamepark/avataaars@npm:~3.0.0":
   version: 3.0.0
   resolution: "@gamepark/avataaars@npm:3.0.0"
@@ -395,6 +404,7 @@ __metadata:
     "@fortawesome/free-regular-svg-icons": "npm:^7.0.1"
     "@fortawesome/free-solid-svg-icons": "npm:^7.0.1"
     "@fortawesome/react-fontawesome": "npm:^3.0.2"
+    "@gamepark/api-types": "npm:^1.0.0"
     "@gamepark/avataaars": "npm:~3.0.0"
     "@gamepark/react-client": "npm:~7.3.1"
     "@gamepark/rules-api": "npm:^7.2.0"

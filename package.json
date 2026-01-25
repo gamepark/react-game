@@ -22,6 +22,7 @@
   "dependencies": {
     "@datadog/browser-logs": "^6.19.0",
     "@dnd-kit/modifiers": "^9.0.0",
+    "@gamepark/api-types": "^1.0.0",
     "@gamepark/avataaars": "~3.0.0",
     "@gamepark/react-client": "~7.3.1",
     "dayjs": "^1.11.18",
