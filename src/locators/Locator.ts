@@ -112,7 +112,19 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @returns true if the item must be hidden
    */
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
-    return this.limit !== undefined && this.getItemIndex(item, context) < 0
+    if (this.limit !== undefined && this.getItemIndex(item, context) < 0) {
+      return true
+    }
+    if (item.location.parent !== undefined && this.parentItemType !== undefined) {
+      const parentItem = this.getParentItem(item.location, context)
+      if (parentItem) {
+        const parentLocator = context.locators[parentItem.location.type]
+        if (parentLocator?.hide(parentItem, { ...context, type: this.parentItemType, index: item.location.parent, displayIndex: 0 })) {
+          return true
+        }
+      }
+    }
+    return false
   }
 
   /**
