@@ -9,9 +9,14 @@ type Props = {
   values?: Record<string, any>
   components?: Record<string, ReactElement>
   moves?: Record<string, (move: MaterialMove) => boolean>
+  defaults?: {
+    you?: string
+    player?: string
+    players?: string
+  }
 }
 
-export const HeaderText = ({ code, values = {}, components = {}, moves = {} }: Props) => {
+export const HeaderText = ({ code, values = {}, components = {}, moves = {}, defaults }: Props) => {
   const rules = useRules<MaterialRules>()!
   const me = usePlayerId()
   const activePlayers = rules.activePlayers
@@ -21,10 +26,10 @@ export const HeaderText = ({ code, values = {}, components = {}, moves = {} }: P
     for (const key in moves) {
       components[key] = <PlayMoveButton move={legalMoves.find(moves[key])}/>
     }
-    return <Trans i18nKey={`header.${code}.you`} values={values} components={components}/>
+    return <Trans i18nKey={`header.${code}.you`} defaults={defaults?.you} values={values} components={components}/>
   } else if (activePlayers.length === 1) {
-    return <Trans i18nKey={`header.${code}.player`} values={{ ...values, player }} components={components}/>
+    return <Trans i18nKey={`header.${code}.player`} defaults={defaults?.player} values={{ ...values, player }} components={components}/>
   } else {
-    return <Trans i18nKey={`header.${code}.players`} values={values} components={components}/>
+    return <Trans i18nKey={`header.${code}.players`} defaults={defaults?.players} values={values} components={components}/>
   }
 }
