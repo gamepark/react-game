@@ -30,7 +30,7 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
 
   i18next.init({
     lng: locale,
-    debug: process.env.NODE_ENV === 'development',
+    debug: import.meta.env.VITE_I18N_DEBUG === 'true',
     fallbackLng: 'en',
     ns: [gameId, 'common', 'credits'],
     defaultNS: gameId,
