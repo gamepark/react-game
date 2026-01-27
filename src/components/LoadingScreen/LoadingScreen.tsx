@@ -39,6 +39,11 @@ export const LoadingScreen = ({
       return () => clearTimeout(timeout)
     }
   }, [display])
+  useEffect(() => {
+    if (boardGameName) {
+      document.title = boardGameName
+    }
+  }, [boardGameName])
   if (!includeInLayout) return null
   const authors = credits?.authors ?? []
   const artists = credits?.illustrators ?? []
