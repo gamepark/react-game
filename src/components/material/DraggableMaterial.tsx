@@ -240,8 +240,7 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
   if (!item || !animationsConfig) return
   const itemContext: ItemContext<P, M, L> = { ...context, ...displayedItem, dragTransform }
   for (const animation of animations) {
-    const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
-    const itemAnimation = config.getItemAnimation(itemContext, animation, boundaries)
+    const itemAnimation = animationsConfig.getItemAnimation(itemContext, animation, animation.action, boundaries)
     if (itemAnimation) {
       if (animationCache.current?.move !== animation.move) {
         // Remember current item animation for each move so that it does not restart if the item's origin changes in between
