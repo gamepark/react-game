@@ -1,4 +1,4 @@
-import { css, Interpolation, keyframes, Keyframes, Theme } from '@emotion/react'
+import { css, Interpolation, Keyframes, Theme } from '@emotion/react'
 import { faQuestion } from '@fortawesome/free-solid-svg-icons/faQuestion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -21,6 +21,7 @@ import { TFunction } from 'i18next'
 import { ComponentType, HTMLAttributes, ReactNode } from 'react'
 import { Trans } from 'react-i18next'
 import { getItemFromContext, ItemContext, Locator, MaterialContext } from '../../locators'
+import { defaultElevation, getElevationKeyframes } from './animations'
 import { ComponentDescription } from './ComponentDescription'
 import { ItemButtonProps, ItemMenuButton } from './ItemMenuButton'
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
@@ -306,12 +307,13 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     </ItemMenuButton>
   }
 
-  getAnimationCss(keyframes: Keyframes, duration: number): Interpolation<Theme> {
+  getAnimationCss(animationKeyframes: Keyframes, duration: number): Interpolation<Theme> {
+    const elevationArc = getElevationKeyframes(defaultElevation)
     return css`
-      animation: ${upAndDown} ${duration}s linear infinite;
+      animation: ${elevationArc} ${duration}s ease-in-out forwards;
 
       > * {
-        animation: ${keyframes} ${duration}s ease-in-out forwards;
+        animation: ${animationKeyframes} ${duration}s ease-in-out forwards;
       }
     `
   }
@@ -324,15 +326,6 @@ export abstract class MaterialDescription<P extends number = number, M extends n
 function isMovementOfItem<P extends number, M extends number, L extends number>(move: MaterialMove<P, M, L>): move is (MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>) {
   return isMoveItem(move) || isMoveItemsAtOnce(move)
 }
-
-const upAndDown = keyframes`
-  from, to {
-    transform: none;
-  }
-  50% {
-    transform: translateZ(10em);
-  }
-`
 
 export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number> = Record<M, MaterialDescription<P, M, L>>
 

@@ -4,15 +4,20 @@ import { DeleteItem, GridBoundaries, ItemMove, MoveItem } from '@gamepark/rules-
 import { defaultOrigin, getItemFromContext, getOriginDeltaPosition, ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { getFirstStockItem, getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
-import { ItemAnimations } from './ItemAnimations'
+import { ItemAnimations, ItemContextWithTrajectory } from './ItemAnimations'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
+import { Trajectory } from './Trajectory'
 import { transformItem } from './transformItem.util'
 
 export class DeleteItemAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
 
-  constructor(protected duration = 1, protected droppedItemDuration = 0.2) {
+  constructor(
+    protected duration = 1,
+    protected droppedItemDuration = 0.2,
+    protected trajectory?: Trajectory<P, M, L>
+  ) {
     super()
   }
 
@@ -43,9 +48,20 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
       if (currentOrigin.y !== futureOrigin.y) {
         targetTransforms.unshift(`translateY(${getOriginDeltaPosition(boundaries.yMin, boundaries.yMax, futureOrigin.y, currentOrigin.y)}em)`)
       }
-      const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
-      const description = context.material[context.type]
-      return description?.getAnimationCss(animationKeyframes, animation.duration)
+
+      // Check if trajectory is configured
+      const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L>
+      const trajectory = this.trajectory ?? contextWithTrajectory.trajectory
+
+      if (trajectory) {
+        const trajectoryContext: ItemContextWithTrajectory<P, M, L> = { ...context, trajectory }
+        const animationKeyframes = this.getTrajectoryKeyframes(originTransforms, targetTransforms, animation, trajectoryContext)
+        return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
+      } else {
+        const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
+        const description = context.material[context.type]
+        return description?.getAnimationCss(animationKeyframes, animation.duration)
+      }
     } else {
       const fadeout = keyframes`
         to {

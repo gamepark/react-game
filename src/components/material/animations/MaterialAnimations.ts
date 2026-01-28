@@ -12,20 +12,21 @@ import { MoveItemAnimations } from './MoveItemAnimations'
 import { MoveItemAtOnceAnimations } from './MoveItemAtOnceAnimations'
 import { RollItemAnimations } from './RollItemAnimations'
 import { ShuffleAnimations } from './ShuffleAnimations'
+import { Trajectory } from './Trajectory'
 
 export class MaterialAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends Animations<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P> {
 
   protected readonly animations: Partial<Record<ItemMoveType, ItemAnimations<P, M, L>>>
 
-  constructor(duration = 1, droppedItemDuration = 0.2) {
+  constructor(duration = 1, droppedItemDuration = 0.2, trajectory?: Trajectory<P, M, L>) {
     super()
     this.animations = {
-      [ItemMoveType.Create]: new CreateItemAnimations(duration),
-      [ItemMoveType.Move]: new MoveItemAnimations(duration, droppedItemDuration),
-      [ItemMoveType.MoveAtOnce]: new MoveItemAtOnceAnimations(duration),
-      [ItemMoveType.Delete]: new DeleteItemAnimations(duration, droppedItemDuration),
-      [ItemMoveType.DeleteAtOnce]: new DeleteItemAtOnceAnimations(duration),
+      [ItemMoveType.Create]: new CreateItemAnimations(duration, trajectory),
+      [ItemMoveType.Move]: new MoveItemAnimations(duration, droppedItemDuration, trajectory),
+      [ItemMoveType.MoveAtOnce]: new MoveItemAtOnceAnimations(duration, trajectory),
+      [ItemMoveType.Delete]: new DeleteItemAnimations(duration, droppedItemDuration, trajectory),
+      [ItemMoveType.DeleteAtOnce]: new DeleteItemAtOnceAnimations(duration, trajectory),
       [ItemMoveType.Shuffle]: new ShuffleAnimations(0),
       [ItemMoveType.Roll]: new RollItemAnimations(duration)
     }

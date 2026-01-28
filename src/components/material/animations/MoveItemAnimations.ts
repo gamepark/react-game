@@ -5,15 +5,20 @@ import { isEqual } from 'es-toolkit'
 import { defaultOrigin, getItemFromContext, getOriginDeltaPosition, ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
-import { ItemAnimations } from './ItemAnimations'
+import { ItemAnimations, ItemContextWithTrajectory } from './ItemAnimations'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
+import { Trajectory } from './Trajectory'
 import { transformItem } from './transformItem.util'
 
 export class MoveItemAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
 
-  constructor(protected duration = 1, protected droppedItemDuration = 0.2) {
+  constructor(
+    protected duration = 1,
+    protected droppedItemDuration = 0.2,
+    protected trajectory?: Trajectory<P, M, L>
+  ) {
     super()
   }
 
@@ -63,8 +68,21 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     if (currentOrigin.y !== futureOrigin.y) {
       targetTransforms.unshift(`translateY(${getOriginDeltaPosition(boundaries.yMin, boundaries.yMax, futureOrigin.y, currentOrigin.y)}em)`)
     }
-    const animationKeyframes = this.getTransformKeyframes(currentTransforms.join(' '), targetTransforms.join(' '), animation, context)
-    return description?.getAnimationCss(animationKeyframes, animation.duration)
+
+    // Check if trajectory is configured (either in this instance or in context)
+    const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L>
+    const trajectory = this.trajectory ?? contextWithTrajectory.trajectory
+
+    if (trajectory) {
+      // Use new trajectory-based animation (single div, integrated elevation)
+      const trajectoryContext: ItemContextWithTrajectory<P, M, L> = { ...context, trajectory }
+      const animationKeyframes = this.getTrajectoryKeyframes(currentTransforms, targetTransforms, animation, trajectoryContext)
+      return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
+    } else {
+      // Use legacy two-div animation
+      const animationKeyframes = this.getTransformKeyframes(currentTransforms.join(' '), targetTransforms.join(' '), animation, context)
+      return description?.getAnimationCss(animationKeyframes, animation.duration)
+    }
   }
 
   getItemIndexAfterMove({ rules }: ItemContext<P, M, L>, move: MoveItem<P, M, L>): number {
@@ -92,7 +110,18 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const originTransforms = transformItem(context)
     const targetTransforms = description?.getItemTransform(item, futureContext) ?? []
     toClosestRotations(originTransforms, targetTransforms)
-    const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
-    return description?.getAnimationCss(animationKeyframes, animation.duration)
+
+    // Check if trajectory is configured
+    const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L>
+    const trajectory = this.trajectory ?? contextWithTrajectory.trajectory
+
+    if (trajectory) {
+      const trajectoryContext: ItemContextWithTrajectory<P, M, L> = { ...context, trajectory }
+      const animationKeyframes = this.getTrajectoryKeyframes(originTransforms, targetTransforms, animation, trajectoryContext)
+      return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
+    } else {
+      const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
+      return description?.getAnimationCss(animationKeyframes, animation.duration)
+    }
   }
 }
