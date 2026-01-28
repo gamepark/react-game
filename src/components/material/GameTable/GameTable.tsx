@@ -28,9 +28,14 @@ export type GameTableProps = {
   zoom?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
+type Margin = NonNullable<GameTableProps['margin']>
+
+const defaultMargin: Margin = { left: 0, right: 0, top: 7, bottom: 0 }
 const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 const pointerSensorOptions = { activationConstraint: { distance: 2 } }
+const measuring = { draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }
+
 export const GameTable: FC<GameTableProps> = (
   {
     collisionAlgorithm,
@@ -40,23 +45,36 @@ export const GameTable: FC<GameTableProps> = (
     xMax,
     yMin,
     yMax,
-    margin = { left: 0, right: 0, top: 7, bottom: 0 },
+    margin = defaultMargin,
     tableFontSize = 5,
     verticalCenter,
-    zoom = true,
+    zoom,
     children,
     ...props
   }
 ) => {
+  // Dimensions calculations
+  const tableWidth = xMax - xMin
+  const tableHeight = yMax - yMin
+  const hm = margin.left + margin.right
+  const vm = margin.top + margin.bottom
+  const ratio = tableWidth / tableHeight
+  const ratioWithMargins = ((100 - vm) * ratio + hm) / 100
 
+  // Scale calculations
+  const minScale = (100 - vm) / tableFontSize / tableHeight
+  const maxScale = minScale > 0.9 ? minScale : 1
+  const enableZoom = zoom ?? minScale < 0.9
+
+  // Drag & drop
   const [dragging, setDragging] = useState(false)
-  const sensors = useSensors(
-    useSensor(PointerSensor, pointerSensorOptions)
-  )
-
+  const sensors = useSensors(useSensor(PointerSensor, pointerSensorOptions))
   const context = useMaterialContext()
   const play = usePlay()
   const legalMoves = useLegalMoves()
+
+  const onDragStart = useCallback(() => setDragging(true), [])
+  const onDragCancel = useCallback(() => setDragging(false), [])
   const onDragEnd = useCallback((event: DragEndEvent) => {
     setDragging(false)
     const move = getBestDropMove(event, context, legalMoves)
@@ -74,10 +92,12 @@ export const GameTable: FC<GameTableProps> = (
     }
   }, [context, play, legalMoves])
 
-  const ref = useRef<ReactZoomPanPinchContentRef>(null)
+  // Zoom resize handler
+  const zoomRef = useRef<ReactZoomPanPinchContentRef>(null)
   useEffect(() => {
+    if (!enableZoom) return
     const handler = () => {
-      const zoomPanPinch = ref.current?.instance
+      const zoomPanPinch = zoomRef.current?.instance
       if (!zoomPanPinch?.bounds) return
       const { positionX, positionY, scale } = zoomPanPinch.transformState
       const bounds = calculateBounds(zoomPanPinch, scale)
@@ -85,26 +105,20 @@ export const GameTable: FC<GameTableProps> = (
       zoomPanPinch.setTransformState(scale, x, y)
     }
     window.addEventListener('resize', handler)
-    return () => {
-      window.removeEventListener('resize', handler)
-    }
-  }, [])
+    return () => window.removeEventListener('resize', handler)
+  }, [enableZoom])
 
-  const hm = margin.left + margin.right
-  const vm = margin.top + margin.bottom
-  const minScale = (100 - vm) / tableFontSize / (yMax - yMin)
-  const maxScale = minScale > 0.9 ? minScale : 1
-  const ratio = (xMax - xMin) / (yMax - yMin)
-  const ratioWithMargins = ((100 - vm) * ratio + hm) / 100
+  // Memoized values
   const panning = useMemo(() => ({ disabled: dragging }), [dragging])
-  const wrapperStyle = useMemo(() => computedWrapperClass(margin, vm, hm, ratio, verticalCenter), [margin, vm, hm, ratio])
+  const wrapperStyle = useMemo(() => computedWrapperClass(margin, vm, hm, ratio, verticalCenter), [margin, vm, hm, ratio, verticalCenter])
   const modifiers = useMemo(() => snapToCenter ? [snapCenterToCursor] : undefined, [snapToCenter])
-  const boundaries = useMemo(() => ({xMin, xMax, yMin, yMax}), [xMin, xMax, yMin, yMax])
+  const boundaries = useMemo(() => ({ xMin, xMax, yMin, yMax }), [xMin, xMax, yMin, yMax])
+  const contextValue = useMemo(() => ({ zoom: enableZoom }), [enableZoom])
 
   const tableContent = (
     <div css={[
-      tableCss(xMin, xMax, yMin, yMax),
-      zoom ? fontSizeCss(tableFontSize) : noZoomTableCss(xMin, xMax, yMin, yMax, vm, hm),
+      tableCss(tableWidth, tableHeight),
+      enableZoom ? fontSizeCss(tableFontSize) : noZoomTableCss(tableWidth, tableHeight, vm, hm),
       perspective && perspectiveCss(perspective)
     ]} {...props}>
       <GameMaterialDisplay boundaries={boundaries}>
@@ -113,16 +127,14 @@ export const GameTable: FC<GameTableProps> = (
     </div>
   )
 
-  const contextValue = useMemo(() => ({ zoom }), [zoom])
-
   return (
     <GameTableContext.Provider value={contextValue}>
-      <DndContext collisionDetection={collisionAlgorithm} measuring={{ draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }}
+      <DndContext collisionDetection={collisionAlgorithm} measuring={measuring}
                   modifiers={modifiers} sensors={sensors}
-                  onDragStart={() => setDragging(true)} onDragEnd={onDragEnd} onDragCancel={() => setDragging(false)}>
+                  onDragStart={onDragStart} onDragEnd={onDragEnd} onDragCancel={onDragCancel}>
         <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle]}/>
-        {zoom ? (
-          <TransformWrapper ref={ref} minScale={minScale} maxScale={maxScale} initialScale={minScale}
+        {enableZoom ? (
+          <TransformWrapper ref={zoomRef} minScale={minScale} maxScale={maxScale} initialScale={minScale}
                             centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
             <TransformComponent wrapperClass="wrapperClass">
               <ZoomScaleProvider>
@@ -142,7 +154,7 @@ export const GameTable: FC<GameTableProps> = (
   )
 }
 
-const computedWrapperClass = (margin: any, vm: number, hm: number, ratio: number, verticalCenter?: boolean) => css`
+const computedWrapperClass = (margin: Margin, vm: number, hm: number, ratio: number, verticalCenter?: boolean) => css`
   .wrapperClass {
     position: absolute;
     margin: ${margin.top}em ${margin.right}em ${margin.bottom}em ${margin.left}em;
@@ -166,10 +178,10 @@ const ratioFontSize = (ratio: number) => css`
   }
 `
 
-const tableCss = (xMin: number, xMax: number, yMin: number, yMax: number) => css`
+const tableCss = (width: number, height: number) => css`
   transform-style: preserve-3d;
-  width: ${xMax - xMin}em;
-  height: ${yMax - yMin}em;
+  width: ${width}em;
+  height: ${height}em;
 `
 
 const noZoomContainerCss = css`
@@ -178,10 +190,7 @@ const noZoomContainerCss = css`
   justify-content: center;
 `
 
-const noZoomTableCss = (xMin: number, xMax: number, yMin: number, yMax: number, vm: number, hm: number) => {
-  const tableWidth = xMax - xMin
-  const tableHeight = yMax - yMin
-  // Margins are in em relative to body font-size (1dvh), so vm em = vm dvh
+const noZoomTableCss = (tableWidth: number, tableHeight: number, vm: number, hm: number) => {
   const heightBasedFontSize = (100 - vm) / tableHeight
   return css`
     font-size: min(${heightBasedFontSize}dvh, calc((100dvw - ${hm}dvh) / ${tableWidth}));
