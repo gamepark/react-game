@@ -23,9 +23,7 @@ export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveVi
 export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Move, PlayerId extends number = number>(
   { materialI18n, theme = {}, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
-  useEffect(() => {
-    setupTranslation(props.game)
-  }, [props.game])
+  setupTranslation(props.game)
 
   useEffect(() => {
     if (isMaterialTutorial(props.tutorial)) {
