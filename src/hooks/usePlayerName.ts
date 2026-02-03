@@ -14,6 +14,6 @@ export function usePlayerName<PlayerId = any>(playerId: PlayerId): string {
   const { t: tCommon } = useTranslation('common')
   if (name) return name
   if (myId === playerId) return me?.user?.name ?? tCommon('anonymous')
-  if (isWithPlayerIdOptions(optionsSpec)) return optionsSpec.players.id.valueSpec(playerId).label(t)
+  if (playerId !== undefined && isWithPlayerIdOptions(optionsSpec)) return optionsSpec.players.id.valueSpec(playerId).label(t)
   return tCommon('Player {number}', { number: playerId })
 }
