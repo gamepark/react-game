@@ -1,5 +1,5 @@
 import { MaterialMove, MaterialRules } from '@gamepark/rules-api'
-import { ReactElement } from 'react'
+import { ReactElement, useRef } from 'react'
 import { Trans } from 'react-i18next'
 import { useLegalMoves, usePlayerId, usePlayerName, useRules } from '../../hooks'
 import { PlayMoveButton } from '../buttons'
@@ -19,9 +19,17 @@ type Props = {
 export const HeaderText = ({ code, values = {}, components = {}, moves = {}, defaults }: Props) => {
   const rules = useRules<MaterialRules>()!
   const me = usePlayerId()
-  const activePlayers = rules.activePlayers
+  const currentActivePlayers = rules.activePlayers
+  const lastActivePlayersRef = useRef<(number | string)[]>([])
+  if (currentActivePlayers.length > 0) {
+    lastActivePlayersRef.current = currentActivePlayers
+  }
+  const activePlayers = currentActivePlayers.length > 0 ? currentActivePlayers : lastActivePlayersRef.current
   const player = usePlayerName(activePlayers[0])
   const legalMoves = useLegalMoves()
+  if (activePlayers.length === 0) {
+    return null
+  }
   if (me !== undefined && activePlayers.includes(me)) {
     for (const key in moves) {
       components[key] = <PlayMoveButton move={legalMoves.find(moves[key])}/>
