@@ -68,7 +68,7 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
           )}
         </div>
       </div>
-      <button aria-label={t('Discuss')!} title={t('Discuss')!} css={[journalButtonCss]} onClick={() => setOpen(!isOpen)}>
+      <button aria-label={t('Chat')!} title={t('Chat')!} css={[journalButtonCss]} onClick={() => setOpen(!isOpen)}>
         <FontAwesomeIcon icon={isOpen ? faTimes : faCommentDots} css={iconStyle}/>
       </button>
     </>
