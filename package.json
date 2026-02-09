@@ -16,8 +16,8 @@
   "scripts": {
     "build": "tsc",
     "prepack": "yarn build",
-    "linkgp": "yarn link ../rules-api ../react-client -r",
-    "unlinkgp": "yarn unlink ../react-client ../rules-api"
+    "linkgp": "yarn link ../rules-api ../react-client -r && git update-index --skip-worktree package.json yarn.lock",
+    "unlinkgp": "git update-index --no-skip-worktree package.json yarn.lock && yarn unlink ../react-client ../rules-api"
   },
   "dependencies": {
     "@datadog/browser-logs": "^6.19.0",
