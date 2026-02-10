@@ -165,6 +165,16 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   /**
+   * This function returns the moves that should be played when long-clicking on an item.
+   * Unlike canLongClick which filters legal moves, this allows returning arbitrary moves (e.g. placing all available resources).
+   *
+   * @param _context Context of the item
+   */
+  getLongClickMoves(_context: ItemContext<P, M, L>): MaterialMove<P, M, L>[] {
+    return []
+  }
+
+  /**
    * Thickness of the item
    */
   thickness = 0.05

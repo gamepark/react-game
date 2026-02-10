@@ -107,6 +107,8 @@ const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialM
 
   const onLongClickMove = useMemo(() => {
     if (unselect || onShortClickMove) return
+    const moves = description.getLongClickMoves(itemContext)
+    if (moves.length) return () => moves.forEach(m => play(m))
     const move = findIfUnique(legalMoves, move => description.canLongClick(move, itemContext))
     if (move !== undefined) return () => play(move)
   }, [itemContext, play, legalMoves])
