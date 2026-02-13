@@ -29,15 +29,12 @@ const DynamicItemsTypeDisplay = ({ type, items, ...props }: DynamicItemsTypeDisp
   const game = useContext(gameContext).game
   const context = useMaterialContext()
   const { focus } = useFocusContext()
-  const locators = context.locators
   const { t } = useTranslation([game, 'common'])
   const description = context.material[type]
   if (!description) return null
   return <>{items.map((item, index) => {
-    const locator = locators[item.location.type]
     return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
       const itemContext: ItemContext = { ...context, type, index, displayIndex }
-      if (locator?.hide(item, itemContext)) return null
       const isFocused = focus?.materials.some(material =>
         material.type === type && material.getIndexes().includes(index)
       )

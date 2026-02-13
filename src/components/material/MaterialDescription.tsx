@@ -230,7 +230,10 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   getItemTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
     const transform = ['translate(-50%, -50%)']
     const locator = context.locators[item.location.type]
-    if (locator) transform.push(...locator.placeItem(item, context))
+    if (locator) {
+      transform.push(...locator.placeItem(item, context))
+      if (locator.hide(item, context)) transform.push('scale(0)')
+    }
     return transform
   }
 
