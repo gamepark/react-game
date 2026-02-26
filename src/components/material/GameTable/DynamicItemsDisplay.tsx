@@ -5,6 +5,7 @@ import {
   isMoveItemsAtOnce,
   isMoveItemType,
   isMoveItemTypeAtOnce,
+  ItemMove,
   MaterialItem,
   MaterialMove,
   MoveItem,
@@ -16,6 +17,7 @@ import { useTranslation } from 'react-i18next'
 import { MaterialContextRefContext, useAnimations, useLegalMoves, useMaterialContext } from '../../../hooks'
 import { ItemContext } from '../../../locators'
 import { gameContext } from '../../GameProvider'
+import { MaterialGameAnimations } from '../animations'
 import { DraggableMaterial } from '../DraggableMaterial'
 import { useFocusContext } from './focus'
 
@@ -36,7 +38,7 @@ type DynamicItemsTypeDisplayProps = {
   css?: Interpolation<Theme>
 }
 
-const DynamicItemsTypeDisplay = ({ type, items, ...props }: DynamicItemsTypeDisplayProps) => {
+const DynamicItemsTypeDisplay = ({ type, items, boundaries, ...props }: DynamicItemsTypeDisplayProps) => {
   const game = useContext(gameContext).game
   const context = useMaterialContext()
   const { focus } = useFocusContext()
@@ -48,11 +50,32 @@ const DynamicItemsTypeDisplay = ({ type, items, ...props }: DynamicItemsTypeDisp
   const contextRef = useRef(context)
   contextRef.current = context
 
-  // Collect all reveal animations for this material type
-  const revealAnimations = useAnimations<MoveItem | MoveItemsAtOnce>(animation =>
-    (isMoveItemType(type)(animation.move) && animation.move.reveal !== undefined)
-    || (isMoveItemTypeAtOnce(type)(animation.move) && animation.move.reveal !== undefined)
+  // Collect all animations (reveal + item animations are computed here to avoid per-item subscriptions)
+  const animationsConfig = useContext(gameContext).animations as MaterialGameAnimations | undefined
+  const animations = useAnimations<ItemMove>()
+  const revealAnimations = animations.filter(animation =>
+    (isMoveItemType(type)(animation.move) && (animation.move as MoveItem).reveal !== undefined)
+    || (isMoveItemTypeAtOnce(type)(animation.move) && (animation.move as MoveItemsAtOnce).reveal !== undefined)
   )
+
+  // Pre-compute item animations: build a map of animation CSS per item key
+  const itemAnimations = useRef(new Map<string, Interpolation<Theme>>())
+  itemAnimations.current.clear()
+  if (animations.length && animationsConfig) {
+    for (let index = 0; index < items.length; index++) {
+      const item = items[index]
+      for (let displayIndex = 0; displayIndex < (item.quantity ?? 1); displayIndex++) {
+        const itemContext: ItemContext = { ...context, type, index, displayIndex }
+        for (const animation of animations) {
+          const itemAnimation = animationsConfig.getItemAnimation(itemContext, animation, animation.action, boundaries)
+          if (itemAnimation) {
+            itemAnimations.current.set(`${index}_${displayIndex}`, itemAnimation)
+            break
+          }
+        }
+      }
+    }
+  }
 
   if (!description) return null
   return <MaterialContextRefContext.Provider value={contextRef}>
@@ -79,12 +102,15 @@ const DynamicItemsTypeDisplay = ({ type, items, ...props }: DynamicItemsTypeDisp
         )
         const disabled = !legalMoves.some(move => description.canDrag(move, itemContext))
         const positionDeps = locator?.getFullPositionDependencies(revealedItem.location, context)
+        const animation = itemAnimations.current.get(`${index}_${displayIndex}`)
         return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                   highlight={description.highlight(revealedItem, itemContext)}
                                   type={type} index={index} displayIndex={displayIndex} isFocused={isFocused}
                                   item={revealedItem} disabled={disabled} positionDeps={positionDeps}
                                   legalMoves={legalMoves}
+                                  animation={animation}
                                   title={description.getTooltip(revealedItem, t, itemContext) ?? undefined}
+                                  boundaries={boundaries}
                                   {...props}/>
       })
     })}
