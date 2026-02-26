@@ -62,6 +62,10 @@ export class PileLocator<P extends number = number, M extends number = number, L
     return [item.location.player, item.location.id, item.location.parent].filter(part => part !== undefined).join('_')
   }
 
+  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>) {
+    return this.countItems(location, context)
+  }
+
   getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
     const location = item.location
     const index = this.getItemIndex(item, context)

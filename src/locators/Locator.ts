@@ -106,7 +106,19 @@ export class Locator<P extends number = number, M extends number = number, L ext
   }
 
   /**
+   * This function can completely remove some items from the DOM. Unlike {@link hide}, ignored items cannot be animated.
+   * Use this for performance when items never need to animate (e.g. cards deep in a deck).
+   * @param _item The item
+   * @param _context The context of the item
+   * @returns true if the item must be removed from the DOM
+   */
+  ignore(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): boolean {
+    return false
+  }
+
+  /**
    * This function can hide some items on the game table depending on the context.
+   * Hidden items remain in the DOM with scale(0) so they can be animated.
    * @param item The item
    * @param context The context of the item
    * @returns true if the item must be hidden
@@ -222,6 +234,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
     const { rules, material } = context
     if (this.parentItemType === undefined) return undefined
     if (location.parent === undefined) return material[this.parentItemType]?.staticItem
+    if (location.parent < 0) return undefined
     return rules.material(this.parentItemType).getItem(location.parent)
   }
 
@@ -247,6 +260,51 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * Coordinates of the location on the Game Table. Use {@link getCoordinates} to provide dynamic coordinates.
    */
   coordinates: Partial<Coordinates> = { x: 0, y: 0, z: 0 }
+
+  /**
+   * Declare which parts of the game state affect the positioning of items in this location area.
+   *
+   * The returned value is compared with deep equality between renders. If it hasn't changed, the item's position
+   * is assumed unchanged and the re-render is skipped.
+   *
+   * Return `undefined` to opt out of the optimization (item always re-renders on state change).
+   *
+   * **Default**: `{}` — position only depends on the item's own location data, never on external game state.
+   *
+   * **Important**: If you override `getCoordinates()` or `getItemCoordinates()` and read from `context.rules`,
+   * you **must** also override this method to declare those dependencies. Otherwise items won't reposition when
+   * the game state changes.
+   *
+   * @param _location A location in this area
+   * @param _context Context of the game
+   * @returns A value representing the external dependencies. Compared with deep equality.
+   */
+  getPositionDependencies(_location: Location<P, L>, _context: MaterialContext<P, M, L>): unknown {
+    return {}
+  }
+
+  /**
+   * Computes the full position dependencies for an item, including the parent item's position dependencies
+   * when the item is placed on a dynamic parent (i.e. `location.parent !== undefined`).
+   *
+   * This method should not be overridden. Override {@link getPositionDependencies} instead.
+   *
+   * @param location A location in this area
+   * @param context Context of the game
+   * @returns Combined dependencies (own + parent chain). `undefined` if any locator in the chain opts out.
+   */
+  getFullPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>): unknown {
+    const own = this.getPositionDependencies(location, context)
+    if (own === undefined) return undefined
+    if (this.parentItemType === undefined || location.parent === undefined) return own
+    const parentItem = context.rules.material(this.parentItemType).getItem(location.parent)
+    if (!parentItem) return own
+    const parentLocator = context.locators[parentItem.location.type]
+    if (!parentLocator) return own
+    const parentDeps = parentLocator.getFullPositionDependencies(parentItem.location, context)
+    if (parentDeps === undefined) return undefined
+    return [own, parentDeps]
+  }
 
   /**
    * Provide the coordinates of a location on the Game Table.

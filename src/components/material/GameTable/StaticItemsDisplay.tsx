@@ -1,7 +1,8 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { GridBoundaries, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { isEqual } from 'es-toolkit'
-import { useLegalMoves, useMaterialContext } from '../../../hooks'
+import { useRef } from 'react'
+import { MaterialContextRefContext, useLegalMoves, useMaterialContext } from '../../../hooks'
 import { getLocationOriginCss } from '../../../locators'
 import { ItemMenuWrapper } from '../ItemMenuWrapper'
 import { MaterialDescription } from '../MaterialDescription'
@@ -26,11 +27,15 @@ type StaticItemsTypeDisplayProps = {
 
 const StaticItemsTypeDisplay = ({ description, ...props }: StaticItemsTypeDisplayProps) => {
   const context = useMaterialContext()
-  return <>{description.getStaticItems(context).map((item, index) => {
-    return [...Array(item.quantity ?? 1)].map((_, displayIndex) =>
-      <StaticItemDisplay key={`${index}_${displayIndex}`} description={description} index={index} displayIndex={displayIndex} item={item} {...props}/>
-    )
-  })}</>
+  const contextRef = useRef(context)
+  contextRef.current = context
+  return <MaterialContextRefContext.Provider value={contextRef}>
+    {description.getStaticItems(context).map((item, index) => {
+      return [...Array(item.quantity ?? 1)].map((_, displayIndex) =>
+        <StaticItemDisplay key={`${index}_${displayIndex}`} description={description} index={index} displayIndex={displayIndex} item={item} {...props}/>
+      )
+    })}
+  </MaterialContextRefContext.Provider>
 }
 
 type StaticItemDisplay = StaticItemsTypeDisplayProps & {

@@ -1,4 +1,5 @@
-import { Coordinates } from '@gamepark/rules-api'
+import { Coordinates, MaterialItem } from '@gamepark/rules-api'
+import { ItemContext } from './Locator'
 import { ListLocator } from './ListLocator'
 
 /**
@@ -13,4 +14,11 @@ export class DeckLocator<P extends number = number, M extends number = number, L
 
   limit? = 20
   gap: Partial<Coordinates> = { x: -0.05, y: -0.05 }
+
+  ignore(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
+    if (this.limit !== undefined && this.getItemIndex(item, context) < 0) {
+      return true
+    }
+    return super.ignore(item, context)
+  }
 }

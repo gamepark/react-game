@@ -6,7 +6,7 @@ import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
 import { mergeRefs } from 'react-merge-refs'
 import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-long-press'
 import { pointerCursorCss } from '../../../css'
-import { useDraggedItem, useMaterialContext, usePlay } from '../../../hooks'
+import { useDraggedItem, useMaterialContextRef, usePlay } from '../../../hooks'
 import { LocationFocusRef, useExpectedDropLocations, useItemLocations } from '../../../hooks/useItemLocations'
 import { combineEventListeners } from '../../../utilities'
 import { ComponentSize } from '../ComponentDescription'
@@ -29,7 +29,7 @@ type ItemDisplayProps = MaterialComponentProps & {
 export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   { type, index, displayIndex, item, dragTransform, animation, isFocused, onShortClick, onLongClick, highlight, playDown, ...props }: ItemDisplayProps, ref
 ) => {
-  const context = useMaterialContext()
+  const context = useMaterialContextRef()
   const { focus, focusRef } = useFocusContext()
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex, dragTransform }), [context, type, index, displayIndex, dragTransform])
   const locations = useItemLocations(item, itemContext)
@@ -122,7 +122,7 @@ type ItemLocationsProps = {
 }
 
 const ItemLocations = ({ locations }: ItemLocationsProps) => {
-  const context = useMaterialContext()
+  const context = useMaterialContextRef()
   return <>
     {locations.map(({ location, focusRef }) => {
       const description = context.locators[location.type]?.getLocationDescription(location, context)
@@ -134,7 +134,7 @@ const ItemLocations = ({ locations }: ItemLocationsProps) => {
 }
 
 const ItemDropLocations = ({ locations, item, type }: ItemLocationsProps & { item: MaterialItem, type: number }) => {
-  const context = useMaterialContext()
+  const context = useMaterialContextRef()
   const draggedItem = useDraggedItem()
   const draggedItemContext = { ...context, ...draggedItem }
   const expectedDropLocations = useExpectedDropLocations()

@@ -102,6 +102,10 @@ export class HandLocator<P extends number = number, M extends number = number, L
     return this.deltaZ
   }
 
+  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>) {
+    return this.countItems(location, context)
+  }
+
   /**
    * See {@link Locator.getLocationCoordinates}.
    * @param location Location to position

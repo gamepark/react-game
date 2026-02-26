@@ -65,6 +65,10 @@ export class ListLocator<P extends number = number, M extends number = number, L
     }
   }
 
+  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>) {
+    return this.countItems(location, context)
+  }
+
   /**
    * The number of items displayed in the list
    * @param location Location area of the items

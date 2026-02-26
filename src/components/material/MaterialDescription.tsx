@@ -170,8 +170,9 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * Unlike canLongClick which filters legal moves, this allows returning arbitrary moves (e.g. placing all available resources).
    *
    * @param _context Context of the item
+   * @param _legalMoves The current legal moves
    */
-  getLongClickMoves(_context: ItemContext<P, M, L>): MaterialMove<P, M, L>[] {
+  getLongClickMoves(_context: ItemContext<P, M, L>, _legalMoves: MaterialMove<P, M, L>[]): MaterialMove<P, M, L>[] {
     return []
   }
 

@@ -1,24 +1,10 @@
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
-import {
-  DisplayedItem, GridBoundaries,
-  isMoveItem,
-  isMoveItemsAtOnce,
-  isMoveItemType,
-  isMoveItemTypeAtOnce,
-  isSelectItem,
-  ItemMove,
-  MaterialItem,
-  MaterialMove,
-  MaterialRules,
-  MoveItem,
-  MoveItemsAtOnce,
-  XYCoordinates
-} from '@gamepark/rules-api'
-import { merge } from 'es-toolkit'
-import { forwardRef, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { DisplayedItem, GridBoundaries, isMoveItemsAtOnce, isSelectItem, ItemMove, MaterialItem, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
+import { isEqual } from 'es-toolkit'
+import React, { forwardRef, memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { grabbingCursor, grabCursor } from '../../css'
-import { useAnimation, useAnimations, useLegalMoves, useMaterialContext, usePlay, useRules, useUndo } from '../../hooks'
+import { useAnimations, useMaterialContextRef, usePlay, useUndo } from '../../hooks'
 import { getLocationOriginCss, ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
 import { gameContext } from '../GameProvider'
@@ -35,44 +21,54 @@ export type DraggableMaterialProps<M extends number = number> = {
   displayIndex: number
   boundaries: GridBoundaries
   isFocused?: boolean
+  item: MaterialItem
+  disabled: boolean
+  positionDeps: unknown
+  legalMoves: MaterialMove[]
 } & MaterialComponentProps<M>
 
-export const DraggableMaterial = <M extends number = number>(
-  props: DraggableMaterialProps<M>
+function arePropsEqual(prev: DraggableMaterialProps, next: DraggableMaterialProps) {
+  if (prev.type !== next.type || prev.index !== next.index || prev.displayIndex !== next.displayIndex) return false
+  // positionDeps === undefined means always recompute
+  if (next.positionDeps === undefined) return false
+  if (!isEqual(prev.positionDeps, next.positionDeps)) return false
+  if (!isEqual(prev.item, next.item)) return false
+  if (prev.disabled !== next.disabled) return false
+  if (!isEqual(prev.boundaries, next.boundaries)) return false
+  if (prev.isFocused !== next.isFocused) return false
+  if (prev.legalMoves !== next.legalMoves) return false
+  if (prev.highlight !== next.highlight) return false
+  if (prev.title !== next.title) return false
+  return true
+}
+
+export const DraggableMaterial = memo(<M extends number = number>(
+  { type, index, displayIndex, item, disabled, legalMoves, ...props }: DraggableMaterialProps<M>
 ) => {
-  const { type, index, displayIndex } = props
-  const context = useMaterialContext()
-  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
-  const legalMoves = useLegalMoves<MaterialMove>()
-  const disabled = useMemo(
-    () => !legalMoves.some(move => itemContext.material[type]!.canDrag(move, itemContext)),
-    [legalMoves, itemContext]
-  )
   const { attributes, listeners, transform, setNodeRef } = useDraggable({ id: `${type}_${index}_${displayIndex}`, data: displayedItem, disabled })
 
-  return <DraggableMaterialMemo  ref={setNodeRef} transform={transform ?? undefined} disabled={disabled} {...props} {...attributes}
-                                {...combineEventListeners(listeners ?? {}, props)}/>
-}
+  return <DraggableMaterialInner ref={setNodeRef} transform={transform ?? undefined} disabled={disabled}
+                                 type={type} index={index} displayIndex={displayIndex} item={item}
+                                 legalMoves={legalMoves}
+                                 {...props} {...attributes}
+                                 {...combineEventListeners(listeners ?? {}, props)}/>
+}, arePropsEqual) as <M extends number = number>(props: DraggableMaterialProps<M>) => React.ReactElement | null
 
-type DraggableMaterialMemoProps<M extends number = number> = DraggableMaterialProps<M> & {
+type DraggableMaterialInnerProps<M extends number = number> = DraggableMaterialProps<M> & {
   transform?: XYCoordinates
-  disabled?: boolean
 }
 
-const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialMemoProps>((
-  { highlight, type, index, displayIndex, boundaries, isFocused, transform, disabled, ...props }: DraggableMaterialMemoProps, ref
+const DraggableMaterialInner = memo(forwardRef<HTMLDivElement, DraggableMaterialInnerProps>((
+  { highlight, type, index, displayIndex, boundaries, isFocused, transform, disabled, item, legalMoves, positionDeps, ...props }: DraggableMaterialInnerProps, ref
 ) => {
-
-  const context = useMaterialContext()
+  const context = useMaterialContextRef()
   const { material, rules } = context
   const description = material[type]!
-  const item = useRevealedItem(type, index)
-  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context])
+  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context, type, index, displayIndex])
   const locator = context.locators[item.location.type]
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const play = usePlay()
-  const legalMoves = useLegalMoves<MaterialMove>()
   const [undo, canUndo] = useUndo()
   const menu = description.getItemMenu(item, itemContext, legalMoves)
   const menuAlwaysVisible = description.isMenuAlwaysVisible(item, itemContext)
@@ -107,7 +103,7 @@ const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialM
 
   const onLongClickMove = useMemo(() => {
     if (unselect || onShortClickMove) return
-    const moves = description.getLongClickMoves(itemContext)
+    const moves = description.getLongClickMoves(itemContext, legalMoves)
     if (moves.length) return () => moves.forEach(m => play(m))
     const move = findIfUnique(legalMoves, move => description.canLongClick(move, itemContext))
     if (move !== undefined) return () => play(move)
@@ -120,7 +116,6 @@ const DraggableMaterialMemo = memo(forwardRef<HTMLDivElement, DraggableMaterialM
     }
     hadMenu.current = !!menu
   }, [!menu])
-
 
   const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
   const draggedItemContext = useMemo<ItemContext | undefined>(() => draggedItem && { ...context, ...draggedItem }, [draggedItem, context])
@@ -214,24 +209,11 @@ export function dataIsDisplayedItem<M extends number = number>(data?: Record<str
   return typeof data?.type === 'number' && typeof data?.index === 'number' && typeof data?.displayIndex === 'number'
 }
 
-const useRevealedItem = <P extends number = number, M extends number = number, L extends number = number>(
-  type: M, index: number
-): MaterialItem<P, L> => {
-  const rules = useRules<MaterialRules<P, M, L>>()
-  const item = rules?.material(type).getItem(index)
-  const animation = useAnimation<MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>>(animation =>
-    (isMoveItemType(type, index)(animation.move) && animation.move.reveal !== undefined)
-    || (isMoveItemTypeAtOnce(type)(animation.move) && animation.move.reveal?.[index] !== undefined)
-  )
-  const reveal = animation ? (isMoveItem(animation.move) ? animation.move.reveal : animation.move.reveal?.[index]) : undefined
-  return useMemo(() => reveal ? merge(JSON.parse(JSON.stringify(item)), reveal) : item, [item, reveal])
-}
-
 const useItemAnimation = <P extends number = number, M extends number = number, L extends number = number>(
   displayedItem: DisplayedItem<M>, dragTransform: string, boundaries: GridBoundaries
 ): Interpolation<Theme> => {
   const { type, index } = displayedItem
-  const context = useMaterialContext<P, M, L>()
+  const context = useMaterialContextRef<P, M, L>()
   const animationsConfig = useContext(gameContext).animations as MaterialGameAnimations<P, M, L>
   const animations = useAnimations<ItemMove<P, M, L>, P>()
   const animationCache = useRef<{ move: MaterialMove<P, M, L>, itemAnimation: Interpolation<Theme> }>(undefined)
@@ -243,7 +225,6 @@ const useItemAnimation = <P extends number = number, M extends number = number, 
     const itemAnimation = animationsConfig.getItemAnimation(itemContext, animation, animation.action, boundaries)
     if (itemAnimation) {
       if (animationCache.current?.move !== animation.move) {
-        // Remember current item animation for each move so that it does not restart if the item's origin changes in between
         animationCache.current = { move: animation.move, itemAnimation }
       }
       return animationCache.current.itemAnimation
