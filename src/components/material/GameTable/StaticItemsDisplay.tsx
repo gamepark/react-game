@@ -1,8 +1,8 @@
 import { Interpolation, Theme } from '@emotion/react'
 import { GridBoundaries, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { isEqual } from 'es-toolkit'
-import { useRef } from 'react'
-import { MaterialContextRefContext, useLegalMoves, useMaterialContext } from '../../../hooks'
+import { memo, useRef } from 'react'
+import { MaterialContextRefContext, useLegalMoves, useMaterialContext, useMaterialContextRef } from '../../../hooks'
 import { getLocationOriginCss } from '../../../locators'
 import { ItemMenuWrapper } from '../ItemMenuWrapper'
 import { MaterialDescription } from '../MaterialDescription'
@@ -29,28 +29,30 @@ const StaticItemsTypeDisplay = ({ description, ...props }: StaticItemsTypeDispla
   const context = useMaterialContext()
   const contextRef = useRef(context)
   contextRef.current = context
+  const legalMoves = useLegalMoves<MaterialMove>()
   return <MaterialContextRefContext.Provider value={contextRef}>
     {description.getStaticItems(context).map((item, index) => {
       return [...Array(item.quantity ?? 1)].map((_, displayIndex) =>
-        <StaticItemDisplay key={`${index}_${displayIndex}`} description={description} index={index} displayIndex={displayIndex} item={item} {...props}/>
+        <StaticItemDisplay key={`${index}_${displayIndex}`} description={description} index={index} displayIndex={displayIndex} item={item}
+                           legalMoves={legalMoves} {...props}/>
       )
     })}
   </MaterialContextRefContext.Provider>
 }
 
-type StaticItemDisplay = StaticItemsTypeDisplayProps & {
+type StaticItemDisplayProps = StaticItemsTypeDisplayProps & {
   index: number
   displayIndex: number
   item: MaterialItem
   boundaries: GridBoundaries
+  legalMoves: MaterialMove[]
 }
 
-const StaticItemDisplay = ({ type, description, index, displayIndex, item, boundaries, ...props }: StaticItemDisplay) => {
-  const context = useMaterialContext()
+const StaticItemDisplayBase = ({ type, description, index, displayIndex, item, boundaries, legalMoves, ...props }: StaticItemDisplayProps) => {
+  const context = useMaterialContextRef()
   const locator = context.locators[item.location.type]
   const { focus } = useFocusContext()
   const isFocused = focus && getStaticItemsOfType(focus.staticItems, type).some(focusedItem => isEqual(focusedItem, item))
-  const legalMoves = useLegalMoves<MaterialMove>()
   const itemContext = { ...context, type, index, displayIndex }
   const menu = description.getItemMenu(item, itemContext, legalMoves)
   const locationOriginCss = getLocationOriginCss(boundaries, locator?.getLocationOrigin(item.location, context))
@@ -62,6 +64,15 @@ const StaticItemDisplay = ({ type, description, index, displayIndex, item, bound
     {menu && <ItemMenuWrapper item={item} itemContext={itemContext} description={description} css={locationOriginCss} {...props}>{menu}</ItemMenuWrapper>}
   </>
 }
+StaticItemDisplayBase.displayName = 'StaticItemDisplay'
+
+const StaticItemDisplay = memo(StaticItemDisplayBase, (prev, next) => {
+  if (prev.type !== next.type || prev.index !== next.index || prev.displayIndex !== next.displayIndex) return false
+  if (!isEqual(prev.item, next.item)) return false
+  if (!isEqual(prev.boundaries, next.boundaries)) return false
+  if (prev.legalMoves !== next.legalMoves) return false
+  return true
+})
 
 function getStaticItemsOfType<P extends number = number, M extends number = number, L extends number = number>(
   staticItems: StaticItem<P, M, L>[] | Partial<Record<M, MaterialItem<P, L>[]>>, type: M
