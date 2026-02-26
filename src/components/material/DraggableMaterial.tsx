@@ -4,7 +4,8 @@ import { DisplayedItem, GridBoundaries, isMoveItemsAtOnce, isSelectItem, Materia
 import { isEqual } from 'es-toolkit'
 import React, { forwardRef, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { grabbingCursor, grabCursor } from '../../css'
-import { useMaterialContextRef, usePlay, useUndo } from '../../hooks'
+import { CanUndo, UndoFunction } from '../../hooks'
+import { useMaterialContextRef, usePlay } from '../../hooks'
 import { getLocationOriginCss, ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
 import { useScale } from './GameTable'
@@ -24,6 +25,8 @@ export type DraggableMaterialProps<M extends number = number> = {
   positionDeps: unknown
   legalMoves: MaterialMove[]
   animation?: Interpolation<Theme>
+  undo: UndoFunction<MaterialMove>
+  canUndo: CanUndo<MaterialMove>
 } & MaterialComponentProps<M>
 
 function arePropsEqual(prev: DraggableMaterialProps, next: DraggableMaterialProps) {
@@ -39,11 +42,13 @@ function arePropsEqual(prev: DraggableMaterialProps, next: DraggableMaterialProp
   if (prev.highlight !== next.highlight) return false
   if (prev.title !== next.title) return false
   if (prev.animation !== next.animation) return false
+  if (prev.undo !== next.undo) return false
+  if (prev.canUndo !== next.canUndo) return false
   return true
 }
 
-export const DraggableMaterial = memo(<M extends number = number>(
-  { type, index, displayIndex, item, disabled, legalMoves, animation, ...props }: DraggableMaterialProps<M>
+const DraggableMaterialBase = <M extends number = number>(
+  { type, index, displayIndex, item, disabled, legalMoves, animation, undo, canUndo, ...props }: DraggableMaterialProps<M>
 ) => {
   const displayedItem: DisplayedItem = useMemo(() => ({ type, index, displayIndex }), [type, index, displayIndex])
   const { attributes, listeners, transform, setNodeRef } = useDraggable({ id: `${type}_${index}_${displayIndex}`, data: displayedItem, disabled })
@@ -51,16 +56,20 @@ export const DraggableMaterial = memo(<M extends number = number>(
   return <DraggableMaterialInner ref={setNodeRef} transform={transform ?? undefined} disabled={disabled}
                                  type={type} index={index} displayIndex={displayIndex} item={item}
                                  legalMoves={legalMoves} animation={animation}
+                                 undo={undo} canUndo={canUndo}
                                  {...props} {...attributes}
                                  {...combineEventListeners(listeners ?? {}, props)}/>
-}, arePropsEqual) as <M extends number = number>(props: DraggableMaterialProps<M>) => React.ReactElement | null
+}
+DraggableMaterialBase.displayName = 'DraggableMaterial'
+
+export const DraggableMaterial = memo(DraggableMaterialBase, arePropsEqual) as <M extends number = number>(props: DraggableMaterialProps<M>) => React.ReactElement | null
 
 type DraggableMaterialInnerProps<M extends number = number> = DraggableMaterialProps<M> & {
   transform?: XYCoordinates
 }
 
-const DraggableMaterialInner = memo(forwardRef<HTMLDivElement, DraggableMaterialInnerProps>((
-  { highlight, type, index, displayIndex, boundaries, isFocused, transform, disabled, item, legalMoves, positionDeps, animation: animationProp, ...props }: DraggableMaterialInnerProps, ref
+const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialInnerProps>((
+  { highlight, type, index, displayIndex, boundaries, isFocused, transform, disabled, item, legalMoves, positionDeps, animation: animationProp, undo, canUndo, ...props }: DraggableMaterialInnerProps, ref
 ) => {
   const context = useMaterialContextRef()
   const { material, rules } = context
@@ -68,7 +77,6 @@ const DraggableMaterialInner = memo(forwardRef<HTMLDivElement, DraggableMaterial
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex }), [context, type, index, displayIndex])
   const locator = context.locators[item.location.type]
   const play = usePlay()
-  const [undo, canUndo] = useUndo()
   const menu = description.getItemMenu(item, itemContext, legalMoves)
   const menuAlwaysVisible = description.isMenuAlwaysVisible(item, itemContext)
 
@@ -184,7 +192,10 @@ const DraggableMaterialInner = memo(forwardRef<HTMLDivElement, DraggableMaterial
       <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props} css={locationOriginCss}>{menu}</ItemMenuWrapper>
     }
   </>
-}))
+})
+DraggableMaterialInnerBase.displayName = 'DraggableMaterialInner'
+
+const DraggableMaterialInner = memo(DraggableMaterialInnerBase)
 
 const animationWrapperCss = css`
   transform-style: preserve-3d;

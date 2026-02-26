@@ -14,7 +14,7 @@ import {
 import { merge } from 'es-toolkit'
 import { useContext, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { MaterialContextRefContext, useAnimations, useLegalMoves, useMaterialContext } from '../../../hooks'
+import { MaterialContextRefContext, useAnimations, useLegalMoves, useMaterialContext, useUndo } from '../../../hooks'
 import { ItemContext } from '../../../locators'
 import { gameContext } from '../../GameProvider'
 import { MaterialGameAnimations } from '../animations'
@@ -45,6 +45,7 @@ const DynamicItemsTypeDisplay = ({ type, items, boundaries, ...props }: DynamicI
   const { t } = useTranslation([game, 'common'])
   const description = context.material[type]
   const legalMoves = useLegalMoves<MaterialMove>()
+  const [undo, canUndo] = useUndo<MaterialMove>()
 
   // Stable ref to the latest context — children read from this without subscribing
   const contextRef = useRef(context)
@@ -109,6 +110,7 @@ const DynamicItemsTypeDisplay = ({ type, items, boundaries, ...props }: DynamicI
                                   item={revealedItem} disabled={disabled} positionDeps={positionDeps}
                                   legalMoves={legalMoves}
                                   animation={animation}
+                                  undo={undo} canUndo={canUndo}
                                   title={description.getTooltip(revealedItem, t, itemContext) ?? undefined}
                                   boundaries={boundaries}
                                   {...props}/>
