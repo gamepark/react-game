@@ -1,7 +1,7 @@
 import { MaterialItem } from '@gamepark/rules-api'
 import { flatten, sumBy } from 'es-toolkit'
 import { values } from 'es-toolkit/compat'
-import { createContext, ReactNode, useCallback, useContext, useRef, useState } from 'react'
+import { createContext, ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
 import { useZoomToElements } from '../../../../hooks'
 import { useLocators } from '../../../../hooks/useLocators'
@@ -32,6 +32,10 @@ export function FocusProvider({ children }: { children?: ReactNode }) {
   const [focus, doSetFocus] = useState<MaterialFocus>()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
   const countFocusRef = useRef<number>(0)
+  const focusStateRef = useRef<MaterialFocus | undefined>(focus)
+  focusStateRef.current = focus
+  const zoomToElementsRef = useRef(zoomToElements)
+  zoomToElementsRef.current = zoomToElements
 
   const setFocus = useCallback((focus?: MaterialFocus, reset: boolean = true) => {
     if (!focus && reset) {
@@ -43,9 +47,10 @@ export function FocusProvider({ children }: { children?: ReactNode }) {
   }, [])
 
   const doFocus = useCallback(() => {
+    const focus = focusStateRef.current
     const elements = Array.from(focusRefs.current)
-    setTimeout(() => zoomToElements(elements, { animationTime: focus?.animationTime ?? 1000, margin: focus?.margin, scale: focus?.scale }), 50)
-  }, [zoomToElements])
+    setTimeout(() => zoomToElementsRef.current(elements, { animationTime: focus?.animationTime ?? 1000, margin: focus?.margin, scale: focus?.scale }), 50)
+  }, [])
 
   const focusRef = useCallback((ref: HTMLElement | null) => {
     if (!ref || focusRefs.current.has(ref)) return
@@ -53,10 +58,12 @@ export function FocusProvider({ children }: { children?: ReactNode }) {
     if (countFocusRef.current === focusRefs.current.size) {
       doFocus()
     }
-  }, [doFocus])
+  }, [])
+
+  const value = useMemo(() => ({ focus, setFocus, focusRef }), [focus, setFocus, focusRef])
 
   return (
-    <FocusContext.Provider value={{ focus, setFocus, focusRef }}>
+    <FocusContext.Provider value={value}>
       {children}
     </FocusContext.Provider>
   )

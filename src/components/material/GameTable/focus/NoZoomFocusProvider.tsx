@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useState } from 'react'
+import { ReactNode, useCallback, useMemo, useState } from 'react'
 import { FocusContext, FocusContextType } from './FocusProvider'
 import { MaterialFocus } from './MaterialFocus'
 
@@ -13,7 +13,7 @@ export function NoZoomFocusProvider({ children }: { children?: ReactNode }) {
     // No-op when zoom is disabled
   }, [])
 
-  const value: FocusContextType = { focus, setFocus, focusRef }
+  const value = useMemo<FocusContextType>(() => ({ focus, setFocus, focusRef }), [focus, setFocus, focusRef])
 
   return (
     <FocusContext.Provider value={value}>
