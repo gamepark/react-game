@@ -1,6 +1,6 @@
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
-import { DeleteItem, GridBoundaries, ItemMove, MoveItem } from '@gamepark/rules-api'
+import { DeleteItem, GridBoundaries, MoveItem } from '@gamepark/rules-api'
 import { defaultOrigin, getItemFromContext, getOriginDeltaPosition, ItemContext } from '../../../locators'
 import { isDroppedItem } from '../utils/isDroppedItem'
 import { getFirstStockItem, getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
@@ -36,10 +36,7 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
     const stockItem = getFirstStockItem(context)
     const stockTransforms = getFirstStockItemTransforms(context)
     if (stockItem && stockTransforms.length) {
-      const originTransforms = toSingleRotation(transformItem(context))
       const targetTransforms = toSingleRotation(stockTransforms)
-      toClosestRotations(originTransforms, targetTransforms)
-      const item = getItemFromContext(context)
       const currentOrigin = context.locators[item.location.type]?.getLocationOrigin(item.location, context) ?? defaultOrigin
       const futureOrigin = context.locators[stockItem.location.type]?.getLocationOrigin(stockItem.location, context) ?? defaultOrigin
       if (currentOrigin.x !== futureOrigin.x) {
@@ -48,6 +45,16 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
       if (currentOrigin.y !== futureOrigin.y) {
         targetTransforms.unshift(`translateY(${getOriginDeltaPosition(boundaries.yMin, boundaries.yMax, futureOrigin.y, currentOrigin.y)}em)`)
       }
+
+      // For dropped items, only specify the target keyframe (no origin) so CSS animates from the current visual position.
+      if (isDroppedItem(context)) {
+        const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
+        const description = context.material[context.type]
+        return description?.getAnimationCss(animationKeyframes, animation.duration)
+      }
+
+      const originTransforms = toSingleRotation(transformItem(context))
+      toClosestRotations(originTransforms, targetTransforms)
 
       // Check if trajectory is configured
       const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L>
@@ -70,13 +77,5 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
       `
       return css`animation: ${fadeout} ${animation.duration}s ease-in-out forwards`
     }
-  }
-
-  protected getKeyframesToDestination(destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
-    return keyframes`
-      to {
-        transform: ${destination};
-      }
-    `
   }
 }

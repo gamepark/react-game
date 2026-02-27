@@ -56,8 +56,25 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const futureDisplayIndex = (futureItem.quantity ?? 1) - (animation.move.quantity ?? 1)
     const futureContext = { ...context, rules: futureRules, index: futureIndex, displayIndex: futureDisplayIndex }
-    const currentTransforms = toSingleRotation(transformItem(context))
     const targetTransforms = toSingleRotation(description?.getItemTransform(futureItem, futureContext) ?? [])
+
+    // For dropped items, the drag transform is not available in the animation context,
+    // so we only specify the target keyframe and let CSS animate from the current visual position (the drop position).
+    if (isDroppedItem(context)) {
+      const item = getItemFromContext(context)
+      const currentOrigin = context.locators[item.location.type]?.getLocationOrigin(item.location, context) ?? defaultOrigin
+      const futureOrigin = context.locators[futureItem.location.type]?.getLocationOrigin(futureItem.location, futureContext) ?? defaultOrigin
+      if (currentOrigin.x !== futureOrigin.x) {
+        targetTransforms.unshift(`translateX(${getOriginDeltaPosition(boundaries.xMin, boundaries.xMax, futureOrigin.x, currentOrigin.x)}em)`)
+      }
+      if (currentOrigin.y !== futureOrigin.y) {
+        targetTransforms.unshift(`translateY(${getOriginDeltaPosition(boundaries.yMin, boundaries.yMax, futureOrigin.y, currentOrigin.y)}em)`)
+      }
+      const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
+      return description?.getAnimationCss(animationKeyframes, animation.duration)
+    }
+
+    const currentTransforms = toSingleRotation(transformItem(context))
     toClosestRotations(currentTransforms, targetTransforms)
     const item = getItemFromContext(context)
     const currentOrigin = context.locators[item.location.type]?.getLocationOrigin(item.location, context) ?? defaultOrigin
@@ -107,8 +124,15 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
     const futureContext = { ...context, rules: futureRules }
-    const originTransforms = transformItem(context)
     const targetTransforms = description?.getItemTransform(item, futureContext) ?? []
+
+    // For children of dropped items, only specify the target keyframe (no origin).
+    if (isDroppedItem(context)) {
+      const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
+      return description?.getAnimationCss(animationKeyframes, animation.duration)
+    }
+
+    const originTransforms = transformItem(context)
     toClosestRotations(originTransforms, targetTransforms)
 
     // Check if trajectory is configured

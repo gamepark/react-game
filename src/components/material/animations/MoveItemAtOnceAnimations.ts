@@ -51,9 +51,7 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     const futureItem = futureRules.material(type).getItem(context.index)!
     // TODO: if animation.move.quantity > 1, we will have to give a different target to each moving item. Formula bellow works only if 1 item moves
     const futureContext = { ...context, rules: futureRules, index: context.index, displayIndex: context.displayIndex }
-    const originTransforms = toSingleRotation(transformItem(context))
     const targetTransforms = toSingleRotation(description?.getItemTransform(futureItem, futureContext) ?? [])
-    toClosestRotations(originTransforms, targetTransforms)
     const item = getItemFromContext(context)
     const currentOrigin = context.locators[item.location.type]?.getLocationOrigin(item.location, context) ?? defaultOrigin
     const futureOrigin = context.locators[futureItem.location.type]?.getLocationOrigin(futureItem.location, futureContext) ?? defaultOrigin
@@ -63,6 +61,15 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     if (currentOrigin.y !== futureOrigin.y) {
       targetTransforms.unshift(`translateY(${getOriginDeltaPosition(boundaries.yMin, boundaries.yMax, futureOrigin.y, currentOrigin.y)}em)`)
     }
+
+    // For dropped items, only specify the target keyframe (no origin) so CSS animates from the current visual position.
+    if (isDroppedItem(context)) {
+      const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
+      return description?.getAnimationCss(animationKeyframes, animation.duration)
+    }
+
+    const originTransforms = toSingleRotation(transformItem(context))
+    toClosestRotations(originTransforms, targetTransforms)
 
     // Check if trajectory is configured
     const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L>
@@ -85,8 +92,15 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
     const futureContext = { ...context, rules: futureRules }
-    const originTransforms = transformItem(context)
     const targetTransforms = description?.getItemTransform(item, futureContext) ?? []
+
+    // For children of dropped items, only specify the target keyframe (no origin).
+    if (isDroppedItem(context)) {
+      const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
+      return description?.getAnimationCss(animationKeyframes, animation.duration)
+    }
+
+    const originTransforms = transformItem(context)
     toClosestRotations(originTransforms, targetTransforms)
 
     const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L>

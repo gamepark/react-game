@@ -41,6 +41,19 @@ export class ItemAnimations<P extends number = number, M extends number = number
   }
 
   /**
+   * Generate keyframes with only a destination (no origin).
+   * CSS will animate from the element's current visual state.
+   * Used for dropped items where the drag transform is not available in the animation context.
+   */
+  protected getKeyframesToDestination(destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
+    return keyframes`
+      to {
+        transform: ${destination};
+      }
+    `
+  }
+
+  /**
    * Generate keyframes with integrated elevation and optional waypoints.
    * The elevation is prepended to the transform chain so it operates in world coordinates.
    *
