@@ -102,7 +102,8 @@ const DynamicItemsTypeDisplay = ({ type, items, boundaries, ...props }: DynamicI
           material.type === type && material.getIndexes().includes(index)
         )
         const disabled = !legalMoves.some(move => description.canDrag(move, itemContext))
-        const positionDeps = locator?.getFullPositionDependencies(revealedItem.location, context)
+        const rawPositionDeps = locator?.getFullPositionDependencies(revealedItem.location, context)
+        const positionDeps = rawPositionDeps === undefined ? undefined : [rawPositionDeps, context.rules.game.view]
         const animation = itemAnimations.current.get(`${index}_${displayIndex}`)
         return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                   highlight={description.highlight(revealedItem, itemContext)}
