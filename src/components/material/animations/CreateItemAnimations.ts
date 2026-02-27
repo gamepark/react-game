@@ -132,7 +132,18 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
   isItemToAnimate(context: ItemContext<P, M, L>, animation: Animation<CreateItem<P, M, L>>): boolean {
     const { type, index, displayIndex } = context
     const key = getConsequenceIndex(animation.action)
-    const createdIndex = createdItemIndexes.get(animation.action.id)?.get(key)
+    let createdIndex = createdItemIndexes.get(animation.action.id)?.get(key)
+    // Fallback: action.id may have changed during notification reconciliation
+    // (local id "local-xxx" replaced by server-assigned id), so search all entries
+    if (createdIndex === undefined) {
+      for (const [, innerMap] of createdItemIndexes) {
+        const candidate = innerMap.get(key)
+        if (candidate !== undefined) {
+          createdIndex = candidate
+          break
+        }
+      }
+    }
     if (animation.move.itemType !== type || createdIndex !== index) return false
     const quantity = getItemFromContext(context).quantity ?? 1
     const createdQuantity = animation.move.item.quantity ?? 1
