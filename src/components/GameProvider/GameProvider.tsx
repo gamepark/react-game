@@ -62,6 +62,7 @@ if (process.env.NODE_ENV === 'production') {
   console.debug = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.debug(buildMessage(message, optionalParams), { origin: 'console' })
   console.info = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.info(buildMessage(message, optionalParams), { origin: 'console' })
   console.warn = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.warn(buildMessage(message, optionalParams), { origin: 'console' })
+  console.error = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.error(buildMessage(message, optionalParams), { origin: 'console' })
 }
 
 const globalCss = (theme: Theme) => css`
