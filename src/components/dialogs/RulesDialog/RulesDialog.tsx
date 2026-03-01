@@ -13,7 +13,7 @@ export const RulesDialog: FC<RulesDialogProps> = ({ close, children, ...props }:
   return (
     <Dialog onBackdropClick={close} css={dialogCss} {...props}>
       {close && <FontAwesomeIcon icon={faXmark} css={dialogCloseIcon} onClick={close}/>}
-      <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
+      <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss(theme.palette.onSurface, theme.palette.onSurfaceFocus, theme.palette.onSurfaceActive) })}>
         {children}
       </ThemeProvider>
     </Dialog>

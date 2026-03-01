@@ -1,38 +1,19 @@
-import { css } from '@emotion/react'
+import { useTheme } from '@emotion/react'
 import { faUserSlash } from '@fortawesome/free-solid-svg-icons/faUserSlash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
-import { menuButtonCss } from '../menuCss'
+import { menuButtonCss, paletteDangerButtonCss, paletteMenuButtonCss } from '../menuCss'
 import { useOpponentWithMaxTime } from '../../../hooks'
 
 export const EjectPlayerButton = (props: HTMLAttributes<HTMLButtonElement>) => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   return (
-    <button css={[menuButtonCss, buttonCss]} disabled={!opponentWithNegativeTime} {...props}>
+    <button css={[menuButtonCss, paletteMenuButtonCss(theme), paletteDangerButtonCss(theme)]} disabled={!opponentWithNegativeTime} {...props}>
       <FontAwesomeIcon icon={faUserSlash}/>
       {t('Eject player')}
     </button>
   )
 }
-
-const buttonCss = css`
-  color: darkred;
-  border-color: darkred;
-
-  &:focus, &:hover {
-    background: #ffd7d7;
-  }
-
-  &:active {
-    background: #ffbebe;
-  }
-
-  &:disabled {
-    color: #555555;
-    border-color: #555555;
-    background: transparent;
-    cursor: auto;
-  }
-`

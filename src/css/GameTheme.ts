@@ -6,8 +6,14 @@ addStylesheetUrl('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,30
 export interface GameTheme {
   root: RootTheme
   dialog: DialogTheme
-  buttons?: Interpolation<GameTheme>,
+  buttons?: Interpolation<GameTheme>
   dropArea?: DropAreaTheme
+  palette: PaletteTheme
+  menu?: MenuTheme
+  journal?: JournalTheme
+  result?: ResultTheme
+  header?: HeaderTheme
+  playerPanel?: PlayerPanelTheme
 }
 
 export interface DropAreaTheme {
@@ -29,6 +35,66 @@ export interface DialogTheme {
   color: string
 }
 
+export interface PaletteTheme {
+  primary: string
+  primaryHover: string
+  primaryActive: string
+  primaryLight: string
+  primaryLighter: string
+  surface: string
+  onSurface: string
+  onSurfaceFocus: string
+  onSurfaceActive: string
+  danger: string
+  dangerHover: string
+  dangerActive: string
+  disabled: string
+}
+
+export interface MenuTheme {
+  panel?: Interpolation<GameTheme>
+  button?: Interpolation<GameTheme>
+  mainButton?: Interpolation<GameTheme>
+  popButton?: Interpolation<GameTheme>
+}
+
+export interface JournalTheme {
+  tab?: Interpolation<GameTheme>
+  tabSelected?: Interpolation<GameTheme>
+  chatBar?: Interpolation<GameTheme>
+  historyEntry?: Interpolation<GameTheme>
+}
+
+export interface ResultTheme {
+  border?: string
+  icon?: string
+}
+
+export interface HeaderTheme {
+  bar?: Interpolation<GameTheme>
+  buttons?: Interpolation<GameTheme>
+}
+
+export interface PlayerPanelTheme {
+  activeRingColors?: [string, string]
+}
+
+export const defaultPalette: PaletteTheme = {
+  primary: '#28B8CE',
+  primaryHover: '#24a5b9',
+  primaryActive: '#2092a3',
+  primaryLight: '#f0fbfc',
+  primaryLighter: '#dbf5f8',
+  surface: '#F0FBFC',
+  onSurface: '#002448',
+  onSurfaceFocus: '#c2ebf1',
+  onSurfaceActive: '#ade4ec',
+  danger: 'darkred',
+  dangerHover: '#ffd7d7',
+  dangerActive: '#ffbebe',
+  disabled: '#555555'
+}
+
 export const defaultTheme: GameTheme = {
   root: {
     fontFamily: 'Mulish',
@@ -43,5 +109,6 @@ export const defaultTheme: GameTheme = {
   },
   dropArea: {
     backgroundColor: 'rgba(0, 255, 0, 0.5)'
-  }
+  },
+  palette: defaultPalette
 }

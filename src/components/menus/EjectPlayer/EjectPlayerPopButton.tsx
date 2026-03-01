@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faUserSlash } from '@fortawesome/free-solid-svg-icons/faUserSlash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { HTMLAttributes } from 'react'
@@ -8,13 +8,14 @@ import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const EjectPlayerPopButton = (props: HTMLAttributes<HTMLButtonElement>) => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const opponentWithNegativeTime = useOpponentWithMaxTime(0)
   const [, canUndo] = useUndo()
   const canUndoLastMove = canUndo()
 
   return (
     <MenuPopButton pop={opponentWithNegativeTime !== undefined} popPosition={canUndoLastMove ? 2 : 1}
-                   css={style} title={t('Eject player')!} {...props}>
+                   css={[style, dangerStyle(theme)]} title={t('Eject player')!} {...props}>
       <FontAwesomeIcon icon={faUserSlash}/>
     </MenuPopButton>
   )
@@ -30,5 +31,17 @@ const style = css`
 
   &:active {
     background: #ffbebe;
+  }
+`
+
+const dangerStyle = (theme: { palette: { danger: string; dangerHover: string; dangerActive: string } }) => css`
+  color: ${theme.palette.danger};
+
+  &:focus, &:hover {
+    background: ${theme.palette.dangerHover};
+  }
+
+  &:active {
+    background: ${theme.palette.dangerActive};
   }
 `

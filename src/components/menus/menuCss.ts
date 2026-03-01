@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, Theme } from '@emotion/react'
 import { buttonResetCss } from '../../css'
 
 export const menuDialogCss = css`
@@ -108,4 +108,65 @@ export const backdrop = css`
 export const displayBackdrop = css`
   opacity: 1;
   pointer-events: auto;
+`
+
+export const paletteMenuBaseCss = (theme: Theme) => css`
+  background: ${theme.palette.surface};
+  color: ${theme.palette.onSurface};
+  font-family: "${theme.root.fontFamily}", sans-serif;
+`
+
+export const paletteMenuButtonCss = (theme: Theme) => css`
+  border-color: ${theme.palette.onSurface};
+  color: ${theme.palette.onSurface};
+
+  &:focus, &:hover {
+    background: ${theme.palette.onSurfaceFocus};
+  }
+
+  &:active {
+    background: ${theme.palette.onSurfaceActive};
+  }
+
+  &:disabled {
+    color: ${theme.palette.disabled};
+    border-color: ${theme.palette.disabled};
+  }
+`
+
+export const paletteDangerButtonCss = (theme: Theme) => css`
+  color: ${theme.palette.danger};
+  border-color: ${theme.palette.danger};
+
+  &:focus, &:hover {
+    background: ${theme.palette.dangerHover};
+  }
+
+  &:active {
+    background: ${theme.palette.dangerActive};
+  }
+`
+
+export const palettePrimaryButtonCss = (theme: Theme) => css`
+  background: ${theme.palette.primary};
+
+  &:focus, &:hover {
+    background: ${theme.palette.primaryHover};
+  }
+
+  &:active {
+    background: ${theme.palette.primaryActive};
+  }
+`
+
+export const palettePopButtonCss = (theme: Theme) => css`
+  color: ${theme.palette.primary};
+
+  &:focus, &:hover {
+    background: ${theme.palette.primaryLight};
+  }
+
+  &:active {
+    background: ${theme.palette.primaryLighter};
+  }
 `

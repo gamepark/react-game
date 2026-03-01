@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
@@ -30,6 +30,7 @@ const gameId = query.get('game')
 
 export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const rankedPlayers = useRankedPlayers()
   const context = useContext(gameContext)
   const rules = useRules()!
@@ -37,6 +38,9 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const tournament = useGameSelector((state) => state.tournament)
   const scoringCells = useScoringHeader()
   let row = (gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1) + (scoringCells?.length ?? 0)
+
+  const borderColor = theme.result?.border ?? theme.palette.primary
+  const iconColor = theme.result?.icon ?? theme.palette.onSurface
 
   const resultText = useResultText()
   return (
@@ -64,10 +68,10 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
       </div>
       <div css={[gridCss, row > 1 ? multiRows(rankedPlayers.length, row) : singleRow(rankedPlayers.length)]}>
         {row > 1 && <div/>}
-        {gameMode === GameMode.TOURNAMENT && <div css={[borderTop, left]}>{t('Tournament')}</div>}
-        {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTop, left]}>{t('Ranking')}</div>}
+        {gameMode === GameMode.TOURNAMENT && <div css={[borderTopCss(borderColor), left]}>{t('Tournament')}</div>}
+        {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTopCss(borderColor), left]}>{t('Ranking')}</div>}
         {scoringCells.map((cell, index) => (
-          <div css={[borderTop, left]} key={index}>
+          <div css={[borderTopCss(borderColor), left]} key={index}>
             {cell}
           </div>
         ))}
@@ -77,6 +81,8 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
                          gameMode={gameMode}
                          rank={isCompetitive(rules) && player.rank <= 3 ? player.rank : undefined}
                          border={row > 1}
+                         borderColor={borderColor}
+                         iconColor={iconColor}
           />)
         }
       </div>
@@ -96,35 +102,37 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   )
 }
 
-const PlayerDisplay = ({ gameMode, playerId, rank, border }: {
+const PlayerDisplay = ({ gameMode, playerId, rank, border, borderColor, iconColor }: {
   gameMode?: GameMode,
   playerId: any,
   rank?: number,
-  border: boolean
+  border: boolean,
+  borderColor: string,
+  iconColor: string
 }) => {
   const playerName = usePlayerName(playerId)
   const tournamentPoints = useGameSelector((state) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
   const playerData = usePlayerScoring(playerId)
   return <>
-    <div css={[relative, border && borderLeft]}>
+    <div css={[relative, border && borderLeftCss(borderColor)]}>
       <div css={avatarContainer}>
         <Avatar playerId={playerId} css={avatarCss}/>
-        {rank !== undefined && <Medal rank={rank} css={medalCss}/>}
+        {rank !== undefined && <Medal rank={rank} css={medalCssFn(iconColor)}/>}
       </div>
       <span>{playerName}</span>
     </div>
     {gameMode === GameMode.TOURNAMENT &&
-      <div css={[borderLeft, borderTop, centered]}>
-        {tournamentPoints !== undefined && <><FontAwesomeIcon icon={faTrophy} css={trophyIcon}/><span>+{tournamentPoints}</span></>}
+      <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), centered]}>
+        {tournamentPoints !== undefined && <><FontAwesomeIcon icon={faTrophy} css={trophyIconCss(borderColor)}/><span>+{tournamentPoints}</span></>}
       </div>
     }
     {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) &&
-      <div css={[borderLeft, borderTop, centered]}>
+      <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), centered]}>
         <GamePoints playerId={playerId}/>
       </div>
     }
     {playerData.map((cell, index) => (
-      <div css={[borderLeft, borderTop]} key={index}>
+      <div css={[borderLeftCss(borderColor), borderTopCss(borderColor)]} key={index}>
         {cell}
       </div>
     ))}
@@ -196,10 +204,10 @@ const avatarCss = css`
   height: 3em;
 `
 
-const medalCss = css`
+const medalCssFn = (color: string) => css`
   width: 1.3em;
   height: 1.6em;
-  fill: #002448;
+  fill: ${color};
   position: absolute;
   top: -0.5em;
   left: -0.8em;
@@ -209,16 +217,16 @@ const relative = css`
   position: relative;
 `
 
-const borderLeft = css`
-  border-left: 0.1em solid #28b8ce;
+const borderLeftCss = (color: string) => css`
+  border-left: 0.1em solid ${color};
 `
 
-const borderTop = css`
-  border-top: 0.1em solid #28b8ce;
+const borderTopCss = (color: string) => css`
+  border-top: 0.1em solid ${color};
 `
 
-const trophyIcon = css`
-  color: #28b8ce;
+const trophyIconCss = (color: string) => css`
+  color: ${color};
 `
 
 const left = css`

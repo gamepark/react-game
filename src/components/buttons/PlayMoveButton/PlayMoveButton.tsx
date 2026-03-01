@@ -1,4 +1,4 @@
-import { css, ThemeProvider } from '@emotion/react'
+import { css, Theme, ThemeProvider } from '@emotion/react'
 import { PlayOptions } from '@gamepark/react-client'
 import { ButtonHTMLAttributes, FC, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -72,7 +72,7 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
     <>
       {!!confirmation && (
         <Dialog key="dialog" open={showDialog} onBackdropClick={() => setShowDialog(false)} css={[flex, confirmationDialogCss]}>
-          <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
+          <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss(theme.palette.onSurface, theme.palette.onSurfaceFocus, theme.palette.onSurfaceActive) })}>
             <div css={content}>
               <p>{confirmation.text}</p>
               <div css={buttons}>
@@ -126,14 +126,14 @@ const content = css`
   }
 `
 
-const confirmationDialogCss = css`
+const confirmationDialogCss = (theme: Theme) => css`
   position: relative;
-  background-color: #f0fbfc;
-  color: #002448;
+  background-color: ${theme.dialog.backgroundColor};
+  color: ${theme.dialog.color};
   padding: 1em;
   border-radius: 1em;
   box-shadow: 0 0 0.2em black;
-  font-family: "Mulish", sans-serif;
+  font-family: "${theme.root.fontFamily}", sans-serif;
 `
 
 const countdownCss = (countdown: number) => css`

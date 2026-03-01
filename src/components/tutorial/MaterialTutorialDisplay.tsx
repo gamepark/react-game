@@ -63,7 +63,7 @@ export const MaterialTutorialDisplay = () => {
             ]}
             backdropCss={backdropCss}>
       {popup &&
-        <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
+        <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss(theme.palette.onSurface, theme.palette.onSurfaceFocus, theme.palette.onSurfaceActive) })}>
           <div css={rules}>
             {passMove && <PlayMoveButton move={passMove} css={passButton}>{tCommon('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>}
             <p>{popup.text(t, game!)}</p>

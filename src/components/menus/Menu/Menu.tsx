@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, Theme, useTheme } from '@emotion/react'
 import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -15,7 +15,7 @@ import { LiveLogButton } from '../../Log/LiveLogButton'
 import { EjectPlayerButton, EjectPlayerDialog, EjectPlayerPopButton } from '../EjectPlayer'
 import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
 import { GiveUpButton } from '../GiveUpButton'
-import { menuBaseCss, menuFloatingButtonCss, menuFontSize } from '../menuCss'
+import { menuBaseCss, menuFloatingButtonCss, menuFontSize, paletteMenuBaseCss, palettePrimaryButtonCss } from '../menuCss'
 import { TrackPlayersQuit } from '../PlayerQuit'
 import { RestartTutorialButton } from '../RestartTutorialButton'
 import { ResultButton, ResultPopButton } from '../Result'
@@ -27,6 +27,7 @@ import { NavButton } from './NavButton'
 
 export const Menu = () => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const [isOpen, setOpen] = useState(false)
   const game = useContext(gameContext)?.game ?? ''
   const query = new URLSearchParams(window.location.search)
@@ -64,7 +65,7 @@ export const Menu = () => {
       {couldUndo && <UndoPopButton/>}
       {gameOver && <ResultPopButton onClick={() => setResultDialogOpen(true)}/>}
       {fscreen.fullscreenEnabled && <FullscreenPopButton/>}
-      <div css={[menuFontSize, menuBaseCss, menuCss, !isOpen && hide]}>
+      <div css={[menuFontSize, menuBaseCss, paletteMenuBaseCss(theme), theme.menu?.panel, menuCss, !isOpen && hide]}>
         <h2 css={titleCss}>{t('Menu')}</h2>
         {fscreen.fullscreenEnabled && <FullscreenButton/>}
         <SoundButton/>
@@ -74,7 +75,7 @@ export const Menu = () => {
         {couldEject && <EjectPlayerButton onClick={() => setEjectPlayerDialogOpen(true)}/>}
         <TimeStatsButton/>
         {gameMode === GameMode.TUTORIAL && <RestartTutorialButton/>}
-        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}`}><LogoIcon css={buttonLogoIcon}/>{t('Back to Game Park')}</NavButton>
+        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}`}><LogoIcon css={buttonLogoIconCss(theme)}/>{t('Back to Game Park')}</NavButton>
         {gameOver && <ResultButton onClick={() => setResultDialogOpen(true)}/>}
         {canPlayAgain &&
           <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}/play`}><FontAwesomeIcon icon={faChessPawn}/>{t('Play again')}</NavButton>
@@ -85,7 +86,7 @@ export const Menu = () => {
           </NavButton>
         }
       </div>
-      <button aria-label={t('Menu')!} title={t('Menu')!} css={mainButtonCss} onClick={() => setOpen(!isOpen)}>
+      <button aria-label={t('Menu')!} title={t('Menu')!} css={[mainButtonCss, palettePrimaryButtonCss(theme), theme.menu?.mainButton]} onClick={() => setOpen(!isOpen)}>
         {isOpen ? <FontAwesomeIcon icon={faTimes} css={iconStyle}/> : <LogoIcon fill="white"/>}
       </button>
       {couldEject && <EjectPlayerDialog open={ejectPlayerDialogOpen} close={() => setEjectPlayerDialogOpen(false)}/>}
@@ -153,11 +154,11 @@ const iconStyle = css`
   font-size: 1.5em;
 `
 
-const buttonLogoIcon = css`
+const buttonLogoIconCss = (theme: Theme) => css`
   width: 1em;
   height: 1em;
   margin-bottom: -0.1em;
-  fill: #28B8CE;
+  fill: ${theme.palette.primary};
 `
 
 const gamePointIconStyle = css`

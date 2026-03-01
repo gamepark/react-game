@@ -1,17 +1,19 @@
-import { css, keyframes } from '@emotion/react'
+import { css, keyframes, useTheme } from '@emotion/react'
 import { faRankingStar } from '@fortawesome/free-solid-svg-icons/faRankingStar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRules } from '../../../hooks'
+import { palettePopButtonCss } from '../menuCss'
 import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const ResultPopButton = (props: HTMLAttributes<HTMLButtonElement>) => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const gameOver = useRules()?.isOver()
 
   return (
-    <MenuPopButton pop={gameOver} css={style} title={t('result.button')!} {...props}>
+    <MenuPopButton pop={gameOver} css={[style, palettePopButtonCss(theme), theme.menu?.popButton]} title={t('result.button')!} {...props}>
       <FontAwesomeIcon icon={faRankingStar} css={shakeAnimation}/>
     </MenuPopButton>
   )

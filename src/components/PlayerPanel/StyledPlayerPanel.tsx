@@ -1,4 +1,4 @@
-import { css, Interpolation, keyframes, Theme } from '@emotion/react'
+import { css, Interpolation, keyframes, Theme, useTheme } from '@emotion/react'
 import { Player } from '@gamepark/react-client'
 import { MaterialRules } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, ReactNode, RefObject, useCallback, useRef } from 'react'
@@ -38,6 +38,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
     speak,
     ...rest
   } = props
+  const theme = useTheme()
   const { setFocus } = useFocusContext()
   const playerName = usePlayerName(player.id)
   const gameOver = useRules()?.isOver()
@@ -59,7 +60,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
       <Avatar css={avatarStyle} playerId={player.id}
               speechBubbleProps={{ direction: getSpeechBubbleDirection(panelRef), children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
-        <div css={isTurnToPlay && circle}/>
+        <div css={isTurnToPlay && circleCss(theme.playerPanel?.activeRingColors ?? ['gold', theme.palette.primary])}/>
       </div>}
       <h2 css={[nameStyle, data]}>{playerName}</h2>
       {!main && !gameOver && (
@@ -225,10 +226,10 @@ const circleAnimation = keyframes`
 `
 
 const inset = 0.8
-const circle = css`
+const circleCss = (colors: [string, string]) => css`
   background-image: linear-gradient(
-          to bottom, gold 0%,
-          rgb(40, 184, 206) 100%);
+          to bottom, ${colors[0]} 0%,
+          ${colors[1]} 100%);
   position: absolute;
   top: -${inset}em;
   bottom: -${inset}em;

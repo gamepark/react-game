@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faFlag } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameClientAPI, GameMode, useGameSelector } from '@gamepark/react-client'
@@ -6,13 +6,14 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGiveUp } from '../../../hooks'
 import { Dialog } from '../../dialogs'
-import { menuButtonCss, menuDialogCss } from '../menuCss'
+import { menuButtonCss, menuDialogCss, paletteDangerButtonCss, paletteMenuButtonCss } from '../menuCss'
 
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
 
 export const GiveUpButton = () => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const [giveUp] = useGiveUp()
   const [displayPopup, setDisplayPopup] = useState(false)
   const onGiveUp = () => {
@@ -45,9 +46,12 @@ export const GiveUpButton = () => {
     }
   }, [displayPopup])
 
+  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button]
+  const dangerButtonCss = [menuButtonCss, paletteMenuButtonCss(theme), paletteDangerButtonCss(theme)]
+
   return (
     <>
-      <button css={[menuButtonCss, buttonCss]} onClick={() => setDisplayPopup(true)}>
+      <button css={dangerButtonCss} onClick={() => setDisplayPopup(true)}>
         <FontAwesomeIcon icon={faFlag}/>
         {t('giveup')}
       </button>
@@ -56,7 +60,7 @@ export const GiveUpButton = () => {
           <h2>{t('giveup.last')}</h2>
           {gameMode === GameMode.TOURNAMENT ? <>
             <p>{t('giveup.last.choice.tournament')}</p>
-            <button css={[menuButtonCss, inDialogButton]} onClick={onClaimVictory} disabled={!displayedLongEnough}>
+            <button css={[...themedButtonCss, inDialogButton]} onClick={onClaimVictory} disabled={!displayedLongEnough}>
               {t('giveup.last.claim')}
             </button>
           </> : <>
@@ -65,13 +69,13 @@ export const GiveUpButton = () => {
               <p>{t('giveup.last.choice.competitive')}</p>
             }
             <div css={buttonLineCss}>
-              <button css={[menuButtonCss, buttonCss, inDialogButton]} onClick={onGiveUp} disabled={!displayedLongEnough}>
+              <button css={[...dangerButtonCss, inDialogButton]} onClick={onGiveUp} disabled={!displayedLongEnough}>
                 {t('giveup.last.cancel')}
               </button>
-              <button css={[menuButtonCss, inDialogButton]} onClick={() => setDisplayPopup(false)} disabled={!displayedLongEnough}>
+              <button css={[...themedButtonCss, inDialogButton]} onClick={() => setDisplayPopup(false)} disabled={!displayedLongEnough}>
                 {t('giveup.last.continue')}
               </button>
-              <button css={[menuButtonCss, inDialogButton]} onClick={onClaimVictory} disabled={!displayedLongEnough}>
+              <button css={[...themedButtonCss, inDialogButton]} onClick={onClaimVictory} disabled={!displayedLongEnough}>
                 {t('giveup.last.claim')}
               </button>
             </div>
@@ -83,8 +87,8 @@ export const GiveUpButton = () => {
           <p>{gameMode === GameMode.FRIENDLY ? t('giveup.friendly') : t('giveup.competitive')} </p>
           <p>{gameMode === GameMode.TOURNAMENT && t('giveup.tournament')}</p>
           <div css={buttonLineCss}>
-            <button css={[menuButtonCss, inDialogButton]} onClick={() => setDisplayPopup(false)} disabled={!displayedLongEnough}>{t('Cancel')}</button>
-            <button css={[menuButtonCss, buttonCss, inDialogButton]} onClick={onGiveUp} disabled={!displayedLongEnough}>
+            <button css={[...themedButtonCss, inDialogButton]} onClick={() => setDisplayPopup(false)} disabled={!displayedLongEnough}>{t('Cancel')}</button>
+            <button css={[...dangerButtonCss, inDialogButton]} onClick={onGiveUp} disabled={!displayedLongEnough}>
               <FontAwesomeIcon icon={faFlag}/>
               {t('giveup')}
             </button>
@@ -94,19 +98,6 @@ export const GiveUpButton = () => {
     </>
   )
 }
-
-const buttonCss = css`
-  color: darkred;
-  border-color: darkred;
-
-  &:focus, &:hover {
-    background: #ffd7d7;
-  }
-
-  &:active {
-    background: #ffbebe;
-  }
-`
 
 const buttonLineCss = css`
   margin-top: 1em;

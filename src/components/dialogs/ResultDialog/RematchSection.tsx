@@ -1,11 +1,11 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faRepeat } from '@fortawesome/free-solid-svg-icons/faRepeat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useRematch } from '@gamepark/react-client'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RematchDisplay } from './RematchDisplay'
-import { menuButtonCss } from '../../menus/menuCss'
+import { menuButtonCss, paletteMenuButtonCss } from '../../menus/menuCss'
 
 type Props = {
   openDialog: () => void
@@ -13,6 +13,7 @@ type Props = {
 
 export const RematchSection = ({ openDialog }: Props) => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const { game, rematch } = useRematch()
   useEffect(() => {
     if (game?.rematch) openDialog()
@@ -20,7 +21,7 @@ export const RematchSection = ({ openDialog }: Props) => {
   return (
     <div>
       {game?.canRematch &&
-        <button css={[menuButtonCss, css`display: inline-block`]} onClick={() => rematch()}>
+        <button css={[menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button, css`display: inline-block`]} onClick={() => rematch()}>
           <FontAwesomeIcon icon={faRepeat}/>
           {t('rematch.button')}
         </button>
