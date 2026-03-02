@@ -41,15 +41,12 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
     missingKeyHandler: (lngs, namespace, key, defaultValue) => {
       const locale = lngs[0]
       if (!locale || !namespace || !key) return
-      // Client-side: send to API endpoint via fetch
-      const origin = window.location.href
-      fetch(`${PLATFORM_URI}/api/translations/missing`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ locale, namespace, key, defaultValue, origin })
-      }).catch((error) => {
-        console.error('[Translation] Failed to report missing key (client):', error)
-      })
+      try {
+        const body = JSON.stringify({ locale, namespace, key, defaultValue, origin: window.location.href })
+        navigator.sendBeacon(`${PLATFORM_URI}/api/translations/missing`, new Blob([body], { type: 'application/json' }))
+      } catch (error) {
+        console.error('[Translation] Failed to report missing key:', error)
+      }
     },
     ...options
   }).catch(error => console.error(error))
