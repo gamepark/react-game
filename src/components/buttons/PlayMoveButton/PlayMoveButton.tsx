@@ -117,7 +117,7 @@ const flex = css`
 
 const content = css`
   margin: 0 1em;
-  font-size: 3em;
+  font-size: 2.4em;
   display: flex;
   flex-direction: column;
 

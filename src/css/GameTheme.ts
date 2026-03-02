@@ -14,6 +14,8 @@ export interface GameTheme {
   result?: ResultTheme
   header?: HeaderTheme
   playerPanel?: PlayerPanelTheme
+  tutorial?: TutorialTheme
+  timeStats?: TimeStatsTheme
 }
 
 export interface DropAreaTheme {
@@ -33,6 +35,10 @@ export interface BackgroundTheme {
 export interface DialogTheme {
   backgroundColor: string
   color: string
+  container?: Interpolation<GameTheme>
+  backdrop?: Interpolation<GameTheme>
+  closeIcon?: Interpolation<GameTheme>
+  content?: Interpolation<GameTheme>
 }
 
 export interface PaletteTheme {
@@ -68,6 +74,8 @@ export interface JournalTheme {
 export interface ResultTheme {
   border?: string
   icon?: string
+  container?: Interpolation<GameTheme>
+  closeIcon?: Interpolation<GameTheme>
 }
 
 export interface HeaderTheme {
@@ -77,6 +85,19 @@ export interface HeaderTheme {
 
 export interface PlayerPanelTheme {
   activeRingColors?: [string, string]
+  panel?: Interpolation<GameTheme>
+  dataBadge?: Interpolation<GameTheme>
+}
+
+export interface TutorialTheme {
+  container?: Interpolation<GameTheme>
+  content?: Interpolation<GameTheme>
+}
+
+export interface TimeStatsTheme {
+  container?: Interpolation<GameTheme>
+  thinkBackground?: string
+  waitBackground?: string
 }
 
 export const defaultPalette: PaletteTheme = {

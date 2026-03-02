@@ -1,9 +1,9 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { PLATFORM_URI, pusherClient, trpc, useMe } from '@gamepark/react-client'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { NavButton } from '../../menus/Menu/NavButton'
-import { menuButtonCss } from '../../menus/menuCss'
+import { menuButtonCss, paletteMenuButtonCss } from '../../menus/menuCss'
 
 type RematchData = {
   id: string
@@ -17,6 +17,7 @@ type Props = {
 
 export const RematchDisplay = ({ rematch }: Props) => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const me = useMe()
   const { mutate: acceptRematch } = trpc.rematch.acceptRematch.useMutation()
   const { mutate: refuseRematch } = trpc.rematch.refuseRematch.useMutation()
@@ -40,10 +41,10 @@ export const RematchDisplay = ({ rematch }: Props) => {
             t('rematch.offer', { player: rematch.players[0].name })
       }</h3>
       {player && !player.ready && <div css={css`margin-bottom: 0.5em;`}>
-        <button css={[menuButtonCss, rematchButton, declineButton]} onClick={() => refuseRematch(rematch.id)}>
+        <button css={[menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button, rematchButton, declineButton]} onClick={() => refuseRematch(rematch.id)}>
           {t('rematch.decline')}
         </button>
-        <button css={[menuButtonCss, rematchButton, acceptButton]} onClick={() => acceptRematch(rematch.id)}>
+        <button css={[menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button, rematchButton, acceptButton]} onClick={() => acceptRematch(rematch.id)}>
           {t('rematch.accept')}
         </button>
       </div>}

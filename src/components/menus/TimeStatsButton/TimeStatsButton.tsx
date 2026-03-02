@@ -22,6 +22,10 @@ export const TimeStatsButton = () => {
   const players = usePlayers()
 
   const borderColor = theme.palette.primary
+  const thinkBg = theme.timeStats?.thinkBackground ?? '#fff3e3'
+  const waitBg = theme.timeStats?.waitBackground ?? '#b3e9f0'
+  const thinkBgCss = css`background-color: ${thinkBg};`
+  const waitBgCss = css`background-color: ${waitBg};`
 
   return (
     <>
@@ -29,35 +33,35 @@ export const TimeStatsButton = () => {
         <FontAwesomeIcon icon={faClock}/>
         {t('time.button')}
       </button>
-      <Dialog open={displayPopup} css={menuDialogCss} onBackdropClick={() => setDisplayPopup(false)}>
+      <Dialog open={displayPopup} css={[menuDialogCss, theme.timeStats?.container]} onBackdropClick={() => setDisplayPopup(false)}>
         <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={() => setDisplayPopup(false)}/>
         <h2>{t('time.title')}</h2>
         <div css={gridCss(players.length)}>
           <div/>
-          <div css={[borderTopCss(borderColor), orangeBackground]}>{t('time.think.total')}</div>
-          <div css={[borderTopCss(borderColor), blueBackground]}>{t('time.wait.total')}</div>
-          <div css={[borderTopCss(borderColor), orangeBackground]}>{t('time.think.max')}</div>
-          <div css={[borderTopCss(borderColor), blueBackground]}>{t('time.wait.max')}</div>
-          <div css={[borderTopCss(borderColor), orangeBackground]}>{t('time.awaited')}</div>
+          <div css={[borderTopCss(borderColor), thinkBgCss]}>{t('time.think.total')}</div>
+          <div css={[borderTopCss(borderColor), waitBgCss]}>{t('time.wait.total')}</div>
+          <div css={[borderTopCss(borderColor), thinkBgCss]}>{t('time.think.max')}</div>
+          <div css={[borderTopCss(borderColor), waitBgCss]}>{t('time.wait.max')}</div>
+          <div css={[borderTopCss(borderColor), thinkBgCss]}>{t('time.awaited')}</div>
           {players.map((player, index) =>
             <Fragment key={index}>
               <div key={index} css={[relative, borderLeftCss(borderColor)]}>
                 <Avatar playerId={player.id} css={avatarCss} />
                 <span><PlayerName playerId={player.id}/></span>
               </div>
-              <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), orangeBackground]}>
+              <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), thinkBgCss]}>
                 {humanize(player.time?.cumulatedPlayTime)}
               </div>
-              <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), blueBackground]}>
+              <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), waitBgCss]}>
                 {humanize(player.time?.cumulatedDownTime)}
               </div>
-              <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), orangeBackground]}>
+              <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), thinkBgCss]}>
                 {humanize(player.time?.highestPlayTime)}
               </div>
-              <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), blueBackground]}>
+              <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), waitBgCss]}>
                 {humanize(player.time?.highestDownTime)}
               </div>
-              <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), orangeBackground]}>
+              <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), thinkBgCss]}>
                 {humanize(player.time?.weightedWaitForMeTime)}
               </div>
             </Fragment>
@@ -109,14 +113,6 @@ const borderLeftCss = (color: string) => css`
 
 const borderTopCss = (color: string) => css`
   border-top: 0.2em solid ${color};
-`
-
-const orangeBackground = css`
-  background-color: #fff3e3;
-`
-
-const blueBackground = css`
-  background-color: #b3e9f0;
 `
 
 const oneDay = dayjs.duration(1, 'day')

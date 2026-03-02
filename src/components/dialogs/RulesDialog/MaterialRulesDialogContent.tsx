@@ -59,6 +59,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   { helpDisplay }: MaterialRulesDialogContentProps<P, M, L>
 ) => {
   const play = usePlay()
+  const theme = useTheme()
   const context = useMaterialContext<P, M, L>()
   const description = useMaterialDescription<P, M, L>(helpDisplay.itemType)
   const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
@@ -82,7 +83,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
           return <LocationDisplay key={JSON.stringify(location)} location={location} description={locationDescription as any}/>
         })}
       </MaterialComponent>
-      <div css={helpDialogContentCss}>
+      <div css={[helpDialogContentCss, theme.dialog.content]}>
         {description.help && <description.help {...helpDisplay} closeDialog={closeDialog}/>}
       </div>
     </div>
@@ -125,7 +126,7 @@ const navigationArrow = (theme: Theme) => css`
   transform: translateY(-50%);
   background-color: ${theme.dialog.backgroundColor};
   color: ${theme.dialog.color};
-  font-size: 4em;
+  font-size: 3.2em;
   display: flex;
   align-items: center;
   border-radius: 1.4em;

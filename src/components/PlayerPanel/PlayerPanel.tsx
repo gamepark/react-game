@@ -22,7 +22,7 @@ export const PlayerPanel: FC<PlayerPanelProps> = (p) => {
   const isTurnToPlay = rules?.isTurnToPlay(playerId) ?? false
   const ringColors = theme.playerPanel?.activeRingColors ?? ['gold', theme.palette.primary]
   return (
-    <div css={panelPlayerStyle(resolvedColor, isTurnToPlay, theme.palette.primaryLight)} {...props}>
+    <div css={[panelPlayerStyle(resolvedColor, isTurnToPlay, theme.palette.primaryLight), theme.playerPanel?.panel]} {...props}>
       <Avatar css={avatarStyle} playerId={playerId}
               speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT, children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>

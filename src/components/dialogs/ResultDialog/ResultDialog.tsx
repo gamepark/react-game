@@ -44,77 +44,81 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
 
   const resultText = useResultText()
   return (
-    <Dialog onBackdropClick={close} css={style} {...props}>
-      <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={close}/>
-      <h2>{resultText}</h2>
-      <div css={buttonLine}>
-        {gameMode === GameMode.TOURNAMENT && tournament ?
-          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
-            {t('result.tournament.link')}
-          </NavButton>
-          :
-          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}`}>{t('Back to Game Park')}</NavButton>
-        }
-        {gameMode === GameMode.COMPETITIVE &&
-          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play?mode=matchmaking`}>
-            {t('Play again')}
-          </NavButton>
-        }
-        {gameMode === GameMode.COMPETITIVE &&
-          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/ranking`}>
-            {t('See overall ranking')}
-          </NavButton>
-        }
-      </div>
-      <div css={[gridCss, row > 1 ? multiRows(rankedPlayers.length, row) : singleRow(rankedPlayers.length)]}>
-        {row > 1 && <div/>}
-        {gameMode === GameMode.TOURNAMENT && <div css={[borderTopCss(borderColor), left]}>{t('Tournament')}</div>}
-        {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTopCss(borderColor), left]}>{t('Ranking')}</div>}
-        {scoringCells.map((cell, index) => (
-          <div css={[borderTopCss(borderColor), left]} key={index}>
-            {cell}
-          </div>
-        ))}
-        {rankedPlayers.map((player, index) =>
-          <PlayerDisplay key={index}
-                         playerId={player.id}
-                         gameMode={gameMode}
-                         rank={isCompetitive(rules) && player.rank <= 3 ? player.rank : undefined}
-                         border={row > 1}
-                         borderColor={borderColor}
-                         iconColor={iconColor}
-          />)
-        }
-      </div>
-      {gameMode === GameMode.TUTORIAL &&
-        <div>
-          <p css={css`white-space: break-spaces;`}>{t('tuto.over')}</p>
-          <p css={buttonsLine}>
-            <RestartTutorialButton/>
-            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`} css={css`margin-left: 1em;`}>
-              <FontAwesomeIcon icon={faChessPawn}/>{t('Play')}
+    <Dialog onBackdropClick={close} css={[style, theme.result?.container]} {...props}>
+      <FontAwesomeIcon icon={faXmark} css={[closeIcon, theme.result?.closeIcon]} onClick={close}/>
+      <div css={scrollableContent}>
+        <h2>{resultText}</h2>
+        <div css={buttonLine}>
+          {gameMode === GameMode.TOURNAMENT && tournament ?
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
+              {t('result.tournament.link')}
             </NavButton>
-          </p>
+            :
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}`}>{t('Back to Game Park')}</NavButton>
+          }
+          {gameMode === GameMode.COMPETITIVE &&
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play?mode=matchmaking`}>
+              {t('Play again')}
+            </NavButton>
+          }
+          {gameMode === GameMode.COMPETITIVE &&
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/ranking`}>
+              {t('See overall ranking')}
+            </NavButton>
+          }
         </div>
-      }
-      {gameId !== null && <RematchSection openDialog={openDialog}/>}
+        <div css={[gridCss, row > 1 ? multiRows(rankedPlayers.length, row) : singleRow(rankedPlayers.length)]}>
+          {row > 1 && <div css={stickyHeader(theme.dialog.backgroundColor)}/>}
+          {gameMode === GameMode.TOURNAMENT && <div css={[borderTopCss(borderColor), left]}>{t('Tournament')}</div>}
+          {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTopCss(borderColor), left]}>{t('Ranking')}</div>}
+          {scoringCells.map((cell, index) => (
+            <div css={[borderTopCss(borderColor), left]} key={index}>
+              {cell}
+            </div>
+          ))}
+          {rankedPlayers.map((player, index) =>
+            <PlayerDisplay key={index}
+                           playerId={player.id}
+                           gameMode={gameMode}
+                           rank={isCompetitive(rules) && player.rank <= 3 ? player.rank : undefined}
+                           border={row > 1}
+                           borderColor={borderColor}
+                           iconColor={iconColor}
+                           backgroundColor={theme.dialog.backgroundColor}
+            />)
+          }
+        </div>
+        {gameMode === GameMode.TUTORIAL &&
+          <div>
+            <p css={css`white-space: break-spaces;`}>{t('tuto.over')}</p>
+            <p css={buttonsLine}>
+              <RestartTutorialButton/>
+              <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`} css={css`margin-left: 1em;`}>
+                <FontAwesomeIcon icon={faChessPawn}/>{t('Play')}
+              </NavButton>
+            </p>
+          </div>
+        }
+        {gameId !== null && <RematchSection openDialog={openDialog}/>}
+      </div>
     </Dialog>
   )
 }
 
-const PlayerDisplay = ({ gameMode, playerId, rank, border, borderColor, iconColor }: {
+const PlayerDisplay = ({ gameMode, playerId, rank, border, borderColor, iconColor, backgroundColor }: {
   gameMode?: GameMode,
   playerId: any,
   rank?: number,
   border: boolean,
   borderColor: string,
-  iconColor: string
+  iconColor: string,
+  backgroundColor: string
 }) => {
   const playerName = usePlayerName(playerId)
   const tournamentPoints = useGameSelector((state) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
   const playerData = usePlayerScoring(playerId)
   return <>
-    <div css={[relative, border && borderLeftCss(borderColor)]}>
+    <div css={[relative, border && borderLeftCss(borderColor), stickyHeader(backgroundColor)]}>
       <div css={avatarContainer}>
         <Avatar playerId={playerId} css={avatarCss}/>
         {rank !== undefined && <Medal rank={rank} css={medalCssFn(iconColor)}/>}
@@ -146,16 +150,22 @@ const centered = css`
 `
 
 const style = css`
-  font-size: 3.2em;
+  font-size: 2.5em;
   text-align: center;
   max-height: 90vh;
   max-height: 90dvh;
-  overflow-y: auto;
-
+  display: flex;
+  flex-direction: column;
 
   > h2 {
     margin: 0 1em 0.5em;
   }
+`
+
+const scrollableContent = css`
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 `
 
 const closeIcon = css`
@@ -164,6 +174,16 @@ const closeIcon = css`
   top: 0.6em;
   font-size: 1.3em;
   cursor: pointer;
+  z-index: 1;
+`
+
+const stickyHeader = (backgroundColor: string) => css`
+  position: sticky;
+  top: 0;
+  background-color: ${backgroundColor};
+  z-index: 1;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
 `
 
 const buttonLine = css`
@@ -193,24 +213,24 @@ const singleRow = (players: number) => css`
 
 const avatarContainer = css`
   position: relative;
-  width: 3em;
-  height: 3em;
-  margin: auto auto 0.5em;
+  width: 2em;
+  height: 2em;
+  margin: auto auto 0.3em;
 `
 
 const avatarCss = css`
   position: relative;
-  width: 3em;
-  height: 3em;
+  width: 2em;
+  height: 2em;
 `
 
 const medalCssFn = (color: string) => css`
-  width: 1.3em;
-  height: 1.6em;
+  width: 0.9em;
+  height: 1.1em;
   fill: ${color};
   position: absolute;
-  top: -0.5em;
-  left: -0.8em;
+  top: -0.3em;
+  left: -0.5em;
 `
 
 const relative = css`

@@ -29,7 +29,7 @@ const speechBubbleCss = css`
   max-width: 15em;
   background: white;
   border-radius: .4em;
-  font-size: 3em;
+  font-size: 2.4em;
   padding: 0.2em 0.4em;
   margin: 0;
   z-index: 500;

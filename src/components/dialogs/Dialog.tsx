@@ -38,7 +38,7 @@ export const Dialog = ({ children, open, backdropCss, onBackdropClick, transitio
 
   return createPortal(
     <div css={[backdropStyle(transitionDelay), !open && hide(transitionDelay), backdropCss]} onClick={event => !justDisplayed && onBackdropClick?.(event)}>
-      <div onClick={event => event.stopPropagation()} css={theme => dialogCss(theme)} {...props}>
+      <div onClick={event => event.stopPropagation()} css={theme => [dialogCss(theme), theme.dialog.container]} {...props}>
         {children}
       </div>
     </div>,

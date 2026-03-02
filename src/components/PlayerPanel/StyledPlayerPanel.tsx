@@ -55,18 +55,18 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
 
   return (
     <div ref={panelRef}
-         css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !hasCounter && noCounterCss]}
+         css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !hasCounter && noCounterCss, theme.playerPanel?.panel]}
          onClick={focusPlayer} {...rest}>
       <Avatar css={avatarStyle} playerId={player.id}
               speechBubbleProps={{ direction: getSpeechBubbleDirection(panelRef), children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
         <div css={isTurnToPlay && circleCss(theme.playerPanel?.activeRingColors ?? ['gold', theme.palette.primary])}/>
       </div>}
-      <h2 css={[nameStyle, data]}>{playerName}</h2>
+      <h2 css={[nameStyle, data, theme.playerPanel?.dataBadge]}>{playerName}</h2>
       {!main && !gameOver && (
         <PlayerTimer
           playerId={player.id}
-          css={[timerStyle, data, rightAlignment]}
+          css={[timerStyle, data, theme.playerPanel?.dataBadge, rightAlignment]}
           customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
         />
       )}
@@ -76,7 +76,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
           {!gameOver && (
             <PlayerTimer
               playerId={player.id}
-              css={[timerStyle, data, rightAlignment]}
+              css={[timerStyle, data, theme.playerPanel?.dataBadge, rightAlignment]}
               customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
             />
           )}
