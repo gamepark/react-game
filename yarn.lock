@@ -460,11 +460,11 @@ __metadata:
   linkType: soft
 
 "@gamepark/rules-api@npm:^7.4.1":
-  version: 7.4.1
-  resolution: "@gamepark/rules-api@npm:7.4.1"
+  version: 7.4.2
+  resolution: "@gamepark/rules-api@npm:7.4.2"
   peerDependencies:
     es-toolkit: ^1.39.10
-  checksum: 10c0/9776509ca62937ced85133e0ba5b8211bfa434c8d974fbaa717d872b63923251391213f11d16d7c528ba83ebc74dd8d0dc6868b5514296df9609f87ca2cb75e8
+  checksum: 10c0/b96dcc5edc00b540a9c5b9d2812650ec764923cc5acc2851ddc20bb0c220c1e2127e88ddc686001dab37973d913c3b7158ae3a33210d194c3f82bf69af64b428
   languageName: node
   linkType: hard
 
