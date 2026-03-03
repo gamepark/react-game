@@ -21,7 +21,7 @@ export const RematchSection = ({ openDialog }: Props) => {
   return (
     <div>
       {game?.canRematch &&
-        <button css={[menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button, css`display: inline-block`]} onClick={() => rematch()}>
+        <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button, css`display: inline-block`]} onClick={() => rematch()}>
           <FontAwesomeIcon icon={faRepeat}/>
           {t('rematch.button')}
         </button>

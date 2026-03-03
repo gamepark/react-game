@@ -46,8 +46,8 @@ export const GiveUpButton = () => {
     }
   }, [displayPopup])
 
-  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button]
-  const dangerButtonCss = [menuButtonCss, paletteMenuButtonCss(theme), paletteDangerButtonCss(theme)]
+  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button]
+  const dangerButtonCss = [menuButtonCss, paletteMenuButtonCss, paletteDangerButtonCss]
 
   return (
     <>

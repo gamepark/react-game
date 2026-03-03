@@ -13,7 +13,7 @@ export const ResultPopButton = (props: HTMLAttributes<HTMLButtonElement>) => {
   const gameOver = useRules()?.isOver()
 
   return (
-    <MenuPopButton pop={gameOver} css={[style, palettePopButtonCss(theme), theme.menu?.popButton]} title={t('result.button')!} {...props}>
+    <MenuPopButton pop={gameOver} css={[style, palettePopButtonCss, theme.menu?.popButton]} title={t('result.button')!} {...props}>
       <FontAwesomeIcon icon={faRankingStar} css={shakeAnimation}/>
     </MenuPopButton>
   )

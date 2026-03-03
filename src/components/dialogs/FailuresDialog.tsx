@@ -20,7 +20,7 @@ export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
     }
   }, [failures])
   const description = failuresDescription[displayedFailure] || fallbackDescription(displayedFailure)
-  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button]
+  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button]
   return (
     <Dialog open={failures.length > 0} css={menuDialogCss} {...props}>
       <h2>{description.title(t)}</h2>

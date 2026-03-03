@@ -33,6 +33,6 @@ const TrackPlayerQuit = ({ player }: { player: Player }) => {
         : t('quit.player', { player: playerName })
     )
     }</p>
-    <button css={[menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button]} onClick={() => setOpen(false)}>{t('OK')}</button>
+    <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button]} onClick={() => setOpen(false)}>{t('OK')}</button>
   </Dialog>
 }

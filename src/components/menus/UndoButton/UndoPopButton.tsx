@@ -13,7 +13,7 @@ export const UndoPopButton = () => {
   const canUndoLastMove = canUndo()
 
   return (
-    <MenuPopButton pop={canUndoLastMove} onClick={() => undo()} css={[style, palettePopButtonCss(theme), theme.menu?.popButton]} title={t('Undo my last move')!}>
+    <MenuPopButton pop={canUndoLastMove} onClick={() => undo()} css={[style, palettePopButtonCss, theme.menu?.popButton]} title={t('Undo my last move')!}>
       <FontAwesomeIcon icon={faUndoAlt}/>
     </MenuPopButton>
   )

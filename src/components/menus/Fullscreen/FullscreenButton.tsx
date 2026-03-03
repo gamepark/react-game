@@ -12,7 +12,7 @@ export const FullscreenButton = () => {
   const { fullscreen, toggleFullscreen } = useFullscreen()
 
   return (
-    <button css={[menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button]} onClick={toggleFullscreen}>
+    <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button]} onClick={toggleFullscreen}>
       <FontAwesomeIcon icon={fullscreen ? faCompress : faExpand}/>
       {fullscreen ? t('Leave full screen') : t('Go to full screen')}
     </button>

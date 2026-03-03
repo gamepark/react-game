@@ -39,9 +39,6 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const scoringCells = useScoringHeader()
   let row = (gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1) + (scoringCells?.length ?? 0)
 
-  const borderColor = theme.result?.border ?? theme.palette.primary
-  const iconColor = theme.result?.icon ?? theme.palette.onSurface
-
   const resultText = useResultText()
   return (
     <Dialog onBackdropClick={close} css={[style, theme.result?.container]} {...props}>
@@ -68,11 +65,11 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
           }
         </div>
         <div css={[gridCss, row > 1 ? multiRows(rankedPlayers.length, row) : singleRow(rankedPlayers.length)]}>
-          {row > 1 && <div css={stickyHeader(theme.dialog.backgroundColor)}/>}
-          {gameMode === GameMode.TOURNAMENT && <div css={[borderTopCss(borderColor), left]}>{t('Tournament')}</div>}
-          {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTopCss(borderColor), left]}>{t('Ranking')}</div>}
+          {row > 1 && <div css={stickyHeader}/>}
+          {gameMode === GameMode.TOURNAMENT && <div css={[borderTopCss, left]}>{t('Tournament')}</div>}
+          {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTopCss, left]}>{t('Ranking')}</div>}
           {scoringCells.map((cell, index) => (
-            <div css={[borderTopCss(borderColor), left]} key={index}>
+            <div css={[borderTopCss, left]} key={index}>
               {cell}
             </div>
           ))}
@@ -82,9 +79,6 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
                            gameMode={gameMode}
                            rank={isCompetitive(rules) && player.rank <= 3 ? player.rank : undefined}
                            border={row > 1}
-                           borderColor={borderColor}
-                           iconColor={iconColor}
-                           backgroundColor={theme.dialog.backgroundColor}
             />)
           }
         </div>
@@ -105,38 +99,35 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   )
 }
 
-const PlayerDisplay = ({ gameMode, playerId, rank, border, borderColor, iconColor, backgroundColor }: {
+const PlayerDisplay = ({ gameMode, playerId, rank, border }: {
   gameMode?: GameMode,
   playerId: any,
   rank?: number,
-  border: boolean,
-  borderColor: string,
-  iconColor: string,
-  backgroundColor: string
+  border: boolean
 }) => {
   const playerName = usePlayerName(playerId)
   const tournamentPoints = useGameSelector((state) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
   const playerData = usePlayerScoring(playerId)
   return <>
-    <div css={[relative, border && borderLeftCss(borderColor), stickyHeader(backgroundColor)]}>
+    <div css={[relative, border && borderLeftCss, stickyHeader]}>
       <div css={avatarContainer}>
         <Avatar playerId={playerId} css={avatarCss}/>
-        {rank !== undefined && <Medal rank={rank} css={medalCssFn(iconColor)}/>}
+        {rank !== undefined && <Medal rank={rank} css={medalCss}/>}
       </div>
       <span>{playerName}</span>
     </div>
     {gameMode === GameMode.TOURNAMENT &&
-      <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), centered]}>
-        {tournamentPoints !== undefined && <><FontAwesomeIcon icon={faTrophy} css={trophyIconCss(borderColor)}/><span>+{tournamentPoints}</span></>}
+      <div css={[borderLeftCss, borderTopCss, centered]}>
+        {tournamentPoints !== undefined && <><FontAwesomeIcon icon={faTrophy} css={trophyIconCss}/><span>+{tournamentPoints}</span></>}
       </div>
     }
     {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) &&
-      <div css={[borderLeftCss(borderColor), borderTopCss(borderColor), centered]}>
+      <div css={[borderLeftCss, borderTopCss, centered]}>
         <GamePoints playerId={playerId}/>
       </div>
     }
     {playerData.map((cell, index) => (
-      <div css={[borderLeftCss(borderColor), borderTopCss(borderColor)]} key={index}>
+      <div css={[borderLeftCss, borderTopCss]} key={index}>
         {cell}
       </div>
     ))}
@@ -177,10 +168,10 @@ const closeIcon = css`
   z-index: 1;
 `
 
-const stickyHeader = (backgroundColor: string) => css`
+const stickyHeader = css`
   position: sticky;
   top: 0;
-  background-color: ${backgroundColor};
+  background-color: var(--gp-dialog-bg);
   z-index: 1;
   padding-top: 0.3em;
   padding-bottom: 0.3em;
@@ -224,10 +215,10 @@ const avatarCss = css`
   height: 2em;
 `
 
-const medalCssFn = (color: string) => css`
+const medalCss = css`
   width: 0.9em;
   height: 1.1em;
-  fill: ${color};
+  fill: var(--gp-result-icon);
   position: absolute;
   top: -0.3em;
   left: -0.5em;
@@ -237,16 +228,16 @@ const relative = css`
   position: relative;
 `
 
-const borderLeftCss = (color: string) => css`
-  border-left: 0.1em solid ${color};
+const borderLeftCss = css`
+  border-left: 0.1em solid var(--gp-result-border);
 `
 
-const borderTopCss = (color: string) => css`
-  border-top: 0.1em solid ${color};
+const borderTopCss = css`
+  border-top: 0.1em solid var(--gp-result-border);
 `
 
-const trophyIconCss = (color: string) => css`
-  color: ${color};
+const trophyIconCss = css`
+  color: var(--gp-result-border);
 `
 
 const left = css`

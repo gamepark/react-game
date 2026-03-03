@@ -1,4 +1,4 @@
-import { css, Theme, useTheme } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { faTimes } from '@fortawesome/free-solid-svg-icons/faTimes'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -65,7 +65,7 @@ export const Menu = () => {
       {couldUndo && <UndoPopButton/>}
       {gameOver && <ResultPopButton onClick={() => setResultDialogOpen(true)}/>}
       {fscreen.fullscreenEnabled && <FullscreenPopButton/>}
-      <div css={[menuFontSize, menuBaseCss, paletteMenuBaseCss(theme), theme.menu?.panel, menuCss, !isOpen && hide]}>
+      <div css={[menuFontSize, menuBaseCss, paletteMenuBaseCss, theme.menu?.panel, menuCss, !isOpen && hide]}>
         <h2 css={titleCss}>{t('Menu')}</h2>
         {fscreen.fullscreenEnabled && <FullscreenButton/>}
         <SoundButton/>
@@ -75,7 +75,7 @@ export const Menu = () => {
         {couldEject && <EjectPlayerButton onClick={() => setEjectPlayerDialogOpen(true)}/>}
         <TimeStatsButton/>
         {gameMode === GameMode.TUTORIAL && <RestartTutorialButton/>}
-        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}`}><LogoIcon css={buttonLogoIconCss(theme)}/>{t('Back to Game Park')}</NavButton>
+        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}`}><LogoIcon css={buttonLogoIconCss}/>{t('Back to Game Park')}</NavButton>
         {gameOver && <ResultButton onClick={() => setResultDialogOpen(true)}/>}
         {canPlayAgain &&
           <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}/play`}><FontAwesomeIcon icon={faChessPawn}/>{t('Play again')}</NavButton>
@@ -86,7 +86,7 @@ export const Menu = () => {
           </NavButton>
         }
       </div>
-      <button aria-label={t('Menu')!} title={t('Menu')!} css={[mainButtonCss, palettePrimaryButtonCss(theme), theme.menu?.mainButton]} onClick={() => setOpen(!isOpen)}>
+      <button aria-label={t('Menu')!} title={t('Menu')!} css={[mainButtonCss, palettePrimaryButtonCss, theme.menu?.mainButton]} onClick={() => setOpen(!isOpen)}>
         {isOpen ? <FontAwesomeIcon icon={faTimes} css={iconStyle}/> : <LogoIcon fill="white"/>}
       </button>
       {couldEject && <EjectPlayerDialog open={ejectPlayerDialogOpen} close={() => setEjectPlayerDialogOpen(false)}/>}
@@ -154,11 +154,11 @@ const iconStyle = css`
   font-size: 1.5em;
 `
 
-const buttonLogoIconCss = (theme: Theme) => css`
+const buttonLogoIconCss = css`
   width: 1em;
   height: 1em;
   margin-bottom: -0.1em;
-  fill: ${theme.palette.primary};
+  fill: var(--gp-primary);
 `
 
 const gamePointIconStyle = css`

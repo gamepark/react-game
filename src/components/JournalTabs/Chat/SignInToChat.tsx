@@ -1,17 +1,16 @@
-import { css, useTheme } from '@emotion/react'
+import { css } from '@emotion/react'
 import { PLATFORM_URI } from '@gamepark/react-client'
 import { useTranslation } from 'react-i18next'
 import { buttonResetCss } from '../../../css'
 
 export const SignInToChat = () => {
   const { t } = useTranslation('common')
-  const theme = useTheme()
   const query = new URLSearchParams(window.location.search)
   const locale = query.get('locale') || 'en'
   return (
     <div css={style}>
       <p css={textCss}>{t('sign-in-to-chat')}</p>
-      <button css={[buttonResetCss, signInButtonCss, signInPaletteCss(theme.palette.onSurface, theme.palette.onSurfaceFocus, theme.palette.onSurfaceActive)]}
+      <button css={[buttonResetCss, signInButtonCss, signInPaletteCss]}
               onClick={() => window.location.href = `${PLATFORM_URI}/${locale}/auth/sign-in?callbackUrl=${encodeURIComponent(window.location.href)}`}>
         {t('Sign in')}
       </button>
@@ -48,15 +47,15 @@ const signInButtonCss = css`
   }
 `
 
-const signInPaletteCss = (color: string, focus: string, active: string) => css`
-  border-color: ${color};
-  color: ${color};
+const signInPaletteCss = css`
+  border-color: var(--gp-on-surface);
+  color: var(--gp-on-surface);
 
   &:focus, &:hover {
-    background: ${focus};
+    background: var(--gp-on-surface-focus);
   }
 
   &:active {
-    background: ${active};
+    background: var(--gp-on-surface-active);
   }
 `

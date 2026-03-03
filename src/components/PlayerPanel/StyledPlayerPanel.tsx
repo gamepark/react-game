@@ -60,7 +60,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
       <Avatar css={avatarStyle} playerId={player.id}
               speechBubbleProps={{ direction: getSpeechBubbleDirection(panelRef), children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
-        <div css={isTurnToPlay && circleCss(theme.playerPanel?.activeRingColors ?? ['gold', theme.palette.primary])}/>
+        <div css={isTurnToPlay && circleCss}/>
       </div>}
       <h2 css={[nameStyle, data, theme.playerPanel?.dataBadge]}>{playerName}</h2>
       {!main && !gameOver && (
@@ -226,10 +226,10 @@ const circleAnimation = keyframes`
 `
 
 const inset = 0.8
-const circleCss = (colors: [string, string]) => css`
+const circleCss = css`
   background-image: linear-gradient(
-          to bottom, ${colors[0]} 0%,
-          ${colors[1]} 100%);
+          to bottom, var(--gp-ring-color-1) 0%,
+          var(--gp-ring-color-2) 100%);
   position: absolute;
   top: -${inset}em;
   bottom: -${inset}em;

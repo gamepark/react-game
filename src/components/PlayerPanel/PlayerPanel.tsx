@@ -16,17 +16,16 @@ export type PlayerPanelProps<PlayerId extends number = number> = {
 export const PlayerPanel: FC<PlayerPanelProps> = (p) => {
   const { playerId, activeRing, color, children, speak, ...props } = p
   const theme = useTheme()
-  const resolvedColor = color ?? theme.palette.primary
+  const resolvedColor = color ?? 'var(--gp-primary)'
   const playerName = usePlayerName(playerId)
   const rules = useRules<MaterialRules>()
   const isTurnToPlay = rules?.isTurnToPlay(playerId) ?? false
-  const ringColors = theme.playerPanel?.activeRingColors ?? ['gold', theme.palette.primary]
   return (
-    <div css={[panelPlayerStyle(resolvedColor, isTurnToPlay, theme.palette.primaryLight), theme.playerPanel?.panel]} {...props}>
+    <div css={[panelPlayerStyle(resolvedColor, isTurnToPlay), theme.playerPanel?.panel]} {...props}>
       <Avatar css={avatarStyle} playerId={playerId}
               speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT, children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
-        <div css={isTurnToPlay && circleCss(ringColors)}/>
+        <div css={isTurnToPlay && circleCss}/>
       </div>}
       <h2 css={nameStyle}>{playerName}</h2>
       {!rules?.isOver() && <PlayerTimer playerId={playerId} css={timerStyle}/>}
@@ -36,8 +35,8 @@ export const PlayerPanel: FC<PlayerPanelProps> = (p) => {
   )
 }
 
-const panelPlayerStyle = (color: string, active?: boolean, activeBackground?: string) => css`
-  background-color: ${active ? (activeBackground ?? '#f0fbfc') : '#dddddd'};
+const panelPlayerStyle = (color: string, active?: boolean) => css`
+  background-color: ${active ? 'var(--gp-primary-light)' : '#dddddd'};
   color: black;
   border: 0.5em solid ${color};
   border-radius: 3em 1.5em 1.5em 1.5em;
@@ -76,10 +75,10 @@ const circleAnimation = keyframes`
 `
 
 const inset = 0.8
-const circleCss = (colors: [string, string]) => css`
+const circleCss = css`
   background-image: linear-gradient(
-          to bottom, ${colors[0]} 0%,
-          ${colors[1]} 100%);
+          to bottom, var(--gp-ring-color-1) 0%,
+          var(--gp-ring-color-2) 100%);
   position: absolute;
   top: -${inset}em;
   bottom: -${inset}em;

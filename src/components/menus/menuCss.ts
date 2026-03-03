@@ -1,4 +1,4 @@
-import { css, Theme } from '@emotion/react'
+import { css } from '@emotion/react'
 import { buttonResetCss } from '../../css'
 
 export const menuDialogCss = css`
@@ -110,63 +110,63 @@ export const displayBackdrop = css`
   pointer-events: auto;
 `
 
-export const paletteMenuBaseCss = (theme: Theme) => css`
-  background: ${theme.palette.surface};
-  color: ${theme.palette.onSurface};
-  font-family: "${theme.root.fontFamily}", sans-serif;
+export const paletteMenuBaseCss = css`
+  background: var(--gp-surface);
+  color: var(--gp-on-surface);
+  font-family: var(--gp-font-family);
 `
 
-export const paletteMenuButtonCss = (theme: Theme) => css`
-  border-color: ${theme.palette.onSurface};
-  color: ${theme.palette.onSurface};
+export const paletteMenuButtonCss = css`
+  border-color: var(--gp-on-surface);
+  color: var(--gp-on-surface);
 
   &:focus, &:hover {
-    background: ${theme.palette.onSurfaceFocus};
+    background: var(--gp-on-surface-focus);
   }
 
   &:active {
-    background: ${theme.palette.onSurfaceActive};
+    background: var(--gp-on-surface-active);
   }
 
   &:disabled {
-    color: ${theme.palette.disabled};
-    border-color: ${theme.palette.disabled};
+    color: var(--gp-disabled);
+    border-color: var(--gp-disabled);
   }
 `
 
-export const paletteDangerButtonCss = (theme: Theme) => css`
-  color: ${theme.palette.danger};
-  border-color: ${theme.palette.danger};
+export const paletteDangerButtonCss = css`
+  color: var(--gp-danger);
+  border-color: var(--gp-danger);
 
   &:focus, &:hover {
-    background: ${theme.palette.dangerHover};
+    background: var(--gp-danger-hover);
   }
 
   &:active {
-    background: ${theme.palette.dangerActive};
+    background: var(--gp-danger-active);
   }
 `
 
-export const palettePrimaryButtonCss = (theme: Theme) => css`
-  background: ${theme.palette.primary};
+export const palettePrimaryButtonCss = css`
+  background: var(--gp-primary);
 
   &:focus, &:hover {
-    background: ${theme.palette.primaryHover};
+    background: var(--gp-primary-hover);
   }
 
   &:active {
-    background: ${theme.palette.primaryActive};
+    background: var(--gp-primary-active);
   }
 `
 
-export const palettePopButtonCss = (theme: Theme) => css`
-  color: ${theme.palette.primary};
+export const palettePopButtonCss = css`
+  color: var(--gp-primary);
 
   &:focus, &:hover {
-    background: ${theme.palette.primaryLight};
+    background: var(--gp-primary-light);
   }
 
   &:active {
-    background: ${theme.palette.primaryLighter};
+    background: var(--gp-primary-lighter);
   }
 `

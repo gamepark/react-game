@@ -13,6 +13,8 @@ import { hide, menuBaseCss, menuFloatingButtonCss, menuFontSize, paletteMenuBase
 import { Chat } from './Chat'
 import { History } from './History'
 
+// Note: local "tabButtonCss" to avoid naming conflict with imported buttonCss from css/
+
 export type JournalTabsProps = {
   gameId?: string
 }
@@ -44,19 +46,17 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
   const isChatOpened = isOpen && tab === JournalTab.CHAT
   const isLogOpened = isOpen && tab === JournalTab.LOG
 
-  const primary = theme.palette.primary
-
   return (
     <>
       <div css={[backdrop, isOpen && displayBackdrop]} onClick={() => setOpen(false)}/>
-      <div css={[menuFontSize, menuBaseCss, paletteMenuBaseCss(theme), theme.menu?.panel, journalMenu, !isOpen && hide]}>
+      <div css={[menuFontSize, menuBaseCss, paletteMenuBaseCss, theme.menu?.panel, journalMenu, !isOpen && hide]}>
         <div css={buttonContainer}>
           {chatEnabled && logEnabled && (
             <>
-              <button css={[buttonCss(primary), chatButton, isChatOpened && selectedCss(primary), theme.journal?.tab, isChatOpened && theme.journal?.tabSelected]} disabled={tab === JournalTab.CHAT} onClick={() => setTab(JournalTab.CHAT)}>
+              <button css={[tabButtonCss, chatButton, isChatOpened && selectedCss, theme.journal?.tab, isChatOpened && theme.journal?.tabSelected]} disabled={tab === JournalTab.CHAT} onClick={() => setTab(JournalTab.CHAT)}>
                 <div>{t('Chat')}</div>
               </button>
-              <button css={[buttonCss(primary), logButton, isLogOpened && selectedCss(primary), theme.journal?.tab, isLogOpened && theme.journal?.tabSelected]} disabled={tab === JournalTab.LOG} onClick={() => setTab(JournalTab.LOG)}>
+              <button css={[tabButtonCss, logButton, isLogOpened && selectedCss, theme.journal?.tab, isLogOpened && theme.journal?.tabSelected]} disabled={tab === JournalTab.LOG} onClick={() => setTab(JournalTab.LOG)}>
                 <div>{t('History')}</div>
               </button>
             </>
@@ -71,7 +71,7 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
           )}
         </div>
       </div>
-      <button aria-label={t('Chat')!} title={t('Chat')!} css={[journalButtonCss, palettePrimaryButtonCss(theme), theme.menu?.mainButton]} onClick={() => setOpen(!isOpen)}>
+      <button aria-label={t('Chat')!} title={t('Chat')!} css={[journalButtonCss, palettePrimaryButtonCss, theme.menu?.mainButton]} onClick={() => setOpen(!isOpen)}>
         <FontAwesomeIcon icon={isOpen ? faTimes : faCommentDots} css={iconStyle}/>
       </button>
     </>
@@ -104,9 +104,9 @@ const flexEnd = css`
   justify-content: flex-end;
 `
 
-const buttonCss = (primary: string) => css`
+const tabButtonCss = css`
   flex: 1;
-  border: 0.01em solid ${primary};
+  border: 0.01em solid var(--gp-primary);
   color: black;
   cursor: pointer;
   background: white;
@@ -114,8 +114,8 @@ const buttonCss = (primary: string) => css`
   font-size: 0.7em;
 `
 
-const selectedCss = (primary: string) => css`
-  background: ${primary};
+const selectedCss = css`
+  background: var(--gp-primary);
   color: white;
 `
 

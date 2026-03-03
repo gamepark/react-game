@@ -41,10 +41,10 @@ export const RematchDisplay = ({ rematch }: Props) => {
             t('rematch.offer', { player: rematch.players[0].name })
       }</h3>
       {player && !player.ready && <div css={css`margin-bottom: 0.5em;`}>
-        <button css={[menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button, rematchButton, declineButton]} onClick={() => refuseRematch(rematch.id)}>
+        <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button, rematchButton, declineButton]} onClick={() => refuseRematch(rematch.id)}>
           {t('rematch.decline')}
         </button>
-        <button css={[menuButtonCss, paletteMenuButtonCss(theme), theme.menu?.button, rematchButton, acceptButton]} onClick={() => acceptRematch(rematch.id)}>
+        <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button, rematchButton, acceptButton]} onClick={() => acceptRematch(rematch.id)}>
           {t('rematch.accept')}
         </button>
       </div>}

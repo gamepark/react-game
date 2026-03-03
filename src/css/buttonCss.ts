@@ -35,6 +35,32 @@ export const buttonCss = (color: string, focus: string, active: string) => css`
   }
 `
 
+export const onSurfaceButtonCss = css`
+  ${buttonResetCss};
+
+  padding: 0.2em 0.5em;
+  border-radius: 2em;
+  border: 0.05em solid var(--gp-on-surface);
+  color: var(--gp-on-surface);
+  background: transparent;
+
+  &:focus, &:hover {
+    background: var(--gp-on-surface-focus);
+  }
+
+  &:active {
+    background: var(--gp-on-surface-active);
+  }
+
+  &:disabled {
+    color: #555555;
+    border-color: #555555;
+    background: transparent;
+    cursor: auto;
+    opacity: 0.5;
+  }
+`
+
 export const linkButtonCss = css`
   ${buttonResetCss};
 

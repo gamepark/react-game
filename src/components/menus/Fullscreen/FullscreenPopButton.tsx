@@ -20,7 +20,7 @@ export const FullscreenPopButton = () => {
   const { fullscreen, toggleFullscreen } = useFullscreen()
 
   return (
-    <MenuPopButton pop={pop} onClick={toggleFullscreen} css={[style, palettePopButtonCss(theme), theme.menu?.popButton]} title={fullscreen ? t('Leave full screen')! : t('Go to full screen')!}>
+    <MenuPopButton pop={pop} onClick={toggleFullscreen} css={[style, palettePopButtonCss, theme.menu?.popButton]} title={fullscreen ? t('Leave full screen')! : t('Go to full screen')!}>
       <FontAwesomeIcon icon={fullscreen ? faCompress : faExpand}/>
     </MenuPopButton>
   )

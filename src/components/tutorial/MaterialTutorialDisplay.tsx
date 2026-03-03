@@ -9,7 +9,7 @@ import { isCloseTutorialPopup, isSetTutorialStep, SetTutorialStep } from '@gamep
 import { maxBy, minBy } from 'es-toolkit'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { buttonCss, transformCss } from '../../css'
+import { onSurfaceButtonCss, transformCss } from '../../css'
 import { useLegalMove, useLegalMoves, useMaterialContext, useUndo } from '../../hooks'
 import { useTutorialStep } from '../../hooks/useTutorialStep'
 import { PlayMoveButton, ThemeButton } from '../buttons'
@@ -66,7 +66,7 @@ export const MaterialTutorialDisplay = () => {
             ]}
             backdropCss={backdropCss}>
       {popup &&
-        <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss(theme.palette.onSurface, theme.palette.onSurfaceFocus, theme.palette.onSurfaceActive) })}>
+        <ThemeProvider theme={theme => ({ ...theme, buttons: onSurfaceButtonCss })}>
           <div css={[rules, theme.tutorial?.content]}>
             {passMove && <PlayMoveButton move={passMove} css={passButton}>{tCommon('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>}
             <p>{popup.text(t, game!)}</p>

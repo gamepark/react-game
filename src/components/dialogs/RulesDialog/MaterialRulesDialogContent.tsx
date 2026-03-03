@@ -1,4 +1,4 @@
-import { css, keyframes, Theme, useTheme } from '@emotion/react'
+import { css, keyframes, useTheme } from '@emotion/react'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -98,9 +98,8 @@ type NextArrowProps = {
 }
 const NextArrow: FC<NextArrowProps> = (props) => {
   const { onNext } = props
-  const theme = useTheme()
   return (
-    <div tabIndex={2} css={[navigationArrow(theme), nextArrow]} onClick={onNext}>
+    <div tabIndex={2} css={[navigationArrow, nextArrow]} onClick={onNext}>
       <FontAwesomeIcon icon={faChevronRight}/>
     </div>
   )
@@ -111,21 +110,20 @@ type PreviousArrowProps = {
 }
 const PreviousArrow: FC<PreviousArrowProps> = (props) => {
   const { onPrevious } = props
-  const theme = useTheme()
   return (
-    <div tabIndex={1} css={[navigationArrow(theme), previousArrow]} onClick={onPrevious}>
+    <div tabIndex={1} css={[navigationArrow, previousArrow]} onClick={onPrevious}>
       <FontAwesomeIcon icon={faChevronLeft}/>
     </div>
   )
 }
 
-const navigationArrow = (theme: Theme) => css`
+const navigationArrow = css`
   position: absolute;
   top: 50%;
   z-index: -1;
   transform: translateY(-50%);
-  background-color: ${theme.dialog.backgroundColor};
-  color: ${theme.dialog.color};
+  background-color: var(--gp-dialog-bg);
+  color: var(--gp-dialog-color);
   font-size: 3.2em;
   display: flex;
   align-items: center;

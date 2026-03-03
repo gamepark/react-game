@@ -1,8 +1,8 @@
-import { css, Theme, ThemeProvider } from '@emotion/react'
+import { css, ThemeProvider } from '@emotion/react'
 import { PlayOptions } from '@gamepark/react-client'
 import { ButtonHTMLAttributes, FC, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { buttonCss } from '../../../css'
+import { onSurfaceButtonCss } from '../../../css'
 import { usePlay } from '../../../hooks'
 import { Dialog } from '../../dialogs'
 import { ThemeButton } from '../ThemeButton'
@@ -72,7 +72,7 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
     <>
       {!!confirmation && (
         <Dialog key="dialog" open={showDialog} onBackdropClick={() => setShowDialog(false)} css={[flex, confirmationDialogCss]}>
-          <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss(theme.palette.onSurface, theme.palette.onSurfaceFocus, theme.palette.onSurfaceActive) })}>
+          <ThemeProvider theme={theme => ({ ...theme, buttons: onSurfaceButtonCss })}>
             <div css={content}>
               <p>{confirmation.text}</p>
               <div css={buttons}>
@@ -126,14 +126,14 @@ const content = css`
   }
 `
 
-const confirmationDialogCss = (theme: Theme) => css`
+const confirmationDialogCss = css`
   position: relative;
-  background-color: ${theme.dialog.backgroundColor};
-  color: ${theme.dialog.color};
+  background-color: var(--gp-dialog-bg);
+  color: var(--gp-dialog-color);
   padding: 1em;
   border-radius: 1em;
   box-shadow: 0 0 0.2em black;
-  font-family: "${theme.root.fontFamily}", sans-serif;
+  font-family: var(--gp-font-family);
 `
 
 const countdownCss = (countdown: number) => css`
