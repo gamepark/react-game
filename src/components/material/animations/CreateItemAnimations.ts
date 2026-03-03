@@ -13,7 +13,7 @@ import { transformItem } from './transformItem.util'
 // Use action.id as key instead of object reference, because Immer proxies in the reducer
 // differ from the finalized objects used during React rendering.
 const createdItemIndexes = new Map<string | undefined, Map<number, number>>()
-const preQuantitySnapshots = new WeakMap<object, Map<number, (number | undefined)[]>>()
+const preQuantitySnapshots = new Map<string | undefined, Map<number, (number | undefined)[]>>()
 
 function getConsequenceIndex(action: { played: number, animation?: { step?: number } }): number {
   const step = action.animation?.step
@@ -31,15 +31,6 @@ function getInnerMap<K, T>(map: { get(key: K): Map<number, T> | undefined, set(k
   return inner
 }
 
-function getWeakInnerMap<T>(weakMap: WeakMap<object, Map<number, T>>, action: object): Map<number, T> {
-  let map = weakMap.get(action)
-  if (!map) {
-    map = new Map()
-    weakMap.set(action, map)
-  }
-  return map
-}
-
 export class CreateItemAnimations<P extends number = number, M extends number = number, L extends number = number>
   extends ItemAnimations<P, M, L> {
 
@@ -54,7 +45,7 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     const rules = new context.Rules(context.game, { player: context.playerId }) as MaterialRules<P, M, L>
     const items = rules.game.items?.[move.itemType] ?? []
     const key = getConsequenceIndex(context.action)
-    getWeakInnerMap(preQuantitySnapshots, context.action).set(key, items.map((item: any) => item.quantity))
+    getInnerMap(preQuantitySnapshots, context.action.id).set(key, items.map((item: any) => item.quantity))
     return 0
   }
 
@@ -63,8 +54,25 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     const items: any[] = rules.game.items?.[move.itemType] ?? []
     const key = getConsequenceIndex(context.action)
     const actionId = context.action.id
-    const snapshots = preQuantitySnapshots.get(context.action)
-    const snapshot = snapshots?.get(key)
+    let snapshots = preQuantitySnapshots.get(actionId)
+    let snapshot = snapshots?.get(key)
+    // Fallback: action.id may have changed (local-xxx → server id) since getPreDuration
+    if (!snapshot) {
+      for (const [id, innerMap] of preQuantitySnapshots) {
+        const candidate = innerMap.get(key)
+        if (candidate) {
+          snapshots = innerMap
+          snapshot = candidate
+          // Clean up the stale key
+          innerMap.delete(key)
+          if (innerMap.size === 0) preQuantitySnapshots.delete(id)
+          break
+        }
+      }
+    } else {
+      snapshots!.delete(key)
+      if (snapshots!.size === 0) preQuantitySnapshots.delete(actionId)
+    }
 
     if (snapshot) {
       for (let i = 0; i < items.length; i++) {
@@ -75,10 +83,6 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
           break
         }
       }
-      snapshots?.delete(key)
-    } else {
-      // Fallback: use prediction (may be wrong in simultaneous phases)
-      getInnerMap(createdItemIndexes, actionId).set(key, rules.mutator(move.itemType).getItemCreationIndex(move.item))
     }
 
     // Clean up to prevent memory leaks (Map doesn't auto-collect like WeakMap)
