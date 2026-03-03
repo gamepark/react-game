@@ -19,12 +19,12 @@ export const Header = ({ buttonsCss, children, ...props }: HeaderProps) => {
 }
 
 const headerPadding = 10 // em
-const fontSize = 3.6 // em
+const fontSize = 4.5 // em
 
 const headerStyle = css`
   position: absolute;
   width: 100%;
-  height: 5.6em;
+  height: 7em;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   text-align: center;

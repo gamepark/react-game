@@ -121,12 +121,12 @@ const gameBoxStyle = css`
 `
 
 const gameTitle = css`
-  font-size: 4em;
+  font-size: 5em;
   margin: 0;
 `
 
 const gamePeople = css`
-  font-size: 2.4em;
+  font-size: 3em;
 `
 
 const iconStyle = css`

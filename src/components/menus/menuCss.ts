@@ -2,7 +2,7 @@ import { css } from '@emotion/react'
 import { buttonResetCss } from '../../css'
 
 export const menuDialogCss = css`
-  font-size: 2.5em;
+  font-size: 3.2em;
 
   h2 {
     margin: 0 0 0.5em;
@@ -14,9 +14,9 @@ export const menuDialogCss = css`
 `
 
 export const menuFontSize = css`
-  font-size: 3.2em;
+  font-size: 4em;
   @media only screen and (min-width: 960px) {
-    font-size: 2.5em;
+    font-size: 3.2em;
   }
 `
 

@@ -89,6 +89,13 @@ const globalCss = (theme: Theme) => css`
     --gp-timestats-wait-bg: ${theme.timeStats?.waitBackground ?? '#b3e9f0'};
     --gp-ring-color-1: ${theme.playerPanel?.activeRingColors?.[0] ?? 'gold'};
     --gp-ring-color-2: ${theme.playerPanel?.activeRingColors?.[1] ?? theme.palette.primary};
+    --gp-scale: 1;
+  }
+
+  @media only screen and (min-height: 600px) {
+    :root {
+      --gp-scale: 0.8;
+    }
   }
 
   html {

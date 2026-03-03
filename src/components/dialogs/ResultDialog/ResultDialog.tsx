@@ -141,7 +141,7 @@ const centered = css`
 `
 
 const style = css`
-  font-size: 2.5em;
+  font-size: 3.2em;
   text-align: center;
   max-height: 90vh;
   max-height: 90dvh;
@@ -204,24 +204,24 @@ const singleRow = (players: number) => css`
 
 const avatarContainer = css`
   position: relative;
-  width: 2em;
-  height: 2em;
-  margin: auto auto 0.3em;
+  width: 3em;
+  height: 3em;
+  margin: auto auto 0.5em;
 `
 
 const avatarCss = css`
   position: relative;
-  width: 2em;
-  height: 2em;
+  width: 3em;
+  height: 3em;
 `
 
 const medalCss = css`
-  width: 0.9em;
-  height: 1.1em;
+  width: 1.3em;
+  height: 1.6em;
   fill: var(--gp-result-icon);
   position: absolute;
-  top: -0.3em;
-  left: -0.5em;
+  top: -0.5em;
+  left: -0.8em;
 `
 
 const relative = css`
