@@ -86,7 +86,7 @@ export const MaterialTutorialDisplay = () => {
 
 const rules = css`
   margin: 0 1em;
-  font-size: 3em;
+  font-size: calc(3em * var(--gp-scale));
   padding-top: 1em;
 
   > h2 {

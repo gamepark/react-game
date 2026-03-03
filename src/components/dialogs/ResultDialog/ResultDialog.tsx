@@ -141,7 +141,7 @@ const centered = css`
 `
 
 const style = css`
-  font-size: 3.2em;
+  font-size: calc(3.2em * var(--gp-scale));
   text-align: center;
   max-height: 90vh;
   max-height: 90dvh;

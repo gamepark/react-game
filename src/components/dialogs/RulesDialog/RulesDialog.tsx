@@ -33,7 +33,7 @@ const dialogCloseIcon = css`
   position: absolute;
   right: 0.5em;
   top: 0.3em;
-  font-size: 4em;
+  font-size: calc(4em * var(--gp-scale));
   cursor: pointer;
   z-index: 100;
 `
