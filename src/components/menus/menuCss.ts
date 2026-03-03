@@ -14,10 +14,7 @@ export const menuDialogCss = css`
 `
 
 export const menuFontSize = css`
-  font-size: calc(4em * var(--gp-scale));
-  @media only screen and (min-width: 960px) {
-    font-size: calc(3.2em * var(--gp-scale));
-  }
+  font-size: calc(3.2em * var(--gp-scale));
 `
 
 export const floatingButtonCss = css`

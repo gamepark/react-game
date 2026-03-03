@@ -18,15 +18,15 @@ export const Header = ({ buttonsCss, children, ...props }: HeaderProps) => {
   )
 }
 
-const headerPadding = 10 // em
 const headerStyle = css`
   position: absolute;
   width: 100%;
-  height: calc(7em * var(--gp-scale));
+  font-size: calc(1em * var(--gp-scale));
+  height: 7em;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   text-align: center;
-  padding: 0 ${headerPadding}em;
+  padding: 0 10em;
   overflow: hidden;
 `
 
@@ -35,7 +35,7 @@ const titleStyle = css`
   text-overflow: ellipsis;
   overflow: hidden;
   margin: 0.2em 0;
-  font-size: calc(4.5em * var(--gp-scale));
+  font-size: 4.5em;
 
   img {
     height: 1em;
