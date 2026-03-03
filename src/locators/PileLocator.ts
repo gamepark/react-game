@@ -62,7 +62,7 @@ export class PileLocator<P extends number = number, M extends number = number, L
     return [item.location.player, item.location.id, item.location.parent].filter(part => part !== undefined).join('_')
   }
 
-  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>) {
+  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>): unknown {
     return this.countItems(location, context)
   }
 
