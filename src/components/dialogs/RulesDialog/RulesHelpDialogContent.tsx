@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { MaterialMoveBuilder, RulesHelpDisplay } from '@gamepark/rules-api'
 import { useContext } from 'react'
 import { usePlay } from '../../../hooks'
@@ -13,10 +13,11 @@ export const RulesHelpDialogContent = (
   { helpDisplay }: RulesHelpDialogContentProps
 ) => {
   const play = usePlay()
+  const theme = useTheme()
   const context = useContext(gameContext)
   const RulesHelp = context.rulesHelp?.[helpDisplay.ruleId]
   return <div css={helpDialogCss}>
-    <div css={helpDialogContentCss}>
+    <div css={[helpDialogContentCss, theme.dialog.content]}>
       {RulesHelp ?
         <RulesHelp close={() => play(displayHelp(undefined), { transient: true })}/>
         : <>
@@ -38,7 +39,7 @@ const helpDialogCss = css`
 export const helpDialogContentCss = css`
   margin: 0 0.5em;
   padding: 0 0.5em;
-  font-size: 3em;
+  font-size: 2.4em;
   overflow: auto;
   flex: 1;
 

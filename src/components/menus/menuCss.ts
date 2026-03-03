@@ -2,7 +2,7 @@ import { css } from '@emotion/react'
 import { buttonResetCss } from '../../css'
 
 export const menuDialogCss = css`
-  font-size: 3.2em;
+  font-size: calc(3.2em * var(--gp-scale));
 
   h2 {
     margin: 0 0 0.5em;
@@ -14,10 +14,7 @@ export const menuDialogCss = css`
 `
 
 export const menuFontSize = css`
-  font-size: 4em;
-  @media only screen and (min-width: 960px) {
-    font-size: 3.2em;
-  }
+  font-size: calc(3.2em * var(--gp-scale));
 `
 
 export const floatingButtonCss = css`
@@ -108,4 +105,65 @@ export const backdrop = css`
 export const displayBackdrop = css`
   opacity: 1;
   pointer-events: auto;
+`
+
+export const paletteMenuBaseCss = css`
+  background: var(--gp-surface);
+  color: var(--gp-on-surface);
+  font-family: var(--gp-font-family);
+`
+
+export const paletteMenuButtonCss = css`
+  border-color: var(--gp-on-surface);
+  color: var(--gp-on-surface);
+
+  &:focus, &:hover {
+    background: var(--gp-on-surface-focus);
+  }
+
+  &:active {
+    background: var(--gp-on-surface-active);
+  }
+
+  &:disabled {
+    color: var(--gp-disabled);
+    border-color: var(--gp-disabled);
+  }
+`
+
+export const paletteDangerButtonCss = css`
+  color: var(--gp-danger);
+  border-color: var(--gp-danger);
+
+  &:focus, &:hover {
+    background: var(--gp-danger-hover);
+  }
+
+  &:active {
+    background: var(--gp-danger-active);
+  }
+`
+
+export const palettePrimaryButtonCss = css`
+  background: var(--gp-primary);
+
+  &:focus, &:hover {
+    background: var(--gp-primary-hover);
+  }
+
+  &:active {
+    background: var(--gp-primary-active);
+  }
+`
+
+export const palettePopButtonCss = css`
+  color: var(--gp-primary);
+
+  &:focus, &:hover {
+    background: var(--gp-primary-light);
+  }
+
+  &:active {
+    background: var(--gp-primary-lighter);
+  }
 `

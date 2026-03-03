@@ -1,8 +1,8 @@
-import { css, ThemeProvider } from '@emotion/react'
+import { css, ThemeProvider, useTheme } from '@emotion/react'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC } from 'react'
-import { buttonCss } from '../../../css'
+import { onSurfaceButtonCss } from '../../../css'
 import { Dialog, DialogProps } from '../index'
 
 export type RulesDialogProps = {
@@ -10,10 +10,11 @@ export type RulesDialogProps = {
 } & DialogProps
 
 export const RulesDialog: FC<RulesDialogProps> = ({ close, children, ...props }: RulesDialogProps) => {
+  const theme = useTheme()
   return (
     <Dialog onBackdropClick={close} css={dialogCss} {...props}>
-      {close && <FontAwesomeIcon icon={faXmark} css={dialogCloseIcon} onClick={close}/>}
-      <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
+      {close && <FontAwesomeIcon icon={faXmark} css={[dialogCloseIcon, theme.dialog.closeIcon]} onClick={close}/>}
+      <ThemeProvider theme={theme => ({ ...theme, buttons: onSurfaceButtonCss })}>
         {children}
       </ThemeProvider>
     </Dialog>
@@ -32,7 +33,7 @@ const dialogCloseIcon = css`
   position: absolute;
   right: 0.5em;
   top: 0.3em;
-  font-size: 4em;
+  font-size: calc(4em * var(--gp-scale));
   cursor: pointer;
   z-index: 100;
 `

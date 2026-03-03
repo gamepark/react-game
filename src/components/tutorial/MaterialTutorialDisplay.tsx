@@ -1,4 +1,4 @@
-import { css, ThemeProvider } from '@emotion/react'
+import { css, ThemeProvider, useTheme } from '@emotion/react'
 import { faBackward } from '@fortawesome/free-solid-svg-icons/faBackward'
 import { faForward } from '@fortawesome/free-solid-svg-icons/faForward'
 import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
@@ -9,7 +9,7 @@ import { isCloseTutorialPopup, isSetTutorialStep, SetTutorialStep } from '@gamep
 import { maxBy, minBy } from 'es-toolkit'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { buttonCss, transformCss } from '../../css'
+import { onSurfaceButtonCss, transformCss } from '../../css'
 import { useLegalMove, useLegalMoves, useMaterialContext, useUndo } from '../../hooks'
 import { useTutorialStep } from '../../hooks/useTutorialStep'
 import { PlayMoveButton, ThemeButton } from '../buttons'
@@ -54,17 +54,20 @@ export const MaterialTutorialDisplay = () => {
     }
   }, [tutorialStep, game?.tutorial?.popupClosed])
 
+  const theme = useTheme()
+
   return (
     <Dialog open={popup !== undefined && !game?.tutorial?.popupClosed}
             css={[
               tutorialDialogCss,
               popup?.position && transformCss(`translate(${popup.position.x ?? 0}em, ${popup.position.y ?? 0}em)`),
-              sizeCss(popup?.size)
+              sizeCss(popup?.size),
+              theme.tutorial?.container
             ]}
             backdropCss={backdropCss}>
       {popup &&
-        <ThemeProvider theme={theme => ({ ...theme, buttons: buttonCss('#002448', '#c2ebf1', '#ade4ec') })}>
-          <div css={rules}>
+        <ThemeProvider theme={theme => ({ ...theme, buttons: onSurfaceButtonCss })}>
+          <div css={[rules, theme.tutorial?.content]}>
             {passMove && <PlayMoveButton move={passMove} css={passButton}>{tCommon('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>}
             <p>{popup.text(t, game!)}</p>
             <p css={buttonsLine}>
@@ -83,7 +86,7 @@ export const MaterialTutorialDisplay = () => {
 
 const rules = css`
   margin: 0 1em;
-  font-size: 3em;
+  font-size: calc(3em * var(--gp-scale));
   padding-top: 1em;
 
   > h2 {

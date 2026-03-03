@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { LocationHelpDisplay, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { fontSizeCss } from '../../../css'
 import { useItemLocator, useMaterialContext, usePlay } from '../../../hooks'
@@ -13,6 +13,7 @@ export const LocationRulesDialogContent = <P extends number = number, M extends 
   { helpDisplay: { location } }: LocationRulesDialogContentProps<P, L>
 ) => {
   const play = usePlay()
+  const theme = useTheme()
   const context = useMaterialContext<P, M, L>()
   const locator = useItemLocator<P, M, L>(location.type)
   const description = locator?.getLocationDescription(location, context)
@@ -24,7 +25,7 @@ export const LocationRulesDialogContent = <P extends number = number, M extends 
     {!!image &&
       <div css={[noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)), backgroundImage(image, height, width)]}/>
     }
-    <div css={helpDialogContentCss}>
+    <div css={[helpDialogContentCss, theme.dialog.content]}>
       <Help location={location} closeDialog={() => play(displayHelp(undefined), { transient: true })}/>
     </div>
   </div>

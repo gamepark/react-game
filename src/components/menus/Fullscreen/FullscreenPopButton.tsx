@@ -1,14 +1,16 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faCompress } from '@fortawesome/free-solid-svg-icons/faCompress'
 import { faExpand } from '@fortawesome/free-solid-svg-icons/faExpand'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useFullscreen } from '../../../hooks'
+import { palettePopButtonCss } from '../menuCss'
 import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const FullscreenPopButton = () => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const [pop, setPop] = useState(true)
 
   useEffect(() => {
@@ -18,7 +20,7 @@ export const FullscreenPopButton = () => {
   const { fullscreen, toggleFullscreen } = useFullscreen()
 
   return (
-    <MenuPopButton pop={pop} onClick={toggleFullscreen} css={style} title={fullscreen ? t('Leave full screen')! : t('Go to full screen')!}>
+    <MenuPopButton pop={pop} onClick={toggleFullscreen} css={[style, palettePopButtonCss, theme.menu?.popButton]} title={fullscreen ? t('Leave full screen')! : t('Go to full screen')!}>
       <FontAwesomeIcon icon={fullscreen ? faCompress : faExpand}/>
     </MenuPopButton>
   )

@@ -66,6 +66,38 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const globalCss = (theme: Theme) => css`
+  :root {
+    --gp-primary: ${theme.palette.primary};
+    --gp-primary-hover: ${theme.palette.primaryHover};
+    --gp-primary-active: ${theme.palette.primaryActive};
+    --gp-primary-light: ${theme.palette.primaryLight};
+    --gp-primary-lighter: ${theme.palette.primaryLighter};
+    --gp-surface: ${theme.palette.surface};
+    --gp-on-surface: ${theme.palette.onSurface};
+    --gp-on-surface-focus: ${theme.palette.onSurfaceFocus};
+    --gp-on-surface-active: ${theme.palette.onSurfaceActive};
+    --gp-danger: ${theme.palette.danger};
+    --gp-danger-hover: ${theme.palette.dangerHover};
+    --gp-danger-active: ${theme.palette.dangerActive};
+    --gp-disabled: ${theme.palette.disabled};
+    --gp-dialog-bg: ${theme.dialog.backgroundColor};
+    --gp-dialog-color: ${theme.dialog.color};
+    --gp-font-family: "${theme.root.fontFamily}", sans-serif;
+    --gp-result-border: ${theme.result?.border ?? theme.palette.primary};
+    --gp-result-icon: ${theme.result?.icon ?? theme.palette.onSurface};
+    --gp-timestats-think-bg: ${theme.timeStats?.thinkBackground ?? '#fff3e3'};
+    --gp-timestats-wait-bg: ${theme.timeStats?.waitBackground ?? '#b3e9f0'};
+    --gp-ring-color-1: ${theme.playerPanel?.activeRingColors?.[0] ?? 'gold'};
+    --gp-ring-color-2: ${theme.playerPanel?.activeRingColors?.[1] ?? theme.palette.primary};
+    --gp-scale: 1;
+  }
+
+  @media only screen and (min-height: 600px) {
+    :root {
+      --gp-scale: 0.8;
+    }
+  }
+
   html {
     box-sizing: border-box;
   }
@@ -76,7 +108,7 @@ const globalCss = (theme: Theme) => css`
 
   body {
     margin: 0;
-    font-family: "${theme.root.fontFamily}", sans-serif;
+    font-family: var(--gp-font-family);
   }
 
   #root {

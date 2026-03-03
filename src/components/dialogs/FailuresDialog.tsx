@@ -1,13 +1,14 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { clearFailures, Failure, useGameDispatch, useGameSelector } from '@gamepark/react-client'
 import { TFunction } from 'i18next'
 import { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
-import { menuButtonCss, menuDialogCss } from '../menus/menuCss'
+import { menuButtonCss, menuDialogCss, paletteMenuButtonCss } from '../menus/menuCss'
 import { Dialog, DialogProps } from './Dialog'
 
 export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const failures = useGameSelector((state) => state.failures)
   const dispatch = useGameDispatch()
   const [displayedFailure, setDisplayedFailure] = useState('')
@@ -19,14 +20,15 @@ export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
     }
   }, [failures])
   const description = failuresDescription[displayedFailure] || fallbackDescription(displayedFailure)
+  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button]
   return (
     <Dialog open={failures.length > 0} css={menuDialogCss} {...props}>
       <h2>{description.title(t)}</h2>
       <p>{description.text(t)}</p>
-      <button css={[menuButtonCss, inDialogButton]} onClick={() => dispatch(clearFailures())}>{t('OK')}</button>
+      <button css={[...themedButtonCss, inDialogButton]} onClick={() => dispatch(clearFailures())}>{t('OK')}</button>
       {displayedFailure === Failure.MOVE_FORBIDDEN && <p>
         <Trans ns="common" i18nKey="failure.dialog.play2"
-               components={[<button css={[menuButtonCss, css`display: inline-block`]} onClick={() => window.location.reload()}/>]}/>
+               components={[<button css={[...themedButtonCss, css`display: inline-block`]} onClick={() => window.location.reload()}/>]}/>
       </p>}
     </Dialog>
   )

@@ -1,4 +1,4 @@
-import { css, keyframes } from '@emotion/react'
+import { css, keyframes, useTheme } from '@emotion/react'
 import { MaterialRules } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import { usePlayerName, useRules } from '../../hooks'
@@ -14,16 +14,18 @@ export type PlayerPanelProps<PlayerId extends number = number> = {
 } & HTMLAttributes<HTMLDivElement>
 
 export const PlayerPanel: FC<PlayerPanelProps> = (p) => {
-  const { playerId, activeRing, color = '#28B8CE', children, speak, ...props } = p
+  const { playerId, activeRing, color, children, speak, ...props } = p
+  const theme = useTheme()
+  const resolvedColor = color ?? 'var(--gp-primary)'
   const playerName = usePlayerName(playerId)
   const rules = useRules<MaterialRules>()
   const isTurnToPlay = rules?.isTurnToPlay(playerId) ?? false
   return (
-    <div css={panelPlayerStyle(color, isTurnToPlay)} {...props}>
+    <div css={[panelPlayerStyle(resolvedColor, isTurnToPlay), theme.playerPanel?.panel]} {...props}>
       <Avatar css={avatarStyle} playerId={playerId}
               speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT, children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
-        <div css={isTurnToPlay && circle}/>
+        <div css={isTurnToPlay && circleCss}/>
       </div>}
       <h2 css={nameStyle}>{playerName}</h2>
       {!rules?.isOver() && <PlayerTimer playerId={playerId} css={timerStyle}/>}
@@ -34,7 +36,7 @@ export const PlayerPanel: FC<PlayerPanelProps> = (p) => {
 }
 
 const panelPlayerStyle = (color: string, active?: boolean) => css`
-  background-color: ${active ? '#f0fbfc' : '#dddddd'};
+  background-color: ${active ? 'var(--gp-primary-light)' : '#dddddd'};
   color: black;
   border: 0.5em solid ${color};
   border-radius: 3em 1.5em 1.5em 1.5em;
@@ -73,10 +75,10 @@ const circleAnimation = keyframes`
 `
 
 const inset = 0.8
-const circle = css`
+const circleCss = css`
   background-image: linear-gradient(
-          to bottom, gold 0%,
-          rgb(40, 184, 206) 100%);
+          to bottom, var(--gp-ring-color-1) 0%,
+          var(--gp-ring-color-2) 100%);
   position: absolute;
   top: -${inset}em;
   bottom: -${inset}em;

@@ -1,4 +1,4 @@
-import { css, ThemeProvider } from '@emotion/react'
+import { css, ThemeProvider, useTheme } from '@emotion/react'
 import { FC, HTMLAttributes, useEffect, useRef } from 'react'
 import { linkButtonCss } from '../../../css'
 import { useFlatHistory } from '../../../hooks/useFlatHistory'
@@ -11,7 +11,7 @@ type HistoryProps = {
 } & HTMLAttributes<HTMLDivElement>
 
 export const History: FC<HistoryProps> = (props) => {
-
+  const theme = useTheme()
   const { history } = useFlatHistory()
   const { open, ...rest } = props
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -30,7 +30,7 @@ export const History: FC<HistoryProps> = (props) => {
           {history.map((h) => {
             if (!h.action.id) return null // wait for server action.id
             const key = h.consequenceIndex !== undefined ? `${h.action.id}_${h.consequenceIndex}` : h.action.id
-            return <LogItem key={key} history={h} css={itemCss} customEntryCss={customEntryCss}/>
+            return <LogItem key={key} history={h} css={itemCss} customEntryCss={[customEntryCss, theme.journal?.historyEntry]}/>
           })}
           <GameOverHistory/>
         </div>

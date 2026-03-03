@@ -1,4 +1,4 @@
-import { css, Interpolation, Theme, ThemeProvider } from '@emotion/react'
+import { css, Interpolation, Theme, ThemeProvider, useTheme } from '@emotion/react'
 import { HTMLAttributes } from 'react'
 import { buttonCss } from '../../css'
 
@@ -6,25 +6,27 @@ export type HeaderProps = {
   buttonsCss?: Interpolation<Theme>
 } & HTMLAttributes<HTMLDivElement>
 
-export const Header = ({ buttonsCss = defaultButtonsCss, children, ...props }: HeaderProps) => (
-  <ThemeProvider theme={theme => ({ ...theme, buttons: buttonsCss })}>
-    <div css={headerStyle} {...props}>
-      <h1 css={titleStyle}>{children}</h1>
-    </div>
-  </ThemeProvider>
-)
-
-const headerPadding = 10 // em
-const fontSize = 4.5 // em
+export const Header = ({ buttonsCss, children, ...props }: HeaderProps) => {
+  const theme = useTheme()
+  const resolvedButtonsCss = buttonsCss ?? theme.header?.buttons ?? defaultButtonsCss
+  return (
+    <ThemeProvider theme={t => ({ ...t, buttons: resolvedButtonsCss })}>
+      <div css={[headerStyle, theme.header?.bar]} {...props}>
+        <h1 css={titleStyle}>{children}</h1>
+      </div>
+    </ThemeProvider>
+  )
+}
 
 const headerStyle = css`
   position: absolute;
   width: 100%;
+  font-size: calc(1em * var(--gp-scale));
   height: 7em;
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   text-align: center;
-  padding: 0 ${headerPadding}em;
+  padding: 0 10em;
   overflow: hidden;
 `
 
@@ -33,8 +35,8 @@ const titleStyle = css`
   text-overflow: ellipsis;
   overflow: hidden;
   margin: 0.2em 0;
-  font-size: ${fontSize}em;
-  
+  font-size: 4.5em;
+
   img {
     height: 1em;
     position: relative;

@@ -52,7 +52,7 @@ const navigationContainer = css`
 `
 
 const button = [buttonResetCss, css`
-  font-size: 3em;
+  font-size: calc(3em * var(--gp-scale));
   height: 2em;
   width: 2em;
   border-radius: 2em;

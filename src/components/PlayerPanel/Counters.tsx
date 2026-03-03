@@ -1,4 +1,4 @@
-import { css, Interpolation, Theme } from '@emotion/react'
+import { css, Interpolation, Theme, useTheme } from '@emotion/react'
 import { times } from 'es-toolkit/compat'
 import { FC } from 'react'
 
@@ -32,11 +32,13 @@ export const Counters: FC<CountersProps> = (props) => {
 
 const Counter: FC<{ unique?: boolean } & CounterProps> = (props) => {
   const { image, value, imageCss, unique, onClick, extraCss } = props
+  const theme = useTheme()
   if (image === undefined && value === undefined) return null
   return (
     <span
       css={[
         data,
+        theme.playerPanel?.dataBadge,
         rightAlignment,
         unique && uniqCounterCss,
         !unique && counterCss,

@@ -14,7 +14,7 @@ export const EjectPlayerPopButton = (props: HTMLAttributes<HTMLButtonElement>) =
 
   return (
     <MenuPopButton pop={opponentWithNegativeTime !== undefined} popPosition={canUndoLastMove ? 2 : 1}
-                   css={style} title={t('Eject player')!} {...props}>
+                   css={[style, dangerStyle]} title={t('Eject player')!} {...props}>
       <FontAwesomeIcon icon={faUserSlash}/>
     </MenuPopButton>
   )
@@ -30,5 +30,17 @@ const style = css`
 
   &:active {
     background: #ffbebe;
+  }
+`
+
+const dangerStyle = css`
+  color: var(--gp-danger);
+
+  &:focus, &:hover {
+    background: var(--gp-danger-hover);
+  }
+
+  &:active {
+    background: var(--gp-danger-active);
   }
 `

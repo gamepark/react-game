@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
@@ -30,6 +30,7 @@ const gameId = query.get('game')
 
 export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const rankedPlayers = useRankedPlayers()
   const context = useContext(gameContext)
   const rules = useRules()!
@@ -40,58 +41,60 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
 
   const resultText = useResultText()
   return (
-    <Dialog onBackdropClick={close} css={style} {...props}>
-      <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={close}/>
-      <h2>{resultText}</h2>
-      <div css={buttonLine}>
-        {gameMode === GameMode.TOURNAMENT && tournament ?
-          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
-            {t('result.tournament.link')}
-          </NavButton>
-          :
-          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}`}>{t('Back to Game Park')}</NavButton>
-        }
-        {gameMode === GameMode.COMPETITIVE &&
-          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play?mode=matchmaking`}>
-            {t('Play again')}
-          </NavButton>
-        }
-        {gameMode === GameMode.COMPETITIVE &&
-          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/ranking`}>
-            {t('See overall ranking')}
-          </NavButton>
-        }
-      </div>
-      <div css={[gridCss, row > 1 ? multiRows(rankedPlayers.length, row) : singleRow(rankedPlayers.length)]}>
-        {row > 1 && <div/>}
-        {gameMode === GameMode.TOURNAMENT && <div css={[borderTop, left]}>{t('Tournament')}</div>}
-        {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTop, left]}>{t('Ranking')}</div>}
-        {scoringCells.map((cell, index) => (
-          <div css={[borderTop, left]} key={index}>
-            {cell}
-          </div>
-        ))}
-        {rankedPlayers.map((player, index) =>
-          <PlayerDisplay key={index}
-                         playerId={player.id}
-                         gameMode={gameMode}
-                         rank={isCompetitive(rules) && player.rank <= 3 ? player.rank : undefined}
-                         border={row > 1}
-          />)
-        }
-      </div>
-      {gameMode === GameMode.TUTORIAL &&
-        <div>
-          <p css={css`white-space: break-spaces;`}>{t('tuto.over')}</p>
-          <p css={buttonsLine}>
-            <RestartTutorialButton/>
-            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`} css={css`margin-left: 1em;`}>
-              <FontAwesomeIcon icon={faChessPawn}/>{t('Play')}
+    <Dialog onBackdropClick={close} css={[style, theme.result?.container]} {...props}>
+      <FontAwesomeIcon icon={faXmark} css={[closeIcon, theme.result?.closeIcon]} onClick={close}/>
+      <div css={scrollableContent}>
+        <h2>{resultText}</h2>
+        <div css={buttonLine}>
+          {gameMode === GameMode.TOURNAMENT && tournament ?
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
+              {t('result.tournament.link')}
             </NavButton>
-          </p>
+            :
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}`}>{t('Back to Game Park')}</NavButton>
+          }
+          {gameMode === GameMode.COMPETITIVE &&
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play?mode=matchmaking`}>
+              {t('Play again')}
+            </NavButton>
+          }
+          {gameMode === GameMode.COMPETITIVE &&
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/ranking`}>
+              {t('See overall ranking')}
+            </NavButton>
+          }
         </div>
-      }
-      {gameId !== null && <RematchSection openDialog={openDialog}/>}
+        <div css={[gridCss, row > 1 ? multiRows(rankedPlayers.length, row) : singleRow(rankedPlayers.length)]}>
+          {row > 1 && <div css={stickyHeader}/>}
+          {gameMode === GameMode.TOURNAMENT && <div css={[borderTopCss, left]}>{t('Tournament')}</div>}
+          {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTopCss, left]}>{t('Ranking')}</div>}
+          {scoringCells.map((cell, index) => (
+            <div css={[borderTopCss, left]} key={index}>
+              {cell}
+            </div>
+          ))}
+          {rankedPlayers.map((player, index) =>
+            <PlayerDisplay key={index}
+                           playerId={player.id}
+                           gameMode={gameMode}
+                           rank={isCompetitive(rules) && player.rank <= 3 ? player.rank : undefined}
+                           border={row > 1}
+            />)
+          }
+        </div>
+        {gameMode === GameMode.TUTORIAL &&
+          <div>
+            <p css={css`white-space: break-spaces;`}>{t('tuto.over')}</p>
+            <p css={buttonsLine}>
+              <RestartTutorialButton/>
+              <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`} css={css`margin-left: 1em;`}>
+                <FontAwesomeIcon icon={faChessPawn}/>{t('Play')}
+              </NavButton>
+            </p>
+          </div>
+        }
+        {gameId !== null && <RematchSection openDialog={openDialog}/>}
+      </div>
     </Dialog>
   )
 }
@@ -106,7 +109,7 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border }: {
   const tournamentPoints = useGameSelector((state) => state.players.find(p => p.id === playerId)?.tournamentPoints ?? undefined)
   const playerData = usePlayerScoring(playerId)
   return <>
-    <div css={[relative, border && borderLeft]}>
+    <div css={[relative, border && borderLeftCss, stickyHeader]}>
       <div css={avatarContainer}>
         <Avatar playerId={playerId} css={avatarCss}/>
         {rank !== undefined && <Medal rank={rank} css={medalCss}/>}
@@ -114,17 +117,17 @@ const PlayerDisplay = ({ gameMode, playerId, rank, border }: {
       <span>{playerName}</span>
     </div>
     {gameMode === GameMode.TOURNAMENT &&
-      <div css={[borderLeft, borderTop, centered]}>
-        {tournamentPoints !== undefined && <><FontAwesomeIcon icon={faTrophy} css={trophyIcon}/><span>+{tournamentPoints}</span></>}
+      <div css={[borderLeftCss, borderTopCss, centered]}>
+        {tournamentPoints !== undefined && <><FontAwesomeIcon icon={faTrophy} css={trophyIconCss}/><span>+{tournamentPoints}</span></>}
       </div>
     }
     {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) &&
-      <div css={[borderLeft, borderTop, centered]}>
+      <div css={[borderLeftCss, borderTopCss, centered]}>
         <GamePoints playerId={playerId}/>
       </div>
     }
     {playerData.map((cell, index) => (
-      <div css={[borderLeft, borderTop]} key={index}>
+      <div css={[borderLeftCss, borderTopCss]} key={index}>
         {cell}
       </div>
     ))}
@@ -138,16 +141,22 @@ const centered = css`
 `
 
 const style = css`
-  font-size: 3.2em;
+  font-size: calc(3.2em * var(--gp-scale));
   text-align: center;
   max-height: 90vh;
   max-height: 90dvh;
-  overflow-y: auto;
-
+  display: flex;
+  flex-direction: column;
 
   > h2 {
     margin: 0 1em 0.5em;
   }
+`
+
+const scrollableContent = css`
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 `
 
 const closeIcon = css`
@@ -156,6 +165,16 @@ const closeIcon = css`
   top: 0.6em;
   font-size: 1.3em;
   cursor: pointer;
+  z-index: 1;
+`
+
+const stickyHeader = css`
+  position: sticky;
+  top: 0;
+  background-color: var(--gp-dialog-bg);
+  z-index: 1;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
 `
 
 const buttonLine = css`
@@ -199,7 +218,7 @@ const avatarCss = css`
 const medalCss = css`
   width: 1.3em;
   height: 1.6em;
-  fill: #002448;
+  fill: var(--gp-result-icon);
   position: absolute;
   top: -0.5em;
   left: -0.8em;
@@ -209,16 +228,16 @@ const relative = css`
   position: relative;
 `
 
-const borderLeft = css`
-  border-left: 0.1em solid #28b8ce;
+const borderLeftCss = css`
+  border-left: 0.1em solid var(--gp-result-border);
 `
 
-const borderTop = css`
-  border-top: 0.1em solid #28b8ce;
+const borderTopCss = css`
+  border-top: 0.1em solid var(--gp-result-border);
 `
 
-const trophyIcon = css`
-  color: #28b8ce;
+const trophyIconCss = css`
+  color: var(--gp-result-border);
 `
 
 const left = css`

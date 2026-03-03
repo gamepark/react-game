@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { gameContext } from '../../GameProvider'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { menuButtonCss } from '../menuCss'
+import { menuButtonCss, paletteMenuButtonCss } from '../menuCss'
 
 export const RestartTutorialButton = () => {
   const { t } = useTranslation('common')
@@ -16,7 +16,7 @@ export const RestartTutorialButton = () => {
   }
 
   return (
-    <button css={menuButtonCss} onClick={onClick}>
+    <button css={[menuButtonCss, paletteMenuButtonCss]} onClick={onClick}>
       <FontAwesomeIcon icon={faGraduationCap}/>
       {t('Restart the tutorial')}
     </button>

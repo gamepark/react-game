@@ -1,4 +1,4 @@
-import { css, Interpolation, keyframes, Theme } from '@emotion/react'
+import { css, Interpolation, keyframes, Theme, useTheme } from '@emotion/react'
 import { Player } from '@gamepark/react-client'
 import { MaterialRules } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, ReactNode, RefObject, useCallback, useRef } from 'react'
@@ -38,6 +38,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
     speak,
     ...rest
   } = props
+  const theme = useTheme()
   const { setFocus } = useFocusContext()
   const playerName = usePlayerName(player.id)
   const gameOver = useRules()?.isOver()
@@ -54,18 +55,18 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
 
   return (
     <div ref={panelRef}
-         css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !hasCounter && noCounterCss]}
+         css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !hasCounter && noCounterCss, theme.playerPanel?.panel]}
          onClick={focusPlayer} {...rest}>
       <Avatar css={avatarStyle} playerId={player.id}
               speechBubbleProps={{ direction: getSpeechBubbleDirection(panelRef), children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
-        <div css={isTurnToPlay && circle}/>
+        <div css={isTurnToPlay && circleCss}/>
       </div>}
-      <h2 css={[nameStyle, data]}>{playerName}</h2>
+      <h2 css={[nameStyle, data, theme.playerPanel?.dataBadge]}>{playerName}</h2>
       {!main && !gameOver && (
         <PlayerTimer
           playerId={player.id}
-          css={[timerStyle, data, rightAlignment]}
+          css={[timerStyle, data, theme.playerPanel?.dataBadge, rightAlignment]}
           customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
         />
       )}
@@ -75,7 +76,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
           {!gameOver && (
             <PlayerTimer
               playerId={player.id}
-              css={[timerStyle, data, rightAlignment]}
+              css={[timerStyle, data, theme.playerPanel?.dataBadge, rightAlignment]}
               customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
             />
           )}
@@ -225,10 +226,10 @@ const circleAnimation = keyframes`
 `
 
 const inset = 0.8
-const circle = css`
+const circleCss = css`
   background-image: linear-gradient(
-          to bottom, gold 0%,
-          rgb(40, 184, 206) 100%);
+          to bottom, var(--gp-ring-color-1) 0%,
+          var(--gp-ring-color-2) 100%);
   position: absolute;
   top: -${inset}em;
   bottom: -${inset}em;

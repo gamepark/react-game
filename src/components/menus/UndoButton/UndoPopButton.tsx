@@ -1,17 +1,19 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faUndoAlt } from '@fortawesome/free-solid-svg-icons/faUndoAlt'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useTranslation } from 'react-i18next'
 import { useUndo } from '../../../hooks'
+import { palettePopButtonCss } from '../menuCss'
 import { MenuPopButton } from '../Menu/MenuPopButton'
 
 export const UndoPopButton = () => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const [undo, canUndo] = useUndo()
   const canUndoLastMove = canUndo()
 
   return (
-    <MenuPopButton pop={canUndoLastMove} onClick={() => undo()} css={style} title={t('Undo my last move')!}>
+    <MenuPopButton pop={canUndoLastMove} onClick={() => undo()} css={[style, palettePopButtonCss, theme.menu?.popButton]} title={t('Undo my last move')!}>
       <FontAwesomeIcon icon={faUndoAlt}/>
     </MenuPopButton>
   )

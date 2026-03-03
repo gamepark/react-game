@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faClock } from '@fortawesome/free-solid-svg-icons/faClock'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { Dialog } from '../../dialogs'
 import { Avatar } from '../../Avatar'
 import { usePlayerName, usePlayers } from '../../../hooks'
-import { menuButtonCss, menuDialogCss } from '../menuCss'
+import { menuButtonCss, menuDialogCss, paletteMenuButtonCss } from '../menuCss'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import utc from 'dayjs/plugin/utc'
@@ -17,44 +17,45 @@ dayjs.extend(utc)
 
 export const TimeStatsButton = () => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const [displayPopup, setDisplayPopup] = useState(false)
   const players = usePlayers()
 
   return (
     <>
-      <button css={menuButtonCss} onClick={() => setDisplayPopup(true)}>
+      <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button]} onClick={() => setDisplayPopup(true)}>
         <FontAwesomeIcon icon={faClock}/>
         {t('time.button')}
       </button>
-      <Dialog open={displayPopup} css={menuDialogCss} onBackdropClick={() => setDisplayPopup(false)}>
+      <Dialog open={displayPopup} css={[menuDialogCss, theme.timeStats?.container]} onBackdropClick={() => setDisplayPopup(false)}>
         <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={() => setDisplayPopup(false)}/>
         <h2>{t('time.title')}</h2>
         <div css={gridCss(players.length)}>
           <div/>
-          <div css={[borderTop, orangeBackground]}>{t('time.think.total')}</div>
-          <div css={[borderTop, blueBackground]}>{t('time.wait.total')}</div>
-          <div css={[borderTop, orangeBackground]}>{t('time.think.max')}</div>
-          <div css={[borderTop, blueBackground]}>{t('time.wait.max')}</div>
-          <div css={[borderTop, orangeBackground]}>{t('time.awaited')}</div>
+          <div css={[borderTopCss, thinkBgCss]}>{t('time.think.total')}</div>
+          <div css={[borderTopCss, waitBgCss]}>{t('time.wait.total')}</div>
+          <div css={[borderTopCss, thinkBgCss]}>{t('time.think.max')}</div>
+          <div css={[borderTopCss, waitBgCss]}>{t('time.wait.max')}</div>
+          <div css={[borderTopCss, thinkBgCss]}>{t('time.awaited')}</div>
           {players.map((player, index) =>
             <Fragment key={index}>
-              <div key={index} css={[relative, borderLeft]}>
+              <div key={index} css={[relative, borderLeftCss]}>
                 <Avatar playerId={player.id} css={avatarCss} />
                 <span><PlayerName playerId={player.id}/></span>
               </div>
-              <div css={[borderLeft, borderTop, orangeBackground]}>
+              <div css={[borderLeftCss, borderTopCss, thinkBgCss]}>
                 {humanize(player.time?.cumulatedPlayTime)}
               </div>
-              <div css={[borderLeft, borderTop, blueBackground]}>
+              <div css={[borderLeftCss, borderTopCss, waitBgCss]}>
                 {humanize(player.time?.cumulatedDownTime)}
               </div>
-              <div css={[borderLeft, borderTop, orangeBackground]}>
+              <div css={[borderLeftCss, borderTopCss, thinkBgCss]}>
                 {humanize(player.time?.highestPlayTime)}
               </div>
-              <div css={[borderLeft, borderTop, blueBackground]}>
+              <div css={[borderLeftCss, borderTopCss, waitBgCss]}>
                 {humanize(player.time?.highestDownTime)}
               </div>
-              <div css={[borderLeft, borderTop, orangeBackground]}>
+              <div css={[borderLeftCss, borderTopCss, thinkBgCss]}>
                 {humanize(player.time?.weightedWaitForMeTime)}
               </div>
             </Fragment>
@@ -100,20 +101,20 @@ const relative = css`
   position: relative;
 `
 
-const borderLeft = css`
-  border-left: 0.2em solid #28b8ce;
+const borderLeftCss = css`
+  border-left: 0.2em solid var(--gp-primary);
 `
 
-const borderTop = css`
-  border-top: 0.2em solid #28b8ce;
+const borderTopCss = css`
+  border-top: 0.2em solid var(--gp-primary);
 `
 
-const orangeBackground = css`
-  background-color: #fff3e3;
+const thinkBgCss = css`
+  background-color: var(--gp-timestats-think-bg);
 `
 
-const blueBackground = css`
-  background-color: #b3e9f0;
+const waitBgCss = css`
+  background-color: var(--gp-timestats-wait-bg);
 `
 
 const oneDay = dayjs.duration(1, 'day')

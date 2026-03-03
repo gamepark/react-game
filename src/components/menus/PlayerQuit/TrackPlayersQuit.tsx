@@ -1,9 +1,10 @@
+import { useTheme } from '@emotion/react'
 import { Player, PlayerQuitReason, useGameSelector, useMe } from '@gamepark/react-client'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePlayerName } from '../../../hooks'
 import { Dialog } from '../../dialogs'
-import { menuButtonCss, menuDialogCss } from '../menuCss'
+import { menuButtonCss, menuDialogCss, paletteMenuButtonCss } from '../menuCss'
 
 export const TrackPlayersQuit = () => {
   const players = useGameSelector((state) => state.players)
@@ -12,6 +13,7 @@ export const TrackPlayersQuit = () => {
 
 const TrackPlayerQuit = ({ player }: { player: Player }) => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const [open, setOpen] = useState(false)
   const me = useMe()
   const playerName = usePlayerName(player.id)
@@ -31,6 +33,6 @@ const TrackPlayerQuit = ({ player }: { player: Player }) => {
         : t('quit.player', { player: playerName })
     )
     }</p>
-    <button css={menuButtonCss} onClick={() => setOpen(false)}>{t('OK')}</button>
+    <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button]} onClick={() => setOpen(false)}>{t('OK')}</button>
   </Dialog>
 }

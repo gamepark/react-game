@@ -10,7 +10,7 @@ export const SignInToChat = () => {
   return (
     <div css={style}>
       <p css={textCss}>{t('sign-in-to-chat')}</p>
-      <button css={[buttonResetCss, signInButtonCss]}
+      <button css={[buttonResetCss, signInButtonCss, signInPaletteCss]}
               onClick={() => window.location.href = `${PLATFORM_URI}/${locale}/auth/sign-in?callbackUrl=${encodeURIComponent(window.location.href)}`}>
         {t('Sign in')}
       </button>
@@ -44,5 +44,18 @@ const signInButtonCss = css`
 
   &:active {
     background: #ade4ec;
+  }
+`
+
+const signInPaletteCss = css`
+  border-color: var(--gp-on-surface);
+  color: var(--gp-on-surface);
+
+  &:focus, &:hover {
+    background: var(--gp-on-surface-focus);
+  }
+
+  &:active {
+    background: var(--gp-on-surface-active);
   }
 `
