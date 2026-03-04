@@ -110,8 +110,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     if (mergeIndex !== -1) {
       return mergeIndex
     } else if ((items[move.itemIndex].quantity ?? 1) > (move.quantity ?? 1)) {
-      const availableIndex = items.findIndex(item => item.quantity === 0)
-      return availableIndex !== -1 ? availableIndex : items.length
+      return mutator.getItemCreationIndex(itemAfterMove, items[move.itemIndex]?.location?.player)
     } else {
       return move.itemIndex
     }
