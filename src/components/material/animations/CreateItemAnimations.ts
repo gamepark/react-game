@@ -54,6 +54,11 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     const items: any[] = rules.game.items?.[move.itemType] ?? []
     const key = getConsequenceIndex(context.action)
     const actionId = context.action.id
+
+    // Start with the prediction — always available and correct except in simultaneous phases
+    let createdIndex = rules.mutator(move.itemType).getItemCreationIndex(move.item)
+
+    // Try to improve with a snapshot comparison (handles simultaneous phases correctly)
     let snapshots = preQuantitySnapshots.get(actionId)
     let snapshot = snapshots?.get(key)
     // Fallback: action.id may have changed (local-xxx → server id) since getPreDuration
@@ -63,7 +68,6 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
         if (candidate) {
           snapshots = innerMap
           snapshot = candidate
-          // Clean up the stale key
           innerMap.delete(key)
           if (innerMap.size === 0) preQuantitySnapshots.delete(id)
           break
@@ -79,11 +83,13 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
         const oldQuantity = i < snapshot.length ? (snapshot[i] ?? 1) : 0
         const newQuantity = items[i]?.quantity ?? 1
         if (newQuantity > oldQuantity) {
-          getInnerMap(createdItemIndexes, actionId).set(key, i)
+          createdIndex = i
           break
         }
       }
     }
+
+    getInnerMap(createdItemIndexes, actionId).set(key, createdIndex)
 
     // Clean up to prevent memory leaks (Map doesn't auto-collect like WeakMap)
     setTimeout(() => {
