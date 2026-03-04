@@ -21,6 +21,7 @@ import { TFunction } from 'i18next'
 import { ComponentType, HTMLAttributes, ReactNode } from 'react'
 import { Trans } from 'react-i18next'
 import { getItemFromContext, ItemContext, Locator, MaterialContext } from '../../locators'
+import { DefaultHelpDisplay } from '../dialogs'
 import { defaultElevation, getElevationKeyframes } from './animations'
 import { ComponentDescription } from './ComponentDescription'
 import { ItemButtonProps, ItemMenuButton } from './ItemMenuButton'
@@ -29,6 +30,14 @@ import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 export type MaterialHelpProps<P extends number = number, M extends number = number, L extends number = number> = {
   closeDialog: () => void
 } & Omit<MaterialHelpDisplay<P, M, L>, 'type'>
+
+export type MaterialHelpDisplayProps<P extends number = number, M extends number = number, L extends number = number> = {
+  item: Partial<MaterialItem<P, L>>
+  itemType: M
+  itemIndex?: number
+  displayIndex?: number
+  closeDialog: () => void
+}
 
 export type MaterialContentProps<ItemId = any, M extends number = number> = {
   itemId: ItemId,
@@ -48,6 +57,13 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * Content of the help dialog opened when an item is clicked
    */
   help?: ComponentType<MaterialHelpProps<P, M, L>>
+
+  /**
+   * Custom component to render the item display area in the help dialog.
+   * Replaces the default item rendering (left side of the dialog).
+   * Use this to customize item positioning, show multiple items, add overlays, etc.
+   */
+  helpDisplay: ComponentType<MaterialHelpDisplayProps<P, M, L>> = DefaultHelpDisplay
 
   /**
    * The React component to display

@@ -2,14 +2,11 @@ import { css, keyframes, useTheme } from '@emotion/react'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { isSameLocationArea, MaterialHelpDisplay, MaterialItem, MaterialMoveBuilder, MaterialRules } from '@gamepark/rules-api'
+import { isSameLocationArea, MaterialHelpDisplay, MaterialMoveBuilder, MaterialRules } from '@gamepark/rules-api'
 import { FC, useMemo } from 'react'
-import { fontSizeCss } from '../../../css'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
 import { useLocators } from '../../../hooks/useLocators'
 import { ItemContext, Locator, SortFunction } from '../../../locators'
-import { MaterialComponent } from '../../material'
-import { LocationDisplay } from '../../material/locations/LocationDisplay'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
 import displayHelp = MaterialMoveBuilder.displayHelp
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
@@ -68,21 +65,10 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   useKeyDown('Escape', closeDialog)
   if (!description) return null
   const item = helpDisplay.item
-  const { width, height } = description.getSize(item.id)
   const hasNavigation = previous || next
-  const locations = item.location ? context.material[helpDisplay.itemType]?.getLocations(item as MaterialItem<P, L, any>, itemContext) ?? [] : []
   return <>
     <div css={[flex, hasNavigation && fullSize]}>
-      <MaterialComponent type={helpDisplay.itemType} itemId={item.id} itemIndex={helpDisplay.itemIndex} css={[
-        noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)),
-        description.getHelpDisplayExtraCss(item, itemContext)
-      ]}>
-        {locations.map((location) => {
-          const locationDescription = context.locators[location.type]?.getLocationDescription(location, context)
-          if (!locationDescription || !locationDescription.displayInParentItemHelp) return null
-          return <LocationDisplay key={JSON.stringify(location)} location={location} description={locationDescription as any}/>
-        })}
-      </MaterialComponent>
+      <description.helpDisplay item={item} itemType={helpDisplay.itemType} itemIndex={helpDisplay.itemIndex} displayIndex={helpDisplay.displayIndex} closeDialog={closeDialog}/>
       <div css={[helpDialogContentCss, theme.dialog.content]}>
         {description.help && <description.help {...helpDisplay} closeDialog={closeDialog}/>}
       </div>
@@ -91,7 +77,6 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
     {next && <NextArrow onNext={() => play(next, { transient: true })}/>}
   </>
 }
-
 
 type NextArrowProps = {
   onNext: () => void
@@ -174,10 +159,6 @@ const flex = css`
   padding: 3em 1em 3em 3em;
   max-width: inherit;
   max-height: inherit;
-`
-
-const noShrink = css`
-  flex-shrink: 0;
 `
 
 const fullSize = css`
