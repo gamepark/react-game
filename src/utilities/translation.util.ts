@@ -43,7 +43,7 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
       if (!locale || !namespace || !key) return
       try {
         const body = JSON.stringify({ locale, namespace, key, defaultValue, origin: window.location.href })
-        navigator.sendBeacon(`${PLATFORM_URI}/api/translations/missing`, new Blob([body], { type: 'application/json' }))
+        navigator.sendBeacon(`${PLATFORM_URI}/api/translations/missing`, new Blob([body], { type: 'text/plain' }))
       } catch (error) {
         console.error('[Translation] Failed to report missing key:', error)
       }
