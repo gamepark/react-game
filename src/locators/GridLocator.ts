@@ -160,7 +160,8 @@ export class GridLocator<P extends number = number, M extends number = number, L
       this.game = context.rules.game
       this.refreshedGrids.clear()
     }
-    if (!this.refreshedGrids.has(gridId)) {
+
+    if (!this.refreshedGrids.has(gridId) && this.itemTypes) {
       this.refreshedGrids.add(gridId)
       this.refreshDelta(location, context, gridId)
     }
@@ -180,7 +181,6 @@ export class GridLocator<P extends number = number, M extends number = number, L
 
   getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>): unknown {
     const gridId = this.getGridId(location, context)
-    this.ensureRefreshed(location, context, gridId)
     const delta = this.deltas.get(gridId) ?? { deltaX: 0, deltaY: 0 }
     return [delta.deltaX, delta.deltaY]
   }
