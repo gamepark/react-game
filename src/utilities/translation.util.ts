@@ -41,6 +41,7 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
     missingKeyHandler: (lngs, namespace, key, defaultValue) => {
       const locale = lngs[0]
       if (!locale || !namespace || !key) return
+      if (/_zero|_one|_two|_few|_many|_other$/.test(key)) return
       try {
         const body = JSON.stringify({ locale, namespace, key, defaultValue, origin: window.location.href })
         navigator.sendBeacon(`${PLATFORM_URI}/api/translations/missing`, new Blob([body], { type: 'text/plain' }))
