@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react'
-import { FC, PropsWithChildren, useCallback, useRef, useState } from 'react'
+import { FC, PropsWithChildren, ReactNode, useCallback, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useGame } from '../../../hooks/useGame'
 import { usePlayerId, usePlayerIds } from '../../../hooks/usePlayerId'
@@ -10,13 +10,43 @@ const GP_DARK = '#002448'
 const GP_SURFACE = '#0a1929'
 const GP_ACCENT = '#9fe2f7'
 
+export type GameOption = {
+  key: string
+  label: string
+  type: 'boolean'
+}
+
+/**
+ * A single entry in the DevToolsHub panel.
+ * Use this instead of raw `<button>` when adding custom tools via `children`.
+ *
+ * @example
+ * <DevToolsHub>
+ *   <DevToolEntry icon="✦" label="Card Viewer" desc="Browse agents" onClick={() => setShowCards(true)} />
+ * </DevToolsHub>
+ */
+export const DevToolEntry: FC<{
+  icon: ReactNode
+  label: string
+  desc?: string
+  onClick?: () => void
+}> = ({ icon, label, desc, onClick }) => (
+  <button css={devToolBtnCss} onClick={onClick}>
+    <span css={devToolIconCss}>{icon}</span>
+    <span css={devToolLabelCss}>{label}</span>
+    {desc && <span css={devToolDescCss}>{desc}</span>}
+  </button>
+)
+
 type DevToolsHubProps = PropsWithChildren<{
   fabBottom?: string
+  gameOptions?: GameOption[]
 }>
 
-export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom }) => {
+export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOptions }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [newGamePlayers, setNewGamePlayers] = useState(2)
+  const [options, setOptions] = useState<Record<string, boolean>>({})
   const [undoCount, setUndoCount] = useState(1)
   const [botActive, setBotActive] = useState(false)
   const [monkeyActive, setMonkeyActive] = useState(false)
@@ -95,10 +125,24 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom }) => {
                     css={numberInputCss} />
                   <button css={stepBtnCss} onClick={() => setNewGamePlayers(c => Math.min(10, c + 1))}>+</button>
                   <button css={goBtnCss}
-                    onClick={() => exec(() => g.new(newGamePlayers), `New game ${newGamePlayers}p`)}>
+                    onClick={() => exec(() => {
+                      const hasOptions = gameOptions?.length && Object.values(options).some(Boolean)
+                      g.new(hasOptions ? { players: newGamePlayers, ...options } : newGamePlayers)
+                    }, `New game ${newGamePlayers}p`)}>
                     Go
                   </button>
                 </div>
+                {gameOptions?.map(opt => (
+                  <label key={opt.key} css={toggleRowCss} onClick={e => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={options[opt.key] ?? false}
+                      onChange={e => setOptions(prev => ({ ...prev, [opt.key]: e.target.checked }))}
+                      css={checkboxCss}
+                    />
+                    <span css={toggleLabelCss}>{opt.label}</span>
+                  </label>
+                ))}
               </div>
 
               {/* Undo */}
@@ -558,4 +602,55 @@ const flashCss = css`
   border-top: 1px solid rgba(40, 184, 206, 0.1);
   background: rgba(40, 184, 206, 0.04);
   animation: ${flashFade} 1.5s ease-out forwards;
+`
+
+// ── Game Options toggles ──
+
+const toggleRowCss = css`
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 4px 0;
+  cursor: pointer;
+`
+
+const checkboxCss = css`
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid rgba(40, 184, 206, 0.35);
+  background: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.15s;
+
+  &:checked {
+    background: rgba(40, 184, 206, 0.2);
+    border-color: ${GP_PRIMARY};
+  }
+
+  &:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 11px;
+    color: ${GP_PRIMARY};
+    font-weight: 700;
+  }
+
+  &:hover {
+    border-color: rgba(40, 184, 206, 0.5);
+  }
+`
+
+const toggleLabelCss = css`
+  font-size: 12px;
+  font-weight: 600;
+  color: #5a8a98;
 `
