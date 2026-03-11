@@ -263,7 +263,7 @@ const fabCss = css`
   position: fixed;
   bottom: 16px;
   left: 16px;
-  z-index: 9999;
+  z-index: 1400;
   width: 40px;
   height: 40px;
   border-radius: 10px;
@@ -304,7 +304,7 @@ const logoCss = css`
 const backdropCss = css`
   position: fixed;
   inset: 0;
-  z-index: 9998;
+  z-index: 1399;
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(2px);
 `
@@ -318,7 +318,7 @@ const panelCss = css`
   position: fixed;
   bottom: 64px;
   left: 16px;
-  z-index: 9999;
+  z-index: 1400;
   width: 320px;
   background: linear-gradient(170deg, #0f2035 0%, ${GP_SURFACE} 100%);
   border: 1px solid rgba(40, 184, 206, 0.25);
