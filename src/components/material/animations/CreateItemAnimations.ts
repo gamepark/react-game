@@ -31,8 +31,8 @@ function getInnerMap<K, T>(map: { get(key: K): Map<number, T> | undefined, set(k
   return inner
 }
 
-export class CreateItemAnimations<P extends number = number, M extends number = number, L extends number = number>
-  extends ItemAnimations<P, M, L> {
+export class CreateItemAnimations<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
+  extends ItemAnimations<P, M, L, R, V> {
 
   constructor(
     protected duration = 1,
@@ -41,16 +41,16 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     super()
   }
 
-  override getPreDuration(move: CreateItem<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
-    const rules = new context.Rules(context.game, { player: context.playerId }) as MaterialRules<P, M, L>
+  override getPreDuration(move: CreateItem<P, M, L>, context: MaterialGameAnimationContext<P, M, L, R, V>): number {
+    const rules = new context.Rules(context.game, { player: context.playerId }) as MaterialRules<P, M, L, R, V>
     const items = rules.game.items?.[move.itemType] ?? []
     const key = getConsequenceIndex(context.action)
     getInnerMap(preQuantitySnapshots, context.action.id).set(key, items.map((item: any) => item.quantity))
     return 0
   }
 
-  override getPostDuration(move: CreateItem<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
-    const rules = new context.Rules(context.game, { player: context.playerId }) as MaterialRules<P, M, L>
+  override getPostDuration(move: CreateItem<P, M, L>, context: MaterialGameAnimationContext<P, M, L, R, V>): number {
+    const rules = new context.Rules(context.game, { player: context.playerId }) as MaterialRules<P, M, L, R, V>
     const items: any[] = rules.game.items?.[move.itemType] ?? []
     const key = getConsequenceIndex(context.action)
     const actionId = context.action.id
@@ -103,7 +103,7 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     return this.duration
   }
 
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<CreateItem<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
+  getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<CreateItem<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
     if (!this.isItemToAnimate(context, animation)) return
     const stockItem = getFirstStockItem(context)
     const stockTransforms = getFirstStockItemTransforms(context)
@@ -122,11 +122,11 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
       }
 
       // Check if trajectory is configured
-      const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L>
+      const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L, R, V>
       const trajectory = this.trajectory ?? contextWithTrajectory.trajectory
 
       if (trajectory) {
-        const trajectoryContext: ItemContextWithTrajectory<P, M, L> = { ...context, trajectory }
+        const trajectoryContext: ItemContextWithTrajectory<P, M, L, R, V> = { ...context, trajectory }
         const animationKeyframes = this.getTrajectoryKeyframes(originTransforms, targetTransforms, animation, trajectoryContext)
         return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
       } else {
@@ -139,7 +139,7 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     }
   }
 
-  isItemToAnimate(context: ItemContext<P, M, L>, animation: Animation<CreateItem<P, M, L>>): boolean {
+  isItemToAnimate(context: ItemContext<P, M, L, R, V>, animation: Animation<CreateItem<P, M, L>>): boolean {
     const { type, index, displayIndex } = context
     const key = getConsequenceIndex(animation.action)
     let createdIndex = createdItemIndexes.get(animation.action.id)?.get(key)
@@ -160,7 +160,7 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     return displayIndex >= quantity - createdQuantity
   }
 
-  protected getKeyframesFromOrigin(origin: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
+  protected getKeyframesFromOrigin(origin: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L, R, V>) {
     return keyframes`
       from {
         transform: ${origin};

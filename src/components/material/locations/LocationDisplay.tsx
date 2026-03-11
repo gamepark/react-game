@@ -5,9 +5,9 @@ import { backgroundCss, borderRadiusCss, sizeCss, transformCss } from '../../../
 import { useMaterialContext } from '../../../hooks'
 import { LocationDescription } from './LocationDescription'
 
-export type LocationDisplayProps<P extends number = number, M extends number = number, L extends number = number> = {
+export type LocationDisplayProps<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = {
   location: Location<P, L>
-  description: LocationDescription<P, M, L>
+  description: LocationDescription<P, M, L, R, V>
   canDrop?: boolean
 } & HTMLAttributes<HTMLDivElement>
 

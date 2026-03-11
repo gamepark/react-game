@@ -3,7 +3,7 @@ import { DisplayedAction } from '@gamepark/react-client'
 import { MaterialGame, MaterialMove } from '@gamepark/rules-api'
 import { ComponentType } from 'react'
 
-export type MaterialLogProps<M extends MaterialMove = MaterialMove, P extends number = number> = MoveComponentProps<M, P, MaterialGame>
+export type MaterialLogProps<Move extends MaterialMove = MaterialMove, P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = MoveComponentProps<Move, P, MaterialGame<P, M, L, R, V>>
 
 export type MoveComponentProps<Move = any, Player = number, Game = any> = {
   move: Move,

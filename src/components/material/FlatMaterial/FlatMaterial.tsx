@@ -6,8 +6,8 @@ import { ItemContext, MaterialContext } from '../../../locators'
 import { MaterialContentProps } from '../MaterialDescription'
 import { MobileMaterialDescription } from '../MobileMaterialDescription'
 
-export abstract class FlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
-  extends MobileMaterialDescription<P, M, L, ItemId> {
+export abstract class FlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>
+  extends MobileMaterialDescription<P, M, L, ItemId, R, V> {
 
   image?: string
   images?: Record<ItemId extends keyof any ? ItemId : never, string>
@@ -57,27 +57,27 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return this.transparency
   }
 
-  isFlipped(item: Partial<MaterialItem<P, L>>, _context: MaterialContext<P, M, L>): boolean {
-    return this.hasBackFace() && this.getFrontId(item.id) === undefined
+  isFlipped(item: Partial<MaterialItem<P, L, ItemId>>, _context: MaterialContext<P, M, L, R, V>): boolean {
+    return this.hasBackFace() && this.getFrontId(item.id as ItemId) === undefined
   }
 
-  isFlippedOnTable(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
+  isFlippedOnTable(item: Partial<MaterialItem<P, L, ItemId>>, context: MaterialContext<P, M, L, R, V>): boolean {
     return this.isFlipped(item, context)
   }
 
-  isFlippedInDialog(item: Partial<MaterialItem<P, L>>, context: MaterialContext<P, M, L>): boolean {
+  isFlippedInDialog(item: Partial<MaterialItem<P, L, ItemId>>, context: MaterialContext<P, M, L, R, V>): boolean {
     return this.isFlipped(item, context)
   }
 
-  getItemTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+  getItemTransform(item: MaterialItem<P, L, ItemId>, context: ItemContext<P, M, L, R, V>): string[] {
     const transform = super.getItemTransform(item, context)
     if (this.isFlippedOnTable(item, context)) transform.push('rotateY(180deg)')
     return transform
   }
 
-  content = (props: MaterialContentProps<ItemId>) => this.contentWithBackChildren(props)
+  content = (props: MaterialContentProps<ItemId, M>) => this.contentWithBackChildren(props)
 
-  contentWithBackChildren = ({ itemId, highlight, playDown, preview, children, backChildren }: MaterialContentProps<ItemId> & { backChildren?: ReactNode }) => {
+  contentWithBackChildren = ({ itemId, highlight, playDown, preview, children, backChildren }: MaterialContentProps<ItemId, M> & { backChildren?: ReactNode }) => {
     const image = this.getImage(itemId)
     const backImage = this.getBackImage(itemId)
     const size = this.getSize(itemId)
@@ -120,13 +120,13 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return
   }
 
-  getHoverTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+  getHoverTransform(item: MaterialItem<P, L, ItemId>, context: ItemContext<P, M, L, R, V>): string[] {
     const locator = context.locators[item.location.type]
     if (!locator || (this.backImage && this.isFlippedOnTable(item, context))) return []
     return locator.getHoverTransform(item, context)
   }
 
-  getHelpDisplayExtraCss(item: Partial<MaterialItem<P, L>>, context: ItemContext<P, M, L>): Interpolation<Theme> {
+  getHelpDisplayExtraCss(item: Partial<MaterialItem<P, L, ItemId>>, context: ItemContext<P, M, L, R, V>): Interpolation<Theme> {
     return this.isFlippedInDialog(item, context) && transformCss('rotateY(180deg)')
   }
 }

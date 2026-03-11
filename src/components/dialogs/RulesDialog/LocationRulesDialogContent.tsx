@@ -9,13 +9,13 @@ export type LocationRulesDialogContentProps<P extends number = number, L extends
   helpDisplay: LocationHelpDisplay<P, L>
 }
 
-export const LocationRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number>(
+export const LocationRulesDialogContent = <P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(
   { helpDisplay: { location } }: LocationRulesDialogContentProps<P, L>
 ) => {
   const play = usePlay()
   const theme = useTheme()
-  const context = useMaterialContext<P, M, L>()
-  const locator = useItemLocator<P, M, L>(location.type)
+  const context = useMaterialContext<P, M, L, R, V>()
+  const locator = useItemLocator<P, M, L, R, V>(location.type)
   const description = locator?.getLocationDescription(location, context)
   const Help = description?.help ?? locator?.help
   if (!Help) return null

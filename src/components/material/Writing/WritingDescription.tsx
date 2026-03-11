@@ -3,14 +3,14 @@ import { ReactNode } from 'react'
 import { borderRadiusCss, shineEffect, sizeCss, transparencyShadowEffect } from '../../../css'
 import { MaterialContentProps, MaterialDescription } from '../MaterialDescription'
 
-export abstract class WritingDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
-  extends MaterialDescription<P, M, L, ItemId> {
+export abstract class WritingDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>
+  extends MaterialDescription<P, M, L, ItemId, R, V> {
 
   getFrontContent(_itemId: ItemId): ReactNode | undefined {
     return
   }
 
-  content = ({ itemId, highlight, playDown }: MaterialContentProps<ItemId>) => {
+  content = ({ itemId, highlight, playDown }: MaterialContentProps<ItemId, M>) => {
     const size = this.getSize(itemId)
     const borderRadius = this.getBorderRadius(itemId)
     return <div css={[
@@ -24,8 +24,8 @@ export abstract class WritingDescription<P extends number = number, M extends nu
   }
 }
 
-export const isWritingDescription = <P extends number = number, M extends number = number, L extends number = number, ItemId = any>(description: MaterialDescription<P, M, L, ItemId>): description is WritingDescription<P, M, L, ItemId> => {
-  return typeof (description as WritingDescription<P, M, L, ItemId>).getFrontContent === 'function'
+export const isWritingDescription = <P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>(description: MaterialDescription<P, M, L, ItemId, R, V>): description is WritingDescription<P, M, L, ItemId, R, V> => {
+  return typeof (description as WritingDescription<P, M, L, ItemId, R, V>).getFrontContent === 'function'
 }
 
 const faceCss = css`

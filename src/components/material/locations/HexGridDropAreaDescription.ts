@@ -7,18 +7,18 @@ import { getItemFromContext, HexagonalGridLocator, ItemContext, Locator } from '
 import { DropAreaDescription } from './DropAreaDescription'
 import { SimpleDropArea } from './SimpleDropArea'
 
-export class HexGridDropAreaDescription<P extends number = number, M extends number = number, L extends number = number, Id = any>
-  extends DropAreaDescription<P, M, L, Id> {
+export class HexGridDropAreaDescription<P extends number = number, M extends number = number, L extends number = number, Id = any, R extends number = number, V extends number = number>
+  extends DropAreaDescription<P, M, L, Id, R, V> {
 
   Component: ElementType = SimpleDropArea
 
   ignoreCoordinates = true
 
-  canDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: ItemContext<P, M, L>): boolean {
+  canDrop(move: MaterialMove<P, M, L, R, V>, location: Location<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
     return this.isMoveToLocation(move, location, context)
   }
 
-  getBestDropMove(moves: MaterialMove<P, M, L>[], location: Location<P, L>, context: ItemContext<P, M, L>, event: DragMoveEvent | DragEndEvent): MaterialMove<P, M, L> {
+  getBestDropMove(moves: MaterialMove<P, M, L, R, V>[], location: Location<P, L>, context: ItemContext<P, M, L, R, V>, event: DragMoveEvent | DragEndEvent): MaterialMove<P, M, L, R, V> {
     const itemRect = event.active.rect.current.translated
     const dropAreaRect = event.over?.rect
     if (itemRect && dropAreaRect) {
@@ -58,8 +58,8 @@ export class HexGridDropAreaDescription<P extends number = number, M extends num
   }
 }
 
-function isHexagonalGridLocator<P extends number = number, M extends number = number, L extends number = number>(
-  locator: Locator<P, M, L>
-): locator is HexagonalGridLocator<P, M, L> {
-  return typeof (locator as HexagonalGridLocator<P, M, L>).coordinatesSystem === 'number'
+function isHexagonalGridLocator<P extends number = number, M extends number = number, L extends number = number, T = any, R extends number = number, V extends number = number>(
+  locator: Locator<P, M, L, R, V>
+): locator is HexagonalGridLocator<P, M, L, T, R, V> {
+  return typeof (locator as HexagonalGridLocator<P, M, L, T, R, V>).coordinatesSystem === 'number'
 }

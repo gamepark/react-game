@@ -9,9 +9,9 @@ import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { DropAreaDescription } from './DropAreaDescription'
 import { LocationComponent } from './LocationComponent'
 
-export type SimpleDropAreaProps<P extends number = number, M extends number = number, L extends number = number> = {
+export type SimpleDropAreaProps<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = {
   location: Location<P, L>
-  description: DropAreaDescription<P, M, L>
+  description: DropAreaDescription<P, M, L, R, V>
 } & HTMLAttributes<HTMLDivElement>
 
 export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
