@@ -10,7 +10,11 @@ const GP_DARK = '#002448'
 const GP_SURFACE = '#0a1929'
 const GP_ACCENT = '#9fe2f7'
 
-export const DevToolsHub: FC<PropsWithChildren> = ({ children }) => {
+type DevToolsHubProps = PropsWithChildren<{
+  fabBottom?: string
+}>
+
+export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [undoCount, setUndoCount] = useState(1)
   const [botActive, setBotActive] = useState(false)
@@ -52,7 +56,8 @@ export const DevToolsHub: FC<PropsWithChildren> = ({ children }) => {
 
   return createPortal(
     <>
-      <button css={fabCss} onClick={() => setIsOpen(o => !o)} data-open={isOpen}>
+      <button css={fabCss} onClick={() => setIsOpen(o => !o)} data-open={isOpen}
+        style={fabBottom ? { bottom: fabBottom } : undefined}>
         <svg css={logoCss} viewBox="0 0 46 46" data-open={isOpen}>
           <circle cx="11" cy="11" r="7" />
           <circle cx="35" cy="11" r="7" />
@@ -64,7 +69,7 @@ export const DevToolsHub: FC<PropsWithChildren> = ({ children }) => {
       {isOpen && (
         <>
           <div css={backdropCss} onClick={() => setIsOpen(false)} />
-          <div css={panelCss}>
+          <div css={panelCss} style={fabBottom ? { bottom: `calc(${fabBottom} + 48px)` } : undefined}>
             <div css={panelHeaderCss}>
               <svg css={headerLogoCss} viewBox="0 0 46 46">
                 <circle cx="11" cy="11" r="7" />
