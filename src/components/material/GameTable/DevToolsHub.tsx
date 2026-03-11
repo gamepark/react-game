@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react'
-import { FC, useCallback, useRef, useState } from 'react'
+import { FC, PropsWithChildren, useCallback, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useGame } from '../../../hooks/useGame'
 import { usePlayerId, usePlayerIds } from '../../../hooks/usePlayerId'
@@ -10,9 +10,10 @@ const GP_DARK = '#002448'
 const GP_SURFACE = '#0a1929'
 const GP_ACCENT = '#9fe2f7'
 
-export const DevToolsHub: FC = () => {
+export const DevToolsHub: FC<PropsWithChildren> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [undoCount, setUndoCount] = useState(1)
+  const [botActive, setBotActive] = useState(false)
   const [monkeyActive, setMonkeyActive] = useState(false)
   const [flash, setFlash] = useState<string | null>(null)
   const flashTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -77,18 +78,18 @@ export const DevToolsHub: FC = () => {
 
             <div css={toolListCss}>
               {/* New Game */}
-              <button css={toolBtnCss} style={{ animationDelay: '0ms' }}
+              <button css={devToolBtnCss} style={{ animationDelay: '0ms' }}
                 onClick={() => exec(() => g.new(), 'New game started')}>
-                <span css={toolIconCss}>{'\u21BB'}</span>
-                <span css={toolLabelCss}>New Game</span>
-                <span css={toolDescCss}>Reset game state</span>
+                <span css={devToolIconCss}>{'\u21BB'}</span>
+                <span css={devToolLabelCss}>New Game</span>
+                <span css={devToolDescCss}>Reset game state</span>
               </button>
 
               {/* Undo */}
-              <div css={toolBtnCss} style={{ animationDelay: '40ms' }}>
-                <span css={toolIconCss}>{'\u238C'}</span>
-                <span css={toolLabelCss}>Undo</span>
-                <span css={toolDescCss}>Revert N moves</span>
+              <div css={devToolBtnCss} style={{ animationDelay: '40ms' }}>
+                <span css={devToolIconCss}>{'\u238C'}</span>
+                <span css={devToolLabelCss}>Undo</span>
+                <span css={devToolDescCss}>Revert N moves</span>
                 <div css={inlineRowCss} onClick={e => e.stopPropagation()}>
                   <button css={stepBtnCss} onClick={() => setUndoCount(c => Math.max(1, c - 1))}>-</button>
                   <input type="number" min={1} max={999} value={undoCount}
@@ -103,10 +104,10 @@ export const DevToolsHub: FC = () => {
               </div>
 
               {/* Switch Player */}
-              <div css={toolBtnCss} style={{ animationDelay: '80ms' }}>
-                <span css={toolIconCss}>{'\u2194'}</span>
-                <span css={toolLabelCss}>Switch Player</span>
-                <span css={toolDescCss}>View as another player</span>
+              <div css={devToolBtnCss} style={{ animationDelay: '80ms' }}>
+                <span css={devToolIconCss}>{'\u2194'}</span>
+                <span css={devToolLabelCss}>Switch Player</span>
+                <span css={devToolDescCss}>View as another player</span>
                 <div css={inlineRowCss} onClick={e => e.stopPropagation()}>
                   {players.map(pid => (
                     <button key={String(pid)}
@@ -124,50 +125,65 @@ export const DevToolsHub: FC = () => {
               </div>
 
               {/* Bot */}
-              <button css={toolBtnCss} style={{ animationDelay: '120ms' }}
-                onClick={() => exec(() => g.bot(), 'Bot move played')}>
-                <span css={toolIconCss}>{'\u2699'}</span>
-                <span css={toolLabelCss}>Bot Move</span>
-                <span css={toolDescCss}>Play one bot move</span>
+              <button css={[devToolBtnCss, botActive && toolBtnActiveCss]}
+                style={{ animationDelay: '120ms' }}
+                onClick={() => {
+                  const next = !botActive
+                  exec(() => g.bot(next), next ? 'Bot ON' : 'Bot OFF')
+                  setBotActive(next)
+                  if (next) setMonkeyActive(false)
+                }}>
+                <span css={devToolIconCss}>{'\u2699'}</span>
+                <span css={devToolLabelCss}>Bot</span>
+                <span css={devToolDescCss}>Toggle bot auto-play</span>
+                {botActive && <span css={activeIndicatorCss} />}
               </button>
 
               {/* Monkey */}
-              <button css={[toolBtnCss, monkeyActive && toolBtnActiveCss]}
+              <button css={[devToolBtnCss, monkeyActive && toolBtnActiveCss]}
                 style={{ animationDelay: '160ms' }}
                 onClick={() => {
                   const next = !monkeyActive
                   exec(() => g.monkeyOpponents(next), next ? 'Monkey ON' : 'Monkey OFF')
                   setMonkeyActive(next)
+                  if (next) setBotActive(false)
                 }}>
-                <span css={toolIconCss}>{'\u2689'}</span>
-                <span css={toolLabelCss}>Monkey</span>
-                <span css={toolDescCss}>Toggle random opponent</span>
+                <span css={devToolIconCss}>{'\u2689'}</span>
+                <span css={devToolLabelCss}>Monkey</span>
+                <span css={devToolDescCss}>Toggle random opponents</span>
                 {monkeyActive && <span css={activeIndicatorCss} />}
               </button>
 
               {/* Tutorial */}
-              <button css={toolBtnCss} style={{ animationDelay: '200ms' }}
+              <button css={devToolBtnCss} style={{ animationDelay: '200ms' }}
                 onClick={() => exec(() => g.tutorial(), 'Tutorial started')}>
-                <span css={toolIconCss}>?</span>
-                <span css={toolLabelCss}>Tutorial</span>
-                <span css={toolDescCss}>Start tutorial mode</span>
+                <span css={devToolIconCss}>?</span>
+                <span css={devToolLabelCss}>Tutorial</span>
+                <span css={devToolDescCss}>Start tutorial mode</span>
               </button>
+
+              {children && (
+                <>
+                  <div css={dividerCss} />
+                  {children}
+                </>
+              )}
 
               <div css={dividerCss} />
 
               {/* Copy State */}
-              <button css={toolBtnCss} style={{ animationDelay: '240ms' }}
+              <button css={devToolBtnCss} style={{ animationDelay: '240ms' }}
                 onClick={() => {
                   if (gameState) copyToClipboard(JSON.stringify(gameState, null, 2), 'Game state')
                   else doFlash('No game state')
                 }}>
-                <span css={toolIconCss}>{'\u2398'}</span>
-                <span css={toolLabelCss}>Copy State</span>
-                <span css={toolDescCss}>Copy game state to clipboard</span>
+                <span css={devToolIconCss}>{'\u2398'}</span>
+                <span css={devToolLabelCss}>Copy State</span>
+                <span css={devToolDescCss}>Copy game state to clipboard</span>
               </button>
 
               {/* Copy LocalStorage */}
-              <button css={toolBtnCss} style={{ animationDelay: '280ms' }}
+              <button css={devToolBtnCss} style={{ animationDelay: '280ms' }}
                 onClick={() => {
                   const data: Record<string, string> = {}
                   for (let i = 0; i < localStorage.length; i++) {
@@ -176,9 +192,9 @@ export const DevToolsHub: FC = () => {
                   }
                   copyToClipboard(JSON.stringify(data, null, 2), 'localStorage')
                 }}>
-                <span css={toolIconCss}>{'\u29C9'}</span>
-                <span css={toolLabelCss}>Copy LocalStorage</span>
-                <span css={toolDescCss}>Copy localStorage to clipboard</span>
+                <span css={devToolIconCss}>{'\u29C9'}</span>
+                <span css={devToolLabelCss}>Copy LocalStorage</span>
+                <span css={devToolDescCss}>Copy localStorage to clipboard</span>
               </button>
             </div>
 
@@ -290,7 +306,7 @@ const headerLogoCss = css`
 `
 
 const panelTitleCss = css`
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   color: #e0f0f4;
   text-transform: uppercase;
@@ -320,7 +336,7 @@ const toolListCss = css`
   gap: 2px;
 `
 
-const toolBtnCss = css`
+export const devToolBtnCss = css`
   position: relative;
   display: grid;
   grid-template-columns: 28px 1fr;
@@ -359,7 +375,7 @@ const toolBtnActiveCss = css`
   }
 `
 
-const toolIconCss = css`
+export const devToolIconCss = css`
   grid-row: 1 / -1;
   font-size: 15px;
   color: ${GP_PRIMARY};
@@ -372,15 +388,15 @@ const toolIconCss = css`
   background: rgba(40, 184, 206, 0.08);
 `
 
-const toolLabelCss = css`
-  font-size: 13px;
+export const devToolLabelCss = css`
+  font-size: 14px;
   font-weight: 700;
   color: #e0f0f4;
   line-height: 1.2;
 `
 
-const toolDescCss = css`
-  font-size: 11px;
+export const devToolDescCss = css`
+  font-size: 12px;
   color: #5a8a98;
   line-height: 1.2;
 `
