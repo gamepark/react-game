@@ -49,7 +49,6 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
   const [options, setOptions] = useState<Record<string, boolean>>({})
   const [undoCount, setUndoCount] = useState(1)
   const [botActive, setBotActive] = useState(false)
-  const [monkeyActive, setMonkeyActive] = useState(false)
   const [flash, setFlash] = useState<string | null>(null)
   const flashTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const gameState = useGame()
@@ -189,33 +188,17 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
                 style={{ animationDelay: '120ms' }}
                 onClick={() => {
                   const next = !botActive
-                  exec(() => g.bot(next), next ? 'Bot ON' : 'Bot OFF')
+                  exec(() => g.bot(next), next ? 'Bots enabled' : 'Bots disabled')
                   setBotActive(next)
-                  if (next) setMonkeyActive(false)
                 }}>
                 <span css={devToolIconCss}>{'\u2699'}</span>
-                <span css={devToolLabelCss}>Bot</span>
-                <span css={devToolDescCss}>Toggle bot auto-play</span>
+                <span css={devToolLabelCss}>{botActive ? 'Disable Bots' : 'Enable Bots'}</span>
+                <span css={devToolDescCss}>{botActive ? 'Stop auto-play' : 'Auto-play all moves'}</span>
                 {botActive && <span css={activeIndicatorCss} />}
               </button>
 
-              {/* Monkey */}
-              <button css={[devToolBtnCss, monkeyActive && toolBtnActiveCss]}
-                style={{ animationDelay: '160ms' }}
-                onClick={() => {
-                  const next = !monkeyActive
-                  exec(() => g.monkeyOpponents(next), next ? 'Monkey ON' : 'Monkey OFF')
-                  setMonkeyActive(next)
-                  if (next) setBotActive(false)
-                }}>
-                <span css={devToolIconCss}>{'\u2689'}</span>
-                <span css={devToolLabelCss}>Monkey</span>
-                <span css={devToolDescCss}>Toggle random opponents</span>
-                {monkeyActive && <span css={activeIndicatorCss} />}
-              </button>
-
               {/* Tutorial */}
-              <button css={devToolBtnCss} style={{ animationDelay: '200ms' }}
+              <button css={devToolBtnCss} style={{ animationDelay: '160ms' }}
                 onClick={() => exec(() => g.tutorial(), 'Tutorial started')}>
                 <span css={devToolIconCss}>?</span>
                 <span css={devToolLabelCss}>Tutorial</span>
