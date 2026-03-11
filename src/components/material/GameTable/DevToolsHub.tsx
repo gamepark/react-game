@@ -16,6 +16,7 @@ type DevToolsHubProps = PropsWithChildren<{
 
 export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [newGamePlayers, setNewGamePlayers] = useState(2)
   const [undoCount, setUndoCount] = useState(1)
   const [botActive, setBotActive] = useState(false)
   const [monkeyActive, setMonkeyActive] = useState(false)
@@ -83,12 +84,22 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom }) => {
 
             <div css={toolListCss}>
               {/* New Game */}
-              <button css={devToolBtnCss} style={{ animationDelay: '0ms' }}
-                onClick={() => exec(() => g.new(), 'New game started')}>
+              <div css={devToolBtnCss} style={{ animationDelay: '0ms' }}>
                 <span css={devToolIconCss}>{'\u21BB'}</span>
                 <span css={devToolLabelCss}>New Game</span>
-                <span css={devToolDescCss}>Reset game state</span>
-              </button>
+                <span css={devToolDescCss}>Reset with N players</span>
+                <div css={inlineRowCss} onClick={e => e.stopPropagation()}>
+                  <button css={stepBtnCss} onClick={() => setNewGamePlayers(c => Math.max(1, c - 1))}>-</button>
+                  <input type="number" min={1} max={10} value={newGamePlayers}
+                    onChange={e => setNewGamePlayers(Math.max(1, parseInt(e.target.value) || 2))}
+                    css={numberInputCss} />
+                  <button css={stepBtnCss} onClick={() => setNewGamePlayers(c => Math.min(10, c + 1))}>+</button>
+                  <button css={goBtnCss}
+                    onClick={() => exec(() => g.new(newGamePlayers), `New game ${newGamePlayers}p`)}>
+                    Go
+                  </button>
+                </div>
+              </div>
 
               {/* Undo */}
               <div css={devToolBtnCss} style={{ animationDelay: '40ms' }}>
