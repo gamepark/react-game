@@ -12,7 +12,7 @@ export enum HexOrientation {
 /**
  * This locator is responsible for placing locations and items on a hexagonal grid.
  */
-export abstract class HexagonalGridLocator<P extends number = number, M extends number = number, L extends number = number, T = any> extends Locator<P, M, L> {
+export abstract class HexagonalGridLocator<P extends number = number, M extends number = number, L extends number = number, T = any, R extends number = number, V extends number = number> extends Locator<P, M, L, R, V> {
   /**
    * The coordinates system used by the location and items to place
    */
@@ -54,7 +54,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    * @param _context Context of the game
    * @return the current drop area
    */
-  getDropArea(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Polyhex<T> | undefined {
+  getDropArea(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): Polyhex<T> | undefined {
     return this.dropArea
   }
 
@@ -64,7 +64,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    * @param context Context of the game
    * @returns The coordinates of the area
    */
-  getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): Partial<Coordinates> {
     const { x = 0, y = 0, z } = this.getCoordinates(location, context)
     const dropArea = this.getDropArea(location, context)
     if (!dropArea) return { x, y, z }
@@ -78,7 +78,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    * @param context Context of the game
    * @return the coordinates
    */
-  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): Partial<Coordinates> {
     if (location.x === undefined && location.y === undefined) {
       return this.getAreaCoordinates(location, context)
     }
@@ -141,10 +141,10 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    * @param context Context of the game
    * @return the coordinates of the item
    */
-  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
+  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): Partial<Coordinates> {
     const { x = 0, y = 0, z } = super.getItemCoordinates(item, context)
     const description = context.material[context.type]
-    if (!description || !isPolyhexDescription<P, M, L>(description)) {
+    if (!description || !isPolyhexDescription<P, M, L, any, R, V>(description)) {
       return { x, y, z }
     }
     const polyhex = description.getPolyhex(item, context)
@@ -159,7 +159,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    * @param _context Context of the item
    * @return the location's rotation in degrees
    */
-  getRotateZ(location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+  getRotateZ(location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number {
     // TODO: the real rotation depends on the sizeX / sizeY ratio for 1, 2, 4 & 5 rotations (custom override applied for King of Tokyo Duel)
     return (location.rotation ?? 0) * 60
   }
@@ -167,7 +167,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
   /**
    * Returns the drop locations for current dragged item. The hexagonal grid must be one simple drop location.
    */
-  getDropLocations(moves: MoveItem<P, M, L>[], context: ItemContext<P, M, L>): Location<P, L>[] {
+  getDropLocations(moves: MoveItem<P, M, L>[], context: ItemContext<P, M, L, R, V>): Location<P, L>[] {
     if (!this.locationDescription || this.locationDescription.ignoreCoordinates) {
       return uniqWith(moves.map(move => (omit(move.location, ['x', 'y', 'z', 'rotation']) as Location<P, L>)), isEqual)
     } else {
@@ -180,7 +180,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
   /**
    * Generate automatically a {@link HexGridDropAreaDescription} based on the grid boundaries
    */
-  getLocationDescription(location: Location<P, L>, context: MaterialContext<P, M, L> | ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
+  getLocationDescription(location: Location<P, L>, context: MaterialContext<P, M, L, R, V> | ItemContext<P, M, L, R, V>): LocationDescription<P, M, L> | undefined {
     if (this.locationDescription) return this.locationDescription
     if (location.x !== undefined || location.y !== undefined) return super.getLocationDescription(location, context)
     const dropArea = this.getDropArea(location, context)

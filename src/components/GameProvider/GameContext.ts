@@ -6,12 +6,12 @@ import { LogDescription } from '../Log'
 import { MaterialDescriptionRecord } from '../material'
 import { ScoringDescription } from '../Scoring'
 
-export type GameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
+export type GameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number, RuleId extends number = number, View extends number = number> = {
   game: string
   Rules: RulesCreator<Game, Move, PlayerId>
-  material?: Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType>>
-  materialI18n?: Record<string, Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType>>>
-  locators?: Partial<ItemLocatorRecord<PlayerId, MaterialType, LocationType>>
+  material?: Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType, RuleId, View>>
+  materialI18n?: Record<string, Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType, RuleId, View>>>
+  locators?: Partial<ItemLocatorRecord<PlayerId, MaterialType, LocationType, RuleId, View>>
   rulesHelp?: Record<number, ComponentType<{ close: () => void }>>
   optionsSpec?: any
   animations?: Animations<Game, Move, PlayerId>
@@ -21,10 +21,10 @@ export type GameContext<Game = any, Move = any, PlayerId extends number = number
   hasSounds?: boolean
 }
 
-export type MaterialGameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number>
-  = GameContext<Game, Move, PlayerId, MaterialType, LocationType> & {
-  material: Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType>>
-  locators: Partial<ItemLocatorRecord<PlayerId, MaterialType, LocationType>>
+export type MaterialGameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number, RulesId extends number = number, View extends number = number>
+  = GameContext<Game, Move, PlayerId, MaterialType, LocationType, RulesId, View> & {
+  material: Partial<MaterialDescriptionRecord<PlayerId, MaterialType, LocationType, RulesId, View>>
+  locators: Partial<ItemLocatorRecord<PlayerId, MaterialType, LocationType, RulesId, View>>
 }
 
 class MissingRules {

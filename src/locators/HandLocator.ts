@@ -5,7 +5,7 @@ import { getItemFromContext, ItemContext, Locator, MaterialContext } from './Loc
 /**
  * This Locator places items fan-shaped to mimic the ways we hold cards in our hands.
  */
-export class HandLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+export class HandLocator<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> extends Locator<P, M, L, R, V> {
 
   constructor(clone?: Partial<HandLocator>) {
     super()
@@ -23,7 +23,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns the radius of the circle in cm
    */
-  getRadius(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+  getRadius(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number {
     return this.radius
   }
 
@@ -38,7 +38,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns the default angle of the items
    */
-  getBaseAngle(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+  getBaseAngle(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number {
     return this.baseAngle
   }
 
@@ -53,7 +53,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns the maximum angle between the first and the last items
    */
-  getMaxAngle(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+  getMaxAngle(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number {
     return this.maxAngle
   }
 
@@ -68,7 +68,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns The maximum angle between two consecutive items in the hand
    */
-  getGapMaxAngle(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+  getGapMaxAngle(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number {
     return this.gapMaxAngle
   }
 
@@ -83,7 +83,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns true if items should be displayed clockwise around the arc of circle. Default is true.
    */
-  isClockwise(_location: Location<P, L>, _context: MaterialContext<P, M, L>): boolean {
+  isClockwise(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): boolean {
     return this.clockwise
   }
 
@@ -98,11 +98,11 @@ export class HandLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns The Z-axis position difference between 2 consecutive items in the hand. Default is 0.05cm.
    */
-  getDeltaZ(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+  getDeltaZ(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number {
     return this.deltaZ
   }
 
-  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>): unknown {
+  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): unknown {
     return this.countItems(location, context)
   }
 
@@ -112,7 +112,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
    * @param context Context of the game
    * @param index Index of the item (or location) to place
    */
-  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
+  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>,
                          index = this.getLocationIndex(location, context)): Coordinates {
     const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)
     if (index === undefined) return { x, y, z }
@@ -127,7 +127,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
     }
   }
 
-  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Coordinates {
+  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): Coordinates {
     return this.getLocationCoordinates(item.location, context, this.getItemIndex(item, context))
   }
 
@@ -137,7 +137,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
    * @param context Context of the game
    * @param index Index of the item (or location) to place
    */
-  getRotateZ(location: Location<P, L>, context: MaterialContext<P, M, L>,
+  getRotateZ(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>,
              index = this.getLocationIndex(location, context)): number {
     const baseAngle = this.getBaseAngle(location, context)
     if (index === undefined) return baseAngle
@@ -148,12 +148,12 @@ export class HandLocator<P extends number = number, M extends number = number, L
     return baseAngle + (index - (size - 1) / 2) * gapAngle * (this.isClockwise(location, context) ? 1 : -1)
   }
 
-  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): number {
     if (context.dragTransform) return 0
     return this.getRotateZ(item.location, context, this.getItemIndex(item, context))
   }
 
-  protected generateLocationDescriptionFromDraggedItem(_location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> {
+  protected generateLocationDescriptionFromDraggedItem(_location: Location<P, L>, context: ItemContext<P, M, L, R, V>): LocationDescription<P, M, L> {
     const itemDescription = context.material[context.type] ?? new CardDescription()
     const item = getItemFromContext(context)
     const { width, height } = itemDescription.getSize(item.id)
@@ -169,7 +169,7 @@ export class HandLocator<P extends number = number, M extends number = number, L
   /**
    * See {@link Locator.getHoverTransform}. By default, display the item on top of others, straight, and twice as big.
    */
-  getHoverTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+  getHoverTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): string[] {
     return ['translateZ(10em)', `rotateZ(${-this.getItemRotateZ(item, context)}${this.rotationUnit})`, 'scale(2)']
   }
 }

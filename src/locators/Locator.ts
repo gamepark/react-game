@@ -21,7 +21,7 @@ export type SortFunction = ((item: MaterialItem) => number)
 /**
  * A Locator is responsible for placing item and locations (such as drop areas) on the Game Table.
  */
-export class Locator<P extends number = number, M extends number = number, L extends number = number> {
+export class Locator<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> {
 
   /**
    * With the constructor, you can create new locators in one line.
@@ -68,7 +68,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * Override this if you need to display some locations on the Game Table that depends on the context.
    * By default, return any {@link location} or {@link locations}.
    */
-  getLocations(_context: MaterialContext<P, M, L>): Partial<Location<P, L>>[] {
+  getLocations(_context: MaterialContext<P, M, L, R, V>): Partial<Location<P, L>>[] {
     return this.location ? [this.location] : this.locations
   }
 
@@ -84,7 +84,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * Do not override it but use {@link locationDescription},
    * otherwise the images of the location descriptions will not be preloaded by the {@link MaterialImageLoader}.
    */
-  getLocationDescription(location: Location<P, L>, context: MaterialContext<P, M, L> | ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
+  getLocationDescription(location: Location<P, L>, context: MaterialContext<P, M, L, R, V> | ItemContext<P, M, L, R, V>): LocationDescription<P, M, L> | undefined {
     if (!this.locationDescription) {
       if (this.parentItemType !== undefined && location.x === undefined && location.y === undefined && location.z === undefined) {
         const material = context.material[this.parentItemType]
@@ -101,7 +101,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
   /**
    * @internal This function provides a custom location description for the current dragged item.
    */
-  protected generateLocationDescriptionFromDraggedItem(_location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
+  protected generateLocationDescriptionFromDraggedItem(_location: Location<P, L>, context: ItemContext<P, M, L, R, V>): LocationDescription<P, M, L> | undefined {
     return new DropAreaDescription(context.material[context.type])
   }
 
@@ -112,7 +112,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param _context The context of the item
    * @returns true if the item must be removed from the DOM
    */
-  ignore(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): boolean {
+  ignore(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L, R, V>): boolean {
     return false
   }
 
@@ -123,7 +123,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context The context of the item
    * @returns true if the item must be hidden
    */
-  hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
+  hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
     if (this.limit !== undefined && this.getItemIndex(item, context) < 0) {
       return true
     }
@@ -154,7 +154,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the location in the game
    * @returns the origin for the location
    */
-  getLocationOrigin(location: Location<P, L>, context: LocationContext<P, M, L>): LocationOrigin {
+  getLocationOrigin(location: Location<P, L>, context: LocationContext<P, M, L, R, V>): LocationOrigin {
     const parentItem = this.getParentItem(location, context)
     if (!parentItem) return this.locationOrigin
     const locator = context.locators[parentItem.location.type]
@@ -167,7 +167,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the location in the game
    * @returns the css transform that will be applied to the location
    */
-  placeLocation(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
+  placeLocation(location: Location<P, L>, context: LocationContext<P, M, L, R, V>): string[] {
     const transform: string[] = []
     const { x = 0, y = 0, z = 0 } = this.getLocationCoordinates(location, context)
     if (x || y || z) {
@@ -187,7 +187,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the item in the game
    * @returns the css transform that will be applied to the item
    */
-  placeItem(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+  placeItem(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): string[] {
     if (!this.itemTypes.includes(context.type)) {
       this.itemTypes.push(context.type)
     }
@@ -209,7 +209,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the item in the game
    * @returns the css transform that will be applied to the item
    */
-  protected placeItemOnParent(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+  protected placeItemOnParent(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): string[] {
     const parentItem = this.getParentItem(item.location, context)
     if (this.parentItemType === undefined || !parentItem) return []
     const locator = context.locators[parentItem.location.type]
@@ -230,7 +230,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the game
    * @returns the parent item of the location if any
    */
-  getParentItem(location: Location<P, L>, context: MaterialContext<P, M, L>): MaterialItem<P, L> | undefined {
+  getParentItem(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): MaterialItem<P, L> | undefined {
     const { rules, material } = context
     if (this.parentItemType === undefined) return undefined
     if (location.parent === undefined) return material[this.parentItemType]?.staticItem
@@ -252,7 +252,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param _context THe material game context
    * @return {x, y} with "x" as a percentage from the parent's width, "y" a percentage of the height
    */
-  getPositionOnParent(_location: Location<P, L>, _context: MaterialContext<P, M, L>): XYCoordinates {
+  getPositionOnParent(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): XYCoordinates {
     return this.positionOnParent
   }
 
@@ -279,7 +279,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param _context Context of the game
    * @returns A value representing the external dependencies. Compared with deep equality.
    */
-  getPositionDependencies(_location: Location<P, L>, _context: MaterialContext<P, M, L>): unknown {
+  getPositionDependencies(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): unknown {
     return {}
   }
 
@@ -293,7 +293,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the game
    * @returns Combined dependencies (own + parent chain). `undefined` if any locator in the chain opts out.
    */
-  getFullPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>): unknown {
+  getFullPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): unknown {
     const own = this.getPositionDependencies(location, context)
     if (own === undefined) return undefined
     if (this.parentItemType === undefined || location.parent === undefined) return own
@@ -315,7 +315,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param _context Context of the game
    * @returns the x, y, z coordinates (in cm) of the location
    */
-  getCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L>) {
+  getCoordinates(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>) {
     return this.coordinates
   }
 
@@ -328,7 +328,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the game
    * @returns the x, y, z coordinates (in cm) of the location
    */
-  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): Partial<Coordinates> {
     return this.getCoordinates(location, context)
   }
 
@@ -339,7 +339,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the item in the game
    * @return The x, y, z coordinates in cm of the center of the item on the table
    */
-  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
+  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): Partial<Coordinates> {
     return this.getLocationCoordinates(item.location, context)
   }
 
@@ -354,7 +354,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param _context Context of the location
    * @returns the rotation (unit in {@link rotationUnit})
    */
-  getRotateZ(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+  getRotateZ(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number {
     return this.rotateZ
   }
 
@@ -364,7 +364,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the item
    * @returns the rotation (unit in {@link rotationUnit})
    */
-  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): number {
     return this.getRotateZ(item.location, context)
   }
 
@@ -377,7 +377,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param _context Context of the game
    * @returns the index of the location in the location area
    */
-  getLocationIndex(location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
+  getLocationIndex(location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number | undefined {
     return location.x ?? location.y ?? location.z
   }
 
@@ -387,7 +387,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the item
    * @returns the index of the item in the location area
    */
-  getItemIndex(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+  getItemIndex(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): number {
     const index = this.getLocationIndex(item.location, context) ?? context.displayIndex
     if (this.limit === undefined) return index
     const count = this.countItems(item.location, context)
@@ -402,7 +402,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the game
    * @returns the total number of items in the location area
    */
-  countItems(location: Location<P, L>, { rules }: MaterialContext<P, M, L>): number {
+  countItems(location: Location<P, L>, { rules }: MaterialContext<P, M, L, R, V>): number {
     return sumBy(this.itemTypes, type => rules.material(type).location(itemLocation => isSameLocationArea(itemLocation, location)).getQuantity())
   }
 
@@ -412,7 +412,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param _context Context of the item
    * @returns the list of css transforms
    */
-  getHoverTransform(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
+  getHoverTransform(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L, R, V>): string[] {
     return []
   }
 
@@ -426,7 +426,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param _context Context of the game
    * @returns The list of sort functions to sort the items.
    */
-  getNavigationSorts(_context: ItemContext<P, M, L>): SortFunction[] {
+  getNavigationSorts(_context: ItemContext<P, M, L, R>): SortFunction[] {
     return this.navigationSorts
   }
 
@@ -437,7 +437,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param move Move to animate
    * @returns true if the items must be animated
    */
-  isItemToAnimate(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, move: MoveItem<P, M, L> | DeleteItem<M>): boolean {
+  isItemToAnimate(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>, move: MoveItem<P, M, L> | DeleteItem<M>): boolean {
     const { rules, type, index, displayIndex } = context
     if (move.itemType !== type || move.itemIndex !== index) return false
     const quantity = item.quantity ?? 1
@@ -463,7 +463,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param context Context of the item
    * @return the drop locations to display
    */
-  getDropLocations(moves: (MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>)[], context: ItemContext<P, M, L>): Location<P, L>[] {
+  getDropLocations(moves: (MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>)[], context: ItemContext<P, M, L, R, V>): Location<P, L>[] {
     return uniqWith(moves.map(move => {
       const { rotation, ...location } = move.location
       const itemIndex = isMoveItem(move) ? move.itemIndex : move.indexes[0]
@@ -483,7 +483,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @param _context Context of the game
    * @return true if a preview must be displayed
    */
-  showDropPreview(_move: MoveItem<P, M, L>, _context: MaterialContext<P, M, L>): boolean {
+  showDropPreview(_move: MoveItem<P, M, L>, _context: MaterialContext<P, M, L, R, V>): boolean {
     return this.dropPreview
   }
 
@@ -493,7 +493,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
 /**
  * A record of item locators, to provide to the game context.
  */
-export type ItemLocatorRecord<P extends number = number, M extends number = number, L extends number = number> = Record<L, Locator<P, M, L>>
+export type ItemLocatorRecord<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = Record<L, Locator<P, M, L, R, V>>
 
 /**
  * Data structure for the context of a game displayed.
@@ -502,10 +502,10 @@ export type ItemLocatorRecord<P extends number = number, M extends number = numb
  * @property locators The record of the locators to place the items.
  * @property player The player currently displaying the game. Undefined for spectators.
  */
-export type MaterialContext<P extends number = number, M extends number = number, L extends number = number> = {
-  rules: MaterialRules<P, M, L>
-  material: Partial<MaterialDescriptionRecord<P, M, L>>
-  locators: Partial<ItemLocatorRecord<P, M, L>>
+export type MaterialContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = {
+  rules: MaterialRules<P, M, L, R, V>
+  material: Partial<MaterialDescriptionRecord<P, M, L, R, V>>
+  locators: Partial<ItemLocatorRecord<P, M, L, R, V>>
   player?: P
 }
 
@@ -513,7 +513,7 @@ export type MaterialContext<P extends number = number, M extends number = number
  * Data structure for the context of an item in a game displayed.
  * @property dragTransform The CSS translate operation applied to the item, if any.
  */
-export type ItemContext<P extends number = number, M extends number = number, L extends number = number> = MaterialContext<P, M, L> & DisplayedItem<M> & {
+export type ItemContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = MaterialContext<P, M, L, R, V> & DisplayedItem<M> & {
   dragTransform?: string
 }
 
@@ -522,10 +522,10 @@ export type ItemContext<P extends number = number, M extends number = number, L 
  * @param context Context of the game
  * @returns true if the context also hold information about a specific item in the game.
  */
-export function isItemContext<P extends number = number, M extends number = number, L extends number = number>(
-  context: MaterialContext<P, M, L>
-): context is ItemContext<P, M, L> {
-  const itemContext = context as ItemContext<P, M, L>
+export function isItemContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(
+  context: MaterialContext<P, M, L, R, V>
+): context is ItemContext<P, M, L, R, V> {
+  const itemContext = context as ItemContext<P, M, L, R, V>
   return itemContext.type !== undefined && itemContext.index !== undefined && itemContext.displayIndex !== undefined
 }
 
@@ -534,8 +534,8 @@ export function isItemContext<P extends number = number, M extends number = numb
  * @param context Context of the item
  * @return The item
  */
-export function getItemFromContext<Id = any, P extends number = number, M extends number = number, L extends number = number>(
-  context: Omit<ItemContext<P, M, L>, 'displayIndex'>
+export function getItemFromContext<Id = any, P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(
+  context: Omit<ItemContext<P, M, L, R, V>, 'displayIndex'>
 ): MaterialItem<P, L, Id> {
   return context.rules.material(context.type).getItem<Id>(context.index)
 }
@@ -544,6 +544,6 @@ export function getItemFromContext<Id = any, P extends number = number, M extend
  * Context of a location in a displayed game.
  * @property canDrop Whether some item is currently being dragged, and can be dropped in the location.
  */
-export type LocationContext<P extends number = number, M extends number = number, L extends number = number> = MaterialContext<P, M, L> & {
+export type LocationContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = MaterialContext<P, M, L, R, V> & {
   canDrop?: boolean
 }

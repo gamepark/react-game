@@ -51,7 +51,7 @@ export type MaterialContentProps<ItemId = any, M extends number = number> = {
 /**
  * Base class to describe the material in a game
  */
-export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
+export abstract class MaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>
   extends ComponentDescription<ItemId> {
   /**
    * Content of the help dialog opened when an item is clicked
@@ -68,7 +68,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   /**
    * The React component to display
    */
-  abstract content: (props: MaterialContentProps<ItemId>) => ReactNode
+  abstract content: (props: MaterialContentProps<ItemId, M>) => ReactNode
 
   /**
    * If the component can be moved (token, cards...) or not (writing)
@@ -78,12 +78,12 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   /**
    * See {@link getStaticItems}
    */
-  staticItem?: MaterialItem<P, L>
+  staticItem?: MaterialItem<P, L, ItemId>
 
   /**
    * See {@link getStaticItems}
    */
-  staticItems: MaterialItem<P, L>[] = []
+  staticItems: MaterialItem<P, L, ItemId>[] = []
 
   /**
    * Return any items to display that are not part of the game state because they never move (board or unlimited stockpiles for instance).
@@ -92,7 +92,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param {MaterialContext} _context Context of the game
    * @returns {MaterialItem[]} the extra items to display
    */
-  getStaticItems(_context: MaterialContext<P, M, L>): MaterialItem<P, L>[] {
+  getStaticItems(_context: MaterialContext<P, M, L, R, V>): MaterialItem<P, L, ItemId>[] {
     return this.staticItem ? [this.staticItem] : this.staticItems
   }
 
@@ -108,7 +108,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param _context Context of the game
    * @returns The location to animate from/to
    */
-  getStockLocation(_item: MaterialItem<P, L>, _context: MaterialContext<P, M, L>): Location<P, L> | undefined {
+  getStockLocation(_item: MaterialItem<P, L, ItemId>, _context: MaterialContext<P, M, L, R, V>): Location<P, L> | undefined {
     return this.stockLocation
   }
 
@@ -129,7 +129,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param _item The item that contains the locations
    * @param _context Context of the game
    */
-  getLocations(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): Location<P, L>[] {
+  getLocations(_item: MaterialItem<P, L, ItemId>, _context: ItemContext<P, M, L, R, V>): Location<P, L>[] {
     return this.location ? [this.location] : this.locations
   }
 
@@ -139,7 +139,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param _move The move to consider
    * @param _context Context of the item
    */
-  canDrag(_move: MaterialMove<P, M, L>, _context: ItemContext<P, M, L>): boolean {
+  canDrag(_move: MaterialMove<P, M, L, R, V>, _context: ItemContext<P, M, L, R, V>): boolean {
     return false
   }
 
@@ -149,7 +149,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param move The move to consider
    * @param context Context of the item
    */
-  canLongClick(move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): boolean {
+  canLongClick(move: MaterialMove<P, M, L, R, V>, context: ItemContext<P, M, L, R, V>): boolean {
     return (isMoveItem(move) || isDeleteItem(move) || isRoll(move)) && move.itemType === context.type && move.itemIndex === context.index
   }
 
@@ -159,7 +159,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param move The move to consider
    * @param context Context of the item
    */
-  canShortClick(move: MaterialMove<P, M, L>, context: ItemContext<P, M, L>): boolean {
+  canShortClick(move: MaterialMove<P, M, L, R, V>, context: ItemContext<P, M, L, R, V>): boolean {
     return isSelectItem(move) && move.itemType === context.type && move.itemIndex === context.index
   }
 
@@ -168,7 +168,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    *
    * @param _context Context of the item
    */
-  getShortClickMove(_context: ItemContext<P, M, L>): MaterialMove<P, M, L> | undefined {
+  getShortClickMove(_context: ItemContext<P, M, L, R, V>): MaterialMove<P, M, L, R, V> | undefined {
     return undefined
   }
 
@@ -177,7 +177,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    *
    * @param _context Context of the item
    */
-  getShortClickLocalMove(_context: ItemContext<P, M, L>): MaterialMove<P, M, L> | undefined {
+  getShortClickLocalMove(_context: ItemContext<P, M, L, R, V>): MaterialMove<P, M, L, R, V> | undefined {
     return undefined
   }
 
@@ -193,7 +193,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param _context Context of the item
    * @returns {number} The thickness
    */
-  getThickness(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): number {
+  getThickness(_item: MaterialItem<P, L, ItemId>, _context: ItemContext<P, M, L, R, V>): number {
     return this.thickness
   }
 
@@ -203,7 +203,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param _context Context of the item
    * @returns The css, using Emotion framework
    */
-  getItemExtraCss(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): Interpolation<Theme> {
+  getItemExtraCss(_item: MaterialItem<P, L, ItemId>, _context: ItemContext<P, M, L, R, V>): Interpolation<Theme> {
     return
   }
 
@@ -213,7 +213,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param _context Context of the item
    * @return true if the item should be highlighted
    */
-  highlight(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): boolean | undefined {
+  highlight(_item: MaterialItem<P, L, ItemId>, _context: ItemContext<P, M, L, R, V>): boolean | undefined {
     return
   }
 
@@ -224,7 +224,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param context Context of the item
    * @return The move to play to open the help dialog
    */
-  displayHelp(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): MaterialMove<P, M, L> | undefined {
+  displayHelp(item: MaterialItem<P, L, ItemId>, context: ItemContext<P, M, L, R, V>): MaterialMove<P, M, L, R, V> | undefined {
     const { type, index, displayIndex } = context
     return displayMaterialHelp(type, item, index, displayIndex)
   }
@@ -235,7 +235,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param context Context of the item
    * @returns {string[]} a list of CSS transformations
    */
-  getItemTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+  getItemTransform(item: MaterialItem<P, L, ItemId>, context: ItemContext<P, M, L, R, V>): string[] {
     const transform = ['translate(-50%, -50%)']
     const locator = context.locators[item.location.type]
     if (locator) {
@@ -251,7 +251,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param _context Context of the item
    * @returns {string[]} a list of CSS transformations
    */
-  getHoverTransform(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
+  getHoverTransform(_item: MaterialItem<P, L, ItemId>, _context: ItemContext<P, M, L, R, V>): string[] {
     return []
   }
 
@@ -261,7 +261,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
    * @param dragMoves Legal moves filtered to only keep those that allows the item to be dragged
    * @return All the locations where the item can be dropped
    */
-  getDropLocations(context: ItemContext<P, M, L>, dragMoves: MaterialMove<P, M, L>[]): Location<P, L>[] {
+  getDropLocations(context: ItemContext<P, M, L, R, V>, dragMoves: MaterialMove<P, M, L, R, V>[]): Location<P, L>[] {
     const locations: Location<P, L>[] = []
     const [itemMoves, otherMoves] = partition(dragMoves, isMovementOfItem)
     const itemMovesByType = groupBy(itemMoves, (move) =>
@@ -279,7 +279,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return locations
   }
 
-  getMoveDropLocations(context: ItemContext<P, M, L>, move: MaterialMove<P, M, L>): Location<P, L>[] {
+  getMoveDropLocations(context: ItemContext<P, M, L, R, V>, move: MaterialMove<P, M, L, R, V>): Location<P, L>[] {
     if (isMoveItem(move) && move.location.type !== undefined) {
       return [move.location as Location<P, L>]
     } else if (isDeleteItem(move)) {
@@ -289,22 +289,22 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     return []
   }
 
-  getTooltip(item: MaterialItem<P, L>, t: TFunction, _context: ItemContext<P, M, L>): string | null | undefined {
+  getTooltip(item: MaterialItem<P, L, ItemId>, t: TFunction, _context: ItemContext<P, M, L, R, V>): string | null | undefined {
     if (item.quantity) return t('quantity.tooltip', { n: item.quantity, ns: 'common' })
     return
   }
 
   menuAlwaysVisible = false
 
-  isMenuAlwaysVisible(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): boolean {
+  isMenuAlwaysVisible(_item: MaterialItem<P, L, ItemId>, _context: ItemContext<P, M, L, R, V>): boolean {
     return this.menuAlwaysVisible
   }
 
-  getItemMenu(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L>, _legalMoves: MaterialMove<P, M, L>[]): ReactNode {
+  getItemMenu(_item: MaterialItem<P, L, ItemId>, _context: ItemContext<P, M, L, R, V>, _legalMoves: MaterialMove<P, M, L, R, V>[]): ReactNode {
     return
   }
 
-  getHelpButton(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, props: Partial<ItemButtonProps> = {}) {
+  getHelpButton(item: MaterialItem<P, L, ItemId>, context: ItemContext<P, M, L, R, V>, props: Partial<ItemButtonProps> = {}) {
     return <ItemMenuButton
       label={<Trans ns="common" i18nKey="Help"/>}
       move={this.displayHelp(item, context)}
@@ -325,7 +325,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     `
   }
 
-  getHelpDisplayExtraCss(_item: Partial<MaterialItem<P, L>>, _context: ItemContext<P, M, L>): Interpolation<Theme> {
+  getHelpDisplayExtraCss(_item: Partial<MaterialItem<P, L, ItemId>>, _context: ItemContext<P, M, L, R, V>): Interpolation<Theme> {
     return
   }
 }
@@ -334,6 +334,6 @@ function isMovementOfItem<P extends number, M extends number, L extends number>(
   return isMoveItem(move) || isMoveItemsAtOnce(move)
 }
 
-export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number> = Record<M, MaterialDescription<P, M, L>>
+export type MaterialDescriptionRecord<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = Record<M, MaterialDescription<P, M, L, any, R, V>>
 
 

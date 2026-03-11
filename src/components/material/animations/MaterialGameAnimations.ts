@@ -10,27 +10,27 @@ import { AnimationBuilder, AnimationPredicate, isMaterial, isMoveType, isRule } 
 import { ItemAnimations } from './ItemAnimations'
 import { MaterialAnimations } from './MaterialAnimations'
 
-export type MaterialGameAnimationContext<P extends number = number, M extends number = number, L extends number = number> =
-  AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>
-  & Omit<GameContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P, M, L>, 'game'>
+export type MaterialGameAnimationContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> =
+  AnimationContext<MaterialGame<P, M, L, R, V>, MaterialMove<P, M, L, R, V>, P>
+  & Omit<GameContext<MaterialGame<P, M, L, R, V>, MaterialMove<P, M, L, R, V>, P, M, L, R, V>, 'game'>
 
-export type MaterialAnimationContext<P extends number = number, M extends number = number, L extends number = number> =
-  MaterialContext<P, M, L> & { action: DisplayedAction<MaterialMove<P, M, L>, P> }
+export type MaterialAnimationContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> =
+  MaterialContext<P, M, L, R, V> & { action: DisplayedAction<MaterialMove<P, M, L, R, V>, P> }
 
-export class MaterialGameAnimations<P extends number = number, M extends number = number, L extends number = number>
-  extends Animations<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P> {
+export class MaterialGameAnimations<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
+  extends Animations<MaterialGame<P, M, L, R, V>, MaterialMove<P, M, L, R, V>, P> {
 
   /** @internal Animation configurations from the legacy .when() API */
-  readonly animationConfigs: AnimationConfig<P, M, L>[] = []
+  readonly animationConfigs: AnimationConfig<P, M, L, R, V>[] = []
 
   /** @internal Animation builders from the new .configure() API */
-  readonly animationBuilders: AnimationBuilder<P, M, L>[] = []
+  readonly animationBuilders: AnimationBuilder<P, M, L, R, V>[] = []
 
   /** @internal Default animation configuration */
-  defaultAnimationConfig = new AnimationConfig<P, M, L>()
+  defaultAnimationConfig = new AnimationConfig<P, M, L, R, V>()
 
   /** @internal Default animation builder for new API */
-  private _defaultBuilder = new AnimationBuilder<P, M, L>()
+  private _defaultBuilder = new AnimationBuilder<P, M, L, R, V>()
 
   // ==========================================
   // Legacy API (backward compatible)
@@ -40,8 +40,8 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
    * @deprecated Use configure() instead for the new trajectory API.
    * Create a new animation configuration with filter chain.
    */
-  when(): AnimationConfig<P, M, L> {
-    const animationConfig = new AnimationConfig<P, M, L>()
+  when(): AnimationConfig<P, M, L, R, V> {
+    const animationConfig = new AnimationConfig<P, M, L, R, V>()
     this.animationConfigs.push(animationConfig)
     return animationConfig
   }
@@ -62,8 +62,8 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
    *   .arc(15)
    * ```
    */
-  configure(predicate: AnimationPredicate<P, M, L>): AnimationBuilder<P, M, L> {
-    const builder = new AnimationBuilder<P, M, L>()
+  configure(predicate: AnimationPredicate<P, M, L, R, V>): AnimationBuilder<P, M, L, R, V> {
+    const builder = new AnimationBuilder<P, M, L, R, V>()
     builder.filter(predicate)
     this.animationBuilders.push(builder)
     return builder
@@ -81,7 +81,7 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
    *   .via(LocationType.TableCenter)
    * ```
    */
-  forRule(ruleId: number): AnimationBuilder<P, M, L> {
+  forRule(ruleId: number): AnimationBuilder<P, M, L, R, V> {
     return this.configure(isRule(ruleId))
   }
 
@@ -97,7 +97,7 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
    *   .arc(12)
    * ```
    */
-  forMove(moveType: ItemMove<P, M, L>['type']): AnimationBuilder<P, M, L> {
+  forMove(moveType: ItemMove<P, M, L>['type']): AnimationBuilder<P, M, L, R, V> {
     return this.configure(isMoveType(moveType))
   }
 
@@ -113,7 +113,7 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
    *   .flat()  // No arc for cards
    * ```
    */
-  forMaterial(materialType: M): AnimationBuilder<P, M, L> {
+  forMaterial(materialType: M): AnimationBuilder<P, M, L, R, V> {
     return this.configure(isMaterial(materialType))
   }
 
@@ -128,7 +128,7 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
    *   .arc({ height: 8, peak: 0.4 })
    * ```
    */
-  defaults(): AnimationBuilder<P, M, L> {
+  defaults(): AnimationBuilder<P, M, L, R, V> {
     return this._defaultBuilder
   }
 
@@ -136,9 +136,9 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
   // Internal methods
   // ==========================================
 
-  override getDuration(move: MaterialMove<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
-    const materialContext: MaterialAnimationContext<P, M, L> = {
-      rules: new context.Rules(context.game) as MaterialRules<P, M, L>,
+  override getDuration(move: MaterialMove<P, M, L, R, V>, context: MaterialGameAnimationContext<P, M, L, R, V>): number {
+    const materialContext: MaterialAnimationContext<P, M, L, R, V> = {
+      rules: new context.Rules(context.game) as MaterialRules<P, M, L, R, V>,
       material: context.material!,
       locators: context.locators!,
       player: context.playerId,
@@ -159,7 +159,7 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
    * Find matching animation builder from new API.
    * @internal
    */
-  getAnimationBuilder(move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>): AnimationBuilder<P, M, L> | undefined {
+  getAnimationBuilder(move: MaterialMove<P, M, L, R, V>, context: MaterialAnimationContext<P, M, L, R, V>): AnimationBuilder<P, M, L, R, V> | undefined {
     for (const builder of this.animationBuilders) {
       if (builder.matches(move, context)) {
         return builder
@@ -176,7 +176,7 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
    * Find matching animation config from legacy API.
    * @internal
    */
-  getAnimationConfig(move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>): AnimationConfig<P, M, L> {
+  getAnimationConfig(move: MaterialMove<P, M, L, R, V>, context: MaterialAnimationContext<P, M, L, R, V>): AnimationConfig<P, M, L, R, V> {
     for (const animationConfig of this.animationConfigs) {
       if (animationConfig.filters.every(filter => filter(move, context))) {
         return animationConfig
@@ -189,8 +189,8 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
    * Get item animation CSS, checking both new and legacy APIs.
    * @internal
    */
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>, action: DisplayedAction<MaterialMove<P, M, L>, P>, boundaries: GridBoundaries): Interpolation<Theme> {
-    const materialContext: MaterialAnimationContext<P, M, L> = {
+  getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<MaterialMove<P, M, L, R, V>>, action: DisplayedAction<MaterialMove<P, M, L, R, V>, P>, boundaries: GridBoundaries): Interpolation<Theme> {
+    const materialContext: MaterialAnimationContext<P, M, L, R, V> = {
       ...context,
       action
     }
@@ -217,7 +217,7 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
     return uniq([...legacySounds, ...newSounds])
   }
 
-  pauseNextConsequenceAnimation(move: MaterialMove<P, M, L>, _context: AnimationContext<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P>): boolean {
+  pauseNextConsequenceAnimation(move: MaterialMove<P, M, L, R, V>, _context: AnimationContext<MaterialGame<P, M, L, R, V>, MaterialMove<P, M, L, R, V>, P>): boolean {
     return isEndPlayerTurn(move)
   }
 }
@@ -226,18 +226,18 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
  * @deprecated Use AnimationBuilder with the new configure() API instead.
  * Legacy animation configuration class for backward compatibility.
  */
-class AnimationConfig<P extends number = number, M extends number = number, L extends number = number>
-  extends ItemAnimations<P, M, L> {
-  filters: ((move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>) => boolean)[] = []
+class AnimationConfig<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
+  extends ItemAnimations<P, M, L, R, V> {
+  filters: ((move: MaterialMove<P, M, L, R, V>, context: MaterialAnimationContext<P, M, L, R, V>) => boolean)[] = []
   d?: number
   s?: string | MaterialSoundConfig | false = undefined
 
-  rule<RuleId extends number>(ruleId: RuleId): this {
+  rule(ruleId: R): this {
     this.filters.push((_, context) => context.rules.game.rule?.id === ruleId)
     return this
   }
 
-  move(predicate: (move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>) => boolean): this {
+  move(predicate: (move: MaterialMove<P, M, L, R, V>, context: MaterialAnimationContext<P, M, L, R, V>) => boolean): this {
     this.filters.push((move, context) => predicate(move, context))
     return this
   }
@@ -261,12 +261,12 @@ class AnimationConfig<P extends number = number, M extends number = number, L ex
     return this.duration(0)
   }
 
-  getDuration(move: MaterialMove<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
+  getDuration(move: MaterialMove<P, M, L, R, V>, context: MaterialGameAnimationContext<P, M, L, R, V>): number {
     if (move.kind !== MoveKind.ItemMove) return context.step === AnimationStep.BEFORE_MOVE ? this.d ?? 0 : 0
-    return new MaterialAnimations<P, M, L>(this.d).getDuration(move, context)
+    return new MaterialAnimations<P, M, L, R, V>(this.d).getDuration(move, context)
   }
 
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
-    return new MaterialAnimations<P, M, L>(this.d).getItemAnimation(context, animation, boundaries)
+  getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<MaterialMove<P, M, L, R, V>>, boundaries: GridBoundaries): Interpolation<Theme> {
+    return new MaterialAnimations<P, M, L, R, V>(this.d).getItemAnimation(context, animation, boundaries)
   }
 }
