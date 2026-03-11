@@ -36,7 +36,7 @@ export type GridSize = {
  *
  * Override {@link getBoundaries} to provide custom boundaries (e.g. from a game helper).
  */
-export class GridLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+export class GridLocator<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> extends Locator<P, M, L, R, V> {
 
   constructor(clone?: Partial<GridLocator>) {
     super()
@@ -54,7 +54,7 @@ export class GridLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns The gap between two consecutive grid cells
    */
-  getGap(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  getGap(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): Partial<Coordinates> {
     return this.gap ?? {}
   }
 
@@ -72,7 +72,7 @@ export class GridLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns The grid size
    */
-  getGridSize(_location: Location<P, L>, _context: MaterialContext<P, M, L>): GridSize | undefined {
+  getGridSize(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): GridSize | undefined {
     return this.gridSize
   }
 
@@ -82,7 +82,7 @@ export class GridLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns A unique identifier for the grid this location belongs to
    */
-  getGridId(location: Location<P, L>, _context: MaterialContext<P, M, L>): string {
+  getGridId(location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): string {
     return [location.player, location.id, location.parent].filter(part => part !== undefined).join('_')
   }
 
@@ -96,7 +96,7 @@ export class GridLocator<P extends number = number, M extends number = number, L
    * @param context Context of the game
    * @returns The grid boundaries, or undefined if no items exist
    */
-  getBoundaries(location: Location<P, L>, context: MaterialContext<P, M, L>): GridBoundaries | undefined {
+  getBoundaries(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): GridBoundaries | undefined {
     const { rules } = context
     let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity
     let found = false
@@ -119,7 +119,7 @@ export class GridLocator<P extends number = number, M extends number = number, L
   private game?: object
   private refreshedGrids = new Set<string>()
 
-  private refreshDelta(location: Location<P, L>, context: MaterialContext<P, M, L>, gridId: string) {
+  private refreshDelta(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>, gridId: string) {
     const boundaries = this.getBoundaries(location, context)
     if (!boundaries) {
       this.deltas.set(gridId, { deltaX: 0, deltaY: 0 })
@@ -155,7 +155,7 @@ export class GridLocator<P extends number = number, M extends number = number, L
     }
   }
 
-  private ensureRefreshed(location: Location<P, L>, context: MaterialContext<P, M, L>, gridId: string) {
+  private ensureRefreshed(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>, gridId: string) {
     if (context.rules.game !== this.game) {
       this.game = context.rules.game
       this.refreshedGrids.clear()
@@ -167,7 +167,7 @@ export class GridLocator<P extends number = number, M extends number = number, L
     }
   }
 
-  getCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  getCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): Partial<Coordinates> {
     const gridId = this.getGridId(location, context)
     this.ensureRefreshed(location, context, gridId)
     const { x: gx = 0, y: gy = 0, z: gz = 0 } = this.getGap(location, context)
@@ -179,7 +179,7 @@ export class GridLocator<P extends number = number, M extends number = number, L
     }
   }
 
-  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>): unknown {
+  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): unknown {
     const gridId = this.getGridId(location, context)
     const delta = this.deltas.get(gridId) ?? { deltaX: 0, deltaY: 0 }
     return [delta.deltaX, delta.deltaY]

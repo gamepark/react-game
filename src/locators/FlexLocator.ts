@@ -5,7 +5,7 @@ import { MaterialContext } from './Locator'
 /**
  * This Locator places a list of items as a grid, with break points for the lines. Inspired by the CSS flexbox.
  */
-export class FlexLocator<P extends number = number, M extends number = number, L extends number = number> extends ListLocator<P, M, L> {
+export class FlexLocator<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> extends ListLocator<P, M, L, R, V> {
 
   constructor(clone?: Partial<FlexLocator>) {
     super()
@@ -23,11 +23,11 @@ export class FlexLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns The number of items per line.
    */
-  getLineSize(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+  getLineSize(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number {
     return this.lineSize
   }
 
-  getMaxCount(location: Location<P, L>, context: MaterialContext<P, M, L>): number | undefined {
+  getMaxCount(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): number | undefined {
     return this.getLineSize(location, context)
   }
 
@@ -42,7 +42,7 @@ export class FlexLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns The default gap between 2 consecutive lines
    */
-  getLineGap(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  getLineGap(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): Partial<Coordinates> {
     return this.lineGap ?? {}
   }
 
@@ -57,7 +57,7 @@ export class FlexLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns The maximum number of lines displayed before the gap between the lines is reduced to fill in the same space.
    */
-  getMaxLines(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
+  getMaxLines(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number | undefined {
     return this.maxLines
   }
 
@@ -72,7 +72,7 @@ export class FlexLocator<P extends number = number, M extends number = number, L
    * @param context Context of the game
    * @returns The maximum gap between the first and the last line.
    */
-  getMaxLineGap(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  getMaxLineGap(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): Partial<Coordinates> {
     if (this.maxLineGap) return this.maxLineGap
     const maxLines = this.getMaxLines(location, context)
     if (maxLines === undefined) return {}
@@ -84,11 +84,11 @@ export class FlexLocator<P extends number = number, M extends number = number, L
     }
   }
 
-  countListItems(location: Location<P, L>, context: MaterialContext<P, M, L>): number {
+  countListItems(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): number {
     return Math.min(super.countListItems(location, context), this.getLineSize(location, context))
   }
 
-  protected getCurrentMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L>): XYCoordinates {
+  protected getCurrentMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): XYCoordinates {
     const { x, y } = super.getCurrentMaxGap(location, context)
     const { x: gx = 0, y: gy = 0 } = this.getLineGap(location, context)
     const { x: mgx, y: mgy } = this.getMaxLineGap(location, context)
@@ -98,7 +98,7 @@ export class FlexLocator<P extends number = number, M extends number = number, L
     return { x: x + (mgx ?? gx * lines), y: y + (mgy ?? gy * lines) }
   }
 
-  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
+  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>,
                          index = this.getLocationIndex(location, context)): Partial<Coordinates> {
     if (index === undefined) return this.getAreaCoordinates(location, context)
     const lineSize = this.getLineSize(location, context)

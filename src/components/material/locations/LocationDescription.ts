@@ -19,7 +19,7 @@ import { isRotationMove } from '../utils/isRotationMove'
 import { LocationComponent } from './LocationComponent'
 import displayLocationHelp = MaterialMoveBuilder.displayLocationHelp
 
-export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any>
+export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any, R extends number = number, V extends number = number>
   extends ComponentDescription<Id> {
 
   constructor(clone?: Partial<Pick<LocationDescription, 'height' | 'width' | 'ratio' | 'borderRadius' | 'extraCss'>>) {
@@ -33,20 +33,20 @@ export class LocationDescription<P extends number = number, M extends number = n
 
   help?: ComponentType<LocationHelpProps<P, L>>
 
-  getLocationSize(location: Location<P, L>, _context: MaterialContext<P, M, L>): ComponentSize {
+  getLocationSize(location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): ComponentSize {
     return this.getSize(location.id)
   }
 
   image?: string
   images?: Record<Id extends keyof any ? Id : never, string>
 
-  getImage(location: Location<P, L>, _context: MaterialContext<P, M, L>): string | undefined {
+  getImage(location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): string | undefined {
     return this.images?.[location.id as keyof typeof this.images] ?? this.image
   }
 
   helpImage?: string
 
-  getHelpImage(location: Location<P, L>, context: MaterialContext<P, M, L>): string | undefined {
+  getHelpImage(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): string | undefined {
     return this.helpImage ?? this.getImage(location, context)
   }
 
@@ -60,35 +60,35 @@ export class LocationDescription<P extends number = number, M extends number = n
 
   extraCss?: Interpolation<Theme>
 
-  getExtraCss(_location: Location<P, L>, _context: LocationContext<P, M, L>): Interpolation<Theme> {
+  getExtraCss(_location: Location<P, L>, _context: LocationContext<P, M, L, R, V>): Interpolation<Theme> {
     return this.extraCss
   }
 
-  getLocationTransform(location: Location<P, L>, context: LocationContext<P, M, L>): string[] {
+  getLocationTransform(location: Location<P, L>, context: LocationContext<P, M, L, R, V>): string[] {
     const transform = ['translate(-50%, -50%)']
     const locator = context.locators[location.type]
     if (locator) transform.push(...locator.placeLocation(location, context))
     return transform
   }
 
-  highlight?(location: Location<P, L>, context: MaterialContext<P, M, L>): boolean | undefined
+  highlight?(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): boolean | undefined
 
   content?: ComponentType<{ location: Location }>
 
-  canLongClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
+  canLongClick(move: MaterialMove<P, M, L, R, V>, location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): boolean {
     return this.isMoveToLocation(move, location, context)
   }
 
   placeOnShortClick: boolean = false
 
-  canShortClick(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>): boolean {
+  canShortClick(move: MaterialMove<P, M, L, R, V>, location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): boolean {
     return this.placeOnShortClick && (
       this.isMoveToLocation(move, location, context)
       || (isCreateItem(move) && isLocationSubset(move.item.location, location))
     )
   }
 
-  isMoveToLocation(move: MaterialMove<P, M, L>, location: Location<P, L>, context: MaterialContext<P, M, L>) {
+  isMoveToLocation(move: MaterialMove<P, M, L, R, V>, location: Location<P, L>, context: MaterialContext<P, M, L, R, V>) {
     return (isMoveItem(move) && isLocationSubset(this.getMoveLocation(move, context), location) && !isRotationMove(move, context)
     ) || (
       isDeleteItem(move) && isEqual(location, context.material[move.itemType]?.getStockLocation(
@@ -97,17 +97,17 @@ export class LocationDescription<P extends number = number, M extends number = n
     ) || (isMoveItemsAtOnce(move) && isLocationSubset(this.getMoveLocation(move, context), location))
   }
 
-  getMoveLocation(move: MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>, context: MaterialContext<P, M, L>): Location<P, L> {
+  getMoveLocation(move: MoveItem<P, M, L> | MoveItemsAtOnce<P, M, L>, context: MaterialContext<P, M, L, R, V>): Location<P, L> {
     const itemIndex = isMoveItem(move) ? move.itemIndex : move.indexes[0]
     const type = move.location.type ?? context.rules.material(move.itemType).getItem(itemIndex).location.type
     return { type, ...move.location }
   }
 
-  getShortClickMove(_location: Location<P, L>, _context: MaterialContext<P, M, L>): MaterialMove<P, M, L> | undefined {
+  getShortClickMove(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): MaterialMove<P, M, L, R, V> | undefined {
     return undefined
   }
 
-  getShortClickLocalMove(_location: Location<P, L>, _context: MaterialContext<P, M, L>): MaterialMove<P, M, L> | undefined {
+  getShortClickLocalMove(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): MaterialMove<P, M, L, R, V> | undefined {
     return undefined
   }
 
@@ -120,7 +120,7 @@ export class LocationDescription<P extends number = number, M extends number = n
    * @param _context Context of the game
    * @return The move to play to open the help dialog, if any
    */
-  displayHelp(location: Location<P, L>, _context: MaterialContext<P, M, L>): MaterialMove<P, M, L> | undefined {
+  displayHelp(location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): MaterialMove<P, M, L, R, V> | undefined {
     return this.help && displayLocationHelp(location)
   }
 }

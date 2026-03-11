@@ -5,7 +5,7 @@ import { getItemFromContext, ItemContext, Locator, MaterialContext } from './Loc
 /**
  * This Locator places items in a disorganised pile.
  */
-export class PileLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+export class PileLocator<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> extends Locator<P, M, L, R, V> {
 
   constructor(clone?: Partial<PileLocator>) {
     super()
@@ -31,7 +31,7 @@ export class PileLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns the maximum dispersion radius of the items.
    */
-  getRadius(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | XYCoordinates {
+  getRadius(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number | XYCoordinates {
     return this.radius
   }
 
@@ -46,7 +46,7 @@ export class PileLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns the maximum angle of rotation of the items
    */
-  getMaxAngle(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number {
+  getMaxAngle(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number {
     return this.maxAngle
   }
 
@@ -58,15 +58,15 @@ export class PileLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the item
    * @returns a unique identifier for the pile of items this location goes to
    */
-  getPileId(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string {
+  getPileId(item: MaterialItem<P, L>, _context: ItemContext<P, M, L, R, V>): string {
     return [item.location.player, item.location.id, item.location.parent].filter(part => part !== undefined).join('_')
   }
 
-  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>): unknown {
+  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): unknown {
     return this.countItems(location, context)
   }
 
-  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
+  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): Partial<Coordinates> {
     const location = item.location
     const index = this.getItemIndex(item, context)
     const itemUniqueId = context.index + context.displayIndex
@@ -87,7 +87,7 @@ export class PileLocator<P extends number = number, M extends number = number, L
     return { x: x + itemPosition.x, y: y + itemPosition.y, z: z + index * 0.05 }
   }
 
-  generateItemPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L>) {
+  generateItemPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>) {
     const distance = Math.random()
     const direction = Math.random() * 2 * Math.PI
     const radius = this.getRadius(item.location, context)
@@ -108,7 +108,7 @@ export class PileLocator<P extends number = number, M extends number = number, L
     return false
   }
 
-  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): number {
+  getItemRotateZ(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): number {
     const itemUniqueId = context.index + context.displayIndex
     const pileId = this.getPileId(item, context)
     if (!this.rotations.has(pileId)) this.rotations.set(pileId, new Map())
@@ -120,7 +120,7 @@ export class PileLocator<P extends number = number, M extends number = number, L
     return this.getRotateZ(item.location, context) + pileRotations.get(itemUniqueId)!
   }
 
-  protected generateLocationDescriptionFromDraggedItem(location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> {
+  protected generateLocationDescriptionFromDraggedItem(location: Location<P, L>, context: ItemContext<P, M, L, R, V>): LocationDescription<P, M, L> {
     const itemDescription = context.material[context.type] ?? new CardDescription()
     const item = getItemFromContext(context)
     const { width, height } = itemDescription.getSize(item.id)

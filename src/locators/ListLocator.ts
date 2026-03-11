@@ -5,7 +5,7 @@ import { getItemFromContext, ItemContext, Locator, MaterialContext } from './Loc
 /**
  * This Locator places items at regular intervals.
  */
-export class ListLocator<P extends number = number, M extends number = number, L extends number = number> extends Locator<P, M, L> {
+export class ListLocator<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> extends Locator<P, M, L, R, V> {
 
   constructor(clone?: Partial<ListLocator>) {
     super()
@@ -23,7 +23,7 @@ export class ListLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns The default gap between 2 consecutive items
    */
-  getGap(_location: Location<P, L>, _context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  getGap(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): Partial<Coordinates> {
     return this.gap ?? {}
   }
 
@@ -38,7 +38,7 @@ export class ListLocator<P extends number = number, M extends number = number, L
    * @param _context Context of the game
    * @returns The maximum number of items that can be displayed in the list before the gap between items is reduced to fill in the same space.
    */
-  getMaxCount(_location: Location<P, L>, _context: MaterialContext<P, M, L>): number | undefined {
+  getMaxCount(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number | undefined {
     return this.maxCount
   }
 
@@ -53,7 +53,7 @@ export class ListLocator<P extends number = number, M extends number = number, L
    * @param context Context of the game
    * @returns The maximum gap between the first and the last items
    */
-  getMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  getMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): Partial<Coordinates> {
     if (this.maxGap) return this.maxGap
     const maxCount = this.getMaxCount(location, context)
     if (maxCount === undefined) return {}
@@ -65,7 +65,7 @@ export class ListLocator<P extends number = number, M extends number = number, L
     }
   }
 
-  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L>): unknown {
+  getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): unknown {
     return this.countItems(location, context)
   }
 
@@ -75,24 +75,24 @@ export class ListLocator<P extends number = number, M extends number = number, L
    * @param context Context of the game
    * @returns number of items in the location area
    */
-  countListItems(location: Location<P, L>, context: MaterialContext<P, M, L>): number {
+  countListItems(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): number {
     return Math.min(this.limit ?? Infinity, this.countItems(location, context))
   }
 
-  protected getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>): Partial<Coordinates> {
+  protected getAreaCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): Partial<Coordinates> {
     const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)
     const { x: mx, y: my } = this.getCurrentMaxGap(location, context)
     return { x: x + mx / 2, y: y + my / 2, z }
   }
 
-  protected getCurrentMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L>): XYCoordinates {
+  protected getCurrentMaxGap(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): XYCoordinates {
     const { x: gx = 0, y: gy = 0 } = this.getGap(location, context)
     const { x: mgx, y: mgy } = this.getMaxGap(location, context)
     const gapCount = Math.max(0, this.countListItems(location, context) - 1)
     return { x: (mgx ?? gx * gapCount), y: (mgy ?? gy * gapCount) }
   }
 
-  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L>,
+  getLocationCoordinates(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>,
                          index = this.getLocationIndex(location, context)): Partial<Coordinates> {
     if (index === undefined) return this.getAreaCoordinates(location, context)
     const { x = 0, y = 0, z = 0 } = this.getCoordinates(location, context)
@@ -106,11 +106,11 @@ export class ListLocator<P extends number = number, M extends number = number, L
     }
   }
 
-  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): Partial<Coordinates> {
+  getItemCoordinates(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): Partial<Coordinates> {
     return this.getLocationCoordinates(item.location, context, this.getItemIndex(item, context))
   }
 
-  protected generateLocationDescriptionFromDraggedItem(location: Location<P, L>, context: ItemContext<P, M, L>): LocationDescription<P, M, L> | undefined {
+  protected generateLocationDescriptionFromDraggedItem(location: Location<P, L>, context: ItemContext<P, M, L, R, V>): LocationDescription<P, M, L> | undefined {
     const item = getItemFromContext(context)
     const { width = 0, height = 0 } = context.material[context.type]?.getSize(item.id) ?? {}
     const borderRadius = context.material[context.type]?.getBorderRadius(item.id) ?? 0

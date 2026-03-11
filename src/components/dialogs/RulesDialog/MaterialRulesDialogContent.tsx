@@ -15,8 +15,8 @@ export type MaterialRulesDialogContentProps<Player extends number = number, Mate
   helpDisplay: MaterialHelpDisplay<Player, MaterialType, LocationType>
 }
 
-const useMaterialNavigation = <P extends number = number, M extends number = number, L extends number = number>(helpDisplay: MaterialHelpDisplay, context: ItemContext<P, M, L>) => {
-  const rules = useRules<MaterialRules>()!
+const useMaterialNavigation = <P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(helpDisplay: MaterialHelpDisplay<P, M, L>, context: ItemContext<P, M, L, R, V>) => {
+  const rules = useRules<MaterialRules<P, M, L, R, V>>()!
   const play = usePlay()
   const helpItem = helpDisplay.item
   const locators = useLocators()!

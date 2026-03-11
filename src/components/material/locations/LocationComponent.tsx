@@ -7,7 +7,7 @@ import { useMaterialContext, usePlay } from '../../../hooks'
 import { combineEventListeners } from '../../../utilities'
 import { LocationDisplay, LocationDisplayProps } from './LocationDisplay'
 
-export type LocationComponentProps<P extends number = number, M extends number = number, L extends number = number> = LocationDisplayProps<P, M, L> & {
+export type LocationComponentProps<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = LocationDisplayProps<P, M, L, R, V> & {
   highlight?: boolean
   onShortClick?: () => void
   onLongClick?: () => void

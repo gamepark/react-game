@@ -3,8 +3,8 @@ import { MaterialContentProps } from '../MaterialDescription'
 import { MobileMaterialDescription } from '../MobileMaterialDescription'
 import { WheelItem } from './WheelItem'
 
-export class WheelDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
-  extends MobileMaterialDescription<P, M, L, ItemId> {
+export class WheelDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>
+  extends MobileMaterialDescription<P, M, L, ItemId, R, V> {
 
   image?: string
   images?: Record<ItemId extends keyof any ? ItemId : never, string>
@@ -53,7 +53,7 @@ export class WheelDescription<P extends number = number, M extends number = numb
     return images
   }
 
-  content = (props: MaterialContentProps<ItemId>) => {
+  content = (props: MaterialContentProps<ItemId, M>) => {
     const { itemId } = props
     const image = this.getImage(itemId)
     const wheelImage = this.getWheelImage(itemId)

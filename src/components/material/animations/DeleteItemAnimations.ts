@@ -10,8 +10,8 @@ import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { Trajectory } from './Trajectory'
 import { transformItem } from './transformItem.util'
 
-export class DeleteItemAnimations<P extends number = number, M extends number = number, L extends number = number>
-  extends ItemAnimations<P, M, L> {
+export class DeleteItemAnimations<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
+  extends ItemAnimations<P, M, L, R, V> {
 
   constructor(
     protected duration = 1,
@@ -21,7 +21,7 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
     super()
   }
 
-  override getPreDuration(move: MoveItem<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
+  override getPreDuration(move: MoveItem<P, M, L>, context: MaterialGameAnimationContext<P, M, L, R, V>): number {
     const potentialDroppedItem = { type: move.itemType, index: move.itemIndex }
     if (isDroppedItem(this.getItemContext(context, potentialDroppedItem))) {
       return this.droppedItemDuration
@@ -29,7 +29,7 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
     return this.duration
   }
 
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<DeleteItem<M>>, boundaries: GridBoundaries): Interpolation<Theme> {
+  getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<DeleteItem<M>>, boundaries: GridBoundaries): Interpolation<Theme> {
     const item = getItemFromContext(context)
     const itemLocator = context.locators[item.location.type]
     if (!itemLocator?.isItemToAnimate(item, context, animation.move)) return
@@ -57,11 +57,11 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
       toClosestRotations(originTransforms, targetTransforms)
 
       // Check if trajectory is configured
-      const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L>
+      const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L, R, V>
       const trajectory = this.trajectory ?? contextWithTrajectory.trajectory
 
       if (trajectory) {
-        const trajectoryContext: ItemContextWithTrajectory<P, M, L> = { ...context, trajectory }
+        const trajectoryContext: ItemContextWithTrajectory<P, M, L, R, V> = { ...context, trajectory }
         const animationKeyframes = this.getTrajectoryKeyframes(originTransforms, targetTransforms, animation, trajectoryContext)
         return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
       } else {

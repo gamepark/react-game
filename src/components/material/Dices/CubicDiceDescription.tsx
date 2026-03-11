@@ -6,8 +6,8 @@ import { ItemContext } from '../../../locators'
 import { MaterialContentProps } from '../MaterialDescription'
 import { MobileMaterialDescription } from '../MobileMaterialDescription'
 
-export abstract class CubicDiceDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any>
-  extends MobileMaterialDescription<P, M, L, ItemId> {
+export abstract class CubicDiceDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>
+  extends MobileMaterialDescription<P, M, L, ItemId, R, V> {
   width = 1.6
   ratio = 1
   borderRadius = 0.3
@@ -26,7 +26,7 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
     return this.color
   }
 
-  content = ({ itemId, highlight, preview, playDown = preview }: MaterialContentProps<ItemId>) => {
+  content = ({ itemId, highlight, preview, playDown = preview }: MaterialContentProps<ItemId, M>) => {
     const internalMask = css`
       position: absolute;
       top: 1px;
@@ -75,11 +75,11 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
     }
   }
 
-  getItemTransform(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): string[] {
+  getItemTransform(item: MaterialItem<P, L, ItemId>, context: ItemContext<P, M, L, R, V>): string[] {
     return super.getItemTransform(item, context).concat(`translateZ(${this.width / 2}em)`, ...this.getRotations(item, context))
   }
 
-  getRotations(item: MaterialItem<P, L>, _context: ItemContext<P, M, L>): string[] {
+  getRotations(item: MaterialItem<P, L, ItemId>, _context: ItemContext<P, M, L, R, V>): string[] {
     switch (item.location.rotation) {
       case 1:
         return ['rotateX(90deg)']
@@ -96,8 +96,8 @@ export abstract class CubicDiceDescription<P extends number = number, M extends 
     }
   }
 
-  getHelpDisplayExtraCss(item: Partial<MaterialItem<P, L>>, context: ItemContext<P, M, L>): Interpolation<Theme> {
-    return item.location && [transformCss(...this.getRotations(item as MaterialItem<P, L>, context)), css`
+  getHelpDisplayExtraCss(item: Partial<MaterialItem<P, L, ItemId>>, context: ItemContext<P, M, L, R, V>): Interpolation<Theme> {
+    return item.location && [transformCss(...this.getRotations(item as MaterialItem<P, L, ItemId>, context)), css`
       margin: ${this.width / 4}em;
     `]
   }

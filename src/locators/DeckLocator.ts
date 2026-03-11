@@ -5,7 +5,7 @@ import { ListLocator } from './ListLocator'
 /**
  * This Locator places items to form a deck of cards. A specific use-case for the {@link ListLocator}.
  */
-export class DeckLocator<P extends number = number, M extends number = number, L extends number = number> extends ListLocator<P, M, L> {
+export class DeckLocator<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> extends ListLocator<P, M, L, R, V> {
 
   constructor(clone?: Partial<DeckLocator>) {
     super()
@@ -15,7 +15,7 @@ export class DeckLocator<P extends number = number, M extends number = number, L
   limit? = 20
   gap: Partial<Coordinates> = { x: -0.05, y: -0.05 }
 
-  ignore(item: MaterialItem<P, L>, context: ItemContext<P, M, L>): boolean {
+  ignore(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
     if (this.limit !== undefined && this.getItemIndex(item, context) < 0) {
       return true
     }
