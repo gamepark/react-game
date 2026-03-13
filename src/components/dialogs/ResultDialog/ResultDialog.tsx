@@ -44,7 +44,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
     <Dialog onBackdropClick={close} css={[style, theme.result?.container]} {...props}>
       <FontAwesomeIcon icon={faXmark} css={[closeIcon, theme.result?.closeIcon]} onClick={close}/>
       <div css={scrollableContent}>
-        <h2>{resultText}</h2>
+        {context.scoring?.ResultHeader ? <context.scoring.ResultHeader/> : <h2>{resultText}</h2>}
         <div css={buttonLine}>
           {gameMode === GameMode.TOURNAMENT && tournament ?
             <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>

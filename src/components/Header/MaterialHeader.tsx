@@ -67,11 +67,13 @@ const MaterialHeaderContent = <RulesStep extends number = number>(
 
 const GameOverHeader = ({ GameOverRule }: { GameOverRule?: ComponentType }) => {
   const resultText = useResultText()
+  const context = useContext(gameContext)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const ResultHeader = context.scoring?.ResultHeader
 
-  if (!GameOverRule) return <>{resultText}</>
+  if (!GameOverRule) return ResultHeader ? <ResultHeader/> : <>{resultText}</>
   return <>
-    <span>{resultText}&nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => setDialogOpen(true)} css={pointerCursorCss}/></span>
+    <span>{ResultHeader ? <ResultHeader/> : resultText}&nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => setDialogOpen(true)} css={pointerCursorCss}/></span>
     <RulesDialog open={dialogOpen} close={() => setDialogOpen(false)}>
       <GameOverRule/>
     </RulesDialog>

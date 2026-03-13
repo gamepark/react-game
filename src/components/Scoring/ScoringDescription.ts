@@ -1,5 +1,5 @@
 import { Rules } from '@gamepark/rules-api'
-import { ReactElement } from 'react'
+import { ComponentType, ReactElement } from 'react'
 
 export type ScoringValue = string | number | ReactElement
 
@@ -10,4 +10,6 @@ export interface ScoringDescription<Player extends number = number, GameRule ext
   getScoringHeader(key: Key, rules: GameRule): ScoringValue
 
   getScoringPlayerData(key: Key, player: Player, rules: GameRule): ScoringValue | null
+
+  ResultHeader?: ComponentType
 }
