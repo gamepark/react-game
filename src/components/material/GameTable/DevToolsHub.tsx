@@ -264,7 +264,7 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
 
   const handleDownloadState = useCallback(() => {
     if (!gameState) { doFlash('No game state'); return }
-    const json = JSON.stringify(gameState, null, 2)
+    const json = JSON.stringify(gameState)
     const blob = new Blob([json], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
