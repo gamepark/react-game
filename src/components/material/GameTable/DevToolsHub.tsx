@@ -263,9 +263,9 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
   }, [])
 
   const handleDownloadState = useCallback(() => {
-    if (!gameState) { doFlash('No game state'); return }
-    const json = JSON.stringify(gameState)
-    const blob = new Blob([json], { type: 'application/json' })
+    const raw = localStorage.getItem(gameName)
+    if (!raw) { doFlash('No game state in localStorage'); return }
+    const blob = new Blob([raw], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -273,7 +273,7 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
     a.click()
     URL.revokeObjectURL(url)
     doFlash('State downloaded')
-  }, [gameState, gameName, doFlash])
+  }, [gameName, doFlash])
 
   const handleMenuClick = (id: MenuId) => {
     setActiveMenu(prev => prev === id ? null : id)
