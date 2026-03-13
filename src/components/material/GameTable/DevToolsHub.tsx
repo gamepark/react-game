@@ -751,6 +751,7 @@ const menuListCss = css`
 `
 
 const menuItemCss = css`
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
