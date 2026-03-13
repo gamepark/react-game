@@ -98,7 +98,6 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
 
       {isOpen && (
         <>
-          <div css={backdropCss} onClick={() => setIsOpen(false)} />
           <div css={panelCss} style={fabBottom ? { bottom: `calc(${fabBottom} + 48px)` } : undefined}>
             <div css={panelHeaderCss}>
               <svg css={headerLogoCss} viewBox="0 0 46 46">
@@ -301,14 +300,6 @@ const logoCss = css`
   }
 `
 
-const backdropCss = css`
-  position: fixed;
-  inset: 0;
-  z-index: 899;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(2px);
-`
-
 const slideUp = keyframes`
   from { opacity: 0; transform: translateY(8px) scale(0.97); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -327,7 +318,7 @@ const panelCss = css`
     0 12px 40px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(159, 226, 247, 0.05);
-  overflow: hidden;
+  overflow: visible;
   animation: ${slideUp} 0.2s ease-out;
   font-family: 'Mulish', sans-serif;
 `
@@ -570,20 +561,29 @@ const playerBtnActiveCss = css`
 // ── Flash ──
 
 const flashFade = keyframes`
-  0% { opacity: 0; transform: translateY(4px); }
+  0% { opacity: 0; transform: translateY(6px); }
   15% { opacity: 1; transform: translateY(0); }
   85% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-4px); }
+  100% { opacity: 0; transform: translateY(-6px); }
 `
 
 const flashCss = css`
-  padding: 8px 16px;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-bottom: 8px;
+  padding: 6px 14px;
   font-size: 12px;
   font-weight: 700;
   color: ${GP_PRIMARY};
   text-align: center;
-  border-top: 1px solid rgba(40, 184, 206, 0.1);
-  background: rgba(40, 184, 206, 0.04);
+  background: linear-gradient(145deg, ${GP_SURFACE}, ${GP_DARK});
+  border: 1px solid rgba(40, 184, 206, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  pointer-events: none;
   animation: ${flashFade} 1.5s ease-out forwards;
 `
 
