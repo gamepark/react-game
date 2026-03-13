@@ -510,19 +510,19 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
                       <span css={devToolDescCss}>Save state as .json file</span>
                     </button>
 
-                    {/* Copy LocalStorage */}
+                    {/* Copy LocalStorage (game key only) */}
                     <button css={devToolBtnCss}
                       onClick={() => {
-                        const data: Record<string, string> = {}
-                        for (let i = 0; i < localStorage.length; i++) {
-                          const key = localStorage.key(i)
-                          if (key) data[key] = localStorage.getItem(key) ?? ''
+                        const raw = localStorage.getItem(gameName)
+                        if (raw) {
+                          copyToClipboard(raw, `${gameName} state`)
+                        } else {
+                          doFlash(`No "${gameName}" key in localStorage`)
                         }
-                        copyToClipboard(JSON.stringify(data, null, 2), 'localStorage')
                       }}>
                       <span css={devToolIconCss}>{'\u29C9'}</span>
                       <span css={devToolLabelCss}>Copy LocalStorage</span>
-                      <span css={devToolDescCss}>Copy localStorage to clipboard</span>
+                      <span css={devToolDescCss}>Copy "{gameName}" key to clipboard</span>
                     </button>
                   </>
                 )}
