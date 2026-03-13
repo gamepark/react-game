@@ -10,10 +10,12 @@ import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { Trajectory } from './Trajectory'
 import { transformItem } from './transformItem.util'
 
-// Use action.id as key instead of object reference, because Immer proxies in the reducer
-// differ from the finalized objects used during React rendering.
-const createdItemIndexes = new Map<string | undefined, Map<number, number>>()
-const preQuantitySnapshots = new Map<string | undefined, Map<number, (number | undefined)[]>>()
+// FIFO queue keyed by consequence index — avoids dependency on unstable action IDs
+// (action.id can change from "local-xxx" to server-assigned id between getPreDuration and getPostDuration)
+const preQuantityQueue = new Map<number, (number | undefined)[][]>()
+
+type CreatedItemEntry = { actionId: string | undefined, index: number, itemType: number }
+const createdItemEntries = new Map<number, CreatedItemEntry[]>()
 
 function getConsequenceIndex(action: { played: number, animation?: { step?: number } }): number {
   const step = action.animation?.step
@@ -22,13 +24,13 @@ function getConsequenceIndex(action: { played: number, animation?: { step?: numb
     : action.played - 2
 }
 
-function getInnerMap<K, T>(map: { get(key: K): Map<number, T> | undefined, set(key: K, value: Map<number, T>): void }, key: K): Map<number, T> {
-  let inner = map.get(key)
-  if (!inner) {
-    inner = new Map()
-    map.set(key, inner)
+function getOrCreateArray<T>(map: Map<number, T[]>, key: number): T[] {
+  let arr = map.get(key)
+  if (!arr) {
+    arr = []
+    map.set(key, arr)
   }
-  return inner
+  return arr
 }
 
 export class CreateItemAnimations<P extends number = number, M extends number = number, L extends number = number>
@@ -45,7 +47,7 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     const rules = new context.Rules(context.game, { player: context.playerId }) as MaterialRules<P, M, L>
     const items = rules.game.items?.[move.itemType] ?? []
     const key = getConsequenceIndex(context.action)
-    getInnerMap(preQuantitySnapshots, context.action.id).set(key, items.map((item: any) => item.quantity))
+    getOrCreateArray(preQuantityQueue, key).push(items.map((item: any) => item.quantity))
     return 0
   }
 
@@ -58,25 +60,10 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     // Start with the prediction — always available and correct except in simultaneous phases
     let createdIndex = rules.mutator(move.itemType).getItemCreationIndex(move.item)
 
-    // Try to improve with a snapshot comparison (handles simultaneous phases correctly)
-    let snapshots = preQuantitySnapshots.get(actionId)
-    let snapshot = snapshots?.get(key)
-    // Fallback: action.id may have changed (local-xxx → server id) since getPreDuration
-    if (!snapshot) {
-      for (const [id, innerMap] of preQuantitySnapshots) {
-        const candidate = innerMap.get(key)
-        if (candidate) {
-          snapshots = innerMap
-          snapshot = candidate
-          innerMap.delete(key)
-          if (innerMap.size === 0) preQuantitySnapshots.delete(id)
-          break
-        }
-      }
-    } else {
-      snapshots!.delete(key)
-      if (snapshots!.size === 0) preQuantitySnapshots.delete(actionId)
-    }
+    // Dequeue the snapshot (FIFO — immune to action ID changes)
+    const queue = preQuantityQueue.get(key)
+    const snapshot = queue?.shift()
+    if (queue && queue.length === 0) preQuantityQueue.delete(key)
 
     if (snapshot) {
       for (let i = 0; i < items.length; i++) {
@@ -89,14 +76,16 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
       }
     }
 
-    getInnerMap(createdItemIndexes, actionId).set(key, createdIndex)
+    const entry: CreatedItemEntry = { actionId, index: createdIndex, itemType: move.itemType }
+    getOrCreateArray(createdItemEntries, key).push(entry)
 
-    // Clean up to prevent memory leaks (Map doesn't auto-collect like WeakMap)
+    // Clean up to prevent memory leaks
     setTimeout(() => {
-      const map = createdItemIndexes.get(actionId)
-      if (map) {
-        map.delete(key)
-        if (map.size === 0) createdItemIndexes.delete(actionId)
+      const entries = createdItemEntries.get(key)
+      if (entries) {
+        const idx = entries.indexOf(entry)
+        if (idx !== -1) entries.splice(idx, 1)
+        if (entries.length === 0) createdItemEntries.delete(key)
       }
     }, this.duration * 2000)
 
@@ -142,19 +131,19 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
   isItemToAnimate(context: ItemContext<P, M, L>, animation: Animation<CreateItem<P, M, L>>): boolean {
     const { type, index, displayIndex } = context
     const key = getConsequenceIndex(animation.action)
-    let createdIndex = createdItemIndexes.get(animation.action.id)?.get(key)
-    // Fallback: action.id may have changed during notification reconciliation
-    // (local id "local-xxx" replaced by server-assigned id), so search all entries
-    if (createdIndex === undefined) {
-      for (const [, innerMap] of createdItemIndexes) {
-        const candidate = innerMap.get(key)
-        if (candidate !== undefined) {
-          createdIndex = candidate
-          break
-        }
-      }
+    const entries = createdItemEntries.get(key)
+
+    // Primary: match by action ID
+    let entry = entries?.find(e => e.actionId === animation.action.id)
+
+    // Fallback: action.id may have changed (local → server), match by itemType
+    if (!entry) {
+      entry = entries?.findLast(e => e.itemType === animation.move.itemType)
+      // Migrate the entry to the new action ID so subsequent calls find it directly
+      if (entry) entry.actionId = animation.action.id
     }
-    if (animation.move.itemType !== type || createdIndex !== index) return false
+
+    if (animation.move.itemType !== type || entry?.index !== index) return false
     const quantity = getItemFromContext(context).quantity ?? 1
     const createdQuantity = animation.move.item.quantity ?? 1
     return displayIndex >= quantity - createdQuantity
