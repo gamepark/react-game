@@ -191,6 +191,20 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
     }
   }, [g, gameName, doFlash])
 
+  const handleDownloadSave = useCallback((key: string) => {
+    const raw = localStorage.getItem(key)
+    if (!raw) { doFlash('Save not found'); return }
+    const label = getSaveLabel(key, gameName)
+    const blob = new Blob([raw], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${gameName}-${label.replace(/[^a-zA-Z0-9_-]/g, '_')}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    doFlash(`Downloaded: ${label}`)
+  }, [gameName, doFlash])
+
   const handleDelete = useCallback((key: string) => {
     localStorage.removeItem(key)
     setSaveRefresh(n => n + 1)
@@ -454,6 +468,7 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
                             <span css={savedLabelCss}>{getSaveLabel(key, gameName)}</span>
                             <div css={savedActionsCss}>
                               <button css={smallBtnCss} onClick={() => handleLoad(key)} title="Load">{'\u25B6'}</button>
+                              <button css={smallBtnCss} onClick={() => handleDownloadSave(key)} title="Download">{'\u2913'}</button>
                               <button css={[smallBtnCss, smallBtnDangerCss]} onClick={() => handleDelete(key)} title="Delete">{'\u2715'}</button>
                             </div>
                           </div>
