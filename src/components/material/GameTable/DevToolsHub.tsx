@@ -2,7 +2,7 @@
 import { css, keyframes } from '@emotion/react'
 import { FC, PropsWithChildren, ReactNode, useCallback, useContext, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { useGame } from '../../../hooks/useGame'
+
 import { usePlayerId, usePlayerIds } from '../../../hooks/usePlayerId'
 import { gameContext } from '../../GameProvider/GameContext'
 
@@ -130,7 +130,7 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
   const [saveRefresh, setSaveRefresh] = useState(0)
   const flashTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const gameState = useGame()
+
   const currentPlayer = usePlayerId()
   const players = usePlayerIds()
   const gameName = useContext(gameContext)?.game ?? 'unknown'
@@ -166,14 +166,15 @@ export const DevToolsHub: FC<DevToolsHubProps> = ({ children, fabBottom, gameOpt
   void saveRefresh // force re-read
 
   const handleSave = useCallback(() => {
-    if (!gameState) { doFlash('No game state'); return }
+    const raw = localStorage.getItem(gameName)
+    if (!raw) { doFlash('No game state in localStorage'); return }
     const label = saveLabel.trim() || new Date().toLocaleTimeString()
     const key = gameName + SAVE_PREFIX + label
-    localStorage.setItem(key, JSON.stringify(gameState))
+    localStorage.setItem(key, raw)
     setSaveLabel('')
     setSaveRefresh(n => n + 1)
     doFlash(`Saved: ${label}`)
-  }, [gameState, saveLabel, gameName, doFlash])
+  }, [saveLabel, gameName, doFlash])
 
   const handleLoad = useCallback((key: string) => {
     const raw = localStorage.getItem(key)
