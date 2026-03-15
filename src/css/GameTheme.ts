@@ -1,4 +1,5 @@
 import { Interpolation } from '@emotion/react'
+import { ComponentType } from 'react'
 import { addStylesheetUrl } from './addStylesheetUrl'
 
 addStylesheetUrl('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap')
@@ -38,6 +39,7 @@ export interface DialogTheme {
   container?: Interpolation<GameTheme>
   backdrop?: Interpolation<GameTheme>
   closeIcon?: Interpolation<GameTheme>
+  closeButton?: ComponentType<{ onClick: () => void }>
   content?: Interpolation<GameTheme>
   openAnimation?: Interpolation<GameTheme>
   closeAnimation?: Interpolation<GameTheme>

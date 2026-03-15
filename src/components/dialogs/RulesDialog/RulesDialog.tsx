@@ -11,9 +11,10 @@ export type RulesDialogProps = {
 
 export const RulesDialog: FC<RulesDialogProps> = ({ close, children, ...props }: RulesDialogProps) => {
   const theme = useTheme()
+  const CloseButton = theme.dialog.closeButton
   return (
     <Dialog onBackdropClick={close} css={dialogCss} {...props}>
-      {close && <FontAwesomeIcon icon={faXmark} css={[dialogCloseIcon, theme.dialog.closeIcon]} onClick={close}/>}
+      {close && (CloseButton ? <CloseButton onClick={close}/> : <FontAwesomeIcon icon={faXmark} css={[dialogCloseIcon, theme.dialog.closeIcon]} onClick={close}/>)}
       <ThemeProvider theme={theme => ({ ...theme, buttons: onSurfaceButtonCss })}>
         {children}
       </ThemeProvider>
