@@ -71,20 +71,29 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const Navigation = theme.dialog.navigation
   const onPrevious = previous ? () => play(previous, { transient: true }) : undefined
   const onNext = next ? () => play(next, { transient: true }) : undefined
+  if (hasNavigation && Navigation) {
+    return <div css={navigationWrapper}>
+      <div css={[flex, navigationContent]}>
+        <description.helpDisplay item={item} itemType={helpDisplay.itemType} itemIndex={helpDisplay.itemIndex} displayIndex={helpDisplay.displayIndex} closeDialog={closeDialog}/>
+        <div css={[helpDialogContentCss, theme.dialog.content]}>
+          {description.help && <description.help {...helpDisplay} closeDialog={closeDialog}/>}
+        </div>
+      </div>
+      <Navigation onPrevious={onPrevious} onNext={onNext} currentIndex={currentIndex} total={total}/>
+    </div>
+  }
+
   return <>
-    <div css={[flex, hasNavigation && !Navigation && fullSize]}>
+    <div css={[flex, hasNavigation && fullSize]}>
       <description.helpDisplay item={item} itemType={helpDisplay.itemType} itemIndex={helpDisplay.itemIndex} displayIndex={helpDisplay.displayIndex} closeDialog={closeDialog}/>
       <div css={[helpDialogContentCss, theme.dialog.content]}>
         {description.help && <description.help {...helpDisplay} closeDialog={closeDialog}/>}
       </div>
     </div>
-    {hasNavigation && (Navigation
-      ? <Navigation onPrevious={onPrevious} onNext={onNext} currentIndex={currentIndex} total={total}/>
-      : <>
-        {previous && <PreviousArrow onPrevious={() => play(previous, { transient: true })}/>}
-        {next && <NextArrow onNext={() => play(next, { transient: true })}/>}
-      </>
-    )}
+    {hasNavigation && <>
+      {previous && <PreviousArrow onPrevious={() => play(previous, { transient: true })}/>}
+      {next && <NextArrow onNext={() => play(next, { transient: true })}/>}
+    </>}
   </>
 }
 
@@ -162,6 +171,20 @@ const nextArrow = css`
   &:focus:not(:active) {
     animation: ${nextAnimation} 0.2s forwards;
   }
+`
+
+const navigationWrapper = css`
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  max-height: 85dvh;
+  width: 80vw;
+  width: 80dvw;
+`
+
+const navigationContent = css`
+  flex: 1;
+  min-height: 0;
 `
 
 const flex = css`
