@@ -20,6 +20,7 @@ export const TimeStatsButton = () => {
   const theme = useTheme()
   const [displayPopup, setDisplayPopup] = useState(false)
   const players = usePlayers()
+  const CloseButton = theme.dialog.closeButton
 
   return (
     <>
@@ -28,7 +29,7 @@ export const TimeStatsButton = () => {
         {t('time.button')}
       </button>
       <Dialog open={displayPopup} css={[menuDialogCss, theme.timeStats?.container]} onBackdropClick={() => setDisplayPopup(false)}>
-        <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={() => setDisplayPopup(false)}/>
+        {CloseButton ? <CloseButton onClick={() => setDisplayPopup(false)}/> : <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={() => setDisplayPopup(false)}/>}
         <h2>{t('time.title')}</h2>
         <div css={gridCss(players.length)}>
           <div/>
