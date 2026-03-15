@@ -51,6 +51,7 @@ export interface DialogTheme {
   openAnimation?: Interpolation<GameTheme>
   closeAnimation?: Interpolation<GameTheme>
   navigation?: ComponentType<DialogNavigationProps>
+  navigationCss?: Interpolation<GameTheme>
 }
 
 export interface PaletteTheme {
