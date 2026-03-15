@@ -33,6 +33,13 @@ export interface BackgroundTheme {
   overlay: string
 }
 
+export type DialogNavigationProps = {
+  onPrevious?: () => void
+  onNext?: () => void
+  currentIndex: number
+  total: number
+}
+
 export interface DialogTheme {
   backgroundColor: string
   color: string
@@ -43,6 +50,7 @@ export interface DialogTheme {
   content?: Interpolation<GameTheme>
   openAnimation?: Interpolation<GameTheme>
   closeAnimation?: Interpolation<GameTheme>
+  navigation?: ComponentType<DialogNavigationProps>
 }
 
 export interface PaletteTheme {
