@@ -39,6 +39,8 @@ export interface DialogTheme {
   backdrop?: Interpolation<GameTheme>
   closeIcon?: Interpolation<GameTheme>
   content?: Interpolation<GameTheme>
+  openAnimation?: Interpolation<GameTheme>
+  closeAnimation?: Interpolation<GameTheme>
 }
 
 export interface PaletteTheme {
