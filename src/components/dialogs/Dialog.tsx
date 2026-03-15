@@ -89,22 +89,22 @@ const hide = (transitionDelay: number) => css`
 const scaleIn = keyframes`
   from {
     opacity: 0;
-    transform: scale(0.92);
+    scale: 0.92;
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    scale: 1;
   }
 `
 
 const scaleOut = keyframes`
   from {
     opacity: 1;
-    transform: scale(1);
+    scale: 1;
   }
   to {
     opacity: 0;
-    transform: scale(0.92);
+    scale: 0.92;
   }
 `
 
