@@ -180,7 +180,7 @@ export class ItemAnimations<P extends number = number, M extends number = number
       const resolvedElevation = elevationConfig ?? defaultElevation
       const elevationArc = getElevationKeyframes(resolvedElevation)
       return css`
-        animation: ${elevationArc} ${duration}s ease-in-out forwards;
+        animation: ${elevationArc} ${duration}s linear infinite;
         > * {
           animation: ${animationKeyframes} ${duration}s ${easing} forwards;
         }

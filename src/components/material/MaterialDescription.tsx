@@ -317,7 +317,7 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   getAnimationCss(animationKeyframes: Keyframes, duration: number): Interpolation<Theme> {
     const elevationArc = getElevationKeyframes(defaultElevation)
     return css`
-      animation: ${elevationArc} ${duration}s ease-in-out forwards;
+      animation: ${elevationArc} ${duration}s linear infinite;
 
       > * {
         animation: ${animationKeyframes} ${duration}s ease-in-out forwards;
