@@ -39,7 +39,7 @@ export const Dialog = ({ children, open, backdropCss, onBackdropClick, transitio
 
   return createPortal(
     <div css={[backdropStyle(transitionDelay), !open && hide(transitionDelay), backdropCss]} onClick={event => !justDisplayed && onBackdropClick?.(event)}>
-      <div onClick={event => event.stopPropagation()} css={[dialogCss, theme.dialog.container]} {...props}>
+      <div onClick={event => event.stopPropagation()} css={[dialogCss, open ? (theme.dialog.openAnimation ?? dialogShow(transitionDelay)) : (theme.dialog.closeAnimation ?? dialogHide(transitionDelay)), theme.dialog.container]} {...props}>
         {children}
       </div>
     </div>,
@@ -84,6 +84,36 @@ const backdropStyle = (transitionDelay: number) => css`
 const hide = (transitionDelay: number) => css`
   animation: ${fadeOut} ${transitionDelay}s forwards;
   pointer-events: none;
+`
+
+const scaleIn = keyframes`
+  from {
+    opacity: 0;
+    scale: 0.92;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+`
+
+const scaleOut = keyframes`
+  from {
+    opacity: 1;
+    scale: 1;
+  }
+  to {
+    opacity: 0;
+    scale: 0.92;
+  }
+`
+
+const dialogShow = (transitionDelay: number) => css`
+  animation: ${scaleIn} ${transitionDelay}s ease-out forwards;
+`
+
+const dialogHide = (transitionDelay: number) => css`
+  animation: ${scaleOut} ${transitionDelay}s ease-in forwards;
 `
 
 const dialogCss = css`

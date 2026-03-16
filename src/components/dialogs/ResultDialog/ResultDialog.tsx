@@ -40,9 +40,10 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   let row = (gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1) + (scoringCells?.length ?? 0)
 
   const resultText = useResultText()
+  const CloseButton = theme.dialog.closeButton
   return (
     <Dialog onBackdropClick={close} css={[style, theme.result?.container]} {...props}>
-      <FontAwesomeIcon icon={faXmark} css={[closeIcon, theme.result?.closeIcon]} onClick={close}/>
+      {CloseButton ? <CloseButton onClick={close}/> : <FontAwesomeIcon icon={faXmark} css={[closeIcon, theme.result?.closeIcon]} onClick={close}/>}
       <div css={scrollableContent}>
         <h2>{context.scoring?.ResultHeader ? <context.scoring.ResultHeader/> : resultText}</h2>
         <div css={buttonLine}>

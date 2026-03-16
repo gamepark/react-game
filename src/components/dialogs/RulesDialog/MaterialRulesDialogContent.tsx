@@ -37,7 +37,7 @@ const useMaterialNavigation = <P extends number = number, M extends number = num
 
   const materialIndexes = useMemo(() => material?.getIndexes(), [material])
 
-  if (!material || !materialIndexes) return { previous: undefined, next: undefined }
+  if (!material || !materialIndexes) return { previous: undefined, next: undefined, currentIndex: 0, total: 0 }
 
   const currentIndex = materialIndexes.indexOf(helpDisplay.itemIndex!)
   const previous = material.index(materialIndexes[currentIndex - 1])
@@ -46,8 +46,10 @@ const useMaterialNavigation = <P extends number = number, M extends number = num
   const nextMove = next.length ? displayMaterialHelp(helpDisplay.itemType, next.getItem(), next.getIndex()) : undefined
 
   return {
-    previous: previous.length ? displayMaterialHelp(helpDisplay.itemType, previous.getItem(), previous.getIndex()) : undefined,
-    next: next.length ? displayMaterialHelp(helpDisplay.itemType, next.getItem(), next.getIndex()) : undefined
+    previous: previousMove,
+    next: nextMove,
+    currentIndex,
+    total: materialIndexes.length
   }
 
 }
@@ -60,12 +62,27 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const context = useMaterialContext<P, M, L>()
   const description = useMaterialDescription<P, M, L>(helpDisplay.itemType)
   const itemContext: ItemContext<P, M, L> = { ...context, type: helpDisplay.itemType, index: helpDisplay.itemIndex!, displayIndex: helpDisplay.displayIndex! }
-  const { previous, next } = useMaterialNavigation<P, M, L>(helpDisplay, itemContext)
+  const { previous, next, currentIndex, total } = useMaterialNavigation<P, M, L>(helpDisplay, itemContext)
   const closeDialog = () => play(displayHelp(undefined), { transient: true })
   useKeyDown('Escape', closeDialog)
   if (!description) return null
   const item = helpDisplay.item
   const hasNavigation = previous || next
+  const Navigation = theme.dialog.navigation
+  const onPrevious = previous ? () => play(previous, { transient: true }) : undefined
+  const onNext = next ? () => play(next, { transient: true }) : undefined
+  if (hasNavigation && Navigation) {
+    return <div css={navigationWrapper}>
+      <div css={[flex, navigationContent]}>
+        <description.helpDisplay item={item} itemType={helpDisplay.itemType} itemIndex={helpDisplay.itemIndex} displayIndex={helpDisplay.displayIndex} closeDialog={closeDialog}/>
+        <div css={[helpDialogContentCss, theme.dialog.content]}>
+          {description.help && <description.help {...helpDisplay} closeDialog={closeDialog}/>}
+        </div>
+      </div>
+      <Navigation onPrevious={onPrevious} onNext={onNext} currentIndex={currentIndex} total={total}/>
+    </div>
+  }
+
   return <>
     <div css={[flex, hasNavigation && fullSize]}>
       <description.helpDisplay item={item} itemType={helpDisplay.itemType} itemIndex={helpDisplay.itemIndex} displayIndex={helpDisplay.displayIndex} closeDialog={closeDialog}/>
@@ -73,8 +90,10 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
         {description.help && <description.help {...helpDisplay} closeDialog={closeDialog}/>}
       </div>
     </div>
-    {previous && <PreviousArrow onPrevious={() => play(previous, { transient: true })}/>}
-    {next && <NextArrow onNext={() => play(next, { transient: true })}/>}
+    {hasNavigation && <>
+      {previous && <PreviousArrow onPrevious={() => play(previous, { transient: true })}/>}
+      {next && <NextArrow onNext={() => play(next, { transient: true })}/>}
+    </>}
   </>
 }
 
@@ -152,6 +171,20 @@ const nextArrow = css`
   &:focus:not(:active) {
     animation: ${nextAnimation} 0.2s forwards;
   }
+`
+
+const navigationWrapper = css`
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  max-height: 85dvh;
+  width: 80vw;
+  width: 80dvw;
+`
+
+const navigationContent = css`
+  flex: 1;
+  min-height: 0;
 `
 
 const flex = css`

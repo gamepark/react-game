@@ -1,4 +1,5 @@
 import { Interpolation } from '@emotion/react'
+import { ComponentType } from 'react'
 import { addStylesheetUrl } from './addStylesheetUrl'
 
 addStylesheetUrl('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap')
@@ -32,13 +33,25 @@ export interface BackgroundTheme {
   overlay: string
 }
 
+export type DialogNavigationProps = {
+  onPrevious?: () => void
+  onNext?: () => void
+  currentIndex: number
+  total: number
+}
+
 export interface DialogTheme {
   backgroundColor: string
   color: string
   container?: Interpolation<GameTheme>
   backdrop?: Interpolation<GameTheme>
   closeIcon?: Interpolation<GameTheme>
+  closeButton?: ComponentType<{ onClick: () => void }>
   content?: Interpolation<GameTheme>
+  openAnimation?: Interpolation<GameTheme>
+  closeAnimation?: Interpolation<GameTheme>
+  navigation?: ComponentType<DialogNavigationProps>
+  navigationCss?: Interpolation<GameTheme>
 }
 
 export interface PaletteTheme {
