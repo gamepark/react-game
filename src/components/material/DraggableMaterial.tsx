@@ -5,7 +5,7 @@ import { isEqual } from 'es-toolkit'
 import React, { forwardRef, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { grabbingCursor, grabCursor } from '../../css'
 import { CanUndo, UndoFunction } from '../../hooks'
-import { useMaterialContextRef, usePlay } from '../../hooks'
+import { useLegalMoves, useMaterialContextRef, usePlay } from '../../hooks'
 import { getLocationOriginCss, ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
 import { useScale } from './GameTable'
@@ -108,11 +108,12 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
     }
   }, [itemContext, play, legalMoves])
 
+  const legalMovesForLongClick = useLegalMoves<MaterialMove>({ includeDuringAnimations: true })
   const onLongClickMove = useMemo(() => {
     if (unselect || onShortClickMove) return
-    const move = findIfUnique(legalMoves, move => description.canLongClick(move, itemContext))
+    const move = findIfUnique(legalMovesForLongClick, move => description.canLongClick(move, itemContext))
     if (move !== undefined) return () => play(move)
-  }, [itemContext, play, legalMoves])
+  }, [itemContext, play, legalMovesForLongClick])
 
   const hadMenu = useRef(!!menu)
   useEffect(() => {
