@@ -79,7 +79,7 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
               css={[timerStyle, data, theme.playerPanel?.dataBadge, rightAlignment]}
               customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
             />
-          )}
+            )}
           <Counters counters={[main]} lineSize={1}/>
         </div>
       )}
