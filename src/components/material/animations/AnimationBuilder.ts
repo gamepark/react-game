@@ -31,7 +31,7 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
   private _sound?: string | MaterialSoundConfig | false
 
   /** @internal Trajectory configuration */
-  private _trajectory: Trajectory<P, M, L> | ((context: ItemContext<P, M, L>) => Trajectory<P, M, L>) = {}
+  private _trajectory: Trajectory<P, M, L> | ((context: ItemContext<P, M, L>, move: MaterialMove<P, M, L>) => Trajectory<P, M, L>) = {}
 
   /** @internal Whether this animation plays after the move is applied */
   private _postMove = false
@@ -112,7 +112,7 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
    * Configure a complete trajectory with elevation and waypoints.
    * @param config Trajectory configuration
    */
-  trajectory(config: Trajectory<P, M, L> | ((context: ItemContext<P, M, L>) => Trajectory<P, M, L>)): this {
+  trajectory(config: Trajectory<P, M, L> | ((context: ItemContext<P, M, L>, move: MaterialMove<P, M, L>) => Trajectory<P, M, L>)): this {
     this._trajectory = config
     return this
   }
@@ -120,7 +120,7 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
   /**
    * Get the trajectory configuration.
    */
-  get trajectoryConfig(): Trajectory<P, M, L> | ((context: ItemContext<P, M, L>) => Trajectory<P, M, L>) {
+  get trajectoryConfig(): Trajectory<P, M, L> | ((context: ItemContext<P, M, L>, move: MaterialMove<P, M, L>) => Trajectory<P, M, L>) {
     return this._trajectory
   }
 
@@ -230,7 +230,7 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
     if (this._itemAnimation) {
       return this._itemAnimation(context, animation, boundaries)
     }
-    const trajectory = typeof this._trajectory === 'function' ? this._trajectory(context) : this._trajectory
+    const trajectory = typeof this._trajectory === 'function' ? this._trajectory(context, animation.move) : this._trajectory
     return new MaterialAnimationsWithTrajectory<P, M, L>(this._duration, trajectory).getItemAnimation(context, animation, boundaries)
   }
 }
