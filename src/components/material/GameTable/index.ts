@@ -1,4 +1,4 @@
-export * from './DevToolsHub'
+export * from './DevTools'
 export * from './focus'
 export * from './GameTable'
 export * from './GameTableContext'
