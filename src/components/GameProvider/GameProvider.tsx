@@ -24,6 +24,7 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
   { materialI18n, theme = {}, children, ...props }: PropsWithChildren<GameProviderProps<Game, GameView, Move, MoveView, PlayerId>>
 ) => {
   setupTranslation(props.game)
+  initDatadog(props.game)
 
   useEffect(() => {
     if (isMaterialTutorial(props.tutorial)) {
@@ -36,24 +37,31 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
   }
   return (
     <gameContext.Provider value={props as GameContext}>
-        <ThemeProvider theme={merge(defaultTheme, theme)}>
-          <Global styles={[normalize, globalCss]}/>
-          <TRPCProvider>
-            {gameId ?
-              <RemoteGameProvider gameId={gameId} {...props}>{children}</RemoteGameProvider> :
-              <LocalGameProvider {...props}>{children}</LocalGameProvider>
-            }
-          </TRPCProvider>
-        </ThemeProvider>
+      <ThemeProvider theme={merge(defaultTheme, theme)}>
+        <Global styles={[normalize, globalCss]}/>
+        <TRPCProvider>
+          {gameId ?
+            <RemoteGameProvider gameId={gameId} {...props}>{children}</RemoteGameProvider> :
+            <LocalGameProvider {...props}>{children}</LocalGameProvider>
+          }
+        </TRPCProvider>
+      </ThemeProvider>
     </gameContext.Provider>
   )
 }
 
 // Init Datadog logs
-if (process.env.NODE_ENV === 'production') {
+let datadogInitialized = false
+
+function initDatadog(service: string) {
+  if (datadogInitialized || process.env.NODE_ENV !== 'production') return
+  datadogInitialized = true
   datadogLogs.init({
     clientToken: process.env.DATADOG_CLIENT_TOKEN ?? 'pubdb04a43151132f11ed7347e785e3902a',
-    site: 'datadoghq.eu'
+    site: 'datadoghq.eu',
+    service,
+    version: process.env.VERSION,
+    beforeSend: (event) => !event.message?.includes('sockjs')
   })
   datadogLogs.logger.setLevel(process.env.LOGGER_LEVEL as StatusType || StatusType.error)
   // The following code may be removed later, see: https://github.com/DataDog/browser-sdk/issues/400
