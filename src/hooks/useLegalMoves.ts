@@ -1,21 +1,11 @@
 import { useGameSelector } from '@gamepark/react-client'
-import { useIsAnimatingPlayerAction } from '../components/material/utils/useIsAnimatingPlayerAction'
 
 const EMPTY_MOVES: never[] = []
 
-type LegalMovesOptions<Move> = {
-  predicate?: (move: Move) => boolean
-  includeDuringAnimations?: boolean
-}
-
-export function useLegalMoves<Move = any>(predicateOrOptions?: ((move: Move) => boolean) | LegalMovesOptions<Move>): Move[] {
+export function useLegalMoves<Move = any>(predicate?: (move: Move) => boolean): Move[] {
   const legalMoves = useGameSelector((state) => state.legalMoves)
   const gameOver = useGameSelector((state) => state.gameOver)
-  const isAnimatingPlayerAction = useIsAnimatingPlayerAction()
-  const { predicate, includeDuringAnimations } = typeof predicateOrOptions === 'function'
-    ? { predicate: predicateOrOptions, includeDuringAnimations: false }
-    : { predicate: predicateOrOptions?.predicate, includeDuringAnimations: predicateOrOptions?.includeDuringAnimations ?? false }
-  if (gameOver || (!includeDuringAnimations && isAnimatingPlayerAction)) return EMPTY_MOVES
+  if (gameOver) return EMPTY_MOVES
   return predicate ? legalMoves.filter(predicate) : legalMoves
 }
 
