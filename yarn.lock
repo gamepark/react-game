@@ -375,9 +375,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gamepark/react-client@npm:^7.5.2":
-  version: 7.5.2
-  resolution: "@gamepark/react-client@npm:7.5.2"
+"@gamepark/react-client@npm:^7.5.3":
+  version: 7.5.3
+  resolution: "@gamepark/react-client@npm:7.5.3"
   dependencies:
     "@reduxjs/toolkit": "npm:^2.11.2"
     "@tanstack/react-query": "npm:^5.90.21"
@@ -398,7 +398,7 @@ __metadata:
     react-dom: ^19.2.4
     react-redux: ^9.2.0
     rxjs: ^7.8.2
-  checksum: 10c0/919aaacfd09d20d41e3f67fc6129e5d99b582b3cb6f24b8cf2907a7f186079a22de790e8424e5d279e0c1188a025302d7366dd6b3990fbf8e0c9cfc0c06c590c
+  checksum: 10c0/ecc7dbc6b580ad9208eecab86e4b7ee1703cb674845923124812f3beeacfdc8792b30410c0a079a510760740a550fc5e37941adbfb2c83ba3802225b3adebcbd
   languageName: node
   linkType: hard
 
@@ -416,8 +416,8 @@ __metadata:
     "@fortawesome/react-fontawesome": "npm:^3.2.0"
     "@gamepark/api-types": "npm:^1.0.0"
     "@gamepark/avataaars": "npm:^3.0.0"
-    "@gamepark/react-client": "npm:^7.5.2"
-    "@gamepark/rules-api": "npm:^7.5.0"
+    "@gamepark/react-client": "npm:^7.5.3"
+    "@gamepark/rules-api": "npm:^7.5.1"
     "@types/fscreen": "npm:^1.0.4"
     "@types/node": "npm:^25.3.1"
     "@types/react": "npm:^19.2.14"
@@ -459,12 +459,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gamepark/rules-api@npm:^7.5.0":
-  version: 7.5.0
-  resolution: "@gamepark/rules-api@npm:7.5.0"
+"@gamepark/rules-api@npm:^7.5.1":
+  version: 7.5.1
+  resolution: "@gamepark/rules-api@npm:7.5.1"
   peerDependencies:
     es-toolkit: ^1.39.10
-  checksum: 10c0/1d47c1bd27a8d6b558b5fd50b3dd452e70ec0e0313d401be025b7cd2353660ade184e19a62a546994eee6371dcbb44121080dc43c708e4748a03924269c44834
+  checksum: 10c0/ed9250fd47a7c5b4774bae5ec6126f08f9a994bc3bc190d24c25652a4b5256af3d837be1a9b5939cd0d686f695b823255091db1621b9eee1590cfdb88877c74a
   languageName: node
   linkType: hard
 
