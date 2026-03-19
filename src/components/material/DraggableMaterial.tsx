@@ -186,7 +186,7 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
                  highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
                  {...props}
                  onShortClick={unselect ?? onShortClickMove} onLongClick={onLongClickMove}/>
-    {menu && (menuAlwaysVisible || item.selected) &&
+    {!animation && menu && (menuAlwaysVisible || item.selected) &&
       <ItemMenuWrapper item={item} itemContext={itemContext} description={description} {...props} css={locationOriginCss}>{menu}</ItemMenuWrapper>
     }
   </>
