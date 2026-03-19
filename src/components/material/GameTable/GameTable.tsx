@@ -132,7 +132,7 @@ export const GameTable: FC<GameTableProps> = (
       <DndContext collisionDetection={collisionAlgorithm} measuring={measuring}
                   modifiers={modifiers} sensors={sensors}
                   onDragStart={onDragStart} onDragEnd={onDragEnd} onDragCancel={onDragCancel}>
-        <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle]}/>
+        <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle, !enableZoom && nativeZoomCss]}/>
         {enableZoom ? (
           <TransformWrapper ref={zoomRef} minScale={minScale} maxScale={maxScale} initialScale={minScale}
                             centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
@@ -182,6 +182,12 @@ const tableCss = (width: number, height: number) => css`
   transform-style: preserve-3d;
   width: ${width}em;
   height: ${height}em;
+`
+
+const nativeZoomCss = css`
+  #root {
+    touch-action: pinch-zoom;
+  }
 `
 
 const noZoomContainerCss = css`
