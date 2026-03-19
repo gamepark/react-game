@@ -1,5 +1,6 @@
 export * from './buttons'
 export * from './dialogs'
+export * from './GamePoints'
 export * from './GameProvider'
 export * from './Header'
 export * from './ImagesLoader'
