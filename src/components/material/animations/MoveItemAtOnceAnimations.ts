@@ -10,8 +10,8 @@ import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { Trajectory } from './Trajectory'
 import { transformItem } from './transformItem.util'
 
-export class MoveItemAtOnceAnimations<P extends number = number, M extends number = number, L extends number = number>
-  extends ItemAnimations<P, M, L> {
+export class MoveItemAtOnceAnimations<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
+  extends ItemAnimations<P, M, L, R, V> {
 
   constructor(
     protected duration = 1,
@@ -21,7 +21,7 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     super()
   }
 
-  override getPreDuration(move: MoveItemsAtOnce<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
+  override getPreDuration(move: MoveItemsAtOnce<P, M, L>, context: MaterialGameAnimationContext<P, M, L, R, V>): number {
     const potentialDroppedItems = move.indexes.map((index => ({ type: move.itemType, index })))
     if (potentialDroppedItems.some((item) => isDroppedItem(this.getItemContext(context, item)))) {
       return this.droppedItemDuration
@@ -29,7 +29,7 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     return this.duration
   }
 
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
+  getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<MoveItemsAtOnce<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
     if (context.type === animation.move.itemType && animation.move.indexes.includes(context.index)) {
       return this.getMovedItemAnimation(context, animation, boundaries)
     }
@@ -42,10 +42,10 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     }
   }
 
-  getMovedItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
+  getMovedItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<MoveItemsAtOnce<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
     const { type, rules, material, player } = context
     const description = material[type]
-    const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
+    const Rules = rules.constructor as MaterialRulesCreator<P, M, L, R, V>
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
     const futureItem = futureRules.material(type).getItem(context.index)!
@@ -72,11 +72,11 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     toClosestRotations(originTransforms, targetTransforms)
 
     // Check if trajectory is configured
-    const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L>
+    const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L, R, V>
     const trajectory = this.trajectory ?? contextWithTrajectory.trajectory
 
     if (trajectory) {
-      const trajectoryContext: ItemContextWithTrajectory<P, M, L> = { ...context, trajectory }
+      const trajectoryContext: ItemContextWithTrajectory<P, M, L, R, V> = { ...context, trajectory }
       const animationKeyframes = this.getTrajectoryKeyframes(originTransforms, targetTransforms, animation, trajectoryContext)
       return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
     } else {
@@ -85,10 +85,10 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     }
   }
 
-  getChildItemAnimation(item: MaterialItem<P, L>, context: ItemContext<P, M, L>, animation: Animation<MoveItemsAtOnce<P, M, L>>): Interpolation<Theme> {
+  getChildItemAnimation(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>, animation: Animation<MoveItemsAtOnce<P, M, L>>): Interpolation<Theme> {
     const { type, rules, material, player } = context
     const description = material[type]
-    const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
+    const Rules = rules.constructor as MaterialRulesCreator<P, M, L, R, V>
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.play(animation.move)
     const futureContext = { ...context, rules: futureRules }
@@ -103,11 +103,11 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     const originTransforms = transformItem(context)
     toClosestRotations(originTransforms, targetTransforms)
 
-    const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L>
+    const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L, R, V>
     const trajectory = this.trajectory ?? contextWithTrajectory.trajectory
 
     if (trajectory) {
-      const trajectoryContext: ItemContextWithTrajectory<P, M, L> = { ...context, trajectory }
+      const trajectoryContext: ItemContextWithTrajectory<P, M, L, R, V> = { ...context, trajectory }
       const animationKeyframes = this.getTrajectoryKeyframes(originTransforms, targetTransforms, animation, trajectoryContext)
       return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
     } else {

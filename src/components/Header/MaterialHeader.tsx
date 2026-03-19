@@ -35,14 +35,14 @@ const MaterialHeaderContent = <RulesStep extends number = number>(
   { loading, rulesStepsHeaders, GameOver, GameOverRule }: MaterialHeaderProps<RulesStep>
 ) => {
   const { t } = useTranslation('common')
-  const game = useGame<MaterialGame>()
+  const game = useGame<MaterialGame<number, number, number, RulesStep>>()
   const play = usePlay()
   const context = useContext(gameContext)
   const cancelled = useGameSelector((state) => state.players.every(player => player.quit))
   const victoryClaim = useGameSelector((state) =>
     state.gameOver === true && state.players.length > 1 && state.players.filter(player => !player.quit).length === 1
   )
-  const RulesStepsHeader = game?.rule ? rulesStepsHeaders[game.rule.id as RulesStep] as ComponentType : undefined
+  const RulesStepsHeader = game?.rule ? rulesStepsHeaders[game.rule.id] as ComponentType : undefined
 
   if (loading || !game) {
     return <>{t('Game loading...')}</>

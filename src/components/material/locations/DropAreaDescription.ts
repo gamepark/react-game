@@ -7,16 +7,16 @@ import { ItemContext } from '../../../locators'
 import { LocationDescription } from './LocationDescription'
 import { SimpleDropArea } from './SimpleDropArea'
 
-export class DropAreaDescription<P extends number = number, M extends number = number, L extends number = number, Id = any>
-  extends LocationDescription<P, M, L, Id> {
+export class DropAreaDescription<P extends number = number, M extends number = number, L extends number = number, Id = any, R extends number = number, V extends number = number>
+  extends LocationDescription<P, M, L, Id, R, V> {
 
   Component: ElementType = SimpleDropArea
 
-  canDrop(move: MaterialMove<P, M, L>, location: Location<P, L>, context: ItemContext<P, M, L>): boolean {
+  canDrop(move: MaterialMove<P, M, L, R, V>, location: Location<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
     return this.isMoveToLocation(move, location, context)
   }
 
-  getBestDropMove(moves: MaterialMove<P, M, L>[], location: Location<P, L>, context: ItemContext<P, M, L>, _event: DragMoveEvent | DragEndEvent): MaterialMove<P, M, L> {
+  getBestDropMove(moves: MaterialMove<P, M, L, R, V>[], location: Location<P, L>, context: ItemContext<P, M, L, R, V>, _event: DragMoveEvent | DragEndEvent): MaterialMove<P, M, L, R, V> {
     const exactMove = moves.find((move) => isMoveItem(move) && isEqual(location, move.location))
     if (exactMove) return exactMove
 

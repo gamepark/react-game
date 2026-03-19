@@ -6,27 +6,27 @@ import { ItemAnimations } from './ItemAnimations'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { transformItem } from './transformItem.util'
 
-export class RollItemAnimations<P extends number = number, M extends number = number, L extends number = number>
-  extends ItemAnimations<P, M, L> {
+export class RollItemAnimations<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
+  extends ItemAnimations<P, M, L, R, V> {
 
   constructor(private duration = 1) {
     super()
   }
 
-  override getPreDuration(_move: CreateItem<P, M, L>, _context: MaterialGameAnimationContext<P, M, L>): number {
+  override getPreDuration(_move: CreateItem<P, M, L>, _context: MaterialGameAnimationContext<P, M, L, R, V>): number {
     return this.duration
   }
 
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<RollItem<P, M, L>>): Interpolation<Theme> {
+  getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<RollItem<P, M, L>>): Interpolation<Theme> {
     if (animation.move.itemType === context.type && animation.move.itemIndex === context.index) {
       return this.getRolledItemAnimation(context, animation)
     }
   }
 
-  getRolledItemAnimation(context: ItemContext<P, M, L>, animation: Animation<RollItem<P, M, L>>): Interpolation<Theme> {
+  getRolledItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<RollItem<P, M, L>>): Interpolation<Theme> {
     const { type, rules, material, player, index } = context
     const description = material[type]
-    const Rules = rules.constructor as MaterialRulesCreator<P, M, L>
+    const Rules = rules.constructor as MaterialRulesCreator<P, M, L, R, V>
     const futureRules = new Rules(JSON.parse(JSON.stringify(rules.game)), { player })
     futureRules.mutator(type).applyMove(animation.move)
     const futureItem = futureRules.material(type).getItem(index)!

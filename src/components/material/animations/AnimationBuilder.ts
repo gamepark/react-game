@@ -11,18 +11,18 @@ import { defaultElevation, ElevationConfig, Trajectory, Waypoint } from './Traje
 /**
  * Predicate function to determine if an animation configuration applies to a move.
  */
-export type AnimationPredicate<P extends number = number, M extends number = number, L extends number = number> =
-  (move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>) => boolean
+export type AnimationPredicate<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> =
+  (move: MaterialMove<P, M, L, R, V>, context: MaterialAnimationContext<P, M, L>) => boolean
 
 /**
  * Fluent builder for configuring animations.
  * Use this to define duration, sound, and trajectory for animations.
  */
-export class AnimationBuilder<P extends number = number, M extends number = number, L extends number = number>
-  extends ItemAnimations<P, M, L> {
+export class AnimationBuilder<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
+  extends ItemAnimations<P, M, L, R, V> {
 
   /** @internal Predicates to match moves */
-  readonly predicates: AnimationPredicate<P, M, L>[] = []
+  readonly predicates: AnimationPredicate<P, M, L, R, V>[] = []
 
   /** @internal Duration in seconds */
   private _duration?: number
@@ -31,19 +31,19 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
   private _sound?: string | MaterialSoundConfig | false
 
   /** @internal Trajectory configuration */
-  private _trajectory: Trajectory<P, M, L> | ((context: ItemContext<P, M, L>, move: MaterialMove<P, M, L>) => Trajectory<P, M, L>) = {}
+  private _trajectory: Trajectory<P, M, L> | ((context: ItemContext<P, M, L, R, V>, move: MaterialMove<P, M, L, R>) => Trajectory<P, M, L>) = {}
 
   /** @internal Whether this animation plays after the move is applied */
   private _postMove = false
 
   /** @internal Custom item animation function */
-  private _itemAnimation?: (context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>, boundaries: GridBoundaries) => Interpolation<Theme>
+  private _itemAnimation?: (context: ItemContext<P, M, L, R, V>, animation: Animation<MaterialMove<P, M, L, R, V>>, boundaries: GridBoundaries) => Interpolation<Theme>
 
   /**
    * Add a predicate to filter which moves this configuration applies to.
    * All predicates must return true for the configuration to apply.
    */
-  filter(predicate: AnimationPredicate<P, M, L>): this {
+  filter(predicate: AnimationPredicate<P, M, L, R, V>): this {
     this.predicates.push(predicate)
     return this
   }
@@ -85,7 +85,7 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
    * This overrides the default position-based animation with fully custom keyframes.
    * @param fn Function that returns CSS animation for each item
    */
-  itemAnimation(fn: (context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>, boundaries: GridBoundaries) => Interpolation<Theme>): this {
+  itemAnimation(fn: (context: ItemContext<P, M, L, R, V>, animation: Animation<MaterialMove<P, M, L, R, V>>, boundaries: GridBoundaries) => Interpolation<Theme>): this {
     this._itemAnimation = fn
     return this
   }
@@ -112,7 +112,7 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
    * Configure a complete trajectory with elevation and waypoints.
    * @param config Trajectory configuration
    */
-  trajectory(config: Trajectory<P, M, L> | ((context: ItemContext<P, M, L>, move: MaterialMove<P, M, L>) => Trajectory<P, M, L>)): this {
+  trajectory(config: Trajectory<P, M, L> | ((context: ItemContext<P, M, L, R, V>, move: MaterialMove<P, M, L, R>) => Trajectory<P, M, L>)): this {
     this._trajectory = config
     return this
   }
@@ -120,7 +120,7 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
   /**
    * Get the trajectory configuration.
    */
-  get trajectoryConfig(): Trajectory<P, M, L> | ((context: ItemContext<P, M, L>, move: MaterialMove<P, M, L>) => Trajectory<P, M, L>) {
+  get trajectoryConfig(): Trajectory<P, M, L> | ((context: ItemContext<P, M, L, R, V>, move: MaterialMove<P, M, L, R>) => Trajectory<P, M, L>) {
     return this._trajectory
   }
 
@@ -203,7 +203,7 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
    * Check if this configuration matches a move.
    * @internal
    */
-  matches(move: MaterialMove<P, M, L>, context: MaterialAnimationContext<P, M, L>): boolean {
+  matches(move: MaterialMove<P, M, L, R, V>, context: MaterialAnimationContext<P, M, L, R, V>): boolean {
     return this.predicates.every(predicate => predicate(move, context))
   }
 
@@ -211,7 +211,7 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
    * Get the duration for this animation.
    * @internal
    */
-  getDuration(move: MaterialMove<P, M, L>, context: MaterialGameAnimationContext<P, M, L>): number {
+  getDuration(move: MaterialMove<P, M, L, R, V>, context: MaterialGameAnimationContext<P, M, L, R, V>): number {
     if (this._postMove) {
       // Post-move animation: only return duration during AFTER_MOVE step
       if (context.step !== AnimationStep.AFTER_MOVE) return 0
@@ -219,14 +219,14 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
     }
     if (move.kind !== MoveKind.ItemMove) return this._duration ?? 0
     const trajectory = typeof this._trajectory === 'function' ? {} : this._trajectory
-    return new MaterialAnimationsWithTrajectory<P, M, L>(this._duration, trajectory).getDuration(move, context)
+    return new MaterialAnimationsWithTrajectory<P, M, L, R, V>(this._duration, trajectory).getDuration(move, context)
   }
 
   /**
    * Get the item animation CSS.
    * @internal
    */
-  getItemAnimation(context: ItemContext<P, M, L>, animation: Animation<MaterialMove<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
+  getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<MaterialMove<P, M, L, R, V>>, boundaries: GridBoundaries): Interpolation<Theme> {
     if (this._itemAnimation) {
       return this._itemAnimation(context, animation, boundaries)
     }
@@ -239,8 +239,8 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
  * Extended MaterialAnimations that supports trajectory configuration.
  * @internal
  */
-class MaterialAnimationsWithTrajectory<P extends number = number, M extends number = number, L extends number = number>
-  extends MaterialAnimations<P, M, L> {
+class MaterialAnimationsWithTrajectory<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
+  extends MaterialAnimations<P, M, L, R, V> {
 
   constructor(
     duration: number | undefined,
@@ -258,7 +258,7 @@ class MaterialAnimationsWithTrajectory<P extends number = number, M extends numb
 /**
  * Create a predicate that matches moves by the current player.
  */
-export function isMyMove<P extends number = number, M extends number = number, L extends number = number>(): AnimationPredicate<P, M, L> {
+export function isMyMove<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(): AnimationPredicate<P, M, L, R, V> {
   return (_, context) => context.player === context.action.playerId
 }
 
@@ -274,7 +274,7 @@ export function isRule<P extends number = number, M extends number = number, L e
  * Create a predicate that matches moves for a specific material type.
  * @param materialType The material type to match
  */
-export function isMaterial<P extends number = number, M extends number = number, L extends number = number>(materialType: M): AnimationPredicate<P, M, L> {
+export function isMaterial<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(materialType: M): AnimationPredicate<P, M, L, R, V> {
   return (move) => move.kind === MoveKind.ItemMove && move.itemType === materialType
 }
 
@@ -282,9 +282,9 @@ export function isMaterial<P extends number = number, M extends number = number,
  * Create a predicate that matches a specific item move type.
  * @param moveType The item move type to match
  */
-export function isMoveType<P extends number = number, M extends number = number, L extends number = number>(
+export function isMoveType<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(
   moveType: ItemMove<P, M, L>['type']
-): AnimationPredicate<P, M, L> {
+): AnimationPredicate<P, M, L, R, V> {
   return (move) => move.kind === MoveKind.ItemMove && move.type === moveType
 }
 
@@ -292,7 +292,7 @@ export function isMoveType<P extends number = number, M extends number = number,
  * Create a predicate that matches moves from a specific location type.
  * @param locationType The source location type to match
  */
-export function isFromLocation<P extends number = number, M extends number = number, L extends number = number>(locationType: L): AnimationPredicate<P, M, L> {
+export function isFromLocation<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(locationType: L): AnimationPredicate<P, M, L, R, V> {
   return (move, context) => {
     if (move.kind !== MoveKind.ItemMove) return false
     const item = context.rules.material(move.itemType).getItem('itemIndex' in move ? move.itemIndex : 0)
@@ -304,7 +304,7 @@ export function isFromLocation<P extends number = number, M extends number = num
  * Create a predicate that matches moves to a specific location type.
  * @param locationType The destination location type to match
  */
-export function isToLocation<P extends number = number, M extends number = number, L extends number = number>(locationType: L): AnimationPredicate<P, M, L> {
+export function isToLocation<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(locationType: L): AnimationPredicate<P, M, L, R, V> {
   return (move) => {
     if (move.kind !== MoveKind.ItemMove) return false
     return 'location' in move && move.location?.type === locationType
@@ -318,26 +318,26 @@ export function isToLocation<P extends number = number, M extends number = numbe
 /**
  * Combine predicates with AND logic (all must match).
  */
-export function and<P extends number = number, M extends number = number, L extends number = number>(
-  ...predicates: AnimationPredicate<P, M, L>[]
-): AnimationPredicate<P, M, L> {
+export function and<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(
+  ...predicates: AnimationPredicate<P, M, L, R, V>[]
+): AnimationPredicate<P, M, L, R, V> {
   return (move, context) => predicates.every(p => p(move, context))
 }
 
 /**
  * Combine predicates with OR logic (any must match).
  */
-export function or<P extends number = number, M extends number = number, L extends number = number>(
-  ...predicates: AnimationPredicate<P, M, L>[]
-): AnimationPredicate<P, M, L> {
+export function or<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(
+  ...predicates: AnimationPredicate<P, M, L, R, V>[]
+): AnimationPredicate<P, M, L, R, V> {
   return (move, context) => predicates.some(p => p(move, context))
 }
 
 /**
  * Negate a predicate.
  */
-export function not<P extends number = number, M extends number = number, L extends number = number>(
-  predicate: AnimationPredicate<P, M, L>
-): AnimationPredicate<P, M, L> {
+export function not<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>(
+  predicate: AnimationPredicate<P, M, L, R, V>
+): AnimationPredicate<P, M, L, R, V> {
   return (move, context) => !predicate(move, context)
 }

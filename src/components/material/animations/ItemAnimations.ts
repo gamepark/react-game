@@ -8,28 +8,28 @@ import { defaultElevation, ElevationConfig, extractTranslation, getElevationKeyf
 /**
  * Extended ItemContext that includes trajectory configuration.
  */
-export type ItemContextWithTrajectory<P extends number = number, M extends number = number, L extends number = number> =
-  ItemContext<P, M, L> & { trajectory?: Trajectory<P, M, L> }
+export type ItemContextWithTrajectory<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> =
+  ItemContext<P, M, L, R, V> & { trajectory?: Trajectory<P, M, L> }
 
-export class ItemAnimations<P extends number = number, M extends number = number, L extends number = number>
-  extends Animations<MaterialGame<P, M, L>, MaterialMove<P, M, L>, P> {
+export class ItemAnimations<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
+  extends Animations<MaterialGame<P, M, L, R, V>, MaterialMove<P, M, L, R, V>, P> {
 
-  getItemAnimation(_context: ItemContext<P, M, L>, _animation: Animation<MaterialMove<P, M, L>>, _boundaries: GridBoundaries): Interpolation<Theme> {
+  getItemAnimation(_context: ItemContext<P, M, L, R, V>, _animation: Animation<MaterialMove<P, M, L, R, V>>, _boundaries: GridBoundaries): Interpolation<Theme> {
     return
   }
 
-  getMaterialContext({ Rules, game, material, locators, playerId }: MaterialGameAnimationContext<P, M, L>): MaterialContext<P, M, L> {
-    return { rules: new Rules(game, { player: playerId }) as MaterialRules<P, M, L>, material: material!, locators: locators!, player: playerId }
+  getMaterialContext({ Rules, game, material, locators, playerId }: MaterialGameAnimationContext<P, M, L, R, V>): MaterialContext<P, M, L, R, V> {
+    return { rules: new Rules(game, { player: playerId }) as MaterialRules<P, M, L, R, V>, material: material!, locators: locators!, player: playerId }
   }
 
-  getItemContext(context: MaterialGameAnimationContext<P, M, L>, item: Omit<DisplayedItem<M>, 'displayIndex'>): Omit<ItemContext<P, M, L>, 'displayIndex'> {
+  getItemContext(context: MaterialGameAnimationContext<P, M, L, R, V>, item: Omit<DisplayedItem<M>, 'displayIndex'>): Omit<ItemContext<P, M, L, R, V>, 'displayIndex'> {
     return { ...this.getMaterialContext(context), ...item }
   }
 
   /**
    * Generate simple from/to keyframes (legacy method).
    */
-  protected getTransformKeyframes(origin: string, destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
+  protected getTransformKeyframes(origin: string, destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L, R, V>) {
     return keyframes`
       from {
         transform: ${origin};
@@ -45,7 +45,7 @@ export class ItemAnimations<P extends number = number, M extends number = number
    * CSS will animate from the element's current visual state.
    * Used for dropped items where the drag transform is not available in the animation context.
    */
-  protected getKeyframesToDestination(destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L>) {
+  protected getKeyframesToDestination(destination: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L, R, V>) {
     return keyframes`
       to {
         transform: ${destination};
@@ -66,7 +66,7 @@ export class ItemAnimations<P extends number = number, M extends number = number
     originTransforms: string[],
     targetTransforms: string[],
     animation: Animation<ItemMove<P, M, L>>,
-    context: ItemContextWithTrajectory<P, M, L>
+    context: ItemContextWithTrajectory<P, M, L, R, V>
   ) {
     const waypoints = context.trajectory?.waypoints ?? []
 
