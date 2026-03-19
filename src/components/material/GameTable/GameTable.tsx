@@ -108,6 +108,23 @@ export const GameTable: FC<GameTableProps> = (
     return () => window.removeEventListener('resize', handler)
   }, [enableZoom])
 
+  // When in-app zoom is enabled, disable native zoom; otherwise allow pinch-to-zoom
+  useEffect(() => {
+    const viewport = document.querySelector('meta[name="viewport"]')
+    if (!viewport) return
+    if (enableZoom) {
+      viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no')
+    } else {
+      viewport.setAttribute('content', 'width=device-width, initial-scale=1.0')
+    }
+    if (enableZoom) return
+    const handler = (e: WheelEvent) => {
+      if (e.ctrlKey) e.preventDefault()
+    }
+    document.addEventListener('wheel', handler, { passive: false })
+    return () => document.removeEventListener('wheel', handler)
+  }, [enableZoom])
+
   // Memoized values
   const panning = useMemo(() => ({ disabled: dragging }), [dragging])
   const wrapperStyle = useMemo(() => computedWrapperClass(margin, vm, hm, ratio, verticalCenter), [margin, vm, hm, ratio, verticalCenter])
