@@ -25,7 +25,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@gamepark/api-types": "^1.0.0",
     "@gamepark/avataaars": "^3.0.0",
-    "@gamepark/react-client": "^7.5.4",
+    "@gamepark/react-client": "^7.5.5",
     "dayjs": "^1.11.19",
     "fscreen": "^1.2.0",
     "i18next-http-backend": "^3.0.2",
