@@ -167,7 +167,7 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
     setDraggedItem(undefined)
     setParentTransform(undefined)
   }, [])
-  useDndMonitor({ onDragStart, onDragEnd, onDragMove })
+  useDndMonitor({ onDragStart, onDragEnd, onDragMove, onDragCancel: onDragEnd })
 
   const locationOriginCss = getLocationOriginCss(boundaries, locator?.getLocationOrigin(item.location, itemContext))
 

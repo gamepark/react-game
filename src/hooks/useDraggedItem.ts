@@ -11,6 +11,6 @@ export function useDraggedItem<M extends number = number>(): DisplayedItem<M> | 
     }
   }, [])
   const onDragEnd = useCallback(() => setDraggedItem(undefined), [])
-  useDndMonitor({ onDragStart, onDragEnd })
+  useDndMonitor({ onDragStart, onDragEnd, onDragCancel: onDragEnd })
   return draggedItem
 }

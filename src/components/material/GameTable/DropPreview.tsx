@@ -20,7 +20,7 @@ export const DropPreview = ({ boundaries }: { boundaries: GridBoundaries }) => {
     setBestMove(getBestDropMove(event, context, legalMoves))
   }, [context, legalMoves])
   const onDragEnd = useCallback(() => setBestMove(undefined), [])
-  useDndMonitor({ onDragStart, onDragEnd, onDragMove })
+  useDndMonitor({ onDragStart, onDragEnd, onDragMove, onDragCancel: onDragEnd })
 
   if (bestMove && isMoveItem(bestMove) && location && context.locators[location.type]?.showDropPreview(bestMove, context)) {
     const type = bestMove.itemType
