@@ -180,8 +180,6 @@ export class GridLocator<P extends number = number, M extends number = number, L
   }
 
   getPositionDependencies(location: Location<P, L>, context: MaterialContext<P, M, L, R, V>): unknown {
-    const gridId = this.getGridId(location, context)
-    const delta = this.deltas.get(gridId) ?? { deltaX: 0, deltaY: 0 }
-    return [delta.deltaX, delta.deltaY]
+    return this.countItems(location, context)
   }
 }
