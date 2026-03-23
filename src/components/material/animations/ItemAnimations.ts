@@ -1,9 +1,20 @@
 import { css, Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation, Animations } from '@gamepark/react-client'
-import { DisplayedItem, GridBoundaries, ItemMove, Location, MaterialGame, MaterialItem, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { DisplayedItem, GridBoundaries, ItemMove, Location, MaterialGame, MaterialItem, MaterialMove, MaterialRules, MaterialRulesCreator } from '@gamepark/rules-api'
+import { isEqual } from 'es-toolkit'
 import { getItemFromContext, ItemContext, MaterialContext } from '../../../locators'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
+import { toClosestRotations, toSingleRotation } from './rotations.utils'
 import { defaultElevation, ElevationConfig, extractTranslation, getElevationKeyframes, interpolateCoordinate, Trajectory } from './Trajectory'
+import { transformItem } from './transformItem.util'
+
+/**
+ * Module-level cache for sibling animation: avoids cloning and simulating the game state
+ * for every sibling item. The WeakMap key is the animation object (same reference for all items
+ * within a render cycle), so entries are automatically GC'd after the render.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const siblingRulesCache = new WeakMap<object, any>()
 
 /**
  * Extended ItemContext that includes trajectory configuration.
@@ -189,6 +200,61 @@ export class ItemAnimations<P extends number = number, M extends number = number
     return css`
       > * {
         animation: ${animationKeyframes} ${duration}s ${easing} forwards;
+      }
+    `
+  }
+
+  /**
+   * Compute animation for sibling items whose position depends on a move that hasn't been applied yet.
+   * Simulates the move to get the future state, then animates from current to future position.
+   */
+  protected getPreMoveSiblingAnimation(
+    context: ItemContext<P, M, L, R, V>,
+    animation: Animation<ItemMove<P, M, L>>
+  ): Interpolation<Theme> {
+    const item = getItemFromContext(context)
+    const locator = context.locators[item.location.type]
+    if (!locator) return
+    const currentDeps = locator.getPositionDependencies(item.location, context)
+    if (currentDeps === undefined || isEqual(currentDeps, {})) return
+    let futureRules = siblingRulesCache.get(animation) as MaterialRules<P, M, L, R, V> | undefined
+    if (!futureRules) {
+      const Rules = context.rules.constructor as MaterialRulesCreator<P, M, L, R, V>
+      futureRules = new Rules(JSON.parse(JSON.stringify(context.rules.game)), { player: context.player })
+      futureRules.play(animation.move)
+      siblingRulesCache.set(animation, futureRules)
+    }
+    const futureContext: ItemContext<P, M, L, R, V> = { ...context, rules: futureRules }
+    return this.computeSiblingAnimation(item, context, futureContext, animation)
+  }
+
+  /**
+   * Compute animation for a sibling item given origin and target contexts.
+   * Returns animation CSS if position dependencies changed, undefined otherwise.
+   */
+  protected computeSiblingAnimation(
+    item: MaterialItem<P, L>,
+    originContext: ItemContext<P, M, L, R, V>,
+    targetContext: ItemContext<P, M, L, R, V>,
+    animation: Animation<ItemMove<P, M, L>>
+  ): Interpolation<Theme> {
+    const locator = originContext.locators[item.location.type]
+    if (!locator) return
+    const originDeps = locator.getPositionDependencies(item.location, originContext)
+    if (originDeps === undefined || isEqual(originDeps, {})) return
+    const targetDeps = locator.getPositionDependencies(item.location, targetContext)
+    if (isEqual(originDeps, targetDeps)) return
+    const description = originContext.material[originContext.type]
+    const originTransforms = toSingleRotation(transformItem(originContext))
+    const targetTransforms = toSingleRotation(description?.getItemTransform(item, targetContext) ?? [])
+    toClosestRotations(originTransforms, targetTransforms)
+    const origin = originTransforms.join(' ')
+    const target = targetTransforms.join(' ')
+    if (origin === target) return
+    const animationKeyframes = this.getTransformKeyframes(origin, target, animation, originContext)
+    return css`
+      > * {
+        animation: ${animationKeyframes} ${animation.duration}s ease-in-out forwards;
       }
     `
   }

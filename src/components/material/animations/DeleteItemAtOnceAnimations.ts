@@ -26,6 +26,7 @@ export class DeleteItemAtOnceAnimations<P extends number = number, M extends num
     if (context.type === animation.move.itemType && animation.move.indexes.includes(context.index)) {
       return this.getMovedItemAnimation(context, animation)
     }
+    return this.getPreMoveSiblingAnimation(context, animation)
   }
 
   getMovedItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<DeleteItemsAtOnce<M>>): Interpolation<Theme> {

@@ -1,6 +1,6 @@
 import { Interpolation, keyframes, Theme } from '@emotion/react'
 import { Animation } from '@gamepark/react-client'
-import { CreateItem, GridBoundaries, ItemMove, MaterialRules } from '@gamepark/rules-api'
+import { CreateItem, GridBoundaries, ItemMove, MaterialRules, MaterialRulesCreator } from '@gamepark/rules-api'
 import { fadeIn } from '../../../css'
 import { defaultOrigin, getItemFromContext, getOriginDeltaPosition, ItemContext } from '../../../locators'
 import { getFirstStockItem, getFirstStockItemTransforms } from './getFirstStockItemTransforms.util'
@@ -13,6 +13,11 @@ import { transformItem } from './transformItem.util'
 // Pre-quantity snapshot captured synchronously between getPreDuration and getPostDuration
 // within the same reducer call. No keying needed — only one CreateItem is processed at a time.
 let pendingSnapshot: (number | undefined)[] | undefined
+
+// Module-level cache for create sibling animation: avoids reconstructing the pre-create state
+// for every sibling item. Keyed by animation object (same reference within a render cycle).
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const createSiblingRulesCache = new WeakMap<object, any>()
 
 export class CreateItemAnimations<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
   extends ItemAnimations<P, M, L, R, V> {
@@ -63,7 +68,9 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
   }
 
   getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<CreateItem<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {
-    if (!this.isItemToAnimate(context, animation)) return
+    if (!this.isItemToAnimate(context, animation)) {
+      return this.getCreateSiblingAnimation(context, animation)
+    }
     const stockItem = getFirstStockItem(context)
     const stockTransforms = getFirstStockItemTransforms(context)
     if (stockItem && stockTransforms.length) {
@@ -103,6 +110,44 @@ export class CreateItemAnimations<P extends number = number, M extends number = 
     const data = animation.action.animationData
     if (!data || animation.move.itemType !== type || data.createdIndex !== index) return false
     return displayIndex >= data.displayIndexes[0] && displayIndex <= data.displayIndexes[1]
+  }
+
+  /**
+   * Compute animation for sibling items during a CreateItem animation.
+   * Since CreateItem is a post-move animation, the state already includes the created item.
+   * We reconstruct the pre-create state to compute the origin position.
+   */
+  private getCreateSiblingAnimation(
+    context: ItemContext<P, M, L, R, V>,
+    animation: Animation<CreateItem<P, M, L>>
+  ): Interpolation<Theme> {
+    const data = animation.action.animationData
+    if (!data) return
+    const item = getItemFromContext(context)
+    const locator = context.locators[item.location.type]
+    if (!locator) return
+    let beforeRules = createSiblingRulesCache.get(animation) as MaterialRules<P, M, L, R, V> | undefined
+    if (!beforeRules) {
+      // Reconstruct pre-create state by removing the created item
+      const beforeGame = JSON.parse(JSON.stringify(context.rules.game))
+      const items = beforeGame.items[animation.move.itemType]
+      if (!items) return
+      const createdItem = items[data.createdIndex]
+      if (!createdItem) return
+      const createdQuantity = animation.move.item.quantity ?? 1
+      const existingQuantity = createdItem.quantity ?? 1
+      if (existingQuantity <= createdQuantity) {
+        items.splice(data.createdIndex, 1)
+      } else {
+        createdItem.quantity = existingQuantity - createdQuantity
+      }
+      const Rules = context.rules.constructor as MaterialRulesCreator<P, M, L, R, V>
+      beforeRules = new Rules(beforeGame, { player: context.player })
+      createSiblingRulesCache.set(animation, beforeRules)
+    }
+    const beforeContext: ItemContext<P, M, L, R, V> = { ...context, rules: beforeRules }
+    // Origin is pre-create state, target is current (post-create) state
+    return this.computeSiblingAnimation(item, beforeContext, context, animation)
   }
 
   protected getKeyframesFromOrigin(origin: string, _animation: Animation<ItemMove<P, M, L>>, _context: ItemContext<P, M, L, R, V>) {

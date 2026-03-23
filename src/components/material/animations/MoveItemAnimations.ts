@@ -43,6 +43,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     if (isPlacedOnItem(item, animatedItemContext)) {
       return this.getChildItemAnimation(item, context, animation)
     }
+    return this.getPreMoveSiblingAnimation(context, animation)
   }
 
   getMovedItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<MoveItem<P, M, L>>, boundaries: GridBoundaries): Interpolation<Theme> {

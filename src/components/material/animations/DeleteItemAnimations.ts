@@ -32,7 +32,9 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
   getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<DeleteItem<M>>, boundaries: GridBoundaries): Interpolation<Theme> {
     const item = getItemFromContext(context)
     const itemLocator = context.locators[item.location.type]
-    if (!itemLocator?.isItemToAnimate(item, context, animation.move)) return
+    if (!itemLocator?.isItemToAnimate(item, context, animation.move)) {
+      return this.getPreMoveSiblingAnimation(context, animation)
+    }
     const stockItem = getFirstStockItem(context)
     const stockTransforms = getFirstStockItemTransforms(context)
     if (stockItem && stockTransforms.length) {
