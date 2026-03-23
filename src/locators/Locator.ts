@@ -107,12 +107,24 @@ export class Locator<P extends number = number, M extends number = number, L ext
 
   /**
    * This function can completely remove some items from the DOM. Unlike {@link hide}, ignored items cannot be animated.
-   * Use this for performance when items never need to animate (e.g. cards deep in a deck).
-   * @param _item The item
-   * @param _context The context of the item
+   * Use this for performance when items never need to animate (e.g. items beyond the display limit, or items on a hidden parent).
+   * @param item The item
+   * @param context The context of the item
    * @returns true if the item must be removed from the DOM
    */
-  ignore(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L, R, V>): boolean {
+  ignore(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
+    if (this.limit !== undefined && this.getItemIndex(item, context) < 0) {
+      return true
+    }
+    if (item.location.parent !== undefined && this.parentItemType !== undefined) {
+      const parentItem = this.getParentItem(item.location, context)
+      if (parentItem) {
+        const parentLocator = context.locators[parentItem.location.type]
+        if (parentLocator?.ignore(parentItem, { ...context, type: this.parentItemType, index: item.location.parent, displayIndex: 0 })) {
+          return true
+        }
+      }
+    }
     return false
   }
 
@@ -124,9 +136,6 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @returns true if the item must be hidden
    */
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
-    if (this.limit !== undefined && this.getItemIndex(item, context) < 0) {
-      return true
-    }
     if (item.location.parent !== undefined && this.parentItemType !== undefined) {
       const parentItem = this.getParentItem(item.location, context)
       if (parentItem) {
