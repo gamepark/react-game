@@ -166,7 +166,7 @@ const closeIcon = css`
   top: 0.6em;
   font-size: 1.3em;
   cursor: pointer;
-  z-index: 1;
+  z-index: 2;
 `
 
 const stickyHeader = css`
