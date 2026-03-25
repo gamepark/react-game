@@ -41,18 +41,24 @@ export class DeleteItemAnimations<P extends number = number, M extends number = 
       const targetTransforms = toSingleRotation(stockTransforms)
       const currentOrigin = context.locators[item.location.type]?.getLocationOrigin(item.location, context) ?? defaultOrigin
       const futureOrigin = context.locators[stockItem.location.type]?.getLocationOrigin(stockItem.location, context) ?? defaultOrigin
+
+      // For dropped items, use to-only keyframes with matching structure to avoid matrix decomposition rotation loops
+      if (isDroppedItem(context)) {
+        const currentTransforms = toSingleRotation(transformItem(context))
+        toClosestRotations(currentTransforms, targetTransforms)
+        const deltaX = currentOrigin.x !== futureOrigin.x ? `${getOriginDeltaPosition(boundaries.xMin, boundaries.xMax, futureOrigin.x, currentOrigin.x)}em` : '0px'
+        const deltaY = currentOrigin.y !== futureOrigin.y ? `${getOriginDeltaPosition(boundaries.yMin, boundaries.yMax, futureOrigin.y, currentOrigin.y)}em` : '0px'
+        targetTransforms.unshift(`translate3d(${deltaX}, ${deltaY}, 0em)`)
+        const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
+        const description = context.material[context.type]
+        return description?.getAnimationCss(animationKeyframes, animation.duration)
+      }
+
       if (currentOrigin.x !== futureOrigin.x) {
         targetTransforms.unshift(`translateX(${getOriginDeltaPosition(boundaries.xMin, boundaries.xMax, futureOrigin.x, currentOrigin.x)}em)`)
       }
       if (currentOrigin.y !== futureOrigin.y) {
         targetTransforms.unshift(`translateY(${getOriginDeltaPosition(boundaries.yMin, boundaries.yMax, futureOrigin.y, currentOrigin.y)}em)`)
-      }
-
-      // For dropped items, only specify the target keyframe (no origin) so CSS animates from the current visual position.
-      if (isDroppedItem(context)) {
-        const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
-        const description = context.material[context.type]
-        return description?.getAnimationCss(animationKeyframes, animation.duration)
       }
 
       const originTransforms = toSingleRotation(transformItem(context))

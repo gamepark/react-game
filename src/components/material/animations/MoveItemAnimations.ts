@@ -61,16 +61,17 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
 
     // For dropped items, the drag transform is not available in the animation context,
     // so we only specify the target keyframe and let CSS animate from the current visual position (the drop position).
+    // We prepend a translate3d(0,0,0) to match the inline style structure (which has the drag translate3d prefix),
+    // so CSS can interpolate component-by-component instead of falling back to matrix decomposition (which causes rotation loops).
     if (isDroppedItem(context)) {
+      const currentTransforms = toSingleRotation(transformItem(context))
+      toClosestRotations(currentTransforms, targetTransforms)
       const item = getItemFromContext(context)
       const currentOrigin = context.locators[item.location.type]?.getLocationOrigin(item.location, context) ?? defaultOrigin
       const futureOrigin = context.locators[futureItem.location.type]?.getLocationOrigin(futureItem.location, futureContext) ?? defaultOrigin
-      if (currentOrigin.x !== futureOrigin.x) {
-        targetTransforms.unshift(`translateX(${getOriginDeltaPosition(boundaries.xMin, boundaries.xMax, futureOrigin.x, currentOrigin.x)}em)`)
-      }
-      if (currentOrigin.y !== futureOrigin.y) {
-        targetTransforms.unshift(`translateY(${getOriginDeltaPosition(boundaries.yMin, boundaries.yMax, futureOrigin.y, currentOrigin.y)}em)`)
-      }
+      const deltaX = currentOrigin.x !== futureOrigin.x ? `${getOriginDeltaPosition(boundaries.xMin, boundaries.xMax, futureOrigin.x, currentOrigin.x)}em` : '0px'
+      const deltaY = currentOrigin.y !== futureOrigin.y ? `${getOriginDeltaPosition(boundaries.yMin, boundaries.yMax, futureOrigin.y, currentOrigin.y)}em` : '0px'
+      targetTransforms.unshift(`translate3d(${deltaX}, ${deltaY}, 0em)`)
       const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
       return description?.getAnimationCss(animationKeyframes, animation.duration)
     }
@@ -126,8 +127,11 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     const futureContext = { ...context, rules: futureRules }
     const targetTransforms = description?.getItemTransform(item, futureContext) ?? []
 
-    // For children of dropped items, only specify the target keyframe (no origin).
+    // For children of dropped items, use to-only keyframes with matching structure
     if (isDroppedItem(context)) {
+      const currentTransforms = toSingleRotation(transformItem(context))
+      toClosestRotations(currentTransforms, targetTransforms)
+      targetTransforms.unshift('translate3d(0px, 0px, 0em)')
       const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
       return description?.getAnimationCss(animationKeyframes, animation.duration)
     }
