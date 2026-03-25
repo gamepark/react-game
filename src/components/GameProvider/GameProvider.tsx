@@ -61,16 +61,10 @@ function initDatadog(service: string) {
     site: 'datadoghq.eu',
     service,
     version: process.env.VERSION,
-    beforeSend: (event) => !event.message?.includes('sockjs') && !event.message?.includes('Script error')
+    beforeSend: (event) => !event.message?.includes('sockjs') && !event.message?.includes('Script error'),
+    forwardConsoleLogs: 'all'
   })
   datadogLogs.logger.setLevel(process.env.LOGGER_LEVEL as StatusType || StatusType.error)
-  // The following code may be removed later, see: https://github.com/DataDog/browser-sdk/issues/400
-  const buildMessage = (message?: any, ...optionalParams: any[]) => [message, ...optionalParams].map(param => JSON.stringify(param, undefined, 2)).join(' ')
-  console.log = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.log(buildMessage(message, optionalParams), { origin: 'console' })
-  console.debug = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.debug(buildMessage(message, optionalParams), { origin: 'console' })
-  console.info = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.info(buildMessage(message, optionalParams), { origin: 'console' })
-  console.warn = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.warn(buildMessage(message, optionalParams), { origin: 'console' })
-  console.error = (message?: any, ...optionalParams: any[]) => datadogLogs.logger.error(buildMessage(message, optionalParams), { origin: 'console' })
 }
 
 const globalCss = (theme: Theme) => css`
