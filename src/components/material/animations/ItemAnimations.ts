@@ -245,12 +245,10 @@ export class ItemAnimations<P extends number = number, M extends number = number
     const targetDeps = locator.getPositionDependencies(item.location, targetContext)
     if (isEqual(originDeps, targetDeps)) return
     const description = originContext.material[originContext.type]
-    // Get the item from each state: location strategies (e.g. PositiveSequenceStrategy)
-    // may have re-indexed location.x/y/z, and array indices may have shifted due to splice.
-    const originItem = originContext.rules.material(originContext.type).getItem<unknown>(originContext.index, true)
-    const targetItem = targetContext.rules.material(originContext.type).getItem<unknown>(originContext.index, true)
-    if (!originItem || !targetItem) return
-    const originTransforms = toSingleRotation(description?.getItemTransform(originItem, originContext) ?? [])
+    const originTransforms = toSingleRotation(transformItem(originContext))
+    // Get the item from the target state: location strategies (e.g. PositiveSequenceStrategy)
+    // may have re-indexed location.x/y/z after the move.
+    const targetItem = targetContext.rules.material(originContext.type).getItem(originContext.index)
     const targetTransforms = toSingleRotation(description?.getItemTransform(targetItem, targetContext) ?? [])
     toClosestRotations(originTransforms, targetTransforms)
     const origin = originTransforms.join(' ')
