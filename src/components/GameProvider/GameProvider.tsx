@@ -9,6 +9,7 @@ import { DeepPartial } from '../../utilities'
 import { setupTranslation } from '../../utilities/translation.util'
 import { isMaterialTutorial } from '../tutorial'
 import { wrapRulesWithTutorial } from '../tutorial/TutorialRulesWrapper'
+import { GameErrorBoundary } from './GameErrorBoundary'
 import { GameContext, gameContext } from './GameContext'
 
 const query = new URLSearchParams(window.location.search)
@@ -36,17 +37,19 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
     merge(props.material, materialI18n[locale])
   }
   return (
-    <gameContext.Provider value={props as GameContext}>
-      <ThemeProvider theme={merge(defaultTheme, theme)}>
-        <Global styles={[normalize, globalCss]}/>
-        <TRPCProvider>
-          {gameId ?
-            <RemoteGameProvider gameId={gameId} {...props}>{children}</RemoteGameProvider> :
-            <LocalGameProvider {...props}>{children}</LocalGameProvider>
-          }
-        </TRPCProvider>
-      </ThemeProvider>
-    </gameContext.Provider>
+    <GameErrorBoundary>
+      <gameContext.Provider value={props as GameContext}>
+        <ThemeProvider theme={merge(defaultTheme, theme)}>
+          <Global styles={[normalize, globalCss]}/>
+          <TRPCProvider>
+            {gameId ?
+              <RemoteGameProvider gameId={gameId} {...props}>{children}</RemoteGameProvider> :
+              <LocalGameProvider {...props}>{children}</LocalGameProvider>
+            }
+          </TRPCProvider>
+        </ThemeProvider>
+      </gameContext.Provider>
+    </GameErrorBoundary>
   )
 }
 
