@@ -1,4 +1,4 @@
-import { datadogLogs, StatusType } from '@datadog/browser-logs'
+import { ConsoleApiName, datadogLogs, StatusType } from '@datadog/browser-logs'
 import { css, Global, Theme, ThemeProvider } from '@emotion/react'
 import { LocalGameProvider, LocalGameProviderProps, RemoteGameProvider, TRPCProvider } from '@gamepark/react-client'
 import { merge } from 'es-toolkit'
@@ -54,6 +54,17 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
 }
 
 // Init Datadog logs
+const consoleLevelsByLogLevel: Record<string, ConsoleApiName[]> = {
+  [StatusType.debug]: ['debug', 'info', 'warn', 'error', 'log'],
+  [StatusType.info]: ['info', 'warn', 'error', 'log'],
+  [StatusType.warn]: ['warn', 'error'],
+  [StatusType.error]: ['error']
+}
+
+function getForwardConsoleLogs(): ConsoleApiName[] {
+  return consoleLevelsByLogLevel[process.env.LOGGER_LEVEL as StatusType] ?? consoleLevelsByLogLevel[StatusType.error]
+}
+
 let datadogInitialized = false
 
 function initDatadog(service: string) {
@@ -65,7 +76,7 @@ function initDatadog(service: string) {
     service,
     version: process.env.VERSION,
     beforeSend: (event) => !event.message?.includes('sockjs') && !event.message?.includes('Script error'),
-    forwardConsoleLogs: 'all'
+    forwardConsoleLogs: getForwardConsoleLogs()
   })
   datadogLogs.logger.setLevel(process.env.LOGGER_LEVEL as StatusType || StatusType.error)
 }
