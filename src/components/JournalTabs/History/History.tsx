@@ -1,9 +1,11 @@
 import { css, ThemeProvider, useTheme } from '@emotion/react'
-import { FC, HTMLAttributes, useEffect, useRef } from 'react'
+import { useGameSelector } from '@gamepark/react-client'
+import { FC, HTMLAttributes, useContext, useEffect, useMemo, useRef } from 'react'
 import { linkButtonCss } from '../../../css'
 import { useFlatHistory } from '../../../hooks/useFlatHistory'
-import { LogItem } from '../../Log'
+import { gameContext, LogItem } from '../../index'
 import { GameOverHistory } from './GameOverHistory'
+import { SetupLogItem } from './SetupLogItem'
 import { StartGameHistory } from './StartGameHistory'
 
 type HistoryProps = {
@@ -12,9 +14,16 @@ type HistoryProps = {
 
 export const History: FC<HistoryProps> = (props) => {
   const theme = useTheme()
+  const context = useContext(gameContext)
+  const setup = useGameSelector((state) => state.setup) ?? {}
   const { history } = useFlatHistory()
   const { open, ...rest } = props
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  const setupLogs = useMemo(() => {
+    if (!context.logs?.getSetupLogDescriptions) return []
+    return context.logs.getSetupLogDescriptions(setup)
+  }, [setup])
 
   useEffect(() => {
     if (!scrollRef.current) return
@@ -27,6 +36,10 @@ export const History: FC<HistoryProps> = (props) => {
       <div css={scrollCss} ref={scrollRef} {...rest}>
         <div css={scrollContentCss}>
           <StartGameHistory/>
+          {setupLogs.map((log, index) =>
+            <SetupLogItem key={`setup_${index}`} log={log} game={setup} index={index} css={itemCss}
+                          customEntryCss={[customEntryCss, theme.journal?.historyEntry]}/>
+          )}
           {history.map((h) => {
             if (!h.action.id) return null // wait for server action.id
             const key = h.consequenceIndex !== undefined ? `${h.action.id}_${h.consequenceIndex}` : h.action.id

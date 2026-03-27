@@ -24,6 +24,12 @@ export type MovePlayedLogDescription<Move = any, Player = number> = {
   liveCss?: boolean
 }
 
+export type SetupLogDescription<Game = any> = {
+  Component: ComponentType<{ game: Game, index: number }>
+  css?: Interpolation<Theme>
+}
+
 export interface LogDescription<Move = any, Player = number, Game = any> {
   getMovePlayedLogDescription(move: Move, context: MoveComponentContext<Move, Player, Game>): MovePlayedLogDescription | undefined
+  getSetupLogDescriptions?(game: Game): SetupLogDescription<Game>[]
 }
