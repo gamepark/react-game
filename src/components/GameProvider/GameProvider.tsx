@@ -75,7 +75,7 @@ function initDatadog(service: string) {
     site: 'datadoghq.eu',
     service,
     version: process.env.VERSION,
-    beforeSend: (event) => !event.message?.includes('sockjs') && !event.message?.includes('Script error') && !event.message?.includes('Failed to fetch'),
+    beforeSend: (event) => !event.message?.includes('sockjs') && !event.message?.includes('Script error') && !event.message?.includes('Fetch error'),
     forwardConsoleLogs: getForwardConsoleLogs()
   })
   datadogLogs.logger.setLevel(process.env.LOGGER_LEVEL as StatusType || StatusType.error)
