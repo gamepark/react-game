@@ -25,7 +25,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@gamepark/api-types": "^1.0.0",
     "@gamepark/avataaars": "^3.0.0",
-    "@gamepark/react-client": "^7.6.1",
+    "@gamepark/react-client": "^7.6.2",
     "dayjs": "^1.11.19",
     "fscreen": "^1.2.0",
     "i18next-http-backend": "^3.0.2",
@@ -75,5 +75,9 @@
     "react-i18next": "16.x",
     "react-redux": "9.x"
   },
-  "packageManager": "yarn@4.9.4"
+  "packageManager": "yarn@4.9.4",
+  "resolutions": {
+    "@gamepark/rules-api": "portal:../rules-api",
+    "@gamepark/react-client": "portal:../react-client"
+  }
 }
