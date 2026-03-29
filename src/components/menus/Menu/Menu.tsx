@@ -75,7 +75,7 @@ export const Menu = () => {
         {canGiveUp && <GiveUpButton/>}
         {couldEject && <EjectPlayerButton onClick={() => setEjectPlayerDialogOpen(true)}/>}
         <TimeStatsButton/>
-        <BugReportButton/>
+        {gameMode !== GameMode.TUTORIAL && <BugReportButton/>}
         {gameMode === GameMode.TUTORIAL && <RestartTutorialButton/>}
         <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}`}><LogoIcon css={buttonLogoIconCss}/>{t('Back to Game Park')}</NavButton>
         {gameOver && <ResultButton onClick={() => setResultDialogOpen(true)}/>}
