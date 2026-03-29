@@ -12,6 +12,7 @@ import { GamePointIcon } from '../../GamePoints'
 import { gameContext } from '../../GameProvider'
 import { JournalTabs } from '../../JournalTabs/JournalTabs'
 import { LiveLogButton } from '../../Log/LiveLogButton'
+import { BugReportButton } from '../BugReport'
 import { EjectPlayerButton, EjectPlayerDialog, EjectPlayerPopButton } from '../EjectPlayer'
 import { FullscreenButton, FullscreenPopButton } from '../Fullscreen'
 import { GiveUpButton } from '../GiveUpButton'
@@ -74,6 +75,7 @@ export const Menu = () => {
         {canGiveUp && <GiveUpButton/>}
         {couldEject && <EjectPlayerButton onClick={() => setEjectPlayerDialogOpen(true)}/>}
         <TimeStatsButton/>
+        <BugReportButton/>
         {gameMode === GameMode.TUTORIAL && <RestartTutorialButton/>}
         <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}`}><LogoIcon css={buttonLogoIconCss}/>{t('Back to Game Park')}</NavButton>
         {gameOver && <ResultButton onClick={() => setResultDialogOpen(true)}/>}
