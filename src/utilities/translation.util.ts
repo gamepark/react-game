@@ -35,7 +35,13 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
     ns: [gameId, 'common', 'credits'],
     defaultNS: gameId,
     backend: {
-      loadPath: 'https://translations.game-park.com/{{lng}}/{{ns}}.json'
+      loadPath: (_lngs: string[], namespaces: string[]) => {
+        const ns = namespaces[0]
+        if (ns === gameId) {
+          return `/translation/{{lng}}.json`
+        }
+        return 'https://translations.game-park.com/{{lng}}/{{ns}}.json'
+      }
     },
     saveMissing: process.env.NODE_ENV === 'production',
     missingKeyHandler: (lngs, namespace, key, defaultValue) => {
