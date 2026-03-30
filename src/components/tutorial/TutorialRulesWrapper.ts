@@ -1,4 +1,4 @@
-import { Action, LocalMoveType, MaterialGame, MaterialMove, MoveKind, PlayMoveContext, RulesCreator, SetTutorialStep } from '@gamepark/rules-api'
+import { Action, isSetTutorialStep, LocalMoveType, MaterialGame, MaterialMove, MoveKind, PlayMoveContext, RulesCreator, SetTutorialStep } from '@gamepark/rules-api'
 import { sample } from 'es-toolkit'
 import { MaterialTutorial, TutorialStep } from './MaterialTutorial'
 
@@ -84,6 +84,11 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
             consequences.splice(interruptIndex, consequences.length - interruptIndex)
           }
         }
+      }
+    } else if (isSetTutorialStep(move)) {
+      const stepView = tutorial.steps[move.step]?.view
+      if (stepView !== undefined && stepView !== game.view) {
+        consequences.push({ kind: MoveKind.LocalMove, type: LocalMoveType.ChangeView, view: stepView })
       }
     } else if (move.kind === MoveKind.LocalMove && move.type === LocalMoveType.CloseTutorialPopup) {
       const consequences: MaterialMove[] = this.game.tutorial.interrupt ?? []

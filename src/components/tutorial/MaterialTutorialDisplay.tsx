@@ -4,8 +4,8 @@ import { faForward } from '@fortawesome/free-solid-svg-icons/faForward'
 import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { playTutorialMoves, useGameDispatch } from '@gamepark/react-client'
-import { isCloseTutorialPopup, isSetTutorialStep, SetTutorialStep } from '@gamepark/rules-api'
+import { playMove, playTutorialMoves, useGameDispatch } from '@gamepark/react-client'
+import { isCloseTutorialPopup, isSetTutorialStep, LocalMoveType, MoveKind, SetTutorialStep } from '@gamepark/rules-api'
 import { maxBy, minBy } from 'es-toolkit'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -31,6 +31,14 @@ export const MaterialTutorialDisplay = () => {
   useEffect(() => {
     dispatch(playTutorialMoves(Infinity))
   }, [])
+
+  // If the player manually changes the view during a step that enforces a specific view, reset it
+  useEffect(() => {
+    if (tutorialStep?.view !== undefined && tutorialStep.view !== game?.view) {
+      dispatch(playMove({ move: { kind: MoveKind.LocalMove, type: LocalMoveType.ChangeView, view: tutorialStep.view }, options: { transient: true } }))
+    }
+  }, [tutorialStep, game?.view])
+
 
   const nextStepMove = minBy(tutorialMoves, move => move.step)
   const passMove = maxBy(tutorialMoves, move => move.step)
