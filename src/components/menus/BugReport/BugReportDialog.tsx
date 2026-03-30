@@ -153,9 +153,14 @@ const selectCss = css`
   font-size: 0.85em;
   border-radius: 0.3em;
   border: 0.05em solid currentColor;
-  background: transparent;
+  background-color: var(--gp-dialog-bg);
   color: inherit;
   margin: 0.5em 0;
+
+  option {
+    background-color: var(--gp-dialog-bg);
+    color: inherit;
+  }
 `
 
 const hintCss = css`
