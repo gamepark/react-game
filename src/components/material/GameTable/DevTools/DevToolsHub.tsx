@@ -147,7 +147,7 @@ const fabCss = css`
   display: flex; align-items: center; justify-content: center;
   padding: 0;
   animation: ${fabPulse} 3s ease-in-out infinite;
-  transition: all 0.2s;
+  transition: background 0.2s, border-color 0.2s;
   &:hover { border-color: rgba(40, 184, 206, 0.7); animation: none; }
   &[data-open="true"] { animation: none; background: ${GP_PRIMARY}; border-color: ${GP_PRIMARY}; }
 `
