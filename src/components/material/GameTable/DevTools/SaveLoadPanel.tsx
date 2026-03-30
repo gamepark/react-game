@@ -218,20 +218,20 @@ export const SaveLoadPanel: FC<SaveLoadPanelProps> = ({ gameName, doFlash }) => 
 // ── Styles ──
 
 const toolReveal = keyframes`
-  from { opacity: 0; transform: translateX(-6px); }
+  from { opacity: 0; transform: translateX(-0.375em); }
   to { opacity: 1; transform: translateX(0); }
 `
 
 const toolBtnCss = css`
   position: relative;
   display: grid;
-  grid-template-columns: 28px 1fr;
+  grid-template-columns: 1.75em 1fr;
   grid-template-rows: auto auto;
   align-items: center;
-  gap: 0 10px;
-  padding: 10px 12px;
+  gap: 0 0.625em;
+  padding: 0.625em 0.75em;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5em;
   background: transparent;
   cursor: pointer;
   text-align: left;
@@ -244,47 +244,46 @@ const toolBtnCss = css`
 
 const toolIconCss = css`
   grid-row: 1 / -1;
-  font-size: 15px;
   color: ${GP_PRIMARY};
   display: flex; align-items: center; justify-content: center;
-  width: 28px; height: 28px;
-  border-radius: 6px;
+  width: 1.75em; height: 1.75em;
+  border-radius: 0.375em;
   background: rgba(40, 184, 206, 0.08);
 `
 
 const toolLabelCss = css`
-  font-size: 14px; font-weight: 700; color: #e0f0f4; line-height: 1.2;
+  font-weight: 700; color: #e0f0f4; line-height: 1.2;
 `
 
 const toolDescCss = css`
-  font-size: 12px; color: #5a8a98; line-height: 1.2;
+  color: #5a8a98; line-height: 1.2;
 `
 
 const inlineRowCss = css`
   grid-column: 1 / -1;
-  display: flex; align-items: center; gap: 4px; margin-top: 6px;
+  display: flex; align-items: center; gap: 0.25em; margin-top: 0.375em;
 `
 
 const textInputCss = css`
-  flex: 1; height: 26px;
-  border-radius: 5px;
-  border: 1px solid rgba(40, 184, 206, 0.25);
+  flex: 1; height: 1.625em;
+  border-radius: 0.3em;
+  border: 0.06em solid rgba(40, 184, 206, 0.25);
   background: rgba(0, 0, 0, 0.3);
   color: #e0f0f4;
-  font-size: 12px; font-weight: 600;
-  padding: 0 8px;
+  font-weight: 600;
+  padding: 0 0.5em;
   font-family: inherit;
   &::placeholder { color: #3a6070; }
-  &:focus { outline: none; border-color: ${GP_PRIMARY}; box-shadow: 0 0 0 2px rgba(40, 184, 206, 0.15); }
+  &:focus { outline: none; border-color: ${GP_PRIMARY}; box-shadow: 0 0 0 0.125em rgba(40, 184, 206, 0.15); }
 `
 
 const goBtnCss = css`
-  height: 26px; padding: 0 12px;
-  border-radius: 5px;
-  border: 1px solid rgba(40, 184, 206, 0.35);
+  height: 1.625em; padding: 0 0.75em;
+  border-radius: 0.3em;
+  border: 0.06em solid rgba(40, 184, 206, 0.35);
   background: rgba(40, 184, 206, 0.15);
   color: ${GP_PRIMARY};
-  font-size: 12px; font-weight: 800;
+  font-weight: 800;
   text-transform: uppercase; letter-spacing: 0.05em;
   cursor: pointer; margin-left: auto;
   font-family: inherit;
@@ -293,38 +292,38 @@ const goBtnCss = css`
 `
 
 const dividerCss = css`
-  height: 1px; margin: 4px 12px;
+  height: 0.06em; margin: 0.25em 0.75em;
   background: rgba(40, 184, 206, 0.1);
 `
 
 const savedListCss = css`
-  display: flex; flex-direction: column; gap: 2px; padding: 0 8px;
+  display: flex; flex-direction: column; gap: 0.125em; padding: 0 0.5em;
 `
 
 const savedEntryCss = css`
   display: flex; align-items: center; justify-content: space-between;
-  padding: 5px 8px; border-radius: 5px;
+  padding: 0.3em 0.5em; border-radius: 0.3em;
   background: rgba(40, 184, 206, 0.04);
-  border: 1px solid rgba(40, 184, 206, 0.08);
+  border: 0.06em solid rgba(40, 184, 206, 0.08);
 `
 
 const savedLabelTextCss = css`
-  font-size: 12px; font-weight: 600; color: #8ab8c8;
+  font-weight: 600; color: #8ab8c8;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  flex: 1; margin-right: 8px;
+  flex: 1; margin-right: 0.5em;
 `
 
 const savedActionsCss = css`
-  display: flex; gap: 4px; flex-shrink: 0;
+  display: flex; gap: 0.25em; flex-shrink: 0;
 `
 
 const smallBtnCss = css`
-  width: 22px; height: 22px;
-  border-radius: 4px;
-  border: 1px solid rgba(40, 184, 206, 0.25);
+  width: 1.375em; height: 1.375em;
+  border-radius: 0.25em;
+  border: 0.06em solid rgba(40, 184, 206, 0.25);
   background: rgba(40, 184, 206, 0.08);
   color: ${GP_PRIMARY};
-  font-size: 10px; cursor: pointer;
+  cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   font-family: inherit;
   transition: all 0.15s;
@@ -345,42 +344,42 @@ const modalFadeIn = keyframes`
 const modalBackdropCss = css`
   position: fixed; inset: 0; z-index: 1000;
   background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(0.125em);
 `
 
 const modalCss = css`
   position: fixed; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   z-index: 1001;
-  width: min(700px, 90vw);
+  width: min(43.75em, 90vw);
   max-height: 80vh;
   display: flex; flex-direction: column;
   background: linear-gradient(170deg, #0f2035 0%, ${GP_SURFACE} 100%);
-  border: 1px solid rgba(40, 184, 206, 0.3);
-  border-radius: 12px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+  border: 0.06em solid rgba(40, 184, 206, 0.3);
+  border-radius: 0.75em;
+  box-shadow: 0 1.5em 3.75em rgba(0, 0, 0, 0.7);
   font-family: 'Mulish', sans-serif;
   animation: ${modalFadeIn} 0.2s ease-out;
 `
 
 const modalHeaderCss = css`
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid rgba(40, 184, 206, 0.15);
+  padding: 0.875em 1.25em;
+  border-bottom: 0.06em solid rgba(40, 184, 206, 0.15);
   background: rgba(40, 184, 206, 0.04);
-  border-radius: 12px 12px 0 0;
+  border-radius: 0.75em 0.75em 0 0;
 `
 
 const modalTitleCss = css`
-  font-size: 14px; font-weight: 800; color: #e0f0f4;
+  font-weight: 800; color: #e0f0f4;
   text-transform: uppercase; letter-spacing: 0.08em;
 `
 
 const modalCloseBtnCss = css`
-  width: 28px; height: 28px;
-  border: none; border-radius: 6px;
+  width: 1.75em; height: 1.75em;
+  border: none; border-radius: 0.375em;
   background: rgba(40, 184, 206, 0.08);
-  color: #5a8a98; font-size: 12px;
+  color: #5a8a98;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all 0.15s;
@@ -389,57 +388,57 @@ const modalCloseBtnCss = css`
 
 const modalBodyCss = css`
   flex: 1; overflow-y: auto;
-  padding: 16px 20px;
-  display: flex; flex-direction: column; gap: 12px;
+  padding: 1em 1.25em;
+  display: flex; flex-direction: column; gap: 0.75em;
   min-height: 0;
 `
 
 const modalTextareaCss = css`
-  width: 100%; min-height: 100px;
-  border-radius: 8px;
-  border: 1px solid rgba(40, 184, 206, 0.25);
+  width: 100%; min-height: 6.25em;
+  border-radius: 0.5em;
+  border: 0.06em solid rgba(40, 184, 206, 0.25);
   background: rgba(0, 0, 0, 0.4);
   color: #e0f0f4;
-  font-size: 13px; font-weight: 500;
-  padding: 12px;
+  font-weight: 500;
+  padding: 0.75em;
   font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
   resize: vertical; line-height: 1.5;
   &::placeholder { color: #3a6070; }
-  &:focus { outline: none; border-color: ${GP_PRIMARY}; box-shadow: 0 0 0 2px rgba(40, 184, 206, 0.15); }
+  &:focus { outline: none; border-color: ${GP_PRIMARY}; box-shadow: 0 0 0 0.125em rgba(40, 184, 206, 0.15); }
 `
 
 const pasteErrorCss = css`
-  font-size: 12px; font-weight: 700; color: #dc3c3c;
-  padding: 6px 10px; border-radius: 6px;
+  font-weight: 700; color: #dc3c3c;
+  padding: 0.375em 0.625em; border-radius: 0.375em;
   background: rgba(220, 60, 60, 0.1);
-  border: 1px solid rgba(220, 60, 60, 0.2);
+  border: 0.06em solid rgba(220, 60, 60, 0.2);
 `
 
 const modalFooterCss = css`
-  display: flex; justify-content: flex-end; gap: 8px;
-  padding: 12px 20px;
-  border-top: 1px solid rgba(40, 184, 206, 0.15);
+  display: flex; justify-content: flex-end; gap: 0.5em;
+  padding: 0.75em 1.25em;
+  border-top: 0.06em solid rgba(40, 184, 206, 0.15);
 `
 
 const modalCancelBtnCss = css`
-  height: 32px; padding: 0 16px;
-  border-radius: 6px;
-  border: 1px solid rgba(40, 184, 206, 0.25);
+  height: 2em; padding: 0 1em;
+  border-radius: 0.375em;
+  border: 0.06em solid rgba(40, 184, 206, 0.25);
   background: transparent;
   color: #5a8a98;
-  font-size: 13px; font-weight: 700;
+  font-weight: 700;
   cursor: pointer; font-family: inherit;
   transition: all 0.15s;
   &:hover { background: rgba(40, 184, 206, 0.08); color: #e0f0f4; }
 `
 
 const modalLoadBtnCss = css`
-  height: 32px; padding: 0 20px;
-  border-radius: 6px;
-  border: 1px solid rgba(40, 184, 206, 0.4);
+  height: 2em; padding: 0 1.25em;
+  border-radius: 0.375em;
+  border: 0.06em solid rgba(40, 184, 206, 0.4);
   background: rgba(40, 184, 206, 0.2);
   color: ${GP_PRIMARY};
-  font-size: 13px; font-weight: 800;
+  font-weight: 800;
   text-transform: uppercase; letter-spacing: 0.05em;
   cursor: pointer; font-family: inherit;
   transition: all 0.15s;
