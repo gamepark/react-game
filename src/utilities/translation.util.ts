@@ -9,6 +9,7 @@ import ICU from 'i18next-icu'
 import { initReactI18next } from 'react-i18next'
 
 let translationInitialized = false
+const reportedKeys = new Set<string>()
 
 /**
  * Setup i18next global instance.
@@ -40,19 +41,22 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
         if (ns === gameId) {
           return `/translation/{{lng}}.json`
         }
-        return 'https://translations.game-park.com/{{lng}}/{{ns}}.json'
+        return `${PLATFORM_URI}/translations/{{ns}}/{{lng}}.json`
       }
     },
-    saveMissing: process.env.NODE_ENV === 'production',
-    missingKeyHandler: (lngs, namespace, key, defaultValue) => {
+    saveMissing: true,
+    missingKeyHandler: (lngs, namespace, key) => {
       const locale = lngs[0]
       if (!locale || !namespace || !key) return
       if (/_zero|_one|_two|_few|_many|_other$/.test(key)) return
-      try {
-        const body = JSON.stringify({ locale, namespace, key, defaultValue, origin: window.location.href })
-        navigator.sendBeacon(`${PLATFORM_URI}/api/translations/missing`, new Blob([body], { type: 'text/plain' }))
-      } catch (error) {
-        console.error('[Translation] Failed to report missing key:', error)
+      const cacheKey = `${locale}:${namespace}:${key}`
+      if (reportedKeys.has(cacheKey)) return
+      reportedKeys.add(cacheKey)
+      const msg = `[Translation] Missing key: ${namespace}|${key} (locale: ${locale})`
+      if (process.env.NODE_ENV === 'production') {
+        console.error(msg)
+      } else {
+        console.warn(msg)
       }
     },
     ...options
