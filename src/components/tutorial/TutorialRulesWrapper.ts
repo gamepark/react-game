@@ -1,4 +1,4 @@
-import { Action, LocalMoveType, MaterialGame, MaterialMove, MoveKind, PlayMoveContext, RulesCreator, SetTutorialStep } from '@gamepark/rules-api'
+import { Action, isSetTutorialStep, LocalMoveType, MaterialGame, MaterialMove, MoveKind, PlayMoveContext, RulesCreator, SetTutorialStep } from '@gamepark/rules-api'
 import { sample } from 'es-toolkit'
 import { MaterialTutorial, TutorialStep } from './MaterialTutorial'
 
@@ -73,6 +73,12 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
   Rules.prototype.play = function (move: MaterialMove, context?: PlayMoveContext) {
     const game = this.game as MaterialGame
     const consequences = play.bind(this)(move, context)
+
+    if (isSetTutorialStep(move) && game.tutorial) {
+      const step = tutorial.steps[game.tutorial.step]
+      game.view = step.view
+    }
+
     if (!context?.local && move.kind !== MoveKind.LocalMove && game.tutorial && game.tutorial.step < tutorial.steps.length) {
       const step = tutorial.steps[game.tutorial.step]
       if (step.move) {

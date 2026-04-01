@@ -14,11 +14,11 @@ import { ReactNode } from 'react'
 import { MaterialContext } from '../../locators'
 import { MaterialFocus } from '../material'
 
-export abstract class MaterialTutorial<P extends number = number, M extends number = number, L extends number = number>
+export abstract class MaterialTutorial<P extends number = number, M extends number = number, L extends number = number, V extends number = number>
   implements TutorialDescription<MaterialGame<P, M, L>, MaterialMove<P, M, L>> {
   abstract options: any
   abstract setup: MaterialGameSetup<P, M, L>
-  abstract steps: TutorialStep<P, M, L>[]
+  abstract steps: TutorialStep<P, M, L, V>[]
   abstract players: Player<P>[]
 
   material(game: MaterialGame<P, M, L>, type: M): Material<P, M, L> {
@@ -52,9 +52,10 @@ export enum TutorialStepType {
 
 export type TutorialStepBase = { zoom?: number }
 
-export type TutorialStep<P extends number = number, M extends number = number, L extends number = number> = {
+export type TutorialStep<P extends number = number, M extends number = number, L extends number = number, V extends number = number> = {
   popup?: TutorialPopup
   focus?: (game: MaterialGame<P, M, L>, context: MaterialContext<P, M, L>) => Partial<MaterialFocus<P, M, L>>
+  view?: V
   move?: {
     player?: P
     filter?: (move: MaterialMove<P, M, L>, game: MaterialGame<P, M, L>) => boolean
