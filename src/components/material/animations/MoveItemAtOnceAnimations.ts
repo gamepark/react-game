@@ -85,7 +85,7 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     if (trajectory) {
       const trajectoryContext: ItemContextWithTrajectory<P, M, L, R, V> = { ...context, trajectory }
       const animationKeyframes = this.getTrajectoryKeyframes(originTransforms, targetTransforms, animation, trajectoryContext)
-      return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
+      return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation, trajectory.waypoints)
     } else {
       const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
       return description?.getAnimationCss(animationKeyframes, animation.duration)
@@ -119,7 +119,7 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
     if (trajectory) {
       const trajectoryContext: ItemContextWithTrajectory<P, M, L, R, V> = { ...context, trajectory }
       const animationKeyframes = this.getTrajectoryKeyframes(originTransforms, targetTransforms, animation, trajectoryContext)
-      return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
+      return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation, trajectory.waypoints)
     } else {
       const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
       return description?.getAnimationCss(animationKeyframes, animation.duration)

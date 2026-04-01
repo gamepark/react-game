@@ -5,7 +5,7 @@ import { isEqual } from 'es-toolkit'
 import { getItemFromContext, ItemContext, MaterialContext } from '../../../locators'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
-import { defaultElevation, ElevationConfig, extractTranslation, getElevationKeyframes, interpolateCoordinate, Trajectory } from './Trajectory'
+import { defaultElevation, ElevationConfig, extractTranslation, getElevationKeyframes, getWaypointElevationKeyframes, interpolateCoordinate, Trajectory, Waypoint } from './Trajectory'
 import { transformItem } from './transformItem.util'
 
 /**
@@ -180,13 +180,25 @@ export class ItemAnimations<P extends number = number, M extends number = number
    * @param duration Animation duration in seconds
    * @param easing CSS easing function
    * @param elevationConfig Elevation configuration for the parent div arc
+   * @param waypoints Trajectory waypoints — if any define elevation, waypoint-level elevation replaces the global arc
    */
   protected getAnimationCssWithTrajectory(
     animationKeyframes: ReturnType<typeof keyframes>,
     duration: number,
     easing: string = 'ease-in-out',
-    elevationConfig?: ElevationConfig | false
+    elevationConfig?: ElevationConfig | false,
+    waypoints?: Pick<Waypoint, 'at' | 'elevation'>[]
   ): Interpolation<Theme> {
+    // If any waypoint defines elevation, use waypoint-level elevation instead of global config
+    const waypointElevation = waypoints ? getWaypointElevationKeyframes(waypoints) : undefined
+    if (waypointElevation) {
+      return css`
+        animation: ${waypointElevation} ${duration}s linear forwards;
+        > * {
+          animation: ${animationKeyframes} ${duration}s ${easing} forwards;
+        }
+      `
+    }
     if (elevationConfig !== false) {
       const resolvedElevation = elevationConfig ?? defaultElevation
       const elevationArc = getElevationKeyframes(resolvedElevation)

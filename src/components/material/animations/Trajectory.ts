@@ -74,8 +74,9 @@ export interface Waypoint<P extends number = number, M extends number = number, 
   offset?: Partial<Coordinates>
 
   /**
-   * Override the elevation at this specific waypoint.
-   * If not specified, uses the global elevation curve.
+   * Override the elevation at this specific waypoint (in em units).
+   * If at least one waypoint defines elevation, waypoint-level elevation replaces the global elevation arc entirely.
+   * Elevation is linearly interpolated between defined waypoints, with implicit 0 at t=0 and t=1.
    */
   elevation?: number
 
@@ -207,6 +208,31 @@ export function getElevationKeyframes(config: ElevationConfig): ReturnType<typeo
   const peakPercent = Math.round(peak * 100)
   const frames = `from, to { transform: translateZ(0); } ${peakPercent}% { transform: translateZ(${height}em); }`
   return keyframes`${frames}`
+}
+
+/**
+ * Generate elevation keyframes from waypoint-level elevation values.
+ * Linearly interpolates between waypoints that define elevation, with implicit 0 at t=0 and t=1.
+ */
+export function getWaypointElevationKeyframes(
+  waypoints: Pick<Waypoint, 'at' | 'elevation'>[]
+): ReturnType<typeof keyframes> | undefined {
+  const elevationWaypoints = waypoints.filter(w => w.elevation !== undefined)
+  if (elevationWaypoints.length === 0) return undefined
+
+  // Build elevation control points: implicit 0 at start/end + waypoint values
+  const points: { at: number, elevation: number }[] = [
+    { at: 0, elevation: 0 },
+    ...elevationWaypoints.map(w => ({ at: w.at, elevation: w.elevation! })),
+    { at: 1, elevation: 0 }
+  ].sort((a, b) => a.at - b.at)
+
+  const frames = points.map(p => {
+    const percent = Math.round(p.at * 100)
+    return `${percent}% { transform: translateZ(${p.elevation}em); }`
+  })
+
+  return keyframes`${frames.join('\n')}`
 }
 
 /**

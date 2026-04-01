@@ -96,7 +96,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
       // Use new trajectory-based animation (single div, integrated elevation)
       const trajectoryContext: ItemContextWithTrajectory<P, M, L, R, V> = { ...context, trajectory }
       const animationKeyframes = this.getTrajectoryKeyframes(currentTransforms, targetTransforms, animation, trajectoryContext)
-      return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
+      return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation, trajectory.waypoints)
     } else {
       // Use legacy two-div animation
       const animationKeyframes = this.getTransformKeyframes(currentTransforms.join(' '), targetTransforms.join(' '), animation, context)
@@ -146,7 +146,7 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     if (trajectory) {
       const trajectoryContext: ItemContextWithTrajectory<P, M, L, R, V> = { ...context, trajectory }
       const animationKeyframes = this.getTrajectoryKeyframes(originTransforms, targetTransforms, animation, trajectoryContext)
-      return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation)
+      return this.getAnimationCssWithTrajectory(animationKeyframes, animation.duration, trajectory.easing, trajectory.elevation, trajectory.waypoints)
     } else {
       const animationKeyframes = this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
       return description?.getAnimationCss(animationKeyframes, animation.duration)
