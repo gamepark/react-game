@@ -73,6 +73,12 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
   Rules.prototype.play = function (move: MaterialMove, context?: PlayMoveContext) {
     const game = this.game as MaterialGame
     const consequences = play.bind(this)(move, context)
+
+    if (isSetTutorialStep(move) && game.tutorial) {
+      const step = tutorial.steps[game.tutorial.step]
+      game.view = step.view
+    }
+
     if (!context?.local && move.kind !== MoveKind.LocalMove && game.tutorial && game.tutorial.step < tutorial.steps.length) {
       const step = tutorial.steps[game.tutorial.step]
       if (step.move) {
@@ -84,11 +90,6 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
             consequences.splice(interruptIndex, consequences.length - interruptIndex)
           }
         }
-      }
-    } else if (isSetTutorialStep(move)) {
-      const stepView = tutorial.steps[move.step]?.view
-      if (stepView !== undefined && stepView !== game.view) {
-        consequences.push({ kind: MoveKind.LocalMove, type: LocalMoveType.ChangeView, view: stepView })
       }
     } else if (move.kind === MoveKind.LocalMove && move.type === LocalMoveType.CloseTutorialPopup) {
       const consequences: MaterialMove[] = this.game.tutorial.interrupt ?? []
