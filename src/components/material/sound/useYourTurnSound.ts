@@ -52,6 +52,9 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
       const { setup, actions, soundsMuted, client, playerId } = store.getState()
       if (!setup || !actions || !playerId || soundsMuted) return
 
+      // Don't play on initial page load
+      if (wasActiveRef.current === undefined) return
+
       const actionCount = actions.filter(a => !a.delayed && !a.cancelled).length
       if (actionCount <= lastActionCountRef.current) {
         lastActionCountRef.current = actionCount
