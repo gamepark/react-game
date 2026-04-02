@@ -70,6 +70,7 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
         if (isActive) {
           audioLoader.play(bellSoundDataUri)
           bellPlayedForActionCountRef.current = actionCount
+          wasActiveRef.current = true
         }
       } catch {
         // Game not ready
