@@ -76,7 +76,9 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
 
     if (isSetTutorialStep(move) && game.tutorial) {
       const step = tutorial.steps[game.tutorial.step]
-      game.view = step.view
+      if (step) {
+        game.view = step.view
+      }
     }
 
     if (!context?.local && move.kind !== MoveKind.LocalMove && game.tutorial && game.tutorial.step < tutorial.steps.length) {
