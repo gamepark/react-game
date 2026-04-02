@@ -36,7 +36,7 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
       return
     }
     const isActive = rules.isTurnToPlay(playerId)
-    if (isActive && wasActiveRef.current === false && !document.hasFocus()) {
+    if (isActive && wasActiveRef.current === false && document.visibilityState !== 'hidden' && !document.hasFocus()) {
       const { soundsMuted } = store.getState()
       if (!soundsMuted) {
         audioLoader.play(bellSoundDataUri)
