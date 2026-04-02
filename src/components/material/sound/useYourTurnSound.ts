@@ -6,8 +6,6 @@ import { gameContext } from '../../GameProvider'
 import { AudioLoader } from './AudioLoader'
 import { bellSoundDataUri } from './bellSound'
 
-export { bellSoundDataUri }
-
 function replayAllActions(setup: any, actions: DisplayedAction[], client: any, RulesCreator: any): Rules {
   const rules = new RulesCreator(JSON.parse(JSON.stringify(setup)), client)
   for (const action of actions) {
@@ -26,6 +24,10 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
   const lastActionCountRef = useRef(0)
   const bellPlayedForActionCountRef = useRef(0)
   const wasActiveRef = useRef<boolean | undefined>(undefined)
+
+  useEffect(() => {
+    audioLoader.load([bellSoundDataUri])
+  }, [audioLoader])
 
   // Case 2: visible but not focused — play bell after animations catch up
   useEffect(() => {
