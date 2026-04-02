@@ -8,6 +8,7 @@ import { AudioLoader } from './AudioLoader'
 import { MaterialSoundConfig } from './MaterialSoundConfig'
 import { MaterialSoundLoader } from './MaterialSoundLoader'
 import { ensureMaterialSoundConfig } from './sound.utils'
+import { bellSoundDataUri, useYourTurnSound } from './useYourTurnSound'
 
 type MaterialGameSoundsProps = {
   onSoundsLoad?: () => void
@@ -31,6 +32,13 @@ export const MaterialGameSounds: FC<MaterialGameSoundsProps> = ({ onSoundsLoad, 
   const material = useContext(gameContext).material
   const animation = useAnimation<MaterialMove>()
   const muted = useGameSelector((state) => state.soundsMuted)
+
+  useEffect(() => {
+    audioLoader.load([bellSoundDataUri])
+  }, [audioLoader])
+
+  useYourTurnSound(audioLoader)
+
   useEffect(() => {
     if (!animation) return
     const config = animationsConfig.getAnimationConfig(animation.move, { ...context, action: animation.action })
