@@ -3,9 +3,8 @@ import { MaterialRules } from '@gamepark/rules-api'
 import { useEffect, useRef, useState } from 'react'
 import { usePlayerId, useRules } from '../../../hooks'
 import { AudioLoader } from './AudioLoader'
-import { bellSoundDataUri } from './bellSound'
 
-export { bellSoundDataUri }
+const dingSoundUrl = 'https://sounds.game-park.com/ding.mp3'
 
 export const useYourTurnSound = (audioLoader: AudioLoader) => {
   const rules = useRules<MaterialRules>()
@@ -14,7 +13,7 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
   const initializedRef = useRef(false)
 
   useEffect(() => {
-    audioLoader.load([bellSoundDataUri])
+    audioLoader.load([dingSoundUrl])
   }, [audioLoader])
 
   useEffect(() => {
@@ -31,6 +30,6 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
     if (document.hasFocus()) return
     const { soundsMuted } = store.getState()
     if (soundsMuted) return
-    audioLoader.play(bellSoundDataUri)
+    audioLoader.play(dingSoundUrl)
   }, [isActive, audioLoader])
 }

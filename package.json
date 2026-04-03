@@ -18,7 +18,8 @@
     "prepack": "yarn build",
     "linkgp": "yarn link ../rules-api ../react-client -r && git update-index --skip-worktree package.json yarn.lock",
     "unlinkgp": "git update-index --no-skip-worktree package.json yarn.lock && yarn unlink ../react-client ../rules-api",
-    "publish": "npm version ${0:-patch} && yarn npm publish && git push && git push --tags"
+    "sync-sounds": "rclone sync sounds sounds:sounds.game-park.com --progress --s3-acl=public-read",
+    "publish": "npm version ${0:-patch} && yarn npm publish && yarn sync-sounds && git push && git push --tags"
   },
   "dependencies": {
     "@datadog/browser-logs": "^6.28.1",
