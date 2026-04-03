@@ -1,6 +1,6 @@
 import { store } from '@gamepark/react-client'
 import { MaterialRules } from '@gamepark/rules-api'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePlayerId, useRules } from '../../../hooks'
 import { AudioLoader } from './AudioLoader'
 import { bellSoundDataUri } from './bellSound'
@@ -12,8 +12,9 @@ const FOCUS_THRESHOLD = 3000
 export const useYourTurnSound = (audioLoader: AudioLoader) => {
   const rules = useRules<MaterialRules>()
   const playerId = usePlayerId()
-  const wasActiveRef = useRef<boolean | undefined>(undefined)
+  const [isActive, setIsActive] = useState(false)
   const lastFocusTimeRef = useRef(Date.now())
+  const initializedRef = useRef(false)
 
   useEffect(() => {
     audioLoader.load([bellSoundDataUri])
@@ -25,20 +26,30 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
     return () => window.removeEventListener('focus', onFocus)
   }, [])
 
+  // Track isActive from rules — only mark inactive if player had focus recently
   useEffect(() => {
-    if (!rules || playerId === undefined) {
-      wasActiveRef.current = undefined
-      return
-    }
-    const isActive = rules.isTurnToPlay(playerId)
-    const hadFocusRecently = document.hasFocus() || Date.now() - lastFocusTimeRef.current < FOCUS_THRESHOLD
-
-    if (isActive && !hadFocusRecently && wasActiveRef.current !== undefined) {
-      const { soundsMuted } = store.getState()
-      if (!soundsMuted) {
-        audioLoader.play(bellSoundDataUri)
+    if (!rules || playerId === undefined) return
+    const active = rules.isTurnToPlay(playerId)
+    if (active) {
+      setIsActive(true)
+    } else {
+      const hadFocusRecently = document.hasFocus() || Date.now() - lastFocusTimeRef.current < FOCUS_THRESHOLD
+      if (hadFocusRecently) {
+        setIsActive(false)
       }
     }
-    wasActiveRef.current = isActive
-  }, [rules, playerId, audioLoader])
+  }, [rules, playerId])
+
+  // Play bell when isActive changes to true
+  useEffect(() => {
+    if (!initializedRef.current) {
+      initializedRef.current = true
+      return
+    }
+    if (!isActive) return
+    if (document.hasFocus()) return
+    const { soundsMuted } = store.getState()
+    if (soundsMuted) return
+    audioLoader.play(bellSoundDataUri)
+  }, [isActive, audioLoader])
 }
