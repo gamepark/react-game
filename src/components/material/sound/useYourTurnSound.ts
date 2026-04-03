@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { usePlayerId, useRules } from '../../../hooks'
 import { AudioLoader } from './AudioLoader'
 
-const dingSoundUrl = 'https://sounds.game-park.com/ding.mp3'
+const bellSoundUrl = 'https://sounds.game-park.com/bell.mp3'
 
 export const useYourTurnSound = (audioLoader: AudioLoader) => {
   const rules = useRules<MaterialRules>()
@@ -13,7 +13,7 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
   const initializedRef = useRef(false)
 
   useEffect(() => {
-    audioLoader.load([dingSoundUrl])
+    audioLoader.load([bellSoundUrl])
   }, [audioLoader])
 
   useEffect(() => {
@@ -27,9 +27,8 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
       return
     }
     if (!isActive) return
-    if (document.hasFocus()) return
     const { soundsMuted } = store.getState()
     if (soundsMuted) return
-    audioLoader.play(dingSoundUrl)
+    audioLoader.play(bellSoundUrl)
   }, [isActive, audioLoader])
 }
