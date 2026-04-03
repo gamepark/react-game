@@ -7,17 +7,23 @@ import { bellSoundDataUri } from './bellSound'
 
 export { bellSoundDataUri }
 
-const INACTIVE_THRESHOLD = 3000
+const FOCUS_THRESHOLD = 3000
 
 export const useYourTurnSound = (audioLoader: AudioLoader) => {
   const rules = useRules<MaterialRules>()
   const playerId = usePlayerId()
   const wasActiveRef = useRef<boolean | undefined>(undefined)
-  const lastActiveTimeRef = useRef(0)
+  const lastFocusTimeRef = useRef(Date.now())
 
   useEffect(() => {
     audioLoader.load([bellSoundDataUri])
   }, [audioLoader])
+
+  useEffect(() => {
+    const onFocus = () => { lastFocusTimeRef.current = Date.now() }
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [])
 
   useEffect(() => {
     if (!rules || playerId === undefined) {
@@ -25,17 +31,9 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
       return
     }
     const isActive = rules.isTurnToPlay(playerId)
-    if (isActive && !wasActiveRef.current) {
-      lastActiveTimeRef.current = Date.now()
-    }
-    if (!isActive && wasActiveRef.current && document.visibilityState !== 'hidden') {
-      // Only consider inactive if we were active for long enough (skip in background where animations are instant)
-      if (Date.now() - lastActiveTimeRef.current < INACTIVE_THRESHOLD) {
-        wasActiveRef.current = isActive
-        return
-      }
-    }
-    if (isActive && wasActiveRef.current === false && !document.hasFocus()) {
+    const hadFocusRecently = document.hasFocus() || Date.now() - lastFocusTimeRef.current < FOCUS_THRESHOLD
+
+    if (isActive && !hadFocusRecently && wasActiveRef.current !== undefined) {
       const { soundsMuted } = store.getState()
       if (!soundsMuted) {
         audioLoader.play(bellSoundDataUri)
