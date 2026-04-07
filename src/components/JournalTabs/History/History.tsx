@@ -8,6 +8,7 @@ import { gameContext } from '../../index'
 import { GameOverHistory } from './GameOverHistory'
 import { LazyLogItem } from './LazyLogItem'
 import { SetupLogItem } from './SetupLogItem'
+import { SharedIntersectionContext, useSharedObserver } from './SharedIntersectionContext'
 import { StartGameHistory } from './StartGameHistory'
 
 type HistoryProps = {
@@ -22,6 +23,7 @@ export const History: FC<HistoryProps> = (props) => {
   const { history, isLoaded } = useFlatHistory()
   const { open, ...rest } = props
   const scrollRef = useRef<HTMLDivElement>(null)
+  const sharedObserver = useSharedObserver(scrollRef.current)
 
   const setupLogs = useMemo(() => {
     if (!context.logs?.getSetupLogDescriptions) return []
@@ -48,29 +50,30 @@ export const History: FC<HistoryProps> = (props) => {
 
   return (
     <ThemeProvider theme={theme => ({ ...theme, buttons: historyButtonCss })}>
-      <div css={scrollCss} ref={scrollRef} {...rest}>
-        <div css={scrollContentCss}>
-          <StartGameHistory/>
-          {setupLogs.map((log, index) =>
-            <SetupLogItem key={`setup_${index}`} log={log} game={setup} index={index} css={itemCss}
-                          customEntryCss={[customEntryCss, theme.journal?.historyEntry]}/>
-          )}
-          {!isLoaded && (
-            <div css={loaderCss}>
-              <div css={spinnerCss}/>
-              {t('history.loading', { defaultValue: 'Loading history...' })}
-            </div>
-          )}
-          {history.map((h) => {
-            if (!h.action.id) return null
-            const key = h.consequenceIndex !== undefined ? `${h.action.id}_${h.consequenceIndex}` : h.action.id
-            return <LazyLogItem key={key} history={h} itemCss={itemCss}
-                                customEntryCss={[customEntryCss, theme.journal?.historyEntry]}
-                                root={scrollRef.current}/>
-          })}
-          <GameOverHistory/>
+      <SharedIntersectionContext.Provider value={sharedObserver}>
+        <div css={scrollCss} ref={scrollRef} {...rest}>
+          <div css={scrollContentCss}>
+            <StartGameHistory/>
+            {setupLogs.map((log, index) =>
+              <SetupLogItem key={`setup_${index}`} log={log} game={setup} index={index} css={itemCss}
+                            customEntryCss={[customEntryCss, theme.journal?.historyEntry]}/>
+            )}
+            {!isLoaded && (
+              <div css={loaderCss}>
+                <div css={spinnerCss}/>
+                {t('history.loading', { defaultValue: 'Loading history...' })}
+              </div>
+            )}
+            {history.map((h) => {
+              if (!h.action.id) return null
+              const key = h.consequenceIndex !== undefined ? `${h.action.id}_${h.consequenceIndex}` : h.action.id
+              return <LazyLogItem key={key} history={h} itemCss={itemCss}
+                                  customEntryCss={[customEntryCss, theme.journal?.historyEntry]}/>
+            })}
+            <GameOverHistory/>
+          </div>
         </div>
-      </div>
+      </SharedIntersectionContext.Provider>
     </ThemeProvider>
   )
 }
