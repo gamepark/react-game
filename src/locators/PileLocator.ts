@@ -50,6 +50,12 @@ export class PileLocator<P extends number = number, M extends number = number, L
     return this.maxAngle
   }
 
+  /**
+   * When true, the z-index is derived from the item's Y offset instead of the item index.
+   * Items with a higher Y appear on top, simulating depth perspective.
+   */
+  zFromY = false
+
   minimumDistance = 0
 
   /**
@@ -84,7 +90,10 @@ export class PileLocator<P extends number = number, M extends number = number, L
       }
     }
     const itemPosition = pilePositions.get(itemUniqueId)!
-    return { x: x + itemPosition.x, y: y + itemPosition.y, z: z + index * 0.05 }
+    const radius = this.getRadius(location, context)
+    const maxRadius = typeof radius === 'number' ? radius : radius.y
+    const itemZ = this.zFromY ? (maxRadius > 0 ? (itemPosition.y + maxRadius) / (2 * maxRadius) : 0) : index * 0.05
+    return { x: x + itemPosition.x, y: y + itemPosition.y, z: z + itemZ }
   }
 
   generateItemPosition(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>) {
