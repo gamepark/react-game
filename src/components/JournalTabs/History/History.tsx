@@ -1,10 +1,12 @@
-import { css, ThemeProvider, useTheme } from '@emotion/react'
+import { css, keyframes, ThemeProvider, useTheme } from '@emotion/react'
 import { useGameSelector } from '@gamepark/react-client'
 import { FC, HTMLAttributes, useContext, useEffect, useMemo, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { linkButtonCss } from '../../../css'
 import { useFlatHistory } from '../../../hooks/useFlatHistory'
-import { gameContext, LogItem } from '../../index'
+import { gameContext } from '../../index'
 import { GameOverHistory } from './GameOverHistory'
+import { LazyLogItem } from './LazyLogItem'
 import { SetupLogItem } from './SetupLogItem'
 import { StartGameHistory } from './StartGameHistory'
 
@@ -13,10 +15,11 @@ type HistoryProps = {
 } & HTMLAttributes<HTMLDivElement>
 
 export const History: FC<HistoryProps> = (props) => {
+  const { t } = useTranslation('common')
   const theme = useTheme()
   const context = useContext(gameContext)
   const setup = useGameSelector((state) => state.setup) ?? {}
-  const { history } = useFlatHistory()
+  const { history, isLoaded } = useFlatHistory()
   const { open, ...rest } = props
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -25,11 +28,23 @@ export const History: FC<HistoryProps> = (props) => {
     return context.logs.getSetupLogDescriptions(setup)
   }, [setup])
 
+  // Scroll to bottom when loaded or when opening
   useEffect(() => {
-    if (!scrollRef.current) return
-    const { scrollHeight, clientHeight } = scrollRef.current
-    scrollRef.current.scrollTo({ top: scrollHeight - clientHeight })
-  }, [open])
+    if (!scrollRef.current || !open || !isLoaded) return
+    const el = scrollRef.current
+    const scrollToBottom = () => el.scrollTo({ top: el.scrollHeight - el.clientHeight })
+    scrollToBottom()
+    const content = el.firstElementChild
+    if (!content) return
+    const observer = new ResizeObserver(scrollToBottom)
+    observer.observe(content)
+    // Stop auto-scrolling as soon as the user scrolls manually
+    const onUserScroll = () => { observer.disconnect(); el.removeEventListener('wheel', onUserScroll); el.removeEventListener('touchmove', onUserScroll) }
+    el.addEventListener('wheel', onUserScroll, { once: true })
+    el.addEventListener('touchmove', onUserScroll, { once: true })
+    const timeout = setTimeout(() => { observer.disconnect(); onUserScroll() }, 2000)
+    return () => { observer.disconnect(); clearTimeout(timeout); onUserScroll() }
+  }, [open, isLoaded])
 
   return (
     <ThemeProvider theme={theme => ({ ...theme, buttons: historyButtonCss })}>
@@ -40,10 +55,18 @@ export const History: FC<HistoryProps> = (props) => {
             <SetupLogItem key={`setup_${index}`} log={log} game={setup} index={index} css={itemCss}
                           customEntryCss={[customEntryCss, theme.journal?.historyEntry]}/>
           )}
+          {!isLoaded && (
+            <div css={loaderCss}>
+              <div css={spinnerCss}/>
+              {t('history.loading', { defaultValue: 'Loading history...' })}
+            </div>
+          )}
           {history.map((h) => {
-            if (!h.action.id) return null // wait for server action.id
+            if (!h.action.id) return null
             const key = h.consequenceIndex !== undefined ? `${h.action.id}_${h.consequenceIndex}` : h.action.id
-            return <LogItem key={key} history={h} css={itemCss} customEntryCss={[customEntryCss, theme.journal?.historyEntry]}/>
+            return <LazyLogItem key={key} history={h} itemCss={itemCss}
+                                customEntryCss={[customEntryCss, theme.journal?.historyEntry]}
+                                root={scrollRef.current}/>
           })}
           <GameOverHistory/>
         </div>
@@ -97,4 +120,28 @@ const itemCss = css`
 const customEntryCss = css`
   background-color: rgba(0, 0, 0, 0.8);
   color: white;
+`
+
+const spin = keyframes`
+  to { transform: rotate(360deg); }
+`
+
+const loaderCss = css`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1em;
+  padding: 2em;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.5em;
+  font-style: italic;
+`
+
+const spinnerCss = css`
+  width: 1.2em;
+  height: 1.2em;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-top-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  animation: ${spin} 0.8s linear infinite;
 `
