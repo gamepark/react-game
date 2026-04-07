@@ -114,16 +114,12 @@ export const useFlatHistory = () => {
     const description = context.logs?.getMovePlayedLogDescription(move, moveComponentContext)
     if (!description?.Component) return
 
-    if (cachedGame !== undefined) {
-      return { ...description, move, consequenceIndex, action, game: cachedGame }
-    }
-
     const capturedMoveIndex = moveIndex
     const capturedCheckpoints = checkpoints.current
     const capturedSetup = setup
-    const entry: MoveHistory = { ...description, move, consequenceIndex, action, game: undefined as any }
-    Object.defineProperty(entry, 'game', {
-      get() {
+    return {
+      ...description, move, consequenceIndex, action,
+      get game() {
         if (cachedGame === undefined) {
           cachedGame = replayFromCheckpoint(
             capturedMoveIndex, capturedCheckpoints, playedMovesRef.current,
@@ -131,11 +127,8 @@ export const useFlatHistory = () => {
           )
         }
         return cachedGame
-      },
-      enumerable: true,
-      configurable: true
-    })
-    return entry
+      }
+    }
   }
 
   const playMove = (move: PlayedMove) => {
