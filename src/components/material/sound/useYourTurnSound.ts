@@ -3,6 +3,7 @@ import { MaterialRules } from '@gamepark/rules-api'
 import { useEffect, useRef, useState } from 'react'
 import { usePlayerId, useRules } from '../../../hooks'
 import { AudioLoader } from './AudioLoader'
+import { MaterialSoundConfig } from './MaterialSoundConfig'
 
 const bellSoundUrl = 'https://sounds.game-park.com/bell.mp3'
 
@@ -29,6 +30,8 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
     if (!isActive) return
     const { soundsMuted } = store.getState()
     if (soundsMuted) return
-    audioLoader.play(bellSoundUrl)
+    const config = new MaterialSoundConfig(bellSoundUrl)
+    if (document.hasFocus()) config.volume = 0.15
+    audioLoader.play(config)
   }, [isActive, audioLoader])
 }
