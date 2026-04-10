@@ -15,7 +15,7 @@ export const BottomBarNavigation: FC<DialogNavigationProps> = ({ onPrevious, onN
     <div css={[barCss(primary), theme.dialog.navigationCss]}>
       <button css={btnCss(primary)} onClick={onPrevious} disabled={!onPrevious}>
         <FontAwesomeIcon icon={faChevronLeft} css={iconCss}/>
-        <span>{t('navigation.previous', 'Previous')}</span>
+        <span>{t('Previous', 'common')}</span>
       </button>
       <div css={counterCss}>
         <div css={dotsCss}>
@@ -26,7 +26,7 @@ export const BottomBarNavigation: FC<DialogNavigationProps> = ({ onPrevious, onN
         <span>{currentIndex + 1} / {total}</span>
       </div>
       <button css={btnCss(primary)} onClick={onNext} disabled={!onNext}>
-        <span>{t('navigation.next', 'Next')}</span>
+        <span>{t('Next', 'common')}</span>
         <FontAwesomeIcon icon={faChevronRight} css={iconCss}/>
       </button>
     </div>
