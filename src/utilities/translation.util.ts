@@ -1,4 +1,3 @@
-import { PLATFORM_URI } from '@gamepark/react-client'
 import dayjs from 'dayjs'
 import 'dayjs/locale/de'
 import 'dayjs/locale/fr'
@@ -41,7 +40,7 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
         if (ns === gameId) {
           return `/translation/{{lng}}.json`
         }
-        return `${PLATFORM_URI}/translations/{{ns}}/{{lng}}.json`
+        return `https://game-park.com/translations/{{ns}}/{{lng}}.json`
       }
     },
     saveMissing: true,
