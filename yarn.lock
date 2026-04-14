@@ -452,7 +452,7 @@ __metadata:
     "@gamepark/api-types": "npm:^1.0.1"
     "@gamepark/avataaars": "npm:^3.0.0"
     "@gamepark/react-client": "npm:^7.6.4"
-    "@gamepark/rules-api": "npm:^7.6.1"
+    "@gamepark/rules-api": "npm:^7.6.2"
     "@types/fscreen": "npm:^1.0.4"
     "@types/node": "npm:^25.3.1"
     "@types/react": "npm:^19.2.14"
@@ -495,12 +495,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gamepark/rules-api@npm:^7.6.1":
-  version: 7.6.1
-  resolution: "@gamepark/rules-api@npm:7.6.1"
+"@gamepark/rules-api@npm:^7.6.2":
+  version: 7.6.2
+  resolution: "@gamepark/rules-api@npm:7.6.2"
   peerDependencies:
     es-toolkit: ^1.39.10
-  checksum: 10c0/72c4034c6aac593ee4987ed04cbad449224307d404ea2d3e9b1e74c2f59edc7d76fc09ece3f354ac45d2361300a420418451de559d018456f86b2b48dae7c16b
+  checksum: 10c0/33ac8fbd413e56dadbeb9d29bb5c73295cab34577484b122dfd5d063087d350825597ac0636bb9e48524eb6ce849218728dd24fadacd4955147435e2982a58b9
   languageName: node
   linkType: hard
 
