@@ -35,8 +35,7 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
     ns: [gameId, 'common', 'credits'],
     defaultNS: gameId,
     backend: {
-      loadPath: (_lngs: string[], namespaces: string[]) => {
-        const ns = namespaces[0]
+      loadPath: (_lng: string, ns: string) => {
         if (ns === gameId) {
           return `/translation/{{lng}}.json`
         }
