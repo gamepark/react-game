@@ -1,8 +1,7 @@
-import { css, ThemeProvider, useTheme } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC } from 'react'
-import { onSurfaceButtonCss } from '../../../css'
 import { Dialog, DialogProps } from '../index'
 
 export type RulesDialogProps = {
@@ -15,9 +14,7 @@ export const RulesDialog: FC<RulesDialogProps> = ({ close, children, ...props }:
   return (
     <Dialog onBackdropClick={close} css={dialogCss} {...props}>
       {close && (CloseButton ? <CloseButton onClick={close}/> : <FontAwesomeIcon icon={faXmark} css={[dialogCloseIcon, theme.dialog.closeIcon]} onClick={close}/>)}
-      <ThemeProvider theme={theme => ({ ...theme, buttons: onSurfaceButtonCss })}>
-        {children}
-      </ThemeProvider>
+      {children}
     </Dialog>
   )
 }

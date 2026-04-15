@@ -52,6 +52,14 @@ export interface DialogTheme {
   closeAnimation?: Interpolation<GameTheme>
   navigation?: ComponentType<DialogNavigationProps>
   navigationCss?: Interpolation<GameTheme>
+  /**
+   * Optional override applied to every <button> rendered inside a
+   * Dialog (rules / help / confirmation / tutorial). When defined,
+   * shadows theme.buttons for the dialog subtree, so games can have
+   * a different button look in dialogs than on the rest of the UI.
+   * Falls back to theme.buttons when undefined.
+   */
+  buttons?: Interpolation<GameTheme>
 }
 
 export interface PaletteTheme {
@@ -144,5 +152,9 @@ export const defaultTheme: GameTheme = {
   dropArea: {
     backgroundColor: 'rgba(0, 255, 0, 0.5)'
   },
+  // theme.buttons is intentionally left undefined: each consumer
+  // (Header, Dialog, ...) layers its own structural defaults below
+  // the game override, so a missing theme.buttons must NOT spread a
+  // generic recipe everywhere.
   palette: defaultPalette
 }

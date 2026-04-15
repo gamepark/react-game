@@ -1,4 +1,4 @@
-import { css, Interpolation, keyframes, useTheme } from '@emotion/react'
+import { css, Interpolation, keyframes, ThemeProvider, useTheme } from '@emotion/react'
 import { HTMLAttributes, MouseEventHandler, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -37,15 +37,52 @@ export const Dialog = ({ children, open, backdropCss, onBackdropClick, transitio
     return null
   }
 
+  // Layered button styling for buttons rendered inside this dialog:
+  //   1. dialogButtonBaseCss   — structural rules (padding, font-weight,
+  //                              border-radius, ...). Always applied so
+  //                              games never lose layout when they only
+  //                              tweak colours.
+  //   2. theme.buttons         — game-wide button recipe override.
+  //   3. theme.dialog.buttons  — dialog-specific override.
+  // Falls back to onSurfaceButtonCss visuals via ThemeButton when the
+  // game does not provide any theme.buttons.
+  const resolvedDialogButtonsCss = [dialogButtonBaseCss, theme.buttons, theme.dialog.buttons]
+  const dialogContent = (
+    <div onClick={event => event.stopPropagation()} css={[dialogCss, open ? (theme.dialog.openAnimation ?? dialogShow(transitionDelay)) : (theme.dialog.closeAnimation ?? dialogHide(transitionDelay)), theme.dialog.container]} {...props}>
+      {children}
+    </div>
+  )
+
   return createPortal(
     <div css={[backdropStyle(transitionDelay), !open && hide(transitionDelay), backdropCss]} onClick={event => !justDisplayed && onBackdropClick?.(event)}>
-      <div onClick={event => event.stopPropagation()} css={[dialogCss, open ? (theme.dialog.openAnimation ?? dialogShow(transitionDelay)) : (theme.dialog.closeAnimation ?? dialogHide(transitionDelay)), theme.dialog.container]} {...props}>
-        {children}
-      </div>
+      <ThemeProvider theme={t => ({ ...t, buttons: resolvedDialogButtonsCss })}>{dialogContent}</ThemeProvider>
     </div>,
     root
   )
 }
+
+// Structural base — applied to every button rendered inside a Dialog
+// regardless of the active theme. Games override visuals via
+// theme.buttons / theme.dialog.buttons but always inherit the
+// structural rules (padding, border-radius, cursor, ...) from here so
+// they don't have to redeclare them.
+const dialogButtonBaseCss = css`
+  cursor: pointer;
+  padding: 0.3em 0.9em;
+  border-radius: 2em;
+  border: 0.05em solid currentColor;
+  background: transparent;
+  font-weight: 600;
+
+  &:focus { outline: none; }
+
+  &:disabled {
+    color: #555555;
+    border-color: #555555;
+    cursor: auto;
+    opacity: 0.5;
+  }
+`
 
 const fadeIn = keyframes`
   from {

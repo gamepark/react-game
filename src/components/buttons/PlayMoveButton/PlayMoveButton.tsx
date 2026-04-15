@@ -1,8 +1,7 @@
-import { css, ThemeProvider } from '@emotion/react'
+import { css } from '@emotion/react'
 import { PlayOptions } from '@gamepark/react-client'
 import { ButtonHTMLAttributes, FC, ReactNode, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { onSurfaceButtonCss } from '../../../css'
 import { usePlay } from '../../../hooks'
 import { Dialog } from '../../dialogs'
 import { ThemeButton } from '../ThemeButton'
@@ -72,17 +71,15 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
     <>
       {!!confirmation && (
         <Dialog key="dialog" open={showDialog} onBackdropClick={() => setShowDialog(false)} css={[flex, confirmationDialogCss]}>
-          <ThemeProvider theme={theme => ({ ...theme, buttons: onSurfaceButtonCss })}>
-            <div css={content}>
-              <p>{confirmation.text}</p>
-              <div css={buttons}>
-                <ThemeButton onClick={() => setShowDialog(false)} {...rest}>
-                  {confirmation.cancelText ?? t('Cancel')}
-                </ThemeButton>
-                <ThemeButton css={moveButton} onClick={doPlay} {...rest} />
-              </div>
+          <div css={content}>
+            <p>{confirmation.text}</p>
+            <div css={buttons}>
+              <ThemeButton onClick={() => setShowDialog(false)} {...rest}>
+                {confirmation.cancelText ?? t('Cancel')}
+              </ThemeButton>
+              <ThemeButton css={moveButton} onClick={doPlay} {...rest} />
             </div>
-          </ThemeProvider>
+          </div>
         </Dialog>
       )}
       <ThemeButton key="button" onClick={onClick} disabled={disabled} css={countdown && countdownCss(countdown)} {...rest}/>

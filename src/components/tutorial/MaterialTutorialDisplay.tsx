@@ -1,4 +1,4 @@
-import { css, ThemeProvider, useTheme } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faBackward } from '@fortawesome/free-solid-svg-icons/faBackward'
 import { faForward } from '@fortawesome/free-solid-svg-icons/faForward'
 import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
@@ -9,7 +9,7 @@ import { isCloseTutorialPopup, isSetTutorialStep, SetTutorialStep } from '@gamep
 import { maxBy, minBy } from 'es-toolkit'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { onSurfaceButtonCss, transformCss } from '../../css'
+import { transformCss } from '../../css'
 import { useLegalMove, useLegalMoves, useMaterialContext, useUndo } from '../../hooks'
 import { useTutorialStep } from '../../hooks/useTutorialStep'
 import { PlayMoveButton, ThemeButton } from '../buttons'
@@ -66,19 +66,17 @@ export const MaterialTutorialDisplay = () => {
             ]}
             backdropCss={backdropCss}>
       {popup &&
-        <ThemeProvider theme={theme => ({ ...theme, buttons: onSurfaceButtonCss })}>
-          <div css={[rules, theme.tutorial?.content]}>
-            {passMove && <PlayMoveButton move={passMove} css={passButton}>{tCommon('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>}
-            <p>{popup.text(t, game!)}</p>
-            <p css={buttonsLine}>
-              <ThemeButton disabled={!canUndoLastMove} onClick={() => undo()}><FontAwesomeIcon icon={faBackward}/>&nbsp;{tCommon('Previous')}</ThemeButton>
-              {closeTutorialPopup ?
-                <PlayMoveButton move={closeTutorialPopup}>{tCommon('OK')}&nbsp;<FontAwesomeIcon icon={faPlay}/></PlayMoveButton>
-                : <PlayMoveButton move={nextStepMove} disabled={!nextStepMove}>{tCommon('Next')}&nbsp;<FontAwesomeIcon icon={faForward}/></PlayMoveButton>
-              }
-            </p>
-          </div>
-        </ThemeProvider>
+        <div css={[rules, theme.tutorial?.content]}>
+          {passMove && <PlayMoveButton move={passMove} css={passButton}>{tCommon('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>}
+          <p>{popup.text(t, game!)}</p>
+          <p css={buttonsLine}>
+            <ThemeButton disabled={!canUndoLastMove} onClick={() => undo()}><FontAwesomeIcon icon={faBackward}/>&nbsp;{tCommon('Previous')}</ThemeButton>
+            {closeTutorialPopup ?
+              <PlayMoveButton move={closeTutorialPopup}>{tCommon('OK')}&nbsp;<FontAwesomeIcon icon={faPlay}/></PlayMoveButton>
+              : <PlayMoveButton move={nextStepMove} disabled={!nextStepMove}>{tCommon('Next')}&nbsp;<FontAwesomeIcon icon={faForward}/></PlayMoveButton>
+            }
+          </p>
+        </div>
       }
     </Dialog>
   )
