@@ -34,6 +34,10 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
     fallbackLng: 'en',
     ns: [gameId, 'common', 'credits'],
     defaultNS: gameId,
+    ...import.meta.hot && {
+      react: { bindI18nStore: 'added' },
+      i18nFormat: { bindI18nStore: 'added' }
+    },
     backend: {
       loadPath: (_lngs: string[], namespaces: string[]) => {
         const ns = namespaces[0]
@@ -62,4 +66,8 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
   }).catch(error => console.error(error))
 
   dayjs.locale(locale)
+
+  if (import.meta.hot) {
+    import.meta.hot.on('translation-update', () => i18next.reloadResources())
+  }
 }
