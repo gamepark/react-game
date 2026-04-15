@@ -8,14 +8,14 @@ import { useTranslation } from 'react-i18next'
 import { DialogNavigationProps } from '../../../css'
 
 export const BottomBarNavigation: FC<DialogNavigationProps> = ({ onPrevious, onNext, currentIndex, total }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation('common')
   const theme = useTheme()
   const primary = theme.palette.primary
   return (
     <div css={[barCss(primary), theme.dialog.navigationCss]}>
       <button css={btnCss(primary)} onClick={onPrevious} disabled={!onPrevious}>
         <FontAwesomeIcon icon={faChevronLeft} css={iconCss}/>
-        <span>{t('Previous', 'common')}</span>
+        <span>{t('nav.previous')}</span>
       </button>
       <div css={counterCss}>
         <div css={dotsCss}>
@@ -26,7 +26,7 @@ export const BottomBarNavigation: FC<DialogNavigationProps> = ({ onPrevious, onN
         <span>{currentIndex + 1} / {total}</span>
       </div>
       <button css={btnCss(primary)} onClick={onNext} disabled={!onNext}>
-        <span>{t('Next', 'common')}</span>
+        <span>{t('nav.next')}</span>
         <FontAwesomeIcon icon={faChevronRight} css={iconCss}/>
       </button>
     </div>
