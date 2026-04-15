@@ -89,7 +89,7 @@ export const Menu = () => {
         }
       </div>
       <button aria-label={t('Menu')!} title={t('Menu')!} css={[mainButtonCss, palettePrimaryButtonCss, theme.menu?.mainButton]} onClick={() => setOpen(!isOpen)}>
-        {isOpen ? <FontAwesomeIcon icon={faTimes} css={iconStyle}/> : <LogoIcon fill="white"/>}
+        {isOpen ? <FontAwesomeIcon icon={faTimes} css={iconStyle}/> : <LogoIcon/>}
       </button>
       {couldEject && <EjectPlayerDialog open={ejectPlayerDialogOpen} close={() => setEjectPlayerDialogOpen(false)}/>}
       {!gameOver && <TrackPlayersQuit/>}
@@ -105,6 +105,7 @@ const mainButtonCss = css`
   ${menuFloatingButtonCss};
   z-index: 1000;
   background: #28B8CE;
+  color: white;
   height: 2.5em;
   width: 2.5em;
 

@@ -1,7 +1,7 @@
 import { SVGProps } from 'react'
 
 export const LogoIcon = (props: SVGProps<SVGSVGElement>) => (
-  <svg {...props} viewBox="0 0 65 88">
+  <svg fill="currentColor" {...props} viewBox="0 0 65 88">
     <circle cx="11.52" cy="11.52" r="11.52"/>
     <circle cx="53.49" cy="11.52" r="11.52"/>
     <circle cx="11.52" cy="52.78" r="11.52"/>

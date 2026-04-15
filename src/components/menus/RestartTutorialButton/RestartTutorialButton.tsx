@@ -1,3 +1,4 @@
+import { useTheme } from '@emotion/react'
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { gameContext } from '../../GameProvider'
@@ -7,6 +8,7 @@ import { menuButtonCss, paletteMenuButtonCss } from '../menuCss'
 
 export const RestartTutorialButton = () => {
   const { t } = useTranslation('common')
+  const theme = useTheme()
   const game = useContext(gameContext)?.game
   if (!game) throw new Error('Cannot use TutorialButton outside a GameProvider context')
 
@@ -16,7 +18,7 @@ export const RestartTutorialButton = () => {
   }
 
   return (
-    <button css={[menuButtonCss, paletteMenuButtonCss]} onClick={onClick}>
+    <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button]} onClick={onClick}>
       <FontAwesomeIcon icon={faGraduationCap}/>
       {t('Restart the tutorial')}
     </button>
