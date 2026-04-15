@@ -107,11 +107,12 @@ export const useFlatHistory = () => {
       idleCallbackId.current = null
       pendingMoves.current = []
       processingIndex.current = 0
+      setLoaded(true)
     }
   }
 
   useEffect(() => {
-    if (playedMoves !== undefined && !isLoaded) setLoaded(true)
+    if (playedMoves !== undefined && playedMoves.length === 0 && !isLoaded) setLoaded(true)
   }, [playedMoves])
 
   useEffect(() => {
@@ -133,6 +134,7 @@ export const useFlatHistory = () => {
         const entries = processMovesSync(newMoves, actualSize, engine.current, playedMovesRef.current, ctx)
         setHistory((h) => h.concat(entries))
         moves.current = playedMoves
+        if (!isLoaded) setLoaded(true)
       } else {
         pendingMoves.current = newMoves
         pendingEntries.current = []
