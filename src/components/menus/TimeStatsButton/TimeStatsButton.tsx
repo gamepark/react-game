@@ -22,6 +22,11 @@ export const TimeStatsButton = () => {
   const players = usePlayers()
   const CloseButton = theme.dialog.closeButton
 
+  // Hide the button entirely when no player has a timer attached
+  // (e.g. local play / async game without time tracking).
+  const hasTimers = players.some(p => p.time !== undefined)
+  if (!hasTimers) return null
+
   return (
     <>
       <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button]} onClick={() => setDisplayPopup(true)}>
