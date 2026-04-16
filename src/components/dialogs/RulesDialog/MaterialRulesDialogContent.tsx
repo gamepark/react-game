@@ -4,9 +4,11 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { isSameLocationArea, MaterialHelpDisplay, MaterialMoveBuilder, MaterialRules } from '@gamepark/rules-api'
 import { FC, useMemo } from 'react'
+import { createPortal } from 'react-dom'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
 import { useLocators } from '../../../hooks/useLocators'
 import { ItemContext, Locator, SortFunction } from '../../../locators'
+import { useDialogBackdrop } from '../Dialog'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
 import displayHelp = MaterialMoveBuilder.displayHelp
 import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
@@ -83,6 +85,8 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
     </div>
   }
 
+  const backdrop = useDialogBackdrop()
+
   return <>
     <div css={[flex, hasNavigation && fullSize]}>
       <description.helpDisplay item={item} itemType={helpDisplay.itemType} itemIndex={helpDisplay.itemIndex} displayIndex={helpDisplay.displayIndex} closeDialog={closeDialog}/>
@@ -90,10 +94,13 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
         {description.help && <description.help {...helpDisplay} closeDialog={closeDialog}/>}
       </div>
     </div>
-    {hasNavigation && <>
-      {previous && <PreviousArrow onPrevious={() => play(previous, { transient: true })}/>}
-      {next && <NextArrow onNext={() => play(next, { transient: true })}/>}
-    </>}
+    {hasNavigation && backdrop && createPortal(
+      <>
+        {previous && <PreviousArrow onPrevious={() => play(previous, { transient: true })}/>}
+        {next && <NextArrow onNext={() => play(next, { transient: true })}/>}
+      </>,
+      backdrop
+    )}
   </>
 }
 
@@ -124,7 +131,6 @@ const PreviousArrow: FC<PreviousArrowProps> = (props) => {
 const navigationArrow = css`
   position: absolute;
   top: 50%;
-  z-index: -1;
   transform: translateY(-50%);
   background-color: var(--gp-dialog-bg);
   color: var(--gp-dialog-color);

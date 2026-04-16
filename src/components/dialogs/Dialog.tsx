@@ -1,6 +1,10 @@
 import { css, Interpolation, keyframes, ThemeProvider, useTheme } from '@emotion/react'
-import { HTMLAttributes, MouseEventHandler, useEffect, useState } from 'react'
+import { createContext, HTMLAttributes, MouseEventHandler, useCallback, useContext, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+
+const DialogBackdropContext = createContext<HTMLDivElement | null>(null)
+
+export const useDialogBackdrop = () => useContext(DialogBackdropContext)
 
 export type DialogProps = {
   open: boolean
@@ -12,6 +16,8 @@ export type DialogProps = {
 
 export const Dialog = ({ children, open, backdropCss, onBackdropClick, transitionDelay = 0.3, rootId = 'root', ...props }: DialogProps) => {
   const theme = useTheme()
+  const [wrapperElement, setWrapperElement] = useState<HTMLDivElement | null>(null)
+  const wrapperRef = useCallback((node: HTMLDivElement | null) => setWrapperElement(node), [])
   const [display, setDisplay] = useState(open)
   // When we open the dialog with use-long-press, Chrome mobile generates a click event on the backdrop even though the pointer down event
   // was done before the dialog existed. It causes the dialog to close immediately. We prevent any backdrop click for 300ms to workaround this issue.
@@ -55,7 +61,13 @@ export const Dialog = ({ children, open, backdropCss, onBackdropClick, transitio
 
   return createPortal(
     <div css={[backdropStyle(transitionDelay), !open && hide(transitionDelay), backdropCss]} onClick={event => !justDisplayed && onBackdropClick?.(event)}>
-      <ThemeProvider theme={t => ({ ...t, buttons: resolvedDialogButtonsCss })}>{dialogContent}</ThemeProvider>
+      <ThemeProvider theme={t => ({ ...t, buttons: resolvedDialogButtonsCss })}>
+        <div ref={wrapperRef} css={dialogWrapperCss}>
+          <DialogBackdropContext.Provider value={wrapperElement}>
+            {dialogContent}
+          </DialogBackdropContext.Provider>
+        </div>
+      </ThemeProvider>
     </div>,
     root
   )
@@ -153,8 +165,13 @@ const dialogHide = (transitionDelay: number) => css`
   animation: ${scaleOut} ${transitionDelay}s ease-in forwards;
 `
 
+const dialogWrapperCss = css`
+  position: relative;
+`
+
 const dialogCss = css`
   position: relative;
+  z-index: 1;
   background-color: var(--gp-dialog-bg);
   color: var(--gp-dialog-color);
   padding: 1em;
