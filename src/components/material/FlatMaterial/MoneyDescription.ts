@@ -11,6 +11,6 @@ export abstract class MoneyDescription<P extends number = number, M extends numb
     const { rules, type } = context
     const material = rules.material(type).location(l => isSameLocationArea(l, item.location))
     const amount = sumBy(material.getItems(), item => (item.id ?? 1) * (item.quantity ?? 1))
-    return t('quantity.tooltip', { n: amount })
+    return t('quantity.tooltip', { n: amount, ns: 'common' })
   }
 }
