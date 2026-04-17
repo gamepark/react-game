@@ -227,6 +227,9 @@ export class ItemAnimations<P extends number = number, M extends number = number
     const item = getItemFromContext(context)
     const locator = context.locators[item.location.type]
     if (!locator) return
+    // Siblings that are not displayed (e.g. cards beyond a DeckLocator's limit) must not animate:
+    // bypassing hide for them would make them pop into view during the move.
+    if (locator.hide(item, context) || locator.ignore(item, context)) return
     const currentDeps = locator.getPositionDependencies(item.location, context)
     if (currentDeps === undefined || isEqual(currentDeps, {})) return
     let futureRules = siblingRulesCache.get(animation) as MaterialRules<P, M, L, R, V> | undefined
