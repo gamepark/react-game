@@ -97,14 +97,14 @@ const DynamicItemsTypeDisplay = ({ type, items, boundaries, ...props }: DynamicI
       return [...Array(item.quantity ?? 1)].map((_, displayIndex) => {
         const itemContext: ItemContext = { ...context, type, index, displayIndex }
         const locator = context.locators[revealedItem.location.type]
-        if (locator?.ignore(revealedItem, itemContext)) return null
+        const animation = itemAnimations.current.get(`${index}_${displayIndex}`)
+        if (!animation && (locator?.hide(revealedItem, itemContext) || locator?.ignore(revealedItem, itemContext))) return null
         const isFocused = focus?.materials.some(material =>
           material.type === type && material.getIndexes().includes(index)
         )
         const disabled = !legalMoves.some(move => description.canDrag(move, itemContext))
         const rawPositionDeps = locator?.getFullPositionDependencies(revealedItem.location, context)
         const positionDeps = rawPositionDeps === undefined ? undefined : [rawPositionDeps, context.rules.game.view]
-        const animation = itemAnimations.current.get(`${index}_${displayIndex}`)
         return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                   highlight={description.highlight(revealedItem, itemContext)}
                                   type={type} index={index} displayIndex={displayIndex} isFocused={isFocused}

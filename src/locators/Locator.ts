@@ -106,13 +106,15 @@ export class Locator<P extends number = number, M extends number = number, L ext
   }
 
   /**
-   * This function can completely remove some items from the DOM. Unlike {@link hide}, ignored items cannot be animated.
-   * Use this for performance when items never need to animate (e.g. items beyond the display limit, or items on a hidden parent).
+   * This function can completely remove some items from the DOM.
+   * Hidden items are still rendered while an animation is active on them, so they can animate in or out.
+   * Use this for performance on items that most of the time don't need to appear (e.g. items beyond the display limit, or items on a hidden parent).
+   * {@link hide} and {@link ignore} are interchangeable aliases: override either one, the framework considers an item hidden if either returns true.
    * @param item The item
    * @param context The context of the item
    * @returns true if the item must be removed from the DOM
    */
-  ignore(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
+  hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
     if (this.limit !== undefined && this.getItemIndex(item, context) < 0) {
       return true
     }
@@ -120,7 +122,8 @@ export class Locator<P extends number = number, M extends number = number, L ext
       const parentItem = this.getParentItem(item.location, context)
       if (parentItem) {
         const parentLocator = context.locators[parentItem.location.type]
-        if (parentLocator?.ignore(parentItem, { ...context, type: this.parentItemType, index: item.location.parent, displayIndex: 0 })) {
+        const parentContext = { ...context, type: this.parentItemType, index: item.location.parent, displayIndex: 0 }
+        if (parentLocator && (parentLocator.hide(parentItem, parentContext) || parentLocator.ignore(parentItem, parentContext))) {
           return true
         }
       }
@@ -129,23 +132,11 @@ export class Locator<P extends number = number, M extends number = number, L ext
   }
 
   /**
-   * This function can hide some items on the game table depending on the context.
-   * Hidden items remain in the DOM with scale(0) so they can be animated.
-   * @param item The item
-   * @param context The context of the item
-   * @returns true if the item must be hidden
+   * Alias of {@link hide}. You can override either — the framework treats the item as hidden if either returns true.
+   * @deprecated
    */
-  hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
-    if (item.location.parent !== undefined && this.parentItemType !== undefined) {
-      const parentItem = this.getParentItem(item.location, context)
-      if (parentItem) {
-        const parentLocator = context.locators[parentItem.location.type]
-        if (parentLocator?.hide(parentItem, { ...context, type: this.parentItemType, index: item.location.parent, displayIndex: 0 })) {
-          return true
-        }
-      }
-    }
-    return false
+  ignore(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
+    return this.hide(item, context)
   }
 
   /**

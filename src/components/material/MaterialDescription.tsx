@@ -240,7 +240,6 @@ export abstract class MaterialDescription<P extends number = number, M extends n
     const locator = context.locators[item.location.type]
     if (locator) {
       transform.push(...locator.placeItem(item, context))
-      if (locator.hide(item, context)) transform.push('scale(0)')
     }
     return transform
   }
