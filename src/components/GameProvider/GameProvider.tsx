@@ -125,6 +125,8 @@ const globalCss = (theme: Theme) => css`
   body {
     margin: 0;
     font-family: var(--gp-font-family);
+    font-size: 1vh;
+    font-size: 1dvh;
   }
 
   #root {
