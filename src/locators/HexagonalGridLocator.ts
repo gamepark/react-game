@@ -161,7 +161,7 @@ export abstract class HexagonalGridLocator<P extends number = number, M extends 
    */
   getRotateZ(location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): number {
     // TODO: the real rotation depends on the sizeX / sizeY ratio for 1, 2, 4 & 5 rotations (custom override applied for King of Tokyo Duel)
-    return (location.rotation ?? 0) * 60
+    return typeof location.rotation === 'number' ? location.rotation * 60 : 0
   }
 
   /**
