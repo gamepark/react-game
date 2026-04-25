@@ -42,6 +42,7 @@ export type MaterialHelpDisplayProps<P extends number = number, M extends number
 export type MaterialContentProps<ItemId = any, M extends number = number> = {
   itemId: ItemId,
   itemIndex?: number
+  displayIndex?: number
   type?: M
   highlight?: boolean
   playDown?: boolean

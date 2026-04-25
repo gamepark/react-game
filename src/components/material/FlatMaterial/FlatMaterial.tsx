@@ -9,26 +9,63 @@ import { MobileMaterialDescription } from '../MobileMaterialDescription'
 export abstract class FlatMaterialDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>
   extends MobileMaterialDescription<P, M, L, ItemId, R, V> {
 
-  image?: string
-  images?: Record<ItemId extends keyof any ? ItemId : never, string>
+  /**
+   * Front image(s) to display. Accepts a single image or an array of alternatives
+   * from which one is randomly picked per displayed instance (see {@link getImage}).
+   */
+  image?: string | string[]
 
-  getImage(itemId: ItemId): string | undefined {
-    return this.images?.[this.getFrontId(itemId) as keyof typeof this.images] ?? this.image
+  /**
+   * Front images indexed by item id. Each entry accepts a single image or an array
+   * of alternatives from which one is randomly picked per displayed instance.
+   */
+  images?: Record<ItemId extends keyof any ? ItemId : never, string | string[]>
+
+  /**
+   * Returns the front image to display for a given item.
+   * When several alternatives are configured (array of strings), a random one is
+   * picked for each visual instance and memorized, so subsequent renders of the
+   * same instance keep showing the same image.
+   *
+   * @param itemId Id of the item
+   * @param itemIndex Index of the item in the game state (undefined for components rendered outside of the game table)
+   * @param displayIndex Index of the visual copy when an item has `quantity > 1` (undefined when not applicable)
+   */
+  getImage(itemId: ItemId, itemIndex?: number, displayIndex?: number): string | undefined {
+    const frontId = this.getFrontId(itemId)
+    const candidates = this.images?.[frontId as keyof typeof this.images] ?? this.image
+    return this.pickImage('front', frontId, candidates, itemIndex, displayIndex)
   }
 
-  backImage?: string
-  backImages?: Record<ItemId extends keyof any ? ItemId : never, string>
+  backImage?: string | string[]
+  backImages?: Record<ItemId extends keyof any ? ItemId : never, string | string[]>
 
-  getBackImage(itemId: ItemId): string | undefined {
-    return this.backImages?.[this.getBackId(itemId) as keyof typeof this.backImages] ?? this.backImage
+  getBackImage(itemId: ItemId, itemIndex?: number, displayIndex?: number): string | undefined {
+    const backId = this.getBackId(itemId)
+    const candidates = this.backImages?.[backId as keyof typeof this.backImages] ?? this.backImage
+    return this.pickImage('back', backId, candidates, itemIndex, displayIndex)
+  }
+
+  private pickedImages: Record<string, string> = {}
+
+  private pickImage(face: 'front' | 'back', id: unknown, candidates: string | string[] | undefined,
+                    itemIndex: number | undefined, displayIndex: number | undefined): string | undefined {
+    if (!candidates) return
+    if (typeof candidates === 'string') return candidates
+    if (candidates.length <= 1) return candidates[0]
+    const key = `${face}|${String(id)}|${itemIndex ?? ''}|${displayIndex ?? ''}`
+    if (!this.pickedImages[key]) {
+      this.pickedImages[key] = candidates[Math.floor(Math.random() * candidates.length)]
+    }
+    return this.pickedImages[key]
   }
 
   getImages(): string[] {
     const images: string[] = []
-    if (this.image) images.push(this.image)
-    if (this.images) images.push(...Object.values(this.images) as string[])
-    if (this.backImage) images.push(this.backImage)
-    if (this.backImages) images.push(...Object.values(this.backImages) as string[])
+    if (this.image) images.push(...toArray(this.image))
+    if (this.images) images.push(...(Object.values(this.images) as (string | string[])[]).flatMap(toArray))
+    if (this.backImage) images.push(...toArray(this.backImage))
+    if (this.backImages) images.push(...(Object.values(this.backImages) as (string | string[])[]).flatMap(toArray))
     return images
   }
 
@@ -77,9 +114,9 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
 
   content = (props: MaterialContentProps<ItemId, M>) => this.contentWithBackChildren(props)
 
-  contentWithBackChildren = ({ itemId, highlight, playDown, preview, children, backChildren }: MaterialContentProps<ItemId, M> & { backChildren?: ReactNode }) => {
-    const image = this.getImage(itemId)
-    const backImage = this.getBackImage(itemId)
+  contentWithBackChildren = ({ itemId, itemIndex, displayIndex, highlight, playDown, preview, children, backChildren }: MaterialContentProps<ItemId, M> & { backChildren?: ReactNode }) => {
+    const image = this.getImage(itemId, itemIndex, displayIndex)
+    const backImage = this.getBackImage(itemId, itemIndex, displayIndex)
     const size = this.getSize(itemId)
     const borderRadius = this.getBorderRadius(itemId)
     const transparency = this.hasTransparency(itemId)
@@ -141,3 +178,7 @@ const faceCss = css`
 const previewCss = css`
   opacity: 0.7;
 `
+
+function toArray(value: string | string[]): string[] {
+  return Array.isArray(value) ? value : [value]
+}

@@ -17,7 +17,7 @@ export const DefaultHelpDisplay = <P extends number = number, M extends number =
   const locations = item.location ? context.material[itemType]?.getLocations(item as MaterialItem<P, L, any>, itemContext) ?? [] : []
   return (
     <div css={css`position: relative; flex-shrink: 0;`}>
-      <MaterialComponent type={itemType} itemId={item.id} itemIndex={itemIndex} css={[
+      <MaterialComponent type={itemType} itemId={item.id} itemIndex={itemIndex} displayIndex={displayIndex} css={[
         fontSizeCss(Math.min(75 / height, 75 / width, 10)),
         description.getHelpDisplayExtraCss(item, itemContext)
       ]}>

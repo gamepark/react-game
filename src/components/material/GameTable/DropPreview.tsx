@@ -31,7 +31,7 @@ export const DropPreview = ({ boundaries }: { boundaries: GridBoundaries }) => {
     const locator = context.locators[futureItem.location.type]
     const itemContext = { ...context, type, index, displayIndex: 0 }
     return <div css={getLocationOriginCss(boundaries, locator?.getLocationOrigin(futureItem.location, itemContext))}>
-      <MaterialComponent type={type} itemIndex={index} itemId={item.id} css={previewCss} preview
+      <MaterialComponent type={type} itemIndex={index} displayIndex={0} itemId={item.id} css={previewCss} preview
                          style={{ transform: 'translateZ(5em) ' + description.getItemTransform(futureItem, itemContext).join(' ') }}
       />
     </div>

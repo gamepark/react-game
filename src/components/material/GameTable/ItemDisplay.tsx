@@ -75,6 +75,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
     ]} {...props} {...combineEventListeners(listeners, props)}>
       <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                          itemIndex={index}
+                         displayIndex={displayIndex}
                          type={type} itemId={item.id}
                          highlight={highlight}
                          playDown={playDown ?? (focus?.highlight && !isFocused && !focusedLocations.length)}
