@@ -129,24 +129,22 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
    * @param heightOrConfig Height in em, or full configuration object
    */
   arc(heightOrConfig?: number | ElevationConfig): this {
-    if (typeof this._trajectory === 'function') this._trajectory = {}
-    if (typeof heightOrConfig === 'number') {
-      this._trajectory.elevation = { ...defaultElevation, height: heightOrConfig }
-    } else if (heightOrConfig) {
-      this._trajectory.elevation = heightOrConfig
-    } else {
-      this._trajectory.elevation = defaultElevation
-    }
-    return this
+    return this.updateTrajectory(trajectory => {
+      if (typeof heightOrConfig === 'number') {
+        trajectory.elevation = { ...defaultElevation, height: heightOrConfig }
+      } else if (heightOrConfig) {
+        trajectory.elevation = heightOrConfig
+      } else {
+        trajectory.elevation = defaultElevation
+      }
+    })
   }
 
   /**
    * Disable elevation (flat movement).
    */
   flat(): this {
-    if (typeof this._trajectory === 'function') this._trajectory = {}
-    this._trajectory.elevation = false
-    return this
+    return this.updateTrajectory(trajectory => { trajectory.elevation = false })
   }
 
   /**
@@ -157,23 +155,19 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
   via(locatorOrCoordinates: Locator<P, M, L> | Coordinates, at?: number): this
   via(waypoint: Waypoint<P, M, L>): this
   via(arg1: Locator<P, M, L> | Coordinates | Waypoint<P, M, L>, at: number = 0.5): this {
-    if (typeof this._trajectory === 'function') this._trajectory = {}
-    if (!this._trajectory.waypoints) {
-      this._trajectory.waypoints = []
-    }
-
-    if (typeof arg1 === 'object' && 'at' in arg1) {
-      // Full waypoint object
-      this._trajectory.waypoints.push(arg1)
-    } else if (typeof arg1 === 'object' && 'placeItem' in arg1) {
-      // Locator instance
-      this._trajectory.waypoints.push({ at, locator: arg1 as Locator<P, M, L> })
-    } else if (typeof arg1 === 'object') {
-      // Coordinates
-      this._trajectory.waypoints.push({ at, coordinates: arg1 as Coordinates })
-    }
-
-    return this
+    return this.updateTrajectory(trajectory => {
+      if (!trajectory.waypoints) trajectory.waypoints = []
+      if (typeof arg1 === 'object' && 'at' in arg1) {
+        // Full waypoint object
+        trajectory.waypoints.push(arg1)
+      } else if (typeof arg1 === 'object' && 'placeItem' in arg1) {
+        // Locator instance
+        trajectory.waypoints.push({ at, locator: arg1 as Locator<P, M, L> })
+      } else if (typeof arg1 === 'object') {
+        // Coordinates
+        trajectory.waypoints.push({ at, coordinates: arg1 as Coordinates })
+      }
+    })
   }
 
   /**
@@ -181,12 +175,10 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
    * @param waypoints Array of waypoints
    */
   through(...waypoints: Waypoint<P, M, L>[]): this {
-    if (typeof this._trajectory === 'function') this._trajectory = {}
-    if (!this._trajectory.waypoints) {
-      this._trajectory.waypoints = []
-    }
-    this._trajectory.waypoints.push(...waypoints)
-    return this
+    return this.updateTrajectory(trajectory => {
+      if (!trajectory.waypoints) trajectory.waypoints = []
+      trajectory.waypoints.push(...waypoints)
+    })
   }
 
   /**
@@ -194,8 +186,27 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
    * @param easing CSS easing function
    */
   easing(easing: string): this {
-    if (typeof this._trajectory === 'function') this._trajectory = {}
-    this._trajectory.easing = easing
+    return this.updateTrajectory(trajectory => { trajectory.easing = easing })
+  }
+
+  /**
+   * Apply a mutation to the trajectory configuration. When the trajectory has
+   * been set to a function (dynamic trajectory), the mutation is composed on
+   * top of the function's result so chaining `.via()`, `.flat()`, etc. after
+   * `.trajectory(fn)` correctly augments the dynamic trajectory instead of
+   * silently discarding it.
+   */
+  private updateTrajectory(mutate: (trajectory: Trajectory<P, M, L>) => void): this {
+    if (typeof this._trajectory === 'function') {
+      const previous = this._trajectory
+      this._trajectory = (context, move) => {
+        const trajectory = previous(context, move)
+        mutate(trajectory)
+        return trajectory
+      }
+    } else {
+      mutate(this._trajectory)
+    }
     return this
   }
 
