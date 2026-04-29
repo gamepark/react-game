@@ -31,7 +31,8 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 ) => {
   const context = useMaterialContextRef()
   const { focus, focusRef } = useFocusContext()
-  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex, dragTransform }), [context, type, index, displayIndex, dragTransform])
+  const isDragging = !!dragTransform
+  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex, isDragging }), [context, type, index, displayIndex, isDragging])
   const locations = useItemLocations(item, itemContext)
   const [focusedLocations, otherLocations] = useMemo(() => partition(locations, l => l.focusRef), [locations])
   const description = context.material[type]!
@@ -70,7 +71,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   return <>
     <div css={[
       itemCss, animation,
-      hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, !!animation || !!dragTransform),
+      hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, !!animation || isDragging),
       (onShortClick || onLongClick) && pointerCursorCss
     ]} {...props} {...combineEventListeners(listeners, props)}>
       <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}

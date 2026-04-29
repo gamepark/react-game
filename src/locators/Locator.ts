@@ -511,10 +511,10 @@ export type MaterialContext<P extends number = number, M extends number = number
 
 /**
  * Data structure for the context of an item in a game displayed.
- * @property dragTransform The CSS translate operation applied to the item, if any.
+ * @property isDragging True when the item is currently being dragged by the user.
  */
 export type ItemContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = MaterialContext<P, M, L, R, V> & DisplayedItem<M> & {
-  dragTransform?: string
+  isDragging?: boolean
 }
 
 /**
