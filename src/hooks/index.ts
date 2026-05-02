@@ -1,5 +1,6 @@
 export * from './useActions'
 export * from './useAnimations'
+export * from './useAutoViewOnDrag'
 export * from './useDraggedItem'
 export * from './useFullscreen'
 export * from './useGame'
