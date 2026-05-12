@@ -33,7 +33,7 @@ export const LazyLogItem: FC<LazyLogItemProps> = memo(({ history, itemCss, custo
 
   useEffect(() => {
     if (isVisible && ref.current) {
-      measuredHeight.current = ref.current.offsetHeight
+      measuredHeight.current = ref.current.getBoundingClientRect().height
     }
   }, [isVisible])
 
