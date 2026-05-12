@@ -115,8 +115,10 @@ export class Locator<P extends number = number, M extends number = number, L ext
    * @returns true if the item must be removed from the DOM
    */
   hide(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): boolean {
-    if (this.limit !== undefined && this.getItemIndex(item, context) < 0) {
-      return true
+    if (this.limit !== undefined) {
+      const index = this.getLocationIndex(item.location, context) ?? context.displayIndex
+      const count = this.countItems(item.location, context)
+      if (count > this.limit && index < count - this.limit) return true
     }
     if (item.location.parent !== undefined && this.parentItemType !== undefined) {
       const parentItem = this.getParentItem(item.location, context)
@@ -392,7 +394,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
     if (this.limit === undefined) return index
     const count = this.countItems(item.location, context)
     if (count <= this.limit) return index
-    return this.limit - count + index
+    return Math.max(0, this.limit - count + index)
   }
 
   /**
