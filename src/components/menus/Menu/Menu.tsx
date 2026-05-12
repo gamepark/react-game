@@ -80,7 +80,7 @@ export const Menu = () => {
         <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}`}><LogoIcon css={buttonLogoIconCss}/>{t('Back to Game Park')}</NavButton>
         {gameOver && <ResultButton onClick={() => setResultDialogOpen(true)}/>}
         {canPlayAgain &&
-          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}/play`}><FontAwesomeIcon icon={faChessPawn}/>{t('Play again')}</NavButton>
+          <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}/play/competitive?auto=true`}><FontAwesomeIcon icon={faChessPawn}/>{t('Play again')}</NavButton>
         }
         {goToRanking &&
           <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}/ranking`}>

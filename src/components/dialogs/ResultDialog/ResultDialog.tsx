@@ -55,7 +55,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
             <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}`}>{t('Back to Game Park')}</NavButton>
           }
           {gameMode === GameMode.COMPETITIVE &&
-            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play?mode=matchmaking`}>
+            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play/competitive?auto=true`}>
               {t('Play again')}
             </NavButton>
           }
