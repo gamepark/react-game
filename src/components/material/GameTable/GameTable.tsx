@@ -153,7 +153,7 @@ export const GameTable: FC<GameTableProps> = (
         {enableZoom ? (
           <TransformWrapper ref={zoomRef} minScale={minScale} maxScale={maxScale} initialScale={minScale}
                             centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
-            <TransformComponent wrapperClass="wrapperClass">
+            <TransformComponent wrapperClass="wrapperClass" contentStyle={{ transformStyle: 'preserve-3d' }}>
               <ZoomScaleProvider>
                 {tableContent}
               </ZoomScaleProvider>
