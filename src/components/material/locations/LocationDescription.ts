@@ -114,6 +114,21 @@ export class LocationDescription<P extends number = number, M extends number = n
   displayInParentItemHelp?: boolean
 
   /**
+   * When true, clicking on an *item* sitting in this location opens THIS
+   * location's help instead of the item's own help. Use this for piles whose
+   * "click target" is meant to be the pile overview (discard, deck, common
+   * reserve) — anywhere the player would rather see the full list than the
+   * top-most card.
+   *
+   * Leave false (default) for locations where each card is individually
+   * meaningful (hand, river, play area) — the user expects clicking a card
+   * to open that specific card's help.
+   *
+   * Read by the default `MaterialDescription.displayHelp` implementation.
+   */
+  redirectsItemHelp?: boolean
+
+  /**
    * The move to execute in order to display the help dialog about this location.
    * By default, open the help about this specific location, but can be overloaded for any other behavior.
    * @param location The location
