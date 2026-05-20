@@ -38,11 +38,12 @@ export type MaterialListHelpProps<M extends number = number, L extends number = 
  * Clicking a card opens that card's own help dialog (stacked on top of this
  * one — the dialog navigation lets the player come back).
  *
- * Designed to be plugged into a `LocationDescription.help`:
+ * Designed to be plugged into a `LocationDescription.help`. Because the
+ * default `MaterialDescription.displayHelp` routes clicks on items in a
+ * location-with-help to the location help, no extra wiring is needed:
  *
  * ```tsx
  * class DiscardArea extends DropAreaDescription {
- *   redirectsItemHelp = true                            // recommended pairing
  *   help = ({ location }: LocationHelpProps) =>
  *     <MaterialListHelp type={MaterialType.Card} location={location}
  *                       titleKey="help.discard.title"
