@@ -220,24 +220,12 @@ export abstract class MaterialDescription<P extends number = number, M extends n
 
   /**
    * The move to execute in order to display the help dialog about this item.
-   * By default, opens the help about this specific item — unless the item's
-   * location has its own `help` defined, in which case we route the click to
-   * the location help instead (typical of discard piles, decks, common
-   * reserves: the pile overview is more meaningful than the top-most card).
-   *
-   * Override on a per-card-description basis to opt out of the redirect for
-   * locations that happen to define a help but where each individual card
-   * should still be clickable (e.g. a hand with a "your hand" explainer).
+   * By default, open the help about this specific item, but it can be the help about the location of the item sometimes.
    * @param item The item
    * @param context Context of the item
    * @return The move to play to open the help dialog
    */
   displayHelp(item: MaterialItem<P, L, ItemId>, context: ItemContext<P, M, L, R, V>): MaterialMove<P, M, L, R, V> | undefined {
-    const locator = context.locators[item.location.type]
-    const locationDescription = locator?.getLocationDescription(item.location, context)
-    if (locationDescription?.help) {
-      return MaterialMoveBuilder.displayLocationHelp(item.location)
-    }
     const { type, index, displayIndex } = context
     return displayMaterialHelp(type, item, index, displayIndex)
   }
