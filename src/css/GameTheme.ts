@@ -1,5 +1,5 @@
 import { Interpolation } from '@emotion/react'
-import { ComponentType, ReactNode } from 'react'
+import { ComponentType } from 'react'
 import { addStylesheetUrl } from './addStylesheetUrl'
 
 addStylesheetUrl('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap')
@@ -39,11 +39,6 @@ export type DialogNavigationProps = {
   onNext?: () => void
   currentIndex: number
   total: number
-  /** Optional override for the "Next" button label. When provided, the
-   *  dialog navigation uses it in place of the default localized
-   *  "Next" — used e.g. by ExtensionInfoDialog to surface "Close" on
-   *  the last slide where Next doubles as dismiss. */
-  nextLabel?: ReactNode
 }
 
 export interface DialogTheme {

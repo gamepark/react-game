@@ -7,7 +7,7 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DialogNavigationProps } from '../../../css'
 
-export const BottomBarNavigation: FC<DialogNavigationProps> = ({ onPrevious, onNext, currentIndex, total, nextLabel }) => {
+export const BottomBarNavigation: FC<DialogNavigationProps> = ({ onPrevious, onNext, currentIndex, total }) => {
   const { t } = useTranslation()
   const theme = useTheme()
   const primary = theme.palette.primary
@@ -26,7 +26,7 @@ export const BottomBarNavigation: FC<DialogNavigationProps> = ({ onPrevious, onN
         <span>{currentIndex + 1} / {total}</span>
       </div>
       <button css={btnCss(primary)} onClick={onNext} disabled={!onNext}>
-        <span>{nextLabel ?? t('Next', { ns: 'common' })}</span>
+        <span>{t('Next', { ns: 'common' })}</span>
         <FontAwesomeIcon icon={faChevronRight} css={iconCss}/>
       </button>
     </div>

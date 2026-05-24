@@ -1,7 +1,10 @@
+/** @jsxImportSource @emotion/react */
 import { css, useTheme } from '@emotion/react'
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft'
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, ReactNode, useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { BottomBarNavigation } from './RulesDialog/BottomBarNavigation'
 import { RulesDialog } from './RulesDialog'
 
 export type ExtensionInfoDialogProps = {
@@ -33,8 +36,10 @@ const markDismissed = (key: string): void => {
  *
  * The framework handles:
  *   - the dialog/modal wrapper (close button via `theme.dialog.closeButton`/`closeIcon`)
- *   - the carousel navigation (uses `theme.dialog.navigation` — same component that drives
- *     paging in the help dialogs, so the look stays consistent game-wide)
+ *   - a dedicated navigation bar tailored to this dialog (see ExtensionNav below):
+ *     * single popup    → just a centered "Close" button (no useless Previous/Next)
+ *     * multiple popups → Previous + dots + Next as long as we're not on the last page;
+ *                         on the last page Next becomes "Close" (still keeps Previous)
  *   - the `sessionStorage` gate ("show once per tab session", F5-safe)
  *
  * The game just passes:
@@ -45,7 +50,6 @@ const markDismissed = (key: string): void => {
  */
 export const ExtensionInfoDialog: FC<ExtensionInfoDialogProps> = ({ popups, storageKey }) => {
   const theme = useTheme()
-  const { t } = useTranslation()
   const [open, setOpen] = useState<boolean>(() => popups.length > 0 && !isDismissed(storageKey))
   const [index, setIndex] = useState(0)
 
@@ -57,25 +61,7 @@ export const ExtensionInfoDialog: FC<ExtensionInfoDialogProps> = ({ popups, stor
     setOpen(false)
   }, [storageKey])
 
-  const onPrevious = safeIndex > 0 ? () => setIndex(i => i - 1) : undefined
-  // On the last slide, Next doubles as a "close" affordance with a
-  // "Close" label override. The user has paged through every
-  // announcement, so the natural follow-up is to dismiss the popup —
-  // mirrors classic onboarding carousels where the final "Next"
-  // button reads as "Got it / Done".
-  //
-  // Behaviour is scoped to this dialog only: BottomBarNavigation just
-  // exposes a `nextLabel` slot. Help/rules dialogs that ALSO use
-  // BottomBarNavigation never pass nextLabel and never wire close into
-  // onNext, so their last page keeps the disabled "Next" button.
-  const isLast = safeIndex === total - 1
-  const onNext = isLast ? close : () => setIndex(i => i + 1)
-  const nextLabel = isLast ? t('Close', { ns: 'common' }) : undefined
-
   if (total === 0) return null
-
-  // Game-provided navigation if any, else fall back to the framework's default bottom bar.
-  const Navigation = theme.dialog.navigation ?? BottomBarNavigation
 
   /* CSS cascade for the dialog container:
    *   1. <Dialog> applies `theme.dialog.container` automatically — that's
@@ -94,11 +80,79 @@ export const ExtensionInfoDialog: FC<ExtensionInfoDialogProps> = ({ popups, stor
         <div css={contentCss}>
           {popups[safeIndex]}
         </div>
-        {total > 1 && (
-          <Navigation onPrevious={onPrevious} onNext={onNext} currentIndex={safeIndex} total={total} nextLabel={nextLabel}/>
-        )}
+        <ExtensionNav
+          total={total}
+          currentIndex={safeIndex}
+          onPrevious={safeIndex > 0 ? () => setIndex(i => i - 1) : undefined}
+          onNext={safeIndex < total - 1 ? () => setIndex(i => i + 1) : undefined}
+          onClose={close}
+        />
       </div>
     </RulesDialog>
+  )
+}
+
+/* ----- Extension-specific navigation bar -----
+ *
+ * Layout rules:
+ *   - total === 1                    → just a centered "Close" button
+ *   - total > 1, not last slide      → Previous (left) · dots+counter (centre) · Next (right)
+ *   - total > 1, last slide          → Previous (left) · dots+counter (centre) · Close (right)
+ *
+ * Kept inline (private to this file) rather than exposed as a framework
+ * navigation slot: the buttons / labels / signals are dialog-specific and
+ * would only confuse the wider DialogNavigationProps contract used by
+ * help/rules dialogs.
+ */
+type ExtensionNavProps = {
+  total: number
+  currentIndex: number
+  onPrevious?: () => void
+  onNext?: () => void
+  onClose: () => void
+}
+
+const ExtensionNav: FC<ExtensionNavProps> = ({ total, currentIndex, onPrevious, onNext, onClose }) => {
+  const { t } = useTranslation()
+  const theme = useTheme()
+  const primary = theme.palette.primary
+
+  if (total === 1) {
+    return (
+      <div css={[barCss(primary), singleSlideBarCss, theme.dialog.navigationCss]}>
+        <button css={btnCss(primary)} onClick={onClose}>
+          <span>{t('Close', { ns: 'common' })}</span>
+        </button>
+      </div>
+    )
+  }
+
+  const isLast = currentIndex === total - 1
+  return (
+    <div css={[barCss(primary), theme.dialog.navigationCss]}>
+      <button css={btnCss(primary)} onClick={onPrevious} disabled={!onPrevious}>
+        <FontAwesomeIcon icon={faChevronLeft} css={iconCss}/>
+        <span>{t('Previous', { ns: 'common' })}</span>
+      </button>
+      <div css={counterCss}>
+        <div css={dotsCss}>
+          {Array.from({ length: Math.min(total, 8) }, (_, i) => (
+            <div key={i} css={[dotCss(primary), i === Math.min(currentIndex, 7) && activeDotCss(primary)]}/>
+          ))}
+        </div>
+        <span>{currentIndex + 1} / {total}</span>
+      </div>
+      {isLast ? (
+        <button css={btnCss(primary)} onClick={onClose}>
+          <span>{t('Close', { ns: 'common' })}</span>
+        </button>
+      ) : (
+        <button css={btnCss(primary)} onClick={onNext} disabled={!onNext}>
+          <span>{t('Next', { ns: 'common' })}</span>
+          <FontAwesomeIcon icon={faChevronRight} css={iconCss}/>
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -119,12 +173,94 @@ const layoutCss = css`
 `
 
 /* Same em base as the framework's help dialogs (helpDialogContentCss) so the popup body
-   reads at the same scale as the rest of the rules UI, and BottomBarNavigation (its own
-   2.4em) lands at the expected size right below. */
+   reads at the same scale as the rest of the rules UI, and the navigation (its own 2.4em)
+   lands at the expected size right below. */
 const contentCss = css`
   font-size: 2.4em;
   overflow-y: auto;
   padding: 0.6em 0.7em 0.5em;
   flex: 1;
   min-height: 0;
+`
+
+/* Visual recipe copied (intentionally) from BottomBarNavigation so the
+   ExtensionNav and the standard help-dialog bottom bar feel like
+   siblings. Keep them in sync if you tweak the look on one side. */
+const barCss = (primary: string) => css`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 2.4em;
+  padding: 0.3em 1em;
+  border-top: 1px solid color-mix(in srgb, ${primary} 8%, transparent);
+  background: linear-gradient(to top, color-mix(in srgb, ${primary} 4%, transparent), transparent);
+`
+
+const singleSlideBarCss = css`
+  /* Single-slide variant: just a centered Close button, no Previous/Next
+     to surround. justify-content: center collapses the bar around it. */
+  justify-content: center;
+`
+
+const btnCss = (primary: string) => css`
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.4em 0.9em;
+  border-radius: 2em;
+  font-size: 0.78em;
+  font-weight: 600;
+  font-family: inherit;
+  color: ${primary};
+  background: transparent;
+  border: 1.5px solid color-mix(in srgb, ${primary} 25%, transparent);
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) {
+    background: color-mix(in srgb, ${primary} 10%, transparent);
+    border-color: ${primary};
+  }
+
+  &:active:not(:disabled) {
+    background: color-mix(in srgb, ${primary} 18%, transparent);
+  }
+
+  &:disabled {
+    opacity: 0.25;
+    cursor: default;
+  }
+`
+
+const iconCss = css`
+  font-size: 0.9em;
+`
+
+const counterCss = css`
+  font-size: 0.75em;
+  color: inherit;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  font-weight: 600;
+`
+
+const dotsCss = css`
+  display: flex;
+  gap: 0.3em;
+`
+
+const dotCss = (primary: string) => css`
+  width: 0.35em;
+  height: 0.35em;
+  border-radius: 50%;
+  background: color-mix(in srgb, ${primary} 35%, transparent);
+  transition: all 0.2s;
+`
+
+const activeDotCss = (primary: string) => css`
+  background: ${primary};
+  width: 1em;
+  border-radius: 0.2em;
 `
