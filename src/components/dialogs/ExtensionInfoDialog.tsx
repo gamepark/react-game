@@ -13,7 +13,6 @@ export type ExtensionInfoDialogProps = {
 }
 
 const isDismissed = (key: string): boolean => {
-  if (typeof window === 'undefined') return false
   try {
     return sessionStorage.getItem(key) === 'true'
   } catch {
@@ -22,7 +21,6 @@ const isDismissed = (key: string): boolean => {
 }
 
 const markDismissed = (key: string): void => {
-  if (typeof window === 'undefined') return
   try {
     sessionStorage.setItem(key, 'true')
   } catch {
@@ -79,6 +77,17 @@ export const ExtensionInfoDialog: FC<ExtensionInfoDialogProps> = ({ popups, stor
   // Game-provided navigation if any, else fall back to the framework's default bottom bar.
   const Navigation = theme.dialog.navigation ?? BottomBarNavigation
 
+  /* CSS cascade for the dialog container:
+   *   1. <Dialog> applies `theme.dialog.container` automatically — that's
+   *      the game-wide chrome (background, padding, dotted outline, fonts…).
+   *      It lands by default, we don't re-apply it here.
+   *   2. `containerCss` below adds the extension-flavour defaults (sane
+   *      width / max-height for a card carousel).
+   *   3. `theme.extensionDialog.container` (if any) lands last and wins —
+   *      games override width, max-height, etc. through the theme rather
+   *      than props. Emotion's array stacking handles precedence, no flag
+   *      needed.
+   */
   return (
     <RulesDialog open={open} close={close} css={[containerCss, theme.extensionDialog?.container]}>
       <div css={layoutCss}>
@@ -94,8 +103,10 @@ export const ExtensionInfoDialog: FC<ExtensionInfoDialogProps> = ({ popups, stor
 }
 
 const containerCss = css`
-  /* Sized to comfortably fit a 4-card grid plus prose; if the game's popup needs more
-     room it can override via theme.extensionDialog.container. */
+  /* Default sizing for the extension carousel — comfortably fits a 4-card
+     grid plus prose. Games widen / shrink / switch to width: auto via
+     theme.extensionDialog.container, which lands after this in the
+     Emotion cascade. */
   width: min(90vw, 70em);
   width: min(90dvw, 70em);
 `
