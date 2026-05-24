@@ -1,4 +1,5 @@
 export * from './RulesDialog'
 export * from './Dialog'
+export * from './ExtensionInfoDialog'
 export * from './FailuresDialog'
 export * from './ResultDialog'

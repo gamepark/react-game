@@ -17,6 +17,7 @@ export interface GameTheme {
   playerPanel?: PlayerPanelTheme
   tutorial?: TutorialTheme
   timeStats?: TimeStatsTheme
+  extensionDialog?: ExtensionDialogTheme
 }
 
 export interface DropAreaTheme {
@@ -119,6 +120,10 @@ export interface TimeStatsTheme {
   container?: Interpolation<GameTheme>
   thinkBackground?: string
   waitBackground?: string
+}
+
+export interface ExtensionDialogTheme {
+  container?: Interpolation<GameTheme>
 }
 
 export const defaultPalette: PaletteTheme = {
