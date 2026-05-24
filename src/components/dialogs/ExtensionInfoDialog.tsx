@@ -3,16 +3,20 @@ import { css, useTheme } from '@emotion/react'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { FC, ReactNode, useCallback, useState } from 'react'
+import { FC, ReactNode, useCallback, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { gameContext } from '../GameProvider'
 import { RulesDialog } from './RulesDialog'
 
 export type ExtensionInfoDialogProps = {
   /** One node per extension. Each node renders its own popup content (title, text, cards…). */
   popups: ReactNode[]
-  /** Stable key for the sessionStorage dismiss flag. Include the extension combo so a new
-   *  configuration (different active extensions) re-triggers the popup. */
-  storageKey: string
+  /** Optional override for the sessionStorage dismiss flag key. When omitted the
+   *  framework derives a sensible default of `${gameId}-extensions` from the
+   *  active GameProvider — sufficient for almost every game. Override only if
+   *  you need to encode something extra (e.g. the active extension combo so a
+   *  new configuration re-triggers the popup). */
+  storageKey?: string
 }
 
 const isDismissed = (key: string): boolean => {
@@ -50,16 +54,21 @@ const markDismissed = (key: string): void => {
  */
 export const ExtensionInfoDialog: FC<ExtensionInfoDialogProps> = ({ popups, storageKey }) => {
   const theme = useTheme()
-  const [open, setOpen] = useState<boolean>(() => popups.length > 0 && !isDismissed(storageKey))
+  // Default storage key derives from the active game id (e.g. "faraway-extensions").
+  // The GameProvider always sets `game` in its context, so this is safe to use as a
+  // fallback when the consumer doesn't pass an explicit storageKey.
+  const { game } = useContext(gameContext)
+  const effectiveStorageKey = storageKey ?? `${game}-extensions`
+  const [open, setOpen] = useState<boolean>(() => popups.length > 0 && !isDismissed(effectiveStorageKey))
   const [index, setIndex] = useState(0)
 
   const total = popups.length
   const safeIndex = Math.min(Math.max(0, index), Math.max(0, total - 1))
 
   const close = useCallback(() => {
-    markDismissed(storageKey)
+    markDismissed(effectiveStorageKey)
     setOpen(false)
-  }, [storageKey])
+  }, [effectiveStorageKey])
 
   if (total === 0) return null
 
