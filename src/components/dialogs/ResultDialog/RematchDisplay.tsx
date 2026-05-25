@@ -57,7 +57,6 @@ export const RematchDisplay = ({ rematch }: Props) => {
 
 const rematchTitle = css`
   margin: 1em;
-  font-size: 1.25em;
 `
 
 const acceptButton = css`

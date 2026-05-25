@@ -1,7 +1,6 @@
 import { css, useTheme } from '@emotion/react'
 import { faChessPawn } from '@fortawesome/free-solid-svg-icons/faChessPawn'
 import { faTrophy } from '@fortawesome/free-solid-svg-icons/faTrophy'
-import { faXmark } from '@fortawesome/free-solid-svg-icons/faXmark'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { GameMode, PLATFORM_URI, useGameSelector } from '@gamepark/react-client'
 import { isCompetitive } from '@gamepark/rules-api'
@@ -14,7 +13,9 @@ import { gameContext } from '../../GameProvider'
 import { Medal } from '../../menus'
 import { NavButton } from '../../menus/Menu/NavButton'
 import { RestartTutorialButton } from '../../menus/RestartTutorialButton'
-import { Dialog, DialogProps } from '../Dialog'
+import { DialogProps } from '../Dialog'
+import { RulesDialog } from '../RulesDialog'
+import { helpDialogContentCss } from '../RulesDialog/RulesHelpDialogContent'
 import { RematchSection } from './RematchSection'
 import { usePlayerScoring, useScoringHeader } from './useScoringTable'
 
@@ -40,11 +41,13 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   let row = (gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1) + (scoringCells?.length ?? 0)
 
   const resultText = useResultText()
-  const CloseButton = theme.dialog.closeButton
   return (
-    <Dialog onBackdropClick={close} css={[style, theme.result?.container]} {...props}>
-      {CloseButton ? <CloseButton onClick={close}/> : <FontAwesomeIcon icon={faXmark} css={[closeIcon, theme.result?.closeIcon]} onClick={close}/>}
-      <div css={scrollableContent}>
+    // RulesDialog wraps Dialog with the standard close button slot (theme.dialog.closeButton)
+    // so the result popup shares the same chrome — and the same font-size context — as
+    // the rules / extension dialogs. No more font-size: calc(3.2em * var(--gp-scale))
+    // override here; the inherited theme.dialog.container handles sizing.
+    <RulesDialog close={close} css={[style, theme.result?.container]} {...props}>
+      <div css={[helpDialogContentCss, scrollableContent, theme.dialog.content]}>
         <h2>{context.scoring?.ResultHeader ? <context.scoring.ResultHeader/> : resultText}</h2>
         <div css={buttonLine}>
           {gameMode === GameMode.TOURNAMENT && tournament ?
@@ -96,7 +99,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
         }
         {gameId !== null && <RematchSection openDialog={openDialog}/>}
       </div>
-    </Dialog>
+    </RulesDialog>
   )
 }
 
@@ -142,31 +145,28 @@ const centered = css`
 `
 
 const style = css`
-  font-size: calc(3.2em * var(--gp-scale));
   text-align: center;
   max-height: 90vh;
   max-height: 90dvh;
   display: flex;
   flex-direction: column;
-
-  > h2 {
-    margin: 0 1em 0.5em;
-  }
+  /* Match the RulesDialog vertical padding: helpDialogCss in
+     RulesHelpDialogContent wraps its content in a 3em-padding box,
+     which is what gives every rules popup its consistent top breathing
+     room. Mirroring it here keeps the ResultDialog visually aligned
+     with the rest of the dialog family. */
+  padding: 3em;
 `
 
 const scrollableContent = css`
   overflow-y: auto;
   flex: 1;
   min-height: 0;
-`
 
-const closeIcon = css`
-  position: absolute;
-  right: 0.8em;
-  top: 0.6em;
-  font-size: 1.3em;
-  cursor: pointer;
-  z-index: 2;
+  > h2 {
+    margin: 0 1em 0.5em;
+    text-align: center;
+  }
 `
 
 const stickyHeader = css`
