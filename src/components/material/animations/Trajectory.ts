@@ -11,7 +11,7 @@ export interface ElevationConfig {
    * Maximum height of the arc in em units.
    * @default 10
    */
-  height: number
+  height?: number
 
   /**
    * Position of the peak in the animation (0-1).
@@ -26,6 +26,15 @@ export interface ElevationConfig {
    * - 'ease': uses CSS ease timing for smoother feel
    */
   curve?: 'parabolic' | 'linear' | 'ease'
+
+  /**
+   * Position at which the arc returns to 0 (0-1). After this point the
+   * elevation stays at 0 for the rest of the animation — useful when the
+   * card needs to slide flat for its final approach (e.g. landing under a
+   * deck stack instead of dropping from above).
+   * @default 1
+   */
+  landAt?: number
 }
 
 /**
@@ -140,7 +149,7 @@ export const defaultElevation: ElevationConfig = {
 export function calculateElevation(t: number, config: ElevationConfig | false | undefined): number {
   if (config === false) return 0
 
-  const { height, peak = 0.5, curve = 'parabolic' } = config ?? defaultElevation
+  const { height = 10, peak = 0.5, curve = 'parabolic' } = config ?? defaultElevation
 
   if (curve === 'linear') {
     // Triangular arc
@@ -201,12 +210,42 @@ export function extractTranslation(transforms: string[]): Coordinates {
 
 /**
  * Generate simple elevation keyframes for the parent div.
- * Creates a 3-keyframe arc: from (0) → peak (height) → to (0).
+ *
+ * Default behaviour (when `landAt` is omitted): a 3-keyframe arc — `from, to`
+ * at translateZ(0) with a single `peak%` at `translateZ(height em)`. This is
+ * the legacy shape; not touching it keeps every existing animation pixel-
+ * perfect identical.
+ *
+ * When `landAt` is provided (must be in (0, 1)): a 4-keyframe arc — rises to
+ * peak, descends back to 0 at `landAt`, then holds 0 until the end. Lets the
+ * card slide flat for its final approach (e.g. landing under a deck stack).
  */
 export function getElevationKeyframes(config: ElevationConfig): ReturnType<typeof keyframes> {
-  const { height, peak = 0.5 } = config
+  const { height = 10, landAt } = config
+  if (landAt === undefined) {
+    const peak = config.peak ?? 0.5
+    const peakPercent = Math.round(peak * 100)
+    const frames = `from, to { transform: translateZ(0); } ${peakPercent}% { transform: translateZ(${height}em); }`
+    return keyframes`${frames}`
+  }
+  // landAt mode: peak must sit strictly between 0 and landAt so the arc has
+  // room to rise AND descend before the flat-landing plateau. When the caller
+  // doesn't supply a peak we centre it inside [0, landAt]; if they pass a
+  // peak >= landAt (legacy default 0.5 with landAt = 0.4 would land here),
+  // we recentre too — otherwise the keyframe percentages collide and the
+  // arc culminates AFTER landAt, defeating the flat plateau.
+  const peak = config.peak !== undefined && config.peak < landAt ? config.peak : landAt / 2
   const peakPercent = Math.round(peak * 100)
-  const frames = `from, to { transform: translateZ(0); } ${peakPercent}% { transform: translateZ(${height}em); }`
+  const landPercent = Math.round(landAt * 100)
+  // Spell out the 100% keyframe explicitly. Combining `${landPercent}%, to`
+  // in a single selector ought to apply translateZ(0) at both points, but
+  // some CSS parsers in the @emotion stack treat the comma-joined selector
+  // as overriding only the first point (landPercent) and leave 100% to be
+  // interpolated back to the peak via the looping `infinite` we run the
+  // arc on — visible as a tiny rebound at the very end of the trajectory.
+  // Two separate keyframes at landPercent% and 100% pin both points and
+  // avoid the rebound.
+  const frames = `from { transform: translateZ(0); } ${peakPercent}% { transform: translateZ(${height}em); } ${landPercent}% { transform: translateZ(0); } to { transform: translateZ(0); }`
   return keyframes`${frames}`
 }
 

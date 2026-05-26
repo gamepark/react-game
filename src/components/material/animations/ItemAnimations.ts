@@ -79,9 +79,24 @@ export class ItemAnimations<P extends number = number, M extends number = number
     animation: Animation<ItemMove<P, M, L>>,
     context: ItemContextWithTrajectory<P, M, L, R, V>
   ) {
-    const waypoints = context.trajectory?.waypoints ?? []
+    // Waypoints that only carry elevation (no locator, no coordinates, no
+    // offset, no rotation, no easing) don't constrain the X/Y motion — they
+    // live on the parent div's elevation arc only. Filter them out here so
+    // the child div keeps its native simple keyframes path: a single CSS
+    // transition from origin to target with browser-tweened rotateY for
+    // free. Mixing in a midway keyframe with only elevation info forces the
+    // path through getTrajectoryKeyframes' interpolation routine and turns
+    // the smooth tween into a multi-step keyframes sequence (visible as a
+    // pause/saccade in browsers that snap between transform formats).
+    const waypoints = (context.trajectory?.waypoints ?? []).filter(w =>
+      w.locator !== undefined
+      || w.coordinates !== undefined
+      || w.offset !== undefined
+      || w.rotation !== undefined
+      || w.easing !== undefined
+    )
 
-    // If no waypoints, use simple keyframes
+    // If no waypoints constrain motion, use simple keyframes
     if (waypoints.length === 0) {
       return this.getTransformKeyframes(originTransforms.join(' '), targetTransforms.join(' '), animation, context)
     }
@@ -138,22 +153,32 @@ export class ItemAnimations<P extends number = number, M extends number = number
         const locatorTransforms = locator.placeItem(fakeItem, context)
         transforms.push('translate(-50%, -50%)')
         transforms.push(...locatorTransforms)
-      } else if (t === 0 && !waypoint) {
-        transforms.push(...originTransforms)
-      } else if (t === 1 && !waypoint) {
-        transforms.push(...targetTransforms)
       } else {
-        // Build interpolated transforms
+        // Build interpolated transforms — used for every non-locator keyframe
+        // INCLUDING the implicit t=0 and t=1 frames. Using the same transform
+        // shape everywhere ("translate(-50%, -50%) translate3d() rotateZ()
+        // rotateY()") avoids the CSS matrix-lerp glitch we'd hit if some
+        // keyframes were originTransforms verbatim (which may omit rotateY
+        // when the card is face-up) and others were the interpolated build:
+        // browsers cannot lerp between an N-transform string and a different
+        // N+1-transform string without snapping. Keep the format stable.
         transforms.push('translate(-50%, -50%)')
         transforms.push(`translate3d(${x}em, ${y}em, ${z}em)`)
 
-        // Interpolate rotation if present
-        const originRotation = extractRotation(originTransforms)
-        const targetRotation = extractRotation(targetTransforms)
-        if (originRotation !== undefined || targetRotation !== undefined) {
-          const rotation = interpolateCoordinate(originRotation ?? 0, targetRotation ?? 0, t)
-          if (rotation !== 0) {
-            transforms.push(`rotateZ(${rotation}deg)`)
+        const originRotateZ = extractRotation(originTransforms)
+        const targetRotateZ = extractRotation(targetTransforms)
+        if (originRotateZ !== undefined || targetRotateZ !== undefined) {
+          const rotateZ = interpolateCoordinate(originRotateZ ?? 0, targetRotateZ ?? 0, t)
+          if (rotateZ !== 0) {
+            transforms.push(`rotateZ(${rotateZ}deg)`)
+          }
+        }
+        const originRotateY = extractRotateY(originTransforms)
+        const targetRotateY = extractRotateY(targetTransforms)
+        if (originRotateY !== undefined || targetRotateY !== undefined) {
+          const rotateY = interpolateCoordinate(originRotateY ?? 0, targetRotateY ?? 0, t)
+          if (rotateY !== 0) {
+            transforms.push(`rotateY(${rotateY}deg)`)
           }
         }
       }
@@ -202,8 +227,22 @@ export class ItemAnimations<P extends number = number, M extends number = number
     if (elevationConfig !== false) {
       const resolvedElevation = elevationConfig ?? defaultElevation
       const elevationArc = getElevationKeyframes(resolvedElevation)
+      // `infinite` is the legacy default — keeps two same-duration animations
+      // chained back to back from sharing a frozen frame (cf. Romain's
+      // 2026-03-16 fix). It's harmless for the classic arc since its 0% and
+      // 100% keyframes are identical, so cycle 2 begins right where cycle 1
+      // ended (translateZ(0)) — no visible discontinuity.
+      //
+      // When `landAt` is set, the arc holds 0 from landAt to 100% but cycle 2
+      // restarts the rise to peak — visible as a rebound at the very tail of
+      // the trajectory if the component lingers past `duration`. Switching to
+      // `forwards` for those cases freezes the final 0 keyframe and removes
+      // the rebound. The trade-off (potential chained-animation glitch) is
+      // worth it because callers opt into `landAt` precisely to control how
+      // the card lands — they don't want the lift to come back.
+      const fillMode = resolvedElevation.landAt === undefined ? 'infinite' : 'forwards'
       return css`
-        animation: ${elevationArc} ${duration}s linear infinite;
+        animation: ${elevationArc} ${duration}s linear ${fillMode};
         > * {
           animation: ${animationKeyframes} ${duration}s ${easing} forwards;
         }
@@ -296,3 +335,27 @@ function extractRotation(transforms: string[]): number | undefined {
   }
   return undefined
 }
+
+/**
+ * Parse a transform string array and extract the rotateY angle in degrees.
+ * Mirrors {@link extractRotation} for the face-flip axis — used so that
+ * intermediate waypoints in a trajectory preserve a card's face-up /
+ * face-down state via linear interpolation instead of dropping the
+ * rotateY transform entirely (which would snap the card back to face-up
+ * at every waypoint).
+ */
+function extractRotateY(transforms: string[]): number | undefined {
+  for (const transform of transforms) {
+    const rotateYMatch = transform.match(/rotateY\(\s*([-\d.]+)(deg|rad|turn)?\s*\)/)
+    if (rotateYMatch) {
+      const value = parseFloat(rotateYMatch[1])
+      const unit = rotateYMatch[2] || 'deg'
+      if (unit === 'rad') return value * (180 / Math.PI)
+      if (unit === 'turn') return value * 360
+      return value
+    }
+  }
+  return undefined
+}
+
+
