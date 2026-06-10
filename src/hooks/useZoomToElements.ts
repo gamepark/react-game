@@ -24,11 +24,14 @@ const zoomToElements = (contextInstance: ReactZoomPanPinchContext) => (
   const { wrapperComponent } = contextInstance
   const { scale, animationTime = 600, animationType = 'easeOut', margin } = options
 
-  const targets: HTMLElement[] = nodes.map(node =>
-    typeof node === 'string' ? document.getElementById(node)! : node
-  )
+  const targets: HTMLElement[] = nodes
+    .map(node => typeof node === 'string' ? document.getElementById(node)! : node)
+    // A focused node may have been detached from the DOM between registration and now (e.g. a
+    // StrictMode mount/unmount/remount cycle, or an item re-rendered to a new node). Such nodes
+    // cannot be zoomed to, so ignore them instead of aborting the whole zoom because of one of them.
+    .filter(target => target && wrapperComponent?.contains(target))
 
-  if (wrapperComponent && targets.length && targets.every(target => wrapperComponent.contains(target))) {
+  if (wrapperComponent && targets.length) {
     const targetState = calculateZoomToNodes(contextInstance, targets, { customZoom: scale, margin })
     animate(contextInstance, targetState, animationTime, animationType)
   }
