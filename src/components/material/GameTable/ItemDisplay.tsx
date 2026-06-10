@@ -9,6 +9,7 @@ import { pointerCursorCss } from '../../../css'
 import { useDraggedItem, useMaterialContextRef, usePlay } from '../../../hooks'
 import { LocationFocusRef, useExpectedDropLocations, useItemLocations } from '../../../hooks/useItemLocations'
 import { combineEventListeners } from '../../../utilities'
+import { toSingleRotation } from '../animations'
 import { ComponentSize } from '../ComponentDescription'
 import { LocationsMask } from '../locations'
 import { MaterialComponent, MaterialComponentProps } from '../MaterialComponent'
@@ -36,7 +37,14 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const locations = useItemLocations(item, itemContext)
   const [focusedLocations, otherLocations] = useMemo(() => partition(locations, l => l.focusRef), [locations])
   const description = context.material[type]!
-  const itemTransform = useMemo(() => description.getItemTransform(item, itemContext), [description, item, itemContext])
+  const itemTransform = useMemo(() => {
+    const transform = description.getItemTransform(item, itemContext)
+    // While dragging, normalize rotations so that a dropped item's "to-only" animation keyframe
+    // (which is also built from toSingleRotation) interpolates component-by-component, instead of
+    // falling back to matrix decomposition between mismatched transform lists (which produces a
+    // circular trajectory when the origin location has a rotated parent + an inverse rotation).
+    return isDragging ? toSingleRotation(transform) : transform
+  }, [description, item, itemContext, isDragging])
   const transformStyle = (dragTransform ? [dragTransform, ...itemTransform] : itemTransform).join(' ')
   const hoverTransform = useMemo(() => description.getHoverTransform(item, itemContext).join(' '), [description, item, itemContext])
 
