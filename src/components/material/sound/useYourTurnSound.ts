@@ -1,4 +1,4 @@
-import { store } from '@gamepark/react-client'
+import { GameMode, store, useGameSelector } from '@gamepark/react-client'
 import { MaterialRules } from '@gamepark/rules-api'
 import { useEffect, useRef, useState } from 'react'
 import { usePlayerId, useRules } from '../../../hooks'
@@ -10,6 +10,7 @@ const bellSoundUrl = 'https://sounds.game-park.com/bell.mp3'
 export const useYourTurnSound = (audioLoader: AudioLoader) => {
   const rules = useRules<MaterialRules>()
   const playerId = usePlayerId()
+  const isTutorial = useGameSelector((state) => state.gameMode === GameMode.TUTORIAL)
   const [isActive, setIsActive] = useState(false)
   const initializedRef = useRef(false)
 
@@ -27,11 +28,11 @@ export const useYourTurnSound = (audioLoader: AudioLoader) => {
       initializedRef.current = true
       return
     }
-    if (!isActive) return
+    if (!isActive || isTutorial) return
     const { soundsMuted } = store.getState()
     if (soundsMuted) return
     const config = new MaterialSoundConfig(bellSoundUrl)
     if (document.hasFocus()) config.volume = 0.15
     audioLoader.play(config)
-  }, [isActive, audioLoader])
+  }, [isActive, isTutorial, audioLoader])
 }
