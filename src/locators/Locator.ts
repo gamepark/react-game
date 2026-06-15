@@ -120,6 +120,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
       const count = this.countItems(item.location, context)
       if (count > this.limit && index < count - this.limit) return true
     }
+    if (this.hasMissingParent(item, context)) return true
     if (item.location.parent !== undefined && this.parentItemType !== undefined) {
       const parentItem = this.getParentItem(item.location, context)
       if (parentItem) {
@@ -237,7 +238,26 @@ export class Locator<P extends number = number, M extends number = number, L ext
     if (this.parentItemType === undefined) return undefined
     if (location.parent === undefined) return material[this.parentItemType]?.staticItem
     if (location.parent < 0) return undefined
-    return rules.material(this.parentItemType).getItem(location.parent)
+    // The parent item may no longer exist for a short instant (e.g. a card deleted together with the
+    // tokens placed on it). Use a non-throwing lookup so callers can handle the missing parent gracefully.
+    return rules.material(this.parentItemType).index(location.parent).getItem()
+  }
+
+  /**
+   * Whether this item is placed on a parent item that no longer exists in the game state.
+   * This can happen for a short time during animations, when a parent item (e.g. a card) and its
+   * children (e.g. tokens placed on it) are deleted in quick succession: the children still exist while
+   * their delete animation plays, but their parent is already gone.
+   * Such orphan items cannot be positioned, so they should not be displayed.
+   * @param item The item
+   * @param context The context of the item
+   * @returns true if the item declares a parent item that does not exist (anymore)
+   */
+  hasMissingParent(item: MaterialItem<P, L>, context: MaterialContext<P, M, L, R, V>): boolean {
+    if (this.parentItemType === undefined) return false
+    const { parent } = item.location
+    if (parent === undefined || parent < 0) return false
+    return this.getParentItem(item.location, context) === undefined
   }
 
   /**
@@ -299,7 +319,7 @@ export class Locator<P extends number = number, M extends number = number, L ext
     const own = this.getPositionDependencies(location, context)
     if (own === undefined) return undefined
     if (this.parentItemType === undefined || location.parent === undefined) return own
-    const parentItem = context.rules.material(this.parentItemType).getItem(location.parent)
+    const parentItem = this.getParentItem(location, context)
     if (!parentItem) return own
     const parentLocator = context.locators[parentItem.location.type]
     if (!parentLocator) return own

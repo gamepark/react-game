@@ -98,6 +98,9 @@ const DynamicItemsTypeDisplay = ({ type, items, boundaries, ...props }: DynamicI
         const itemContext: ItemContext = { ...context, type, index, displayIndex }
         const locator = context.locators[revealedItem.location.type]
         const animation = itemAnimations.current.get(`${index}_${displayIndex}`)
+        // An item whose parent no longer exists cannot be positioned (e.g. a card deleted together with the
+        // tokens placed on it). Hide it immediately, even if a delete animation is still running on it.
+        if (locator?.hasMissingParent(revealedItem, itemContext)) return null
         if (!animation && (locator?.hide(revealedItem, itemContext) || locator?.ignore(revealedItem, itemContext))) return null
         const isFocused = focus?.materials.some(material =>
           material.type === type && material.getIndexes().includes(index)

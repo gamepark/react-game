@@ -7,6 +7,6 @@ export const isPlacedOnItem = <P extends number = number, M extends number = num
   if (childItem.location.parent === undefined) return false
   const locator = itemContext.locators[childItem.location.type]
   if (locator?.parentItemType === itemContext.type && childItem.location.parent === itemContext.index) return true
-  const parentItem = itemContext.rules.material(locator!.parentItemType!).getItem(childItem.location.parent)
+  const parentItem = locator!.getParentItem(childItem.location, itemContext)
   return parentItem !== undefined && isPlacedOnItem(parentItem, itemContext)
 }
