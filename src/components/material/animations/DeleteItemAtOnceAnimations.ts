@@ -55,7 +55,15 @@ export class DeleteItemAtOnceAnimations<P extends number = number, M extends num
           opacity: 0;
         }
       `
-      return css`animation: ${fadeout} ${animation.duration}s ease-in-out forwards`
+      // The fade must be applied on the inner element (> *), like every other item animation, and not on
+      // the outer wrapper: the wrapper carries the preserve-3d context that places the item in the scene.
+      // Setting opacity < 1 on it would force the 3D context to flatten, snapping the item out of the
+      // perspective at the very first frame (it appears to vanish brutally instead of fading out).
+      return css`
+        > * {
+          animation: ${fadeout} ${animation.duration}s ease-in-out forwards;
+        }
+      `
     }
   }
 }
