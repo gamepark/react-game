@@ -22,7 +22,7 @@
     "publish": "npm version ${0:-patch} && yarn npm publish && yarn sync-sounds && git push && git push --tags"
   },
   "dependencies": {
-    "@datadog/browser-logs": "^6.33.0",
+    "@datadog/browser-logs": "^7.3.0",
     "@dnd-kit/modifiers": "^9.0.0",
     "@gamepark/api-types": "^1.0.1",
     "@gamepark/avataaars": "^3.0.0",
