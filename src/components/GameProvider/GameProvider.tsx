@@ -128,6 +128,14 @@ const globalCss = (theme: Theme) => css`
     }
   }
 
+  html, body {
+    /* iOS Safari: prevent the bottom-edge swipe from revealing the navigation bar
+       and the top-edge swipe from triggering pull-to-refresh. Without this, a drag
+       gesture that starts near the bottom collapses the page. */
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+  }
+
   html {
     box-sizing: border-box;
   }
@@ -141,6 +149,10 @@ const globalCss = (theme: Theme) => css`
     font-family: var(--gp-font-family);
     font-size: 1vh;
     font-size: 1dvh;
+    /* iOS Safari: lock the body in place so the bottom bar doesn't intrude during drags. */
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
   }
 
   #root {
