@@ -92,6 +92,22 @@ export const GameTable: FC<GameTableProps> = (
     }
   }, [context, play, legalMoves])
 
+  // Safety net for stuck drags.
+  // dnd-kit's PointerSensor only ends a drag on `pointerup`/`pointercancel` received by the document, or on
+  // window `resize`/`visibilitychange`. It does NOT listen for the window losing focus. So if the pointer is
+  // released outside the page or the window loses focus mid-drag without going hidden (frequent on some
+  // Linux / Edge setups), none of those events fire: the drag stays active and every drop area shown while
+  // dragging (e.g. a large "recycle" zone) remains stuck on top of the cards.
+  // On `blur` we force dnd-kit to cancel through its own teardown by dispatching a `pointercancel` on the
+  // document, which resets the dragged item position, the panning lock and the drop areas all at once.
+  // `blur` never fires on a normal drop (that goes through `pointerup`), so this adds no spurious cancels.
+  useEffect(() => {
+    if (!dragging) return
+    const cancelStuckDrag = () => document.dispatchEvent(new PointerEvent('pointercancel'))
+    window.addEventListener('blur', cancelStuckDrag)
+    return () => window.removeEventListener('blur', cancelStuckDrag)
+  }, [dragging])
+
   // Zoom resize handler
   const zoomRef = useRef<ReactZoomPanPinchContentRef>(null)
   useEffect(() => {
