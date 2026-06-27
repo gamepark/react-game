@@ -27,6 +27,11 @@ export const MaterialHeader = <RulesStep extends number = number>(
 type MaterialHeaderContentProps<RulesStep extends number = number> = {
   loading?: boolean
   rulesStepsHeaders: Partial<Record<RulesStep, ComponentType>>
+  /**
+   * @deprecated Use {@link ScoringDescription.ResultHeader} instead. `ResultHeader` is read from the game context by both
+   * this header and the result popup, so the result text stays aligned. The `GameOver` prop only overrides the header and
+   * leaves the popup showing a different content.
+   */
   GameOver?: ComponentType
   GameOverRule?: ComponentType
 }
