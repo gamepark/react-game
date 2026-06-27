@@ -72,6 +72,10 @@ const failuresDescription: Record<string, { title: (t: TFunction) => string, tex
     title: (t) => t('Too late!'),
     text: (t) => t('failure.dialog.undo')
   },
+  [Failure.EJECT_IMPOSSIBLE]: {
+    title: (t) => t('Too late!'),
+    text: (t) => t('failure.dialog.eject')
+  },
   [Failure.TUTORIAL_MOVE_EXPECTED]: {
     title: (t) => t('Move not expected in the tutorial'),
     text: (t) => t('failure.dialog.tutorial')
