@@ -51,7 +51,7 @@ const MaterialHeaderContent = <RulesStep extends number = number>(
   } else if (victoryClaim) {
     return <ShowVictoryClaim/>
   } else if (!game?.rule) {
-    return GameOver ? <GameOver/> : <GameOverHeader GameOverRule={GameOverRule}/>
+    return <GameOverHeader GameOver={GameOver} GameOverRule={GameOverRule}/>
   } else if (RulesStepsHeader) {
     return <>
       <RulesStepsHeader/>
@@ -65,15 +65,16 @@ const MaterialHeaderContent = <RulesStep extends number = number>(
   }
 }
 
-const GameOverHeader = ({ GameOverRule }: { GameOverRule?: ComponentType }) => {
+const GameOverHeader = ({ GameOver, GameOverRule }: { GameOver?: ComponentType, GameOverRule?: ComponentType }) => {
   const resultText = useResultText()
   const context = useContext(gameContext)
   const [dialogOpen, setDialogOpen] = useState(false)
   const ResultHeader = context.scoring?.ResultHeader
+  const result = GameOver ? <GameOver/> : ResultHeader ? <ResultHeader/> : <>{resultText}</>
 
-  if (!GameOverRule) return ResultHeader ? <ResultHeader/> : <>{resultText}</>
+  if (!GameOverRule) return result
   return <>
-    <span>{ResultHeader ? <ResultHeader/> : resultText}&nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => setDialogOpen(true)} css={pointerCursorCss}/></span>
+    <span>{result}&nbsp;<FontAwesomeIcon icon={faCircleQuestion} onClick={() => setDialogOpen(true)} css={pointerCursorCss}/></span>
     <RulesDialog open={dialogOpen} close={() => setDialogOpen(false)}>
       <GameOverRule/>
     </RulesDialog>
