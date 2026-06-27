@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { PlayOptions } from '@gamepark/react-client'
-import { ButtonHTMLAttributes, FC, ReactNode, useCallback, useEffect, useState } from 'react'
+import { ButtonHTMLAttributes, FC, ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { usePlay } from '../../../hooks'
 import { Dialog } from '../../dialogs'
@@ -35,7 +35,12 @@ export const PlayMoveButton: FC<PlayMoveButtonProps> = (props) => {
     }
   }, [disabled])
 
+  // Guard against double-clicks: replaying the same move once the state changed would be rejected ("move unauthorized")
+  const lastPlay = useRef(0)
   const doPlay = useCallback(() => {
+    const time = new Date().getTime()
+    if (time - lastPlay.current < 300) return
+    lastPlay.current = time
     setCountdown(undefined)
     setShowDialog(false)
     for (const move of moves) {

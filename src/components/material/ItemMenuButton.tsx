@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import { PlayOptions } from '@gamepark/react-client'
-import { HTMLAttributes, ReactNode } from 'react'
+import { HTMLAttributes, ReactNode, useRef } from 'react'
 import { transformCss } from '../../css'
 import { usePlay } from '../../hooks'
 
@@ -25,8 +25,13 @@ export const ItemMenuButton = (
   }: ItemButtonProps & HTMLAttributes<HTMLButtonElement>
 ) => {
   const play = usePlay()
+  // Guard against double-clicks: replaying the same move once the state changed would be rejected ("move unauthorized")
+  const lastClick = useRef(0)
   if (!props.onClick && moves.length) {
     props.onClick = () => {
+      const time = new Date().getTime()
+      if (time - lastClick.current < 300) return
+      lastClick.current = time
       for (const move of moves) play(move, options)
     }
   }
