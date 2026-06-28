@@ -293,9 +293,13 @@ export class Locator<P extends number = number, M extends number = number, L ext
    *
    * **Default**: `{}` — position only depends on the item's own location data, never on external game state.
    *
-   * **Important**: If you override `getCoordinates()` or `getItemCoordinates()` and read from `context.rules`,
-   * you **must** also override this method to declare those dependencies. Otherwise items won't reposition when
-   * the game state changes.
+   * **When to override**: only when the position depends on game state that can **change during the game**.
+   * If you override `getCoordinates()` or `getItemCoordinates()` and read such a value from `context.rules`, return
+   * it here so items reposition when it changes. Otherwise they won't.
+   *
+   * Reading values that are **fixed for the whole game** (e.g. the number of players, the chosen options, or a board
+   * layout decided at setup) does *not* require an override: the position can never change once the game has started,
+   * so the default `{}` is already correct. Declaring such constants is harmless but pointless.
    *
    * @param _location A location in this area
    * @param _context Context of the game
