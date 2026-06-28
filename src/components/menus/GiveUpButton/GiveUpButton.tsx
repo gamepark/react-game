@@ -1,19 +1,17 @@
 import { css, useTheme } from '@emotion/react'
 import { faFlag } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { GameClientAPI, GameMode, useGameSelector } from '@gamepark/react-client'
+import { claimVictory, GameMode, useGameDispatch, useGameSelector } from '@gamepark/react-client'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useGiveUp } from '../../../hooks'
 import { Dialog } from '../../dialogs'
 import { menuButtonCss, menuDialogCss, paletteDangerButtonCss, paletteMenuButtonCss } from '../menuCss'
 
-const query = new URLSearchParams(window.location.search)
-const gameId = query.get('game')
-
 export const GiveUpButton = () => {
   const { t } = useTranslation('common')
   const theme = useTheme()
+  const dispatch = useGameDispatch()
   const [giveUp] = useGiveUp()
   const [displayPopup, setDisplayPopup] = useState(false)
   const onGiveUp = () => {
@@ -30,9 +28,7 @@ export const GiveUpButton = () => {
   }, [playerIsLast])
 
   const onClaimVictory = () => {
-    if (gameId) {
-      new GameClientAPI(gameId).claimVictory()
-    }
+    dispatch(claimVictory())
     setDisplayPopup(false)
   }
 
