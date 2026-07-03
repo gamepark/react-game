@@ -1,4 +1,4 @@
-import { CollisionDetection, DndContext, DragEndEvent, getClientRect, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { CollisionDetection, DndContext, DragEndEvent, DragStartEvent, getClientRect, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { css, Global } from '@emotion/react'
 import { isMoveItemsAtOnce, MaterialMoveBuilder } from '@gamepark/rules-api'
@@ -33,7 +33,7 @@ type Margin = NonNullable<GameTableProps['margin']>
 const defaultMargin: Margin = { left: 0, right: 0, top: 7, bottom: 0 }
 const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
-const pointerSensorOptions = { activationConstraint: { distance: 2 } }
+const dragSensorOptions = { activationConstraint: { distance: 2 } }
 const measuring = { draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }
 
 export const GameTable: FC<GameTableProps> = (
@@ -68,14 +68,32 @@ export const GameTable: FC<GameTableProps> = (
 
   // Drag & drop
   const [dragging, setDragging] = useState(false)
-  const sensors = useSensors(useSensor(PointerSensor, pointerSensorOptions))
+  const draggingRef = useRef(false)
+  const draggingPointerType = useRef<string | undefined>(undefined)
+  const isTouchDrag = () => draggingRef.current && draggingPointerType.current !== 'mouse'
+  // On iOS Safari a `touch-action: none` CSS rule is NOT enough for dnd-kit's PointerSensor to claim a touch
+  // drag: the browser keeps the gesture and never delivers move events, so tiles can't be dragged at all.
+  // dnd-kit's TouchSensor works around this (its `setup()` installs a non-passive `touchmove` listener so that
+  // `preventDefault()` is honoured, "required for iOS Safari"). So we drive touch with TouchSensor and mouse
+  // with MouseSensor instead of the unified PointerSensor.
+  const sensors = useSensors(useSensor(MouseSensor, dragSensorOptions), useSensor(TouchSensor, dragSensorOptions))
   const context = useMaterialContext()
   const play = usePlay()
   const legalMoves = useLegalMoves()
 
-  const onDragStart = useCallback(() => setDragging(true), [])
-  const onDragCancel = useCallback(() => setDragging(false), [])
+  const onDragStart = useCallback((event: DragStartEvent) => {
+    // MouseSensor activates with a MouseEvent, TouchSensor with a TouchEvent (which has no `pointerType`).
+    const activator = event.activatorEvent
+    draggingPointerType.current = activator && 'touches' in activator ? 'touch' : 'mouse'
+    draggingRef.current = true
+    setDragging(true)
+  }, [])
+  const onDragCancel = useCallback(() => {
+    draggingRef.current = false
+    setDragging(false)
+  }, [])
   const onDragEnd = useCallback((event: DragEndEvent) => {
+    draggingRef.current = false
     setDragging(false)
     const move = getBestDropMove(event, context, legalMoves)
     if (move !== undefined) {
@@ -92,20 +110,60 @@ export const GameTable: FC<GameTableProps> = (
     }
   }, [context, play, legalMoves])
 
+  // Mobile Safari fires a window `resize` when its toolbar shows/hides, which happens on the very first
+  // move of a touch drag (and on iOS < 17 / iPad it is systematic). dnd-kit's PointerSensor cancels the
+  // active drag on window `resize`, so on those devices a tile can't be dragged at all: the drag dies the
+  // instant it starts. We register this listener once (at mount, so it runs before dnd-kit's own drag-time
+  // `resize` listener) and, while a *touch* drag is in progress, stop the event before the sensor sees it.
+  // Mouse drags are never affected (a genuine window resize still cancels them as before).
+  useEffect(() => {
+    const swallowResizeWhileTouchDragging = (event: Event) => {
+      if (isTouchDrag()) event.stopImmediatePropagation()
+    }
+    window.addEventListener('resize', swallowResizeWhileTouchDragging, { capture: true })
+    return () => window.removeEventListener('resize', swallowResizeWhileTouchDragging, { capture: true })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Safety net for stuck drags.
   // dnd-kit's PointerSensor only ends a drag on `pointerup`/`pointercancel` received by the document, or on
   // window `resize`/`visibilitychange`. It does NOT listen for the window losing focus. So if the pointer is
   // released outside the page or the window loses focus mid-drag without going hidden (frequent on some
-  // Linux / Edge setups), none of those events fire: the drag stays active and every drop area shown while
-  // dragging (e.g. a large "recycle" zone) remains stuck on top of the cards.
+  // Linux / Edge setups, and on touch when the browser hands focus to its own UI), none of those events fire:
+  // the drag stays active and every drop area shown while dragging (e.g. a large "recycle" zone) remains stuck
+  // on top of the cards.
   // On `blur` we force dnd-kit to cancel through its own teardown by dispatching a `pointercancel` on the
   // document, which resets the dragged item position, the panning lock and the drop areas all at once.
-  // `blur` never fires on a normal drop (that goes through `pointerup`), so this adds no spurious cancels.
+  // Caveat: on iOS Safari `blur` also fires during a *live* touch drag (toolbar showing/hiding on the first
+  // move, system gestures), so cancelling immediately would spuriously kill the drag. But a genuinely stuck
+  // drag has no more pointer activity, whereas a live drag keeps emitting moves. So on `blur` we defer and
+  // only cancel if no move arrives shortly after — this cleans up truly stuck drags (mouse and touch) without
+  // killing live iOS drags.
   useEffect(() => {
     if (!dragging) return
-    const cancelStuckDrag = () => document.dispatchEvent(new PointerEvent('pointercancel'))
-    window.addEventListener('blur', cancelStuckDrag)
-    return () => window.removeEventListener('blur', cancelStuckDrag)
+    let timeout: ReturnType<typeof setTimeout> | undefined
+    const clear = () => {
+      if (timeout !== undefined) {
+        clearTimeout(timeout)
+        timeout = undefined
+      }
+    }
+    const onBlur = () => {
+      if (timeout !== undefined) return
+      timeout = setTimeout(() => {
+        timeout = undefined
+        document.dispatchEvent(new PointerEvent('pointercancel'))
+      }, 300)
+    }
+    window.addEventListener('blur', onBlur)
+    window.addEventListener('pointermove', clear, { capture: true })
+    window.addEventListener('touchmove', clear, { capture: true })
+    return () => {
+      clear()
+      window.removeEventListener('blur', onBlur)
+      window.removeEventListener('pointermove', clear, { capture: true })
+      window.removeEventListener('touchmove', clear, { capture: true })
+    }
   }, [dragging])
 
   // Zoom resize handler
