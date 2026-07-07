@@ -7,7 +7,7 @@ import { isDroppedItem } from '../utils/isDroppedItem'
 import { isPlacedOnItem } from '../utils/isPlacedOnItem'
 import { ItemAnimations, ItemContextWithTrajectory } from './ItemAnimations'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
-import { toClosestRotations, toSingleRotation } from './rotations.utils'
+import { alignTargetRotationsToOrigin, toClosestRotations, toSingleRotation } from './rotations.utils'
 import { Trajectory } from './Trajectory'
 import { transformItem } from './transformItem.util'
 
@@ -65,7 +65,10 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     // so CSS can interpolate component-by-component instead of falling back to matrix decomposition (which causes rotation loops).
     if (isDroppedItem(context)) {
       const currentTransforms = toSingleRotation(transformItem(context))
-      toClosestRotations(currentTransforms, targetTransforms)
+      // to-only keyframe: the implicit "from" is the element's real inline transform ([0, 2π)),
+      // so align the target to that fixed origin rather than re-baselining it toward 0 (which would
+      // turn a same-rotation reposition into a full spin).
+      alignTargetRotationsToOrigin(currentTransforms, targetTransforms)
       const item = getItemFromContext(context)
       const currentOrigin = context.locators[item.location.type]?.getLocationOrigin(item.location, context) ?? defaultOrigin
       const futureOrigin = context.locators[futureItem.location.type]?.getLocationOrigin(futureItem.location, futureContext) ?? defaultOrigin
@@ -130,7 +133,8 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     // For children of dropped items, use to-only keyframes with matching structure
     if (isDroppedItem(context)) {
       const currentTransforms = toSingleRotation(transformItem(context))
-      toClosestRotations(currentTransforms, targetTransforms)
+      // to-only keyframe: align the target to the real inline origin (see getMovedItemAnimation).
+      alignTargetRotationsToOrigin(currentTransforms, targetTransforms)
       targetTransforms.unshift('translate3d(0px, 0px, 0em)')
       const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
       return description?.getAnimationCss(animationKeyframes, animation.duration)

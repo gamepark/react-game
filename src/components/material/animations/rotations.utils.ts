@@ -88,4 +88,32 @@ export const toClosestRotations = (originTransforms: string[], targetTransforms:
   }
 }
 
+/**
+ * Adjust every rotateZ in `targetTransforms` to the equivalent angle closest to the origin's total
+ * rotation, WITHOUT mutating `originTransforms`.
+ *
+ * Unlike {@link toClosestRotations}, the origin is treated as a fixed reference. This is required for
+ * "to-only" keyframes (dropped items): there the animation's implicit "from" is the element's actual
+ * inline transform (already normalized to [0, 2π) by {@link toSingleRotation}), so the target must
+ * stay in that same convention. Re-baselining the target toward 0 (as toClosestRotations does) would
+ * leave e.g. a 270° item with a -90° target, i.e. a 360° gap animated as a full spin.
+ */
+export const alignTargetRotationsToOrigin = (originTransforms: string[], targetTransforms: string[]): void => {
+  const rotationRegex = /rotateZ?\((-?\d+\.?\d*)([^)]*)\)/
+  const originAngle = originTransforms.reduce((sum, transform) => {
+    const match = transform.match(rotationRegex)
+    return match ? sum + convertAngle(parseFloat(match[1]), match[2]) : sum
+  }, 0)
+  for (let i = 0; i < targetTransforms.length; i++) {
+    const match = targetTransforms[i].match(rotationRegex)
+    if (match) {
+      const targetAngle = convertAngle(parseFloat(match[1]), match[2])
+      const delta = Math.round((originAngle - targetAngle) / (2 * Math.PI))
+      if (delta !== 0) {
+        targetTransforms[i] = `rotateZ(${targetAngle + delta * 2 * Math.PI}rad)`
+      }
+    }
+  }
+}
+
 export const removeRotations = (transforms: string[]): string[] => toSingleRotation(transforms).filter(transform => !transform.startsWith('rotate'))
