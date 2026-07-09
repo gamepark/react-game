@@ -30,11 +30,16 @@ const StaticItemsTypeDisplay = ({ description, ...props }: StaticItemsTypeDispla
   const contextRef = useRef(context)
   contextRef.current = context
   const legalMoves = useLegalMoves<MaterialMove>()
+  // Static items are memoized on their legalMoves reference. Once the game is over, useLegalMoves collapses to a
+  // stable EMPTY_MOVES constant, so legalMoves stops changing reference exactly when the displayed state reaches
+  // isOver(). Passing isOver() (from the displayed/animated rules state) gives such items a re-render signal at the
+  // game-over transition, so getLocations that depend on isOver() (e.g. an end-of-game score sheet) get recomputed.
+  const gameOver = context.rules?.isOver() ?? false
   return <MaterialContextRefContext.Provider value={contextRef}>
     {description.getStaticItems(context).map((item, index) => {
       return [...Array(item.quantity ?? 1)].map((_, displayIndex) =>
         <StaticItemDisplay key={`${index}_${displayIndex}`} description={description} index={index} displayIndex={displayIndex} item={item}
-                           legalMoves={legalMoves} {...props}/>
+                           legalMoves={legalMoves} gameOver={gameOver} {...props}/>
       )
     })}
   </MaterialContextRefContext.Provider>
@@ -46,9 +51,10 @@ type StaticItemDisplayProps = StaticItemsTypeDisplayProps & {
   item: MaterialItem
   boundaries: GridBoundaries
   legalMoves: MaterialMove[]
+  gameOver: boolean
 }
 
-const StaticItemDisplayBase = ({ type, description, index, displayIndex, item, boundaries, legalMoves, ...props }: StaticItemDisplayProps) => {
+const StaticItemDisplayBase = ({ type, description, index, displayIndex, item, boundaries, legalMoves, gameOver, ...props }: StaticItemDisplayProps) => {
   const context = useMaterialContextRef()
   const locator = context.locators[item.location.type]
   const { focus } = useFocusContext()
@@ -71,6 +77,7 @@ const StaticItemDisplay = memo(StaticItemDisplayBase, (prev, next) => {
   if (!isEqual(prev.item, next.item)) return false
   if (!isEqual(prev.boundaries, next.boundaries)) return false
   if (prev.legalMoves !== next.legalMoves) return false
+  if (prev.gameOver !== next.gameOver) return false
   return true
 })
 
