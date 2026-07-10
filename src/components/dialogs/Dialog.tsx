@@ -83,6 +83,7 @@ const dialogButtonBaseCss = css`
   padding: 0.3em 0.9em;
   border-radius: 2em;
   border: 0.05em solid currentColor;
+  color: inherit;
   background: transparent;
   font-weight: 600;
 
