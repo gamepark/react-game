@@ -64,10 +64,13 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
     // We prepend a translate3d(0,0,0) to match the inline style structure (which has the drag translate3d prefix),
     // so CSS can interpolate component-by-component instead of falling back to matrix decomposition (which causes rotation loops).
     if (isDroppedItem(context)) {
-      const currentTransforms = toSingleRotation(transformItem(context))
-      // to-only keyframe: the implicit "from" is the element's real inline transform ([0, 2π)),
-      // so align the target to that fixed origin rather than re-baselining it toward 0 (which would
-      // turn a same-rotation reposition into a full spin).
+      // to-only keyframe: the implicit "from" is the element's real inline transform, which is
+      // rendered with isDragging=true (the drag translate is retained on a dropped item). Some
+      // locators (e.g. HandLocator) zero the item's rotation while it is held, so we must build the
+      // origin reference with the same flag — otherwise we'd align the target to the card's resting
+      // fan angle instead of the 0° it is actually drawn at, spinning a slightly-rotated hand card
+      // ~360° on drop.
+      const currentTransforms = toSingleRotation(transformItem({ ...context, isDragging: true }))
       alignTargetRotationsToOrigin(currentTransforms, targetTransforms)
       const item = getItemFromContext(context)
       const currentOrigin = context.locators[item.location.type]?.getLocationOrigin(item.location, context) ?? defaultOrigin
@@ -132,8 +135,8 @@ export class MoveItemAnimations<P extends number = number, M extends number = nu
 
     // For children of dropped items, use to-only keyframes with matching structure
     if (isDroppedItem(context)) {
-      const currentTransforms = toSingleRotation(transformItem(context))
-      // to-only keyframe: align the target to the real inline origin (see getMovedItemAnimation).
+      // Align the target to the real inline origin, built with isDragging=true (see getMovedItemAnimation).
+      const currentTransforms = toSingleRotation(transformItem({ ...context, isDragging: true }))
       alignTargetRotationsToOrigin(currentTransforms, targetTransforms)
       targetTransforms.unshift('translate3d(0px, 0px, 0em)')
       const animationKeyframes = this.getKeyframesToDestination(targetTransforms.join(' '), animation, context)
