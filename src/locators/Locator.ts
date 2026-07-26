@@ -329,6 +329,9 @@ export class Locator<P extends number = number, M extends number = number, L ext
     if (!parentLocator) return own
     const parentDeps = parentLocator.getFullPositionDependencies(parentItem.location, context)
     if (parentDeps === undefined) return undefined
+    // Collapse an empty parent chain so that "no dependency at all" keeps being represented by `{}`:
+    // callers use `isEqual(deps, {})` to skip work entirely for items that can never move on their own.
+    if (isEqual(parentDeps, {})) return own
     return [own, parentDeps]
   }
 

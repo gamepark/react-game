@@ -269,7 +269,9 @@ export class ItemAnimations<P extends number = number, M extends number = number
     // Siblings that are not displayed (e.g. cards beyond a DeckLocator's limit) must not animate:
     // bypassing hide for them would make them pop into view during the move.
     if (locator.hide(item, context) || locator.ignore(item, context)) return
-    const currentDeps = locator.getPositionDependencies(item.location, context)
+    // Full dependencies: an item placed on a parent (a token on a card) moves whenever its parent moves,
+    // even though its own dependencies are unchanged.
+    const currentDeps = locator.getFullPositionDependencies(item.location, context)
     if (currentDeps === undefined || isEqual(currentDeps, {})) return
     let futureRules = siblingRulesCache.get(animation) as MaterialRules<P, M, L, R, V> | undefined
     if (!futureRules) {
@@ -294,9 +296,9 @@ export class ItemAnimations<P extends number = number, M extends number = number
   ): Interpolation<Theme> {
     const locator = originContext.locators[item.location.type]
     if (!locator) return
-    const originDeps = locator.getPositionDependencies(item.location, originContext)
+    const originDeps = locator.getFullPositionDependencies(item.location, originContext)
     if (originDeps === undefined || isEqual(originDeps, {})) return
-    const targetDeps = locator.getPositionDependencies(item.location, targetContext)
+    const targetDeps = locator.getFullPositionDependencies(item.location, targetContext)
     if (isEqual(originDeps, targetDeps)) return
     const description = originContext.material[originContext.type]
     const originTransforms = toSingleRotation(transformItem(originContext))
