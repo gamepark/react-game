@@ -108,7 +108,9 @@ const globalCss = (theme: Theme) => css`
     --gp-scale: 1;
   }
 
-  @media only screen and (min-height: 600px) {
+  /* Scale down the UI chrome on desktop only. A phone is small in at least one dimension whatever
+     its orientation, so both dimensions must be tested (testing the height alone matched portrait). */
+  @media only screen and (min-width: 600px) and (min-height: 600px) {
     :root {
       --gp-scale: 0.8;
     }
