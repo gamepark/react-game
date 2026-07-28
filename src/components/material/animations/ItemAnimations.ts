@@ -286,7 +286,7 @@ export class ItemAnimations<P extends number = number, M extends number = number
 
   /**
    * Compute animation for a sibling item given origin and target contexts.
-   * Returns animation CSS if position dependencies changed, undefined otherwise.
+   * Returns animation CSS if the item's position changed, undefined otherwise.
    */
   protected computeSiblingAnimation(
     item: MaterialItem<P, L>,
@@ -298,13 +298,18 @@ export class ItemAnimations<P extends number = number, M extends number = number
     if (!locator) return
     const originDeps = locator.getFullPositionDependencies(item.location, originContext)
     if (originDeps === undefined || isEqual(originDeps, {})) return
-    const targetDeps = locator.getFullPositionDependencies(item.location, targetContext)
-    if (isEqual(originDeps, targetDeps)) return
-    const description = originContext.material[originContext.type]
-    const originTransforms = toSingleRotation(transformItem(originContext))
     // Get the item from the target state: location strategies (e.g. PositiveSequenceStrategy)
     // may have re-indexed location.x/y/z after the move.
-    const targetItem = targetContext.rules.material(originContext.type).getItem(originContext.index)
+    const targetItem = targetContext.rules.game.items[originContext.type]?.[originContext.index]
+    if (!targetItem || targetItem.quantity === 0) return
+    const targetDeps = locator.getFullPositionDependencies(item.location, targetContext)
+    // Both dependency sets are computed from the item's *current* location, so they cannot see a location
+    // strategy that re-indexed this very item (addItem/removeItem shifting its own x/y/z). Compare the
+    // locations too: without it, an item shifted by a strategy would stay put for the whole animation and
+    // only jump to its new slot once the move is applied.
+    if (isEqual(originDeps, targetDeps) && isEqual(targetItem.location, item.location)) return
+    const description = originContext.material[originContext.type]
+    const originTransforms = toSingleRotation(transformItem(originContext))
     const targetTransforms = toSingleRotation(description?.getItemTransform(targetItem, targetContext) ?? [])
     toClosestRotations(originTransforms, targetTransforms)
     const origin = originTransforms.join(' ')
