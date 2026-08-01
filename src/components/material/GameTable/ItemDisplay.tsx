@@ -1,5 +1,5 @@
 import { css, Interpolation, Theme } from '@emotion/react'
-import { MaterialItem } from '@gamepark/rules-api'
+import { Location, MaterialItem } from '@gamepark/rules-api'
 import { isEqual } from 'es-toolkit'
 import { partition } from 'es-toolkit/compat'
 import { forwardRef, MouseEvent, useMemo, useRef } from 'react'
@@ -8,6 +8,7 @@ import { LongPressCallbackReason, LongPressEventType, useLongPress } from 'use-l
 import { pointerCursorCss } from '../../../css'
 import { useDraggedItem, useMaterialContextRef, usePlay } from '../../../hooks'
 import { LocationFocusRef, useExpectedDropLocations, useItemLocations } from '../../../hooks/useItemLocations'
+import { ParentFace } from '../../../locators'
 import { combineEventListeners } from '../../../utilities'
 import { toSingleRotation } from '../animations'
 import { ComponentSize } from '../ComponentDescription'
@@ -76,6 +77,32 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
 
   const canHaveChildren = useMemo(() => Object.values(context.locators).some(locator => locator?.parentItemType === type), [context, type])
 
+  /**
+   * Each face of the item carries the locations that belong to it: what a location is printed on is the locator's
+   * to say, and a location that belongs to the item rather than to one of its faces follows the one that is up
+   * (see {@link Locator.getParentFace}). A location left on a face that is turned away is out of reach, which is
+   * what a spot printed on the front of a card has to be while the card shows its back.
+   */
+  const isOnFace = useMemo(() => {
+    const faceUp = description.isFlippedOnTable(item, itemContext) ? ParentFace.Back : ParentFace.Front
+    return (location: Location, face: ParentFace) => {
+      const parentFace = context.locators[location.type]?.getParentFace(location, context) ?? ParentFace.Front
+      return (parentFace === ParentFace.Up ? faceUp : parentFace) === face
+    }
+  }, [context, description, item, itemContext])
+
+  const faceContent = (face: ParentFace) => {
+    const others = otherLocations.filter(({ location }) => isOnFace(location, face))
+    const focused = focusedLocations.filter(({ location }) => isOnFace(location, face))
+    return <>
+      {canHaveChildren
+        ? <ItemDropLocations locations={others} item={item} type={type} keepLocation={location => isOnFace(location, face)}/>
+        : <ItemLocations locations={others}/>}
+      {focused.length > 0 && <LocationsMask locations={focused.map(l => l.location)} borderRadius={description.getBorderRadius(item.id)}/>}
+      <ItemLocations locations={focused}/>
+    </>
+  }
+
   return <>
     <div css={[
       itemCss, animation,
@@ -88,11 +115,10 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
                          type={type} itemId={item.id}
                          highlight={highlight}
                          playDown={playDown ?? (focus?.highlight && !isFocused && !focusedLocations.length)}
+                         backChildren={faceContent(ParentFace.Back)}
                          style={{ transform: transformStyle }}
                          css={description.getItemExtraCss(item, itemContext)}>
-        {canHaveChildren ? <ItemDropLocations locations={otherLocations} item={item} type={type}/> : <ItemLocations locations={otherLocations}/>}
-        {focusedLocations.length > 0 && <LocationsMask locations={focusedLocations.map(l => l.location)} borderRadius={description.getBorderRadius(item.id)}/>}
-        <ItemLocations locations={focusedLocations}/>
+        {faceContent(ParentFace.Front)}
       </MaterialComponent>
     </div>
   </>
@@ -143,7 +169,9 @@ const ItemLocations = ({ locations }: ItemLocationsProps) => {
   </>
 }
 
-const ItemDropLocations = ({ locations, item, type }: ItemLocationsProps & { item: MaterialItem, type: number }) => {
+const ItemDropLocations = (
+  { locations, item, type, keepLocation }: ItemLocationsProps & { item: MaterialItem, type: number, keepLocation: (location: Location) => boolean }
+) => {
   const context = useMaterialContextRef()
   const draggedItem = useDraggedItem()
   const draggedItemContext = { ...context, ...draggedItem }
@@ -152,7 +180,8 @@ const ItemDropLocations = ({ locations, item, type }: ItemLocationsProps & { ite
     const result = [...locations]
     for (const location of expectedDropLocations) {
       const locator = context.locators[location.type]
-      if (locator?.parentItemType === type && isEqual(locator.getParentItem(location, context), item) && !result.some(r => isLocationSubset(location, r.location))) {
+      if (locator?.parentItemType === type && isEqual(locator.getParentItem(location, context), item)
+        && keepLocation(location) && !result.some(r => isLocationSubset(location, r.location))) {
         result.push({ location })
       }
     }

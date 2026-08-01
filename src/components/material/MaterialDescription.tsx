@@ -47,6 +47,12 @@ export type MaterialContentProps<ItemId = any, M extends number = number> = {
   highlight?: boolean
   playDown?: boolean
   preview?: boolean
+  /**
+   * What material with 2 faces displays on its back face (see {@link FlatMaterialDescription}), where children
+   * are displayed on its front face. Which of the two a location goes to is decided by whoever renders the item,
+   * from the face the location belongs to (see {@link Locator.getParentFace}).
+   */
+  backChildren?: ReactNode
 } & HTMLAttributes<HTMLElement>
 
 /**
@@ -228,6 +234,27 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   displayHelp(item: MaterialItem<P, L, ItemId>, context: ItemContext<P, M, L, R, V>): MaterialMove<P, M, L, R, V> | undefined {
     const { type, index, displayIndex } = context
     return displayMaterialHelp(type, item, index, displayIndex)
+  }
+
+  /**
+   * Whether the item shows its back face on the game table. Only material with 2 faces ever does
+   * (see {@link FlatMaterialDescription}), hence false here.
+   * @param _item The item
+   * @param _context Context of the item
+   * @returns true if the face the player sees is the back of the item
+   */
+  isFlippedOnTable(_item: Partial<MaterialItem<P, L, ItemId>>, _context: MaterialContext<P, M, L, R, V>): boolean {
+    return false
+  }
+
+  /**
+   * Whether the item shows its back face in the help dialog. See {@link isFlippedOnTable}.
+   * @param _item The item
+   * @param _context Context of the item
+   * @returns true if the face the player sees is the back of the item
+   */
+  isFlippedInDialog(_item: Partial<MaterialItem<P, L, ItemId>>, _context: MaterialContext<P, M, L, R, V>): boolean {
+    return false
   }
 
   /**

@@ -19,6 +19,18 @@ import { defaultOrigin, LocationOrigin, OriginType } from './LocationOrigin'
 export type SortFunction = ((item: MaterialItem) => number)
 
 /**
+ * The face of a parent item a location is laid on. See {@link Locator.getParentFace}.
+ */
+export enum ParentFace {
+  /** Printed on the front of the parent item, and out of reach while it shows its back. */
+  Front,
+  /** Printed on its back, and out of reach while it shows its front. */
+  Back,
+  /** Belongs to the parent item rather than to one of its faces, and follows whichever face is up. */
+  Up
+}
+
+/**
  * A Locator is responsible for placing item and locations (such as drop areas) on the Game Table.
  */
 export class Locator<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> {
@@ -276,6 +288,25 @@ export class Locator<P extends number = number, M extends number = number, L ext
    */
   getPositionOnParent(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): XYCoordinates {
     return this.positionOnParent
+  }
+
+  /**
+   * Which face of the parent item the locations belong to. Use {@link getParentFace} to decide per location.
+   */
+  parentFace = ParentFace.Front
+
+  /**
+   * Which face of the parent item a location belongs to, when that parent has 2 faces
+   * (see {@link FlatMaterialDescription}). A face turned away from the player is hidden by its backface-visibility,
+   * which takes it out of the page altogether, pointer events included: whatever is laid on it is invisible, and
+   * cannot be clicked or dropped onto. See {@link ParentFace} for what each value means.
+   *
+   * @param _location Location of the item or area inside the parent item
+   * @param _context The material game context
+   * @return the face of the parent item the location is laid on
+   */
+  getParentFace(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): ParentFace {
+    return this.parentFace
   }
 
   /**

@@ -1,6 +1,5 @@
 import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
-import { ReactNode } from 'react'
 import { backgroundCss, borderRadiusCss, playDownCss, shadowCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { MaterialContentProps } from '../MaterialDescription'
@@ -114,7 +113,13 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
 
   content = (props: MaterialContentProps<ItemId, M>) => this.contentWithBackChildren(props)
 
-  contentWithBackChildren = ({ itemId, itemIndex, displayIndex, highlight, playDown, preview, children, backChildren }: MaterialContentProps<ItemId, M> & { backChildren?: ReactNode }) => {
+  /**
+   * Each face carries its own children: whoever renders the item decides which face a location belongs to, and
+   * gives it as children or as backChildren (see {@link Locator.getParentFace}). A face turned away from the
+   * player is hidden by its backface-visibility, which takes it and its children out of the page altogether,
+   * pointer events included, which is exactly what a location printed on the other face has to be.
+   */
+  contentWithBackChildren = ({ itemId, itemIndex, displayIndex, highlight, playDown, preview, children, backChildren }: MaterialContentProps<ItemId, M>) => {
     const image = this.getImage(itemId, itemIndex, displayIndex)
     const backImage = this.getBackImage(itemId, itemIndex, displayIndex)
     const size = this.getSize(itemId)

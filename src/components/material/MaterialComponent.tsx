@@ -1,5 +1,5 @@
 import { css } from '@emotion/react'
-import { forwardRef, HTMLAttributes, memo, useMemo } from 'react'
+import { forwardRef, HTMLAttributes, memo, ReactNode, useMemo } from 'react'
 import { sizeCss } from '../../css'
 import { useMaterialDescription } from '../../hooks'
 
@@ -11,10 +11,12 @@ export type MaterialComponentProps<M extends number = number, ItemId = any> = {
   highlight?: boolean
   playDown?: boolean
   preview?: boolean
+  /** What to display on the back face of material that has 2 faces (see {@link MaterialContentProps}). */
+  backChildren?: ReactNode
 } & HTMLAttributes<HTMLElement>
 
 export const MaterialComponent = memo(forwardRef<HTMLDivElement, MaterialComponentProps>((
-  { type, itemId, itemIndex, displayIndex, highlight, playDown, preview, ...props }, ref
+  { type, itemId, itemIndex, displayIndex, highlight, playDown, preview, backChildren, ...props }, ref
 ) => {
   const description = useMaterialDescription(type)
 
@@ -27,7 +29,7 @@ export const MaterialComponent = memo(forwardRef<HTMLDivElement, MaterialCompone
   return (
     <div ref={ref} css={componentCss} {...props}>
       <div css={hoverWrapper}>
-        {description.content({ type, itemId, highlight, playDown, preview, itemIndex, displayIndex, ...props })}
+        {description.content({ type, itemId, highlight, playDown, preview, backChildren, itemIndex, displayIndex, ...props })}
       </div>
     </div>
   )
