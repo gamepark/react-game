@@ -117,3 +117,74 @@ export const alignTargetRotationsToOrigin = (originTransforms: string[], targetT
 }
 
 export const removeRotations = (transforms: string[]): string[] => toSingleRotation(transforms).filter(transform => !transform.startsWith('rotate'))
+
+/**
+ * The same transforms, read in a frame that has been turned over by a rotateY(180deg): x and z change sign while
+ * y does not, so a translateZ that lifts an item towards the player has to push it away instead, and a rotateZ
+ * has to turn the other way round.
+ *
+ * Written this way rather than by wrapping the list in rotateY(-180deg) ... rotateY(180deg), which computes the
+ * same thing but is 2 functions longer: a transition towards a longer list interpolates those 2 rotations from 0,
+ * and everything between them is read in a half turned frame along the way, which swings the item sideways before
+ * it settles. Mirroring each function in place keeps the list the length it was, so every step of a transition is
+ * a step towards the answer.
+ *
+ * Undefined when the list holds something this cannot mirror, leaving the caller to fall back on wrapping.
+ */
+export const mirrorTransforms = (transforms: string[]): string[] | undefined => {
+  const mirrored: string[] = []
+  for (const transform of transforms) {
+    const result = mirrorTransform(transform)
+    if (result === undefined) return undefined
+    mirrored.push(result)
+  }
+  return mirrored
+}
+
+const mirrorTransform = (transform: string): string | undefined => {
+  const match = transform.match(/^\s*([a-zA-Z0-9]+)\(([^)]*)\)\s*$/)
+  if (!match) return undefined
+  const [, fn, args] = match
+  const values = args.split(',').map(value => value.trim())
+  switch (fn) {
+    // Along y, or not a direction at all: a half turn around y leaves these alone.
+    case 'translateY':
+    case 'rotateY':
+    case 'scale':
+    case 'scaleX':
+    case 'scaleY':
+    case 'scaleZ':
+    case 'scale3d':
+    case 'perspective':
+      return transform
+    // Along x or z, or an angle around one of them: all of them change sign.
+    case 'translateX':
+    case 'translateZ':
+    case 'rotate':
+    case 'rotateX':
+    case 'rotateZ':
+      return rebuild(fn, [negate(values[0])])
+    // translate takes its y as an option, so an absent one stays absent rather than counting as a failure.
+    case 'translate': {
+      const x = negate(values[0])
+      if (x === undefined) return undefined
+      return values[1] === undefined ? `translate(${x})` : `translate(${x}, ${values[1]})`
+    }
+    case 'translate3d':
+      return rebuild(fn, [negate(values[0]), values[1], negate(values[2])])
+    // A rotation around an arbitrary axis: the axis is mirrored, the angle is not.
+    case 'rotate3d':
+      return rebuild(fn, [negate(values[0]), values[1], negate(values[2]), values[3]])
+    default:
+      return undefined
+  }
+}
+
+const rebuild = (fn: string, values: (string | undefined)[]): string | undefined =>
+  values.some(value => value === undefined) ? undefined : `${fn}(${values.filter(value => value !== undefined).join(', ')})`
+
+/** The same value with its sign flipped, keeping its unit. Undefined for anything that is not a plain number. */
+const negate = (value: string | undefined): string | undefined => {
+  const match = value?.match(/^(-?\d*\.?\d+)([a-z%]*)$/)
+  return match ? `${-parseFloat(match[1])}${match[2]}` : undefined
+}

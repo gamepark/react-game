@@ -2,6 +2,7 @@ import { css, Interpolation, Theme } from '@emotion/react'
 import { MaterialItem } from '@gamepark/rules-api'
 import { backgroundCss, borderRadiusCss, playDownCss, shadowCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
+import { mirrorTransforms } from '../animations'
 import { MaterialContentProps } from '../MaterialDescription'
 import { MobileMaterialDescription } from '../MobileMaterialDescription'
 
@@ -162,10 +163,28 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return
   }
 
+  /**
+   * An item turned onto a back that all items of its type share is not hovered: every one of them looks the same,
+   * so there is nothing to look closer at.
+   * {@link backImage} on purpose here rather than {@link hasBackFace}: when the backs differ from one item to the
+   * next ({@link backImages}), the back carries something of its own and hovering it is legitimate.
+   *
+   * An item that is hovered while turned onto its back has what the locator asks for mirrored.
+   * {@link getItemTransform} ends with the rotateY(180deg) that shows the back, so everything the locator returns
+   * would otherwise be read in a frame that has been turned over: a translateZ would push the item away from the
+   * player instead of lifting it towards them, and a rotateZ would tilt it the wrong way round, doubling the angle
+   * of a hand instead of straightening it. Mirroring leaves the locator to describe what it means, in the frame it
+   * means it in, whichever face the item shows.
+   * Wrapping the list in the 2 rotations computes the same thing, and is what a list that cannot be mirrored falls
+   * back on, at the price of a transition that swings the item sideways on its way (see {@link mirrorTransforms}).
+   */
   getHoverTransform(item: MaterialItem<P, L, ItemId>, context: ItemContext<P, M, L, R, V>): string[] {
     const locator = context.locators[item.location.type]
-    if (!locator || (this.backImage && this.isFlippedOnTable(item, context))) return []
-    return locator.getHoverTransform(item, context)
+    const flipped = this.isFlippedOnTable(item, context)
+    if (!locator || (this.backImage && flipped)) return []
+    const transform = locator.getHoverTransform(item, context)
+    if (!flipped || !transform.length) return transform
+    return mirrorTransforms(transform) ?? ['rotateY(-180deg)', ...transform, 'rotateY(180deg)']
   }
 
   getHelpDisplayExtraCss(item: Partial<MaterialItem<P, L, ItemId>>, context: ItemContext<P, M, L, R, V>): Interpolation<Theme> {

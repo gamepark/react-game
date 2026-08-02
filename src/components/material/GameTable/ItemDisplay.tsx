@@ -130,6 +130,15 @@ const itemCss = css`
   }
 `
 
+/**
+ * `> * > *` is the wrapper MaterialComponent puts around the content of an item, and not the item itself, on
+ * purpose: an item that is neither dragged nor animating wears a `transition: transform 0.2s` (see the
+ * transformTransition of DraggableMaterial), so a hover applied to it would trail behind the pointer. The wrapper
+ * exists for this and carries no transition, so it snaps.
+ *
+ * Above the faces rather than on them: a face carries a transform of its own, the rotateY(-180deg) of the back of
+ * a card or the 6 sides of a die, and a transform set here would replace it instead of adding to it.
+ */
 const hoverCss = (itemTransform: string, itemSize: ComponentSize, hoverTransform: string, disable: boolean) => css`
   @media (hover) {
     &:hover > * > * {
