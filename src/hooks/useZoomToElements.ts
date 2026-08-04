@@ -1,26 +1,35 @@
-import { ReactZoomPanPinchContext, ReactZoomPanPinchState, useTransformContext } from 'react-zoom-pan-pinch'
+import { ReactZoomPanPinchContext, ReactZoomPanPinchHandlers, ReactZoomPanPinchState, useControls } from 'react-zoom-pan-pinch'
 import { Margin } from '../components'
-import { animations } from '../utilities/zoom-pan-pinch'
-import { animate, handleCancelAnimation } from '../utilities/zoom-pan-pinch'
-import { calculateBounds, getMouseBoundedPosition } from '../utilities/zoom-pan-pinch'
-import { checkZoomBounds } from '../utilities/zoom-pan-pinch'
+import { calculateBounds, getMouseBoundedPosition, handleCancelAnimation } from '../utilities/zoom-pan-pinch'
+
+type SetTransform = ReactZoomPanPinchHandlers['setTransform']
+
+// react-zoom-pan-pinch declares its easing names inline on the handler signatures without exporting the
+// `animations` record they come from, so the union has to be derived from the public signature.
+type AnimationName = NonNullable<Parameters<SetTransform>[4]>
+
+const MIN_SAFE_SCALE = 1e-7
+
+/**
+ * Equivalent of the library's own checkZoomBounds, reduced to the zero-padding case we call it with.
+ */
+const clampScale = (scale: number, minScale: number, maxScale: number) =>
+  Math.min(Math.max(scale, Math.max(minScale, MIN_SAFE_SCALE)), maxScale)
 
 /**
  * react-zoom-pan-pinch only has "zoomToElement". This code is the equivalent to zoom to display multiple elements at once.
  */
 export function useZoomToElements(): (elements: HTMLElement[], options?: ZoomToElementsOptions) => void {
-  const libraryContext = useTransformContext()
-  return zoomToElements(libraryContext)
+  const { instance, setTransform } = useControls()
+  return zoomToElements(instance, setTransform)
 }
 
-type ZoomToElementsOptions = { scale?: number, animationTime?: number, animationType?: keyof typeof animations, margin?: Margin }
+type ZoomToElementsOptions = { scale?: number, animationTime?: number, animationType?: AnimationName, margin?: Margin }
 
-const zoomToElements = (contextInstance: ReactZoomPanPinchContext) => (
+const zoomToElements = (contextInstance: ReactZoomPanPinchContext, setTransform: SetTransform) => (
   nodes: (HTMLElement | string)[],
   options: ZoomToElementsOptions = {}
 ): void => {
-  handleCancelAnimation(contextInstance)
-
   const { wrapperComponent } = contextInstance
   const { scale, animationTime = 600, animationType = 'easeOut', margin } = options
 
@@ -32,8 +41,11 @@ const zoomToElements = (contextInstance: ReactZoomPanPinchContext) => (
     .filter(target => target && wrapperComponent?.contains(target))
 
   if (wrapperComponent && targets.length) {
-    const targetState = calculateZoomToNodes(contextInstance, targets, { customZoom: scale, margin })
-    animate(contextInstance, targetState, animationTime, animationType)
+    // `setTransform` cancels a running animation only when it animates; asked for an instant transform
+    // it writes the state directly, and the animation still in flight would overwrite it next frame.
+    if (animationTime === 0) handleCancelAnimation(contextInstance)
+    const { positionX, positionY, scale: newScale } = calculateZoomToNodes(contextInstance, targets, { customZoom: scale, margin })
+    setTransform(positionX, positionY, newScale, animationTime, animationType)
   }
 }
 
@@ -42,7 +54,7 @@ function calculateZoomToNodes(
   nodes: HTMLElement[],
   options: { customZoom?: number, margin?: Margin } = {}
 ): { positionX: number; positionY: number; scale: number } {
-  const { wrapperComponent, contentComponent, transformState } =
+  const { wrapperComponent, contentComponent, state: transformState } =
     contextInstance
   const { limitToBounds, minScale, maxScale } = contextInstance.setup
   if (!wrapperComponent || !contentComponent) return transformState
@@ -63,13 +75,7 @@ function calculateZoomToNodes(
   const scaleX = wrapperComponent.offsetWidth / focusWidth
   const scaleY = wrapperComponent.offsetHeight / focusHeight
 
-  const newScale = checkZoomBounds(
-    customZoom || Math.min(scaleX, scaleY),
-    minScale,
-    maxScale,
-    0,
-    false
-  )
+  const newScale = clampScale(customZoom || Math.min(scaleX, scaleY), minScale, maxScale)
 
   const offsetX = (wrapperRect.width - focusWidth * newScale) / 2
   const offsetY = (wrapperRect.height - focusHeight * newScale) / 2

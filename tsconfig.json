@@ -26,8 +26,10 @@
     "noUnusedParameters": true,
     "removeComments": false,
     "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // TypeScript 7 dropped the automatic inclusion of every @types package. `process.env.NODE_ENV` is
+    // read in a handful of places, so @types/node has to be requested explicitly now.
+    "types": ["node"]
   },
   "include": ["src"],
   "exclude": ["**/*.test.ts"]

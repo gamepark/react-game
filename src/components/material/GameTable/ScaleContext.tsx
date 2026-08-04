@@ -6,9 +6,9 @@ const ScaleContext = createContext<number>(1)
 export const useScale = () => useContext(ScaleContext)
 
 export function ZoomScaleProvider({ children }: { children?: ReactNode }) {
-  const { transformState } = useTransformContext()
+  const { state } = useTransformContext()
   return (
-    <ScaleContext.Provider value={transformState.scale}>
+    <ScaleContext.Provider value={state.scale}>
       {children}
     </ScaleContext.Provider>
   )

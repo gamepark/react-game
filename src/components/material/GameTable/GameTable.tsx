@@ -115,10 +115,10 @@ export const GameTable: FC<GameTableProps> = (
     const handler = () => {
       const zoomPanPinch = zoomRef.current?.instance
       if (!zoomPanPinch?.bounds) return
-      const { positionX, positionY, scale } = zoomPanPinch.transformState
+      const { positionX, positionY, scale } = zoomPanPinch.state
       const bounds = calculateBounds(zoomPanPinch, scale)
       const { x, y } = getMouseBoundedPosition(positionX, positionY, bounds, true, 0, 0, zoomPanPinch.wrapperComponent)
-      zoomPanPinch.setTransformState(scale, x, y)
+      zoomPanPinch.setState(scale, x, y)
     }
     window.addEventListener('resize', handler)
     return () => window.removeEventListener('resize', handler)

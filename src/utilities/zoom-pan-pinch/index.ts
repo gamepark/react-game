@@ -1,9 +1,9 @@
 /**
- * Lib https://github.com/BetterTyped/react-zoom-pan-pinch does not export their utility functions and does not offer a "zoom to multiple elements" feature
- * that we need. The code from "zoomToElement" is simply adapted and all the utility functions they use is copied here.
+ * Lib https://github.com/BetterTyped/react-zoom-pan-pinch does not offer a "zoom to multiple elements"
+ * feature that we need, and does not export the bounds utilities required to clamp a position we
+ * computed ourselves. Only what has no public equivalent is copied here — the animation runner and the
+ * easing functions are reached through the public `setTransform` handler instead.
  */
-export * from './animations.constants'
 export * from './animations.util'
 export * from './bounds.util'
 export * from './calculation.util'
-export * from './zoom.util'
