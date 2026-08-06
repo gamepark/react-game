@@ -7,6 +7,7 @@ import { Avatar, SpeechBubbleDirection } from '../Avatar'
 import { MaterialFocus, useFocusContext } from '../material'
 import { blinkOnRunningTimeout, PlayerTimer } from '../PlayerTimer'
 import { Counters } from './Counters'
+import { rightAlignment } from './playerPanelCss'
 
 type CountersProps = {
   image: string
@@ -63,12 +64,16 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
         <div css={isTurnToPlay && circleCss}/>
       </div>}
       <h2 css={[nameStyle, data, theme.playerPanel?.dataBadge]}>{playerName}</h2>
-      {!main && !gameOver && (
-        <PlayerTimer
-          playerId={player.id}
-          css={[timerStyle, data, theme.playerPanel?.dataBadge, rightAlignment]}
-          customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
-        />
+      {!main && (
+        <div css={timerLine}>
+          {!gameOver && (
+            <PlayerTimer
+              playerId={player.id}
+              css={[timerStyle, data, theme.playerPanel?.dataBadge, rightAlignment]}
+              customStyle={[halfOpacityOnPause, blinkOnRunningTimeout]}
+            />
+          )}
+        </div>
       )}
 
       {main && (
@@ -113,6 +118,15 @@ const noCounterCss = css`
   min-height: 8.1em;
 `
 
+// The timer line is always reserved, even when the timer is not displayed (game without timer, or game over):
+// otherwise the counters move up under the avatar and overlap it.
+const timerLine = css`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-height: 3.4em;
+`
+
 const groupTimerAndCounter = css`
   display: flex;
   flex-direction: row;
@@ -129,12 +143,6 @@ const groupTimerAndCounters = css`
 
 const halfOpacityOnPause = (playing: boolean) => !playing && css`
   opacity: 0.8;
-`
-
-const rightAlignment = css`
-  left: initial;
-  right: 0.2em;
-  font-size: 2.5em;
 `
 
 const panelPlayerStyle = css`

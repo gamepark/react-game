@@ -1,6 +1,7 @@
 import { css, Interpolation, Theme, useTheme } from '@emotion/react'
 import { times } from 'es-toolkit/compat'
 import { FC } from 'react'
+import { rightAlignment } from './playerPanelCss'
 
 export type CounterProps = {
   image: string
@@ -22,7 +23,7 @@ export const Counters: FC<CountersProps> = (props) => {
 
   return (
     <div css={counterGridCss(lineSize)}>
-      {times(Math.max(lineSize - counters.length), (i) => <span key={i} />)}
+      {times((lineSize - counters.length % lineSize) % lineSize, (i) => <span key={i}/>)}
       {counters.map((counter, i) => (
         <Counter key={i} {...counter} />
       ))}
@@ -89,12 +90,6 @@ const data = css`
   padding: 0.1em 0.3em;
   border-radius: 0.4em;
   z-index: 2;
-`
-
-const rightAlignment = css`
-  left: initial;
-  right: 0.2em;
-  font-size: 2.5em;
 `
 
 const uniqCounterCss = css`
