@@ -54,7 +54,10 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
     lng: locale,
     debug: import.meta.env.VITE_I18N_DEBUG === 'true',
     fallbackLng: 'en',
-    ns: [gameId, 'common', 'credits'],
+    // `options` is the game's own presentation document — the labels of its options, its identities and
+    // its teams, published beside its translations. A namespace rather than a bespoke fetch: loading,
+    // caching and the fallback to English are already solved here, and the text is reachable with `t`.
+    ns: [gameId, 'common', 'credits', 'options'],
     defaultNS: gameId,
     ...import.meta.hot && {
       react: { bindI18nStore: 'added' },
@@ -65,6 +68,11 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
         const ns = namespaces[0]
         if (ns === gameId) {
           return `/translation/{{lng}}.json`
+        }
+        // Same origin as the game front, so no CORS rule is involved here — unlike the platform, which
+        // reads the very same document across origins.
+        if (ns === 'options') {
+          return `/options/{{lng}}.json`
         }
         return `https://game-park.com/translations/{{ns}}/{{lng}}.json`
       }
