@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { isEnumOption, isWithPlayerOptions, Option, PlayerEnumOption } from '@gamepark/rules-api'
+import { availableValues, legalPlayerCounts, listOptions, optionValueKey, OptionValue } from '@gamepark/rules-api'
 import { FC, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { gameContext } from '../../../GameProvider/GameContext'
@@ -15,124 +15,162 @@ type NewGameToolProps = {
   gameOptions?: GameOption[]
 }
 
-const reservedKeys = new Set(['players', 'validate', 'subscriberRequired', 'competitivePlayers'])
-const playerReservedKeys = new Set(['id'])
+/** What a player may be asked to be. Both are addressed as `players[i].<field>` by the local game API. */
+const concepts = ['identities', 'teams'] as const
+type Concept = typeof concepts[number]
+const conceptField: Record<Concept, 'id' | 'team'> = { identities: 'id', teams: 'team' }
 
 export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
-  const [newGamePlayers, setNewGamePlayers] = useState(2)
+  const [players, setPlayers] = useState(2)
   const [options, setOptions] = useState<Record<string, any>>({})
-  const [playerOptions, setPlayerOptions] = useState<Record<string, any>[]>([])
+  const [seats, setSeats] = useState<Record<string, any>[]>([])
   const [showOptions, setShowOptions] = useState(false)
   const optionsSpec = useContext(gameContext).optionsSpec
-  const { t } = useTranslation()
+  // A v2 spec carries no text: the labels come from the game's own options document, served beside its
+  // translations. Never suspend on it — a devtool must open even when that file is missing.
+  const { t } = useTranslation('options', { useSuspense: false })
 
-  const specOptions = useMemo(() => {
-    if (!optionsSpec) return []
-    return Object.keys(optionsSpec)
-      .filter(key => !reservedKeys.has(key))
-      .map(key => ({ key, spec: optionsSpec[key] as Option }))
-      .filter(({ spec }) => spec && typeof spec.label === 'function')
+  const label = (key: string, fallback: string) => t(key, { defaultValue: fallback })
+
+  /** Table sizes the spec allows — with teams that is not a range, it is 2, 4, 6. */
+  const counts = useMemo<number[]>(() => {
+    if (!optionsSpec) return Array.from({ length: 10 }, (_, index) => index + 1)
+    const legal = legalPlayerCounts(optionsSpec)
+    return legal.length ? legal : [optionsSpec.players.min]
   }, [optionsSpec])
 
-  const playerSpecOptions = useMemo(() => {
-    if (!optionsSpec || !isWithPlayerOptions(optionsSpec)) return []
-    const playersSpec = optionsSpec.players as Record<string, PlayerEnumOption>
-    return Object.keys(playersSpec)
-      .filter(key => !playerReservedKeys.has(key))
-      .map(key => ({ key, spec: playersSpec[key] }))
-      .filter(({ spec }) => spec && typeof spec.label === 'function' && Array.isArray(spec.values))
+  const specOptions = useMemo(() => (optionsSpec ? listOptions(optionsSpec) : []), [optionsSpec])
+
+  /** Only the concepts the spec declares, with the values still available at this table size. */
+  const seatChoices = useMemo(() => {
+    if (!optionsSpec) return []
+    return concepts
+      .filter((concept) => optionsSpec[concept])
+      .map((concept) => ({
+        concept,
+        field: conceptField[concept],
+        values: (optionsSpec[concept]!.values as any[]).map((value) => (typeof value === 'object' ? value.value : value)) as OptionValue[]
+      }))
   }, [optionsSpec])
 
   const setPlayerCount = (count: number) => {
-    setNewGamePlayers(count)
-    setPlayerOptions(prev => prev.length > count ? prev.slice(0, count) : prev)
+    setPlayers(count)
+    setSeats((previous) => (previous.length > count ? previous.slice(0, count) : previous))
   }
 
-  const setPlayerOption = (playerIndex: number, key: string, value: any) => {
-    setPlayerOptions(prev => {
-      const next = [...prev]
-      while (next.length <= playerIndex) next.push({})
-      next[playerIndex] = { ...next[playerIndex], [key]: value }
+  const step = (direction: 1 | -1) => {
+    const index = counts.indexOf(players)
+    const next = counts[Math.min(counts.length - 1, Math.max(0, (index < 0 ? 0 : index) + direction))]
+    if (next !== undefined) setPlayerCount(next)
+  }
+
+  const setSeat = (index: number, field: string, value: any) => {
+    setSeats((previous) => {
+      const next = [...previous]
+      while (next.length <= index) next.push({})
+      next[index] = { ...next[index], [field]: value }
       return next
     })
   }
 
+  const parse = (raw: string): OptionValue | undefined => (raw === '' ? undefined : isNaN(Number(raw)) ? raw : Number(raw))
+
+  /**
+   * What is handed to `game.new`.
+   *
+   * Only what was actually chosen: everything omitted is resolved by the spec, so leaving the panel
+   * untouched still starts a real game rather than an empty one.
+   */
   const buildOptions = () => {
-    const definedOptions = Object.fromEntries(Object.entries(options).filter(([, v]) => v !== undefined && v !== false))
-    const hasPlayerOpts = playerOptions.some(p => Object.values(p).some(v => v !== undefined))
-    const hasOptions = Object.keys(definedOptions).length > 0 || hasPlayerOpts
-    if (!hasOptions) return newGamePlayers
-    const result: Record<string, any> = { ...definedOptions }
-    if (hasPlayerOpts) {
-      result.players = Array.from({ length: newGamePlayers }, (_, i) => playerOptions[i] ?? {})
-    } else {
-      result.players = newGamePlayers
-    }
-    return result
+    const chosen = Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined && value !== false))
+    const wishes = seats.some((seat) => Object.values(seat ?? {}).some((value) => value !== undefined))
+    if (!Object.keys(chosen).length && !wishes) return players
+    return { ...chosen, players: wishes ? Array.from({ length: players }, (_, index) => seats[index] ?? {}) : players }
   }
+
+  const hasPanel = specOptions.length > 0 || seatChoices.length > 0 || !!gameOptions?.length
 
   return (
     <div css={toolBtnCss}>
-      <span css={toolIconCss}>{'\u21BB'}</span>
+      <span css={toolIconCss}>{'↻'}</span>
       <span css={toolLabelCss}>New Game</span>
       <span css={toolDescCss}>Reset with N players</span>
       <div css={inlineRowCss} onClick={e => e.stopPropagation()}>
-        <button css={stepBtnCss} onClick={() => setPlayerCount(Math.max(1, newGamePlayers - 1))}>-</button>
-        <input type="number" min={1} max={10} value={newGamePlayers}
-          onChange={e => setPlayerCount(Math.max(1, parseInt(e.target.value) || 2))}
+        <button css={stepBtnCss} onClick={() => step(-1)}>-</button>
+        <input type="number" min={counts[0]} max={counts[counts.length - 1]} value={players}
+          onChange={e => setPlayerCount(parseInt(e.target.value) || counts[0])}
           css={numberInputCss} />
-        <button css={stepBtnCss} onClick={() => setPlayerCount(Math.min(10, newGamePlayers + 1))}>+</button>
+        <button css={stepBtnCss} onClick={() => step(1)}>+</button>
         <button css={goBtnCss}
-          onClick={() => exec(() => g.new(buildOptions()), `New game ${newGamePlayers}p`)}>
+          onClick={() => exec(() => g.new(buildOptions()), `New game ${players}p`)}>
           Go
         </button>
       </div>
-      {(specOptions.length > 0 || playerSpecOptions.length > 0 || gameOptions?.length) && (
+      {hasPanel && (
         <button css={optionsToggleCss} onClick={e => { e.stopPropagation(); setShowOptions(o => !o) }}>
-          <span>{showOptions ? '\u25BE' : '\u25B8'}</span>
+          <span>{showOptions ? '▾' : '▸'}</span>
           <span>Options</span>
         </button>
       )}
       {showOptions && <>
-        {specOptions.map(({ key, spec }) => (
-          isEnumOption(spec) ? (
+        {specOptions.map(({ key, option }) => {
+          const name = label(`option.${key}`, key)
+          if (option.kind === 'boolean') {
+            return (
+              <label key={key} css={toggleRowCss} onClick={e => e.stopPropagation()}>
+                <input type="checkbox" checked={options[key] ?? false}
+                  onChange={e => setOptions(prev => ({ ...prev, [key]: e.target.checked }))} css={checkboxCss} />
+                <span css={toggleLabelCss}>{name}</span>
+              </label>
+            )
+          }
+          const values = availableValues(option, players, {})
+          if (option.kind === 'enum-set') {
+            // A set is several values at once, so it is a row of checkboxes. The local API reads the
+            // array as "these are in" and draws the rest.
+            const picked: OptionValue[] = options[key] ?? []
+            return (
+              <div key={key} css={toggleRowCss} onClick={e => e.stopPropagation()}>
+                <span css={toggleLabelCss}>{name}</span>
+                {values.map(value => (
+                  <label key={optionValueKey(value)} css={toggleLabelCss}>
+                    <input type="checkbox" checked={picked.includes(value)} css={checkboxCss}
+                      onChange={e => setOptions(prev => ({
+                        ...prev,
+                        [key]: e.target.checked ? [...picked, value] : picked.filter(entry => entry !== value)
+                      }))} />
+                    {label(`option.${key}.${optionValueKey(value)}`, optionValueKey(value))}
+                  </label>
+                ))}
+              </div>
+            )
+          }
+          return (
             <div key={key} css={toggleRowCss} onClick={e => e.stopPropagation()}>
-              <span css={toggleLabelCss}>{spec.label(t)}</span>
-              <select
-                value={options[key] ?? ''}
-                onChange={e => setOptions(prev => ({ ...prev, [key]: e.target.value === '' ? undefined : isNaN(Number(e.target.value)) ? e.target.value : Number(e.target.value) }))}
-                css={selectCss}
-              >
+              <span css={toggleLabelCss}>{name}</span>
+              <select value={options[key] ?? ''} css={selectCss}
+                onChange={e => setOptions(prev => ({ ...prev, [key]: parse(e.target.value) }))}>
                 <option value="">—</option>
-                {spec.values.map((v: any) => (
-                  <option key={String(v)} value={v}>{spec.valueSpec(v).label(t)}</option>
+                {values.map(value => (
+                  <option key={optionValueKey(value)} value={String(value)}>
+                    {label(`option.${key}.${optionValueKey(value)}`, optionValueKey(value))}
+                  </option>
                 ))}
               </select>
             </div>
-          ) : (
-            <label key={key} css={toggleRowCss} onClick={e => e.stopPropagation()}>
-              <input
-                type="checkbox"
-                checked={options[key] ?? false}
-                onChange={e => setOptions(prev => ({ ...prev, [key]: e.target.checked }))}
-                css={checkboxCss}
-              />
-              <span css={toggleLabelCss}>{spec.label(t)}</span>
-            </label>
           )
-        ))}
-        {playerSpecOptions.length > 0 && Array.from({ length: newGamePlayers }, (_, i) => (
-          playerSpecOptions.map(({ key, spec }) => (
-            <div key={`${i}-${key}`} css={toggleRowCss} onClick={e => e.stopPropagation()}>
-              <span css={toggleLabelCss}>P{i + 1} {spec.label(t)}</span>
-              <select
-                value={playerOptions[i]?.[key] ?? ''}
-                onChange={e => setPlayerOption(i, key, e.target.value === '' ? undefined : isNaN(Number(e.target.value)) ? e.target.value : Number(e.target.value))}
-                css={selectCss}
-              >
+        })}
+        {seatChoices.length > 0 && Array.from({ length: players }, (_, index) => (
+          seatChoices.map(({ concept, field, values }) => (
+            <div key={`${index}-${field}`} css={toggleRowCss} onClick={e => e.stopPropagation()}>
+              <span css={toggleLabelCss}>P{index + 1} {label(concept, concept)}</span>
+              <select value={seats[index]?.[field] ?? ''} css={selectCss}
+                onChange={e => setSeat(index, field, parse(e.target.value))}>
                 <option value="">—</option>
-                {spec.values.map((v: any) => (
-                  <option key={String(v)} value={v}>{spec.valueSpec(v).label(t)}</option>
+                {values.map(value => (
+                  <option key={optionValueKey(value)} value={String(value)}>
+                    {label(`${concept}.${optionValueKey(value)}`, optionValueKey(value))}
+                  </option>
                 ))}
               </select>
             </div>
@@ -140,12 +178,8 @@ export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
         ))}
         {gameOptions?.map(opt => (
           <label key={opt.key} css={toggleRowCss} onClick={e => e.stopPropagation()}>
-            <input
-              type="checkbox"
-              checked={options[opt.key] ?? false}
-              onChange={e => setOptions(prev => ({ ...prev, [opt.key]: e.target.checked }))}
-              css={checkboxCss}
-            />
+            <input type="checkbox" checked={options[opt.key] ?? false}
+              onChange={e => setOptions(prev => ({ ...prev, [opt.key]: e.target.checked }))} css={checkboxCss} />
             <span css={toggleLabelCss}>{opt.label}</span>
           </label>
         ))}
