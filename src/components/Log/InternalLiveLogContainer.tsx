@@ -14,6 +14,14 @@ type MoveHistoryDisplayed = MoveHistory & {
   deleting?: boolean,
 }
 
+/**
+ * How long an entry stays in the live log, in seconds, when the game does not ask for anything else: the time it
+ * is readable plus the fade out it ends with (see getDelayBeforeDelete and getFadeOutDuration).
+ * It is also what entries come in at, one every duration / maxItemDisplayed (see getThrottleDuration), so that a
+ * burst of consequences arrives at the rate the oldest entries leave and the log stays the same length.
+ */
+const defaultDuration = 8
+
 const getFadeOutDuration = (duration: number) => {
   return 0.4 * duration
 }
@@ -32,7 +40,7 @@ export const InternalLiveLogContainer: FC<LiveLogContainerProps> = (props) => {
   const [displayed, setDisplayed] = useState<MoveHistoryDisplayed[]>([])
   const [nextDisplayed, setNextDisplayed] = useState<number>(-1)
   const [isJustDisplayed, setJustDisplayed] = useState(false)
-  const { duration = 5, maxItemDisplayed = 5, ...rest } = props
+  const { duration = defaultDuration, maxItemDisplayed = 5, ...rest } = props
 
   useEffect(() => {
     if (isLoaded) {
