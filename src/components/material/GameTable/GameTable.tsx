@@ -148,6 +148,10 @@ export const GameTable: FC<GameTableProps> = (
   const boundaries = useMemo(() => ({ xMin, xMax, yMin, yMax }), [xMin, xMax, yMin, yMax])
   const contextValue = useMemo(() => ({ zoom: enableZoom }), [enableZoom])
 
+  // `centerZoomedOut` below keeps the free space split evenly on both sides once the table is smaller than the
+  // wrapper, which happens on every screen wider than the table ratio. Without it, react-zoom-pan-pinch v4 gives
+  // the whole slack to the right (bounds [0, diff] instead of [diff/2, diff/2]), and `disablePadding` then pins the
+  // position to 0, so the table sticks to the left edge. v3 centered by default: this restores that behaviour.
   const tableContent = (
     <div css={[
       tableCss(tableWidth, tableHeight),
@@ -168,7 +172,8 @@ export const GameTable: FC<GameTableProps> = (
         <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle, !enableZoom && nativeZoomCss]}/>
         {enableZoom ? (
           <TransformWrapper ref={zoomRef} minScale={minScale} maxScale={maxScale} initialScale={minScale}
-                            centerOnInit={true} wheel={wheel} smooth={false} panning={panning} disablePadding doubleClick={doubleClick}>
+                            centerOnInit={true} centerZoomedOut={true} wheel={wheel} smooth={false} panning={panning}
+                            disablePadding doubleClick={doubleClick}>
             <TransformComponent wrapperClass="wrapperClass" contentStyle={{ transformStyle: 'preserve-3d' }}>
               <ZoomScaleProvider>
                 {tableContent}
