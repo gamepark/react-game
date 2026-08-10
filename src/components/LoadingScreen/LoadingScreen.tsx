@@ -57,28 +57,24 @@ export const LoadingScreen = ({
       <h2 css={gameTitle}>{boardGameName ?? ' '}</h2>
       {creditsReady && (
         <p css={gamePeople}>
-          <PeopleLine type="authors" people={authors} icon={faLightbulb}/>
-          <PeopleLine type="artists" people={artists} icon={faPaintbrush}/>
-          <PeopleLine type="graphics" people={graphicDesigners} icon={faImage}/>
-          <PeopleLine type="publishers" people={publishers} icon={faWrench}/>
-          <PeopleLine type="developers" people={developers} icon={faLaptopCode}/>
-          <PeopleLine type="musicians" people={musicians} icon={faMusic}/>
+          <PeopleLine type="authors" people={authors} icon={faLightbulb} locale={locale}/>
+          <PeopleLine type="artists" people={artists} icon={faPaintbrush} locale={locale}/>
+          <PeopleLine type="graphics" people={graphicDesigners} icon={faImage} locale={locale}/>
+          <PeopleLine type="publishers" people={publishers} icon={faWrench} locale={locale}/>
+          <PeopleLine type="developers" people={developers} icon={faLaptopCode} locale={locale}/>
+          <PeopleLine type="musicians" people={musicians} icon={faMusic} locale={locale}/>
         </p>
       )}
     </div>
   )
 }
 
-// The credits namespace provides one key per people count, up to maxPeopleInCredits
-const maxPeopleInCredits = 3
-
-const PeopleLine = ({ type, icon, people }: { type: string, icon: IconProp, people: string[] }) => {
-  if (!people.length || people.length > maxPeopleInCredits) return null
-  const values: Record<string, string> = people.length === 1 ? { name: people[0] }
-    : Object.fromEntries(people.map((name, index) => [`name${index + 1}`, name]))
+const PeopleLine = ({ type, icon, people, locale }: { type: string, icon: IconProp, people: string[], locale: string }) => {
+  if (!people.length) return null
+  const names = new Intl.ListFormat(locale, { style: 'long', type: 'conjunction' }).format(people)
   return <>
     <FontAwesomeIcon css={iconStyle} icon={icon}/>
-    <Trans ns="credits" i18nKey={`${type}.${people.length}`} values={values} components={[<strong/>]}/>
+    <Trans ns="credits" i18nKey={`${type}.n`} values={{ names }} components={[<strong/>]}/>
     <br/>
   </>
 }
