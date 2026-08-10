@@ -62,24 +62,23 @@ export const LoadingScreen = ({
           <PeopleLine type="graphics" people={graphicDesigners} icon={faImage}/>
           <PeopleLine type="publishers" people={publishers} icon={faWrench}/>
           <PeopleLine type="developers" people={developers} icon={faLaptopCode}/>
-          <PeopleLine type="musician" people={musicians} icon={faMusic}/>
+          <PeopleLine type="musicians" people={musicians} icon={faMusic}/>
         </p>
       )}
     </div>
   )
 }
 
+// The credits namespace provides one key per people count, up to maxPeopleInCredits
+const maxPeopleInCredits = 3
+
 const PeopleLine = ({ type, icon, people }: { type: string, icon: IconProp, people: string[] }) => {
-  if (!people.length) return null
+  if (!people.length || people.length > maxPeopleInCredits) return null
+  const values: Record<string, string> = people.length === 1 ? { name: people[0] }
+    : Object.fromEntries(people.map((name, index) => [`name${index + 1}`, name]))
   return <>
     <FontAwesomeIcon css={iconStyle} icon={icon}/>
-    {people.length === 1 &&
-      <Trans ns="credits" i18nKey={`${type}.1`} values={{ name: people[0] }} components={[<strong/>]}/>
-    }
-    {people.length === 2 &&
-      <Trans ns="credits" i18nKey={`${type}.2`} values={{ name1: people[0], name2: people[1] }}
-             components={[<strong/>]}/>
-    }
+    <Trans ns="credits" i18nKey={`${type}.${people.length}`} values={values} components={[<strong/>]}/>
     <br/>
   </>
 }
