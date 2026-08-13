@@ -22,11 +22,11 @@
     "publish": "npm version ${0:-patch} && yarn npm publish && yarn sync-sounds && git push && git push --tags"
   },
   "dependencies": {
-    "@datadog/browser-logs": "^7.7.0",
+    "@datadog/browser-logs": "^7.8.0",
     "@dnd-kit/modifiers": "^9.0.0",
     "@gamepark/api-types": "^1.0.3",
     "@gamepark/avataaars": "^3.0.0",
-    "@gamepark/react-client": "^7.7.6",
+    "@gamepark/react-client": "^7.7.7",
     "dayjs": "^1.11.21",
     "fscreen": "^1.2.0",
     "i18next-http-backend": "^4.0.1",
@@ -50,7 +50,7 @@
     "@fortawesome/react-fontawesome": "^3.5.0",
     "@gamepark/rules-api": "^7.7.2",
     "@types/fscreen": "^1.0.4",
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.2.0",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "es-toolkit": "^1.50.0",

@@ -74,34 +74,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@datadog/browser-core@npm:7.7.0":
-  version: 7.7.0
-  resolution: "@datadog/browser-core@npm:7.7.0"
+"@datadog/browser-core@npm:7.8.0":
+  version: 7.8.0
+  resolution: "@datadog/browser-core@npm:7.8.0"
   dependencies:
-    "@datadog/js-core": "npm:0.0.8"
-  checksum: 10c0/4c55b9132cfab2386965c206956095c11b9b2a242cd09c15fe3d8847408541fb0e747b35497071d980c528197a95acbd0e9ee42f716d7bc9714ad9bbb35eeb60
+    "@datadog/js-core": "npm:0.0.9"
+  checksum: 10c0/98aa2b4342bfb5b41289397116e46da38191a812ee3400dc8d39f748bd232f86a11101c66a65bbcda196c74b66634aca362f7407d5400b330e73eb42c30a1822
   languageName: node
   linkType: hard
 
-"@datadog/browser-logs@npm:^7.7.0":
-  version: 7.7.0
-  resolution: "@datadog/browser-logs@npm:7.7.0"
+"@datadog/browser-logs@npm:^7.8.0":
+  version: 7.8.0
+  resolution: "@datadog/browser-logs@npm:7.8.0"
   dependencies:
-    "@datadog/browser-core": "npm:7.7.0"
-    "@datadog/js-core": "npm:0.0.8"
+    "@datadog/browser-core": "npm:7.8.0"
+    "@datadog/js-core": "npm:0.0.9"
   peerDependencies:
-    "@datadog/browser-rum": 7.7.0
+    "@datadog/browser-rum": 7.8.0
   peerDependenciesMeta:
     "@datadog/browser-rum":
       optional: true
-  checksum: 10c0/054603e5e0ec8a60d241759527b2f99fc458bf9adf9ea95e9c9fc3d00d050f1b99ddb28c4b692a8eaea8d7e58b30b306c5e18f663077299fb1d501a78d733285
+  checksum: 10c0/bbfb00c14106d4c860130cdabaabe2bdba18f69283331c57d1b1d1010a2bc39f0662c4b0aeb09d2bd1c005a7804d5a8c9638473aa4053dd5fb9b505ab1cb343c
   languageName: node
   linkType: hard
 
-"@datadog/js-core@npm:0.0.8":
-  version: 0.0.8
-  resolution: "@datadog/js-core@npm:0.0.8"
-  checksum: 10c0/fe43f0ff073a597c3927fc6219e7b6fb59d6a054f3665b5eeb416588d70910b799e68e509f4d9c14d9719bb36fda71b6ef7f4a19a6452e94d9de069b785db3c4
+"@datadog/js-core@npm:0.0.9":
+  version: 0.0.9
+  resolution: "@datadog/js-core@npm:0.0.9"
+  checksum: 10c0/6739d4ab18bfd2fc11c8640a73f05d9c76ab8c1178de54165d87480a888ea95f3c571a609f847243769741010a487886d3d3da8b83b7713fe9f0f548d8a742fd
   languageName: node
   linkType: hard
 
@@ -384,9 +384,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gamepark/react-client@npm:^7.7.6":
-  version: 7.7.6
-  resolution: "@gamepark/react-client@npm:7.7.6"
+"@gamepark/react-client@npm:^7.7.7":
+  version: 7.7.7
+  resolution: "@gamepark/react-client@npm:7.7.7"
   dependencies:
     "@reduxjs/toolkit": "npm:^2.12.0"
     "@tanstack/react-query": "npm:^5.101.4"
@@ -407,7 +407,7 @@ __metadata:
     react-dom: ^19.2.4
     react-redux: ^9.2.0
     rxjs: ^7.8.2
-  checksum: 10c0/4eace233c17537467c9326bd14656708afdde72fd8fa9ab3d31c3afea3d03f860f516a3ec930873d4ec671631682bb5d791e97118bc996c7be93536bdafbfe98
+  checksum: 10c0/0ef3cb7a8a3475e11e9c1131ee38bfc30c8dcde34bbddf0b508c524896efc797204c84969517563fab5fcfb129eec8236a5387987a8cac099dcf7215bc816d94
   languageName: node
   linkType: hard
 
@@ -415,7 +415,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@gamepark/react-game@workspace:."
   dependencies:
-    "@datadog/browser-logs": "npm:^7.7.0"
+    "@datadog/browser-logs": "npm:^7.8.0"
     "@dnd-kit/core": "npm:^6.3.1"
     "@dnd-kit/modifiers": "npm:^9.0.0"
     "@emotion/react": "npm:^11.14.0"
@@ -425,10 +425,10 @@ __metadata:
     "@fortawesome/react-fontawesome": "npm:^3.5.0"
     "@gamepark/api-types": "npm:^1.0.3"
     "@gamepark/avataaars": "npm:^3.0.0"
-    "@gamepark/react-client": "npm:^7.7.6"
+    "@gamepark/react-client": "npm:^7.7.7"
     "@gamepark/rules-api": "npm:^7.7.2"
     "@types/fscreen": "npm:^1.0.4"
-    "@types/node": "npm:^26.1.2"
+    "@types/node": "npm:^26.2.0"
     "@types/react": "npm:^19.2.18"
     "@types/react-dom": "npm:^19.2.4"
     dayjs: "npm:^1.11.21"
@@ -802,12 +802,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^26.1.2":
-  version: 26.1.2
-  resolution: "@types/node@npm:26.1.2"
+"@types/node@npm:^26.2.0":
+  version: 26.2.0
+  resolution: "@types/node@npm:26.2.0"
   dependencies:
     undici-types: "npm:~8.3.0"
-  checksum: 10c0/a45503222c7db8f374afd5c9381db63dd95b6b1f703abea0890dd3d4a09eeb41da489e08a1a45baf18fe89fb77fbf310ff2789f680c490b04dafc41a60800a86
+  checksum: 10c0/f8566d88162241eb55a46f7e4ea097188eab0aaafefea7a58e63adab8c4144eb98c08b7911452c846104c339a0f82282f5e1ed4b26b578d60709614fe2843f4d
   languageName: node
   linkType: hard
 

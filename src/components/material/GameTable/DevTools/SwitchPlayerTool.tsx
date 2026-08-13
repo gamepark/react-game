@@ -19,18 +19,18 @@ export const SwitchPlayerTool: FC<SwitchPlayerToolProps> = ({ exec, g }) => {
     <div css={toolBtnCss}>
       <span css={toolIconCss}>{'\u2194'}</span>
       <span css={toolLabelCss}>Switch Player</span>
-      <span css={toolDescCss}>View as another player</span>
+      <span css={toolDescCss}>Open the tab of another player</span>
       <div css={inlineRowCss} onClick={e => e.stopPropagation()}>
         {players.map(pid => (
           <button key={String(pid)}
             css={[playerBtnCss, pid === currentPlayer && playerBtnActiveCss]}
-            onClick={() => exec(() => g.changePlayer(pid), `Switched to P${pid}`)}>
+            onClick={() => exec(() => g.openPlayer(pid), `Opened P${pid}`)}>
             P{String(pid)}
           </button>
         ))}
         <button
           css={[playerBtnCss, currentPlayer === undefined && playerBtnActiveCss]}
-          onClick={() => exec(() => g.changePlayer(), 'Spectator mode')}>
+          onClick={() => exec(() => g.openPlayer(), 'Opened spectator')}>
           Spect
         </button>
       </div>
