@@ -59,6 +59,13 @@ const DynamicItemsTypeDisplay = ({ type, items, boundaries, ...props }: DynamicI
     || (isMoveItemTypeAtOnce(type)(animation.move) && (animation.move as MoveItemsAtOnce).reveal !== undefined)
   )
 
+  // Dynamic items are memoized on their position dependencies, and legalMoves has already collapsed to the stable
+  // EMPTY_MOVES constant by the time the displayed state reaches isOver(). Adding it to the dependencies gives every
+  // item a re-render signal at the game-over transition, so whatever a description draws only once the game is over
+  // (e.g. the end-of-game score printed on a card by getItemExtraCss) appears without reloading the page.
+  // Symmetrical to the gameOver prop of StaticItemsDisplay.
+  const gameOver = context.rules.isOver()
+
   // Pre-compute item animations: build a map of animation CSS per item key
   const itemAnimations = useRef(new Map<string, Interpolation<Theme>>())
   itemAnimations.current.clear()
@@ -107,7 +114,7 @@ const DynamicItemsTypeDisplay = ({ type, items, boundaries, ...props }: DynamicI
         )
         const disabled = !legalMoves.some(move => description.canDrag(move, itemContext))
         const rawPositionDeps = locator?.getFullPositionDependencies(revealedItem.location, context)
-        const positionDeps = rawPositionDeps === undefined ? undefined : [rawPositionDeps, context.rules.game.view]
+        const positionDeps = rawPositionDeps === undefined ? undefined : [rawPositionDeps, context.rules.game.view, gameOver]
         return <DraggableMaterial key={`${type}_${index}_${displayIndex}`}
                                   highlight={description.highlight(revealedItem, itemContext)}
                                   type={type} index={index} displayIndex={displayIndex} isFocused={isFocused}
