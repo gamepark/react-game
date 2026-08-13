@@ -11,7 +11,7 @@ import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { MoveItemAnimations } from './MoveItemAnimations'
 import { MoveItemAtOnceAnimations } from './MoveItemAtOnceAnimations'
 import { RollItemAnimations } from './RollItemAnimations'
-import { ShuffleAnimations } from './ShuffleAnimations'
+import { defaultShuffleDuration, ShuffleAnimations } from './ShuffleAnimations'
 import { Trajectory } from './Trajectory'
 
 export class MaterialAnimations<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number>
@@ -19,7 +19,16 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
 
   protected readonly animations: Partial<Record<ItemMoveType, ItemAnimations<P, M, L, R, V>>>
 
-  constructor(duration = 1, droppedItemDuration = 0.2, trajectory?: Trajectory<P, M, L>) {
+  /**
+   * @param duration Duration of the animations, in seconds
+   * @param droppedItemDuration Duration of the animation of an item that was dropped by the player, in seconds
+   * @param trajectory Trajectory configuration of the moves
+   * @param shuffleDuration Duration of the shuffle animation, in seconds. A shuffle is not a displacement from
+   * A to B: it needs to last long enough for the random movement to read as "the items were mixed up", hence a
+   * default of its own. Pass the raw (possibly undefined) configured duration so that a game which explicitly
+   * sets a duration also controls its shuffles.
+   */
+  constructor(duration = 1, droppedItemDuration = 0.2, trajectory?: Trajectory<P, M, L>, shuffleDuration = defaultShuffleDuration) {
     super()
     this.animations = {
       [ItemMoveType.Create]: new CreateItemAnimations(duration, trajectory),
@@ -27,7 +36,7 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
       [ItemMoveType.MoveAtOnce]: new MoveItemAtOnceAnimations(duration, trajectory),
       [ItemMoveType.Delete]: new DeleteItemAnimations(duration, droppedItemDuration, trajectory),
       [ItemMoveType.DeleteAtOnce]: new DeleteItemAtOnceAnimations(duration, trajectory),
-      [ItemMoveType.Shuffle]: new ShuffleAnimations(0),
+      [ItemMoveType.Shuffle]: new ShuffleAnimations(shuffleDuration),
       [ItemMoveType.Roll]: new RollItemAnimations(duration)
     }
   }

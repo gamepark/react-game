@@ -263,10 +263,10 @@ class AnimationConfig<P extends number = number, M extends number = number, L ex
 
   getDuration(move: MaterialMove<P, M, L, R, V>, context: MaterialGameAnimationContext<P, M, L, R, V>): number {
     if (move.kind !== MoveKind.ItemMove) return context.step === AnimationStep.BEFORE_MOVE ? this.d ?? 0 : 0
-    return new MaterialAnimations<P, M, L, R, V>(this.d).getDuration(move, context)
+    return new MaterialAnimations<P, M, L, R, V>(this.d, undefined, undefined, this.d).getDuration(move, context)
   }
 
   getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<MaterialMove<P, M, L, R, V>>, boundaries: GridBoundaries): Interpolation<Theme> {
-    return new MaterialAnimations<P, M, L, R, V>(this.d).getItemAnimation(context, animation, boundaries)
+    return new MaterialAnimations<P, M, L, R, V>(this.d, undefined, undefined, this.d).getItemAnimation(context, animation, boundaries)
   }
 }
