@@ -15,7 +15,7 @@ import { merge } from 'es-toolkit'
 import { useContext, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MaterialContextRefContext, useAnimations, useLegalMoves, useMaterialContext, useUndo } from '../../../hooks'
-import { ItemContext } from '../../../locators'
+import { displayedItems, ItemContext } from '../../../locators'
 import { gameContext } from '../../GameProvider'
 import { MaterialGameAnimations } from '../animations'
 import { DraggableMaterial } from '../DraggableMaterial'
@@ -46,6 +46,10 @@ const DynamicItemsTypeDisplay = ({ type, items, boundaries, ...props }: DynamicI
   const description = context.material[type]
   const legalMoves = useLegalMoves<MaterialMove>()
   const [undo, canUndo] = useUndo<MaterialMove>()
+
+  // Record what is on screen, so that a locator handed a game state can tell it apart from the copies
+  // animations simulate moves on (see PileLocator.cleanUpPile).
+  displayedItems.track(type, items)
 
   // Stable ref to the latest context — children read from this without subscribing
   const contextRef = useRef(context)
