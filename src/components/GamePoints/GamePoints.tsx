@@ -1,6 +1,7 @@
 import { css } from '@emotion/react'
 import { useGameSelector } from '@gamepark/react-client'
 import { HTMLAttributes, useEffect, useState } from 'react'
+import { getLocale } from '../../utilities/translation.util'
 import { GamePointIcon } from './index'
 
 type Props<PlayerId> = {
@@ -21,8 +22,12 @@ export const GamePoints = <PlayerId extends any>({ playerId, suspense = 0.1, tes
     }
   }, [player, gamePointsDelta, hidden, suspense, setHidden])
   if (gamePointsDelta === undefined) return null
-  return <span css={[style, hidden && hiddenCss]} {...props}><GamePointIcon/>{gamePointsDelta > 0 && '+'}{gamePointsDelta}</span>
+  return <span css={[style, hidden && hiddenCss]} {...props}><GamePointIcon/>{gamePointsDelta > 0 && '+'}{formatGamePoints(gamePointsDelta)}</span>
 }
+
+// Game points are integers, except when a game moved the score by less than half a point: the site then
+// reports the real variation with one decimal, so that a game never looks like it did not count at all.
+const formatGamePoints = (gamePoints: number) => gamePoints.toLocaleString(getLocale(), { maximumFractionDigits: 1 })
 
 const style = css`
   display: flex;

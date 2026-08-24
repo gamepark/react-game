@@ -29,6 +29,11 @@ for (const [locale, overrides] of Object.entries(numericSingularRelativeTime)) {
   }
 }
 
+/**
+ * Locale the game is displayed in: the site passes it in the query string of the game frame url.
+ */
+export const getLocale = () => new URLSearchParams(window.location.search).get('locale') || 'en'
+
 let translationInitialized = false
 const reportedKeys = new Set<string>()
 
@@ -46,8 +51,7 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
 
   i18next.use(initReactI18next).use(ICU).use(HttpBackend)
 
-  const query = new URLSearchParams(window.location.search)
-  const locale = query.get('locale') || 'en'
+  const locale = getLocale()
   document.documentElement.lang = locale
 
   i18next.init({
