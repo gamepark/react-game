@@ -13,22 +13,37 @@ export class AudioLoader {
     this.sounds = {}
   }
 
+  /**
+   * Fetch and decode every sound, and resolve once they have all been tried.
+   *
+   * A sound that cannot be fetched or decoded is reported and skipped, never rethrown. Callers wait on this
+   * promise to take the loading screen down — `onSoundsLoad` — so a rejection here does not degrade the sound,
+   * it strands the player on the loading screen forever. One missing file must cost its own sound and nothing
+   * else, which matters all the more now that the framework gives materials sounds the game never listed and
+   * may not have published yet.
+   */
   public async load(sources: (string | MaterialSoundConfig)[]): Promise<any> {
     this.sources = sources.map((s) => typeof s === 'string' ? { id: s, url: s } : { id: s.sound, url: s.sound })
     if (!sources.length) return Promise.resolve()
-    return Promise.all(this.sources.map(async source =>
-      fetch(new Request(source.url))
-        .then(response => response.arrayBuffer())
-        .then((buffer) => this.audioContext.decodeAudioData(buffer, (b) => {
-          this.buffers[source.id] = b
-        }))
-    ))
+    return Promise.all(this.sources.map(async source => {
+      try {
+        const response = await fetch(new Request(source.url))
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        this.buffers[source.id] = await this.audioContext.decodeAudioData(await response.arrayBuffer())
+      } catch (error) {
+        console.warn(`Could not load sound ${source.url}`, error)
+      }
+    }))
   }
 
   public play(soundConfig: string | MaterialSoundConfig) {
     const config = typeof soundConfig === 'string' ? new MaterialSoundConfig(soundConfig) : soundConfig
     const id = config.sound
     this.sounds[id] = this.sounds[id] || {}
+
+    // A sound whose file failed to load has no buffer. Playing on regardless would start a source node with a
+    // null buffer, which never fires `ended` and leaks a node per move for the rest of the game.
+    if (!this.buffers[id]) return
 
     const sound = this.sounds[id]
     sound.volume = config.volume ?? 1

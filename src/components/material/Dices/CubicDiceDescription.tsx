@@ -5,9 +5,11 @@ import { backgroundCss, borderRadiusCss, shadowEffect, shineEffect, transformCss
 import { ItemContext } from '../../../locators'
 import { MaterialContentProps } from '../MaterialDescription'
 import { MobileMaterialDescription } from '../MobileMaterialDescription'
+import { SoundKit } from '../sound/defaultSounds'
 
 export abstract class CubicDiceDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>
   extends MobileMaterialDescription<P, M, L, ItemId, R, V> {
+  soundKit = SoundKit.Dice
   width = 1.6
   ratio = 1
   borderRadius = 0.3

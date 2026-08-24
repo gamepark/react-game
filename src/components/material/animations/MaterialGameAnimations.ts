@@ -186,6 +186,26 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
   }
 
   /**
+   * Sound the animation API configures for a move: a sound, `false` when the game explicitly silences the
+   * move, or undefined when the animations say nothing and the material description should decide.
+   *
+   * Not expressed through {@link getAnimationBuilder}, on purpose. That method only hands back the default
+   * builder when it carries a duration or a trajectory, because those are what change the way a move is
+   * animated. A default builder carrying nothing but a sound — `animations.defaults().sound(false)`, the way
+   * a game turns the library's default sounds off wholesale — would never be returned, and the switch would
+   * silently do nothing.
+   *
+   * @internal
+   */
+  getSoundConfig(move: MaterialMove<P, M, L, R, V>, context: MaterialAnimationContext<P, M, L, R, V>): string | MaterialSoundConfig | false | undefined {
+    for (const builder of this.animationBuilders) {
+      if (builder.matches(move, context) && builder.soundConfig !== undefined) return builder.soundConfig
+    }
+    if (this._defaultBuilder.soundConfig !== undefined) return this._defaultBuilder.soundConfig
+    return this.getAnimationConfig(move, context).s
+  }
+
+  /**
    * Get item animation CSS, checking both new and legacy APIs.
    * @internal
    */
@@ -210,7 +230,9 @@ export class MaterialGameAnimations<P extends number = number, M extends number 
       .filter(animationConfig => !!animationConfig.s)
       .map(animationConfig => ensureMaterialSoundConfig(animationConfig.s!)!.sound)
 
-    const newSounds = this.animationBuilders
+    // `_defaultBuilder` is deliberately not part of `animationBuilders`, so `defaults().sound(url)` has to be
+    // listed here too or that sound would be played without ever having been fetched and decoded.
+    const newSounds = [...this.animationBuilders, this._defaultBuilder]
       .filter(builder => builder.soundConfig !== undefined && builder.soundConfig !== false)
       .map(builder => ensureMaterialSoundConfig(builder.soundConfig as string | MaterialSoundConfig)!.sound)
 

@@ -1,8 +1,11 @@
 import { ComponentSize } from '../ComponentDescription'
+import { SoundKit } from '../sound'
 import { FlatMaterialDescription } from './FlatMaterial'
 
 export abstract class TokenDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>
   extends FlatMaterialDescription<P, M, L, ItemId, R, V> {
+  /** Cardboard is what most tokens are punched out of. Override it with the sound the token should make. */
+  soundKit = SoundKit.Cardboard
   ratio = 1
 }
 

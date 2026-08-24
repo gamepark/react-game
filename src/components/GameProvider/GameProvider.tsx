@@ -7,10 +7,11 @@ import { BackgroundTheme, defaultTheme } from '../../css'
 import { normalize } from '../../css/normalize'
 import { DeepPartial } from '../../utilities'
 import { setupTranslation } from '../../utilities/translation.util'
+import { DefaultMaterialGameSounds } from '../material'
 import { isMaterialTutorial } from '../tutorial'
 import { wrapRulesWithTutorial } from '../tutorial/TutorialRulesWrapper'
-import { GameErrorBoundary } from './GameErrorBoundary'
 import { GameContext, gameContext } from './GameContext'
+import { GameErrorBoundary } from './GameErrorBoundary'
 
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
@@ -36,6 +37,10 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
   if (props.material && materialI18n && locale in materialI18n) {
     merge(props.material, materialI18n[locale])
   }
+  // Mounted inside the game provider, never above it: both providers are what supply the redux store, and the
+  // sounds read the game state through it. Built once here rather than written into each branch, so the two
+  // cannot drift apart.
+  const content = <>{children}<DefaultMaterialGameSounds/></>
   return (
     <GameErrorBoundary>
       <gameContext.Provider value={props as GameContext}>
@@ -43,8 +48,8 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
           <Global styles={[normalize, globalCss]}/>
           <TRPCProvider>
             {gameId ?
-              <RemoteGameProvider gameId={gameId} {...props}>{children}</RemoteGameProvider> :
-              <LocalGameProvider {...props}>{children}</LocalGameProvider>
+              <RemoteGameProvider gameId={gameId} {...props}>{content}</RemoteGameProvider> :
+              <LocalGameProvider {...props}>{content}</LocalGameProvider>
             }
           </TRPCProvider>
         </ThemeProvider>
