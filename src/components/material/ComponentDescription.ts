@@ -1,5 +1,6 @@
-import { getEnumValues, ItemMoveType } from '@gamepark/rules-api'
-import { defaultSounds, MaterialSoundConfig, SoundKit } from './sound'
+import { ItemMove, ItemMoveType } from '@gamepark/rules-api'
+import { getSoundKitMoveSounds, getSoundKitSounds, SoundBatch, SoundKit } from './sound/defaultSounds'
+import { MaterialSoundConfig } from './sound/MaterialSoundConfig'
 import { ensureMaterialSoundConfig } from './sound/sound.utils'
 
 /**
@@ -32,30 +33,33 @@ export abstract class ComponentDescription<Id = any> {
   soundKit?: SoundKit
 
   /**
-   * Sound the framework falls back to when {@link sounds} declares nothing for that move type. Reads
+   * Sounds the framework falls back to when {@link sounds} declares nothing for that move type. Reads
    * {@link soundKit}; override it for a component whose sound depends on the item rather than on the class.
+   *
+   * Several, because one move is not always one sound: an item that is revealed as it travels is heard
+   * turning over and then landing. They are scheduled independently — see {@link MaterialSoundConfig.atEnd}.
    *
    * A method rather than a getter on purpose. `target: esnext` implies `useDefineForClassFields`, so a
    * subclass writing `sounds = {...}` *defines* the property and would blank out a base-class getter instead
    * of extending it. A method lives on the prototype and is overridden the way it reads.
    *
-   * @param moveType the type of move being animated
-   * @returns the sound, `false` to stay silent, or undefined when this component has no default
+   * @param move the move being animated
+   * @param batch the moves animated in a row with it, see {@link SoundBatch}
+   * @returns the sounds to play, empty when this component makes no sound for that move
    */
-  getDefaultSound(moveType: ItemMoveType): string | MaterialSoundConfig | false | undefined {
-    return this.soundKit === undefined ? undefined : defaultSounds[this.soundKit][moveType]
+  getDefaultSounds(move: ItemMove, batch: SoundBatch): MaterialSoundConfig[] {
+    return this.soundKit === undefined ? [] : getSoundKitMoveSounds(this.soundKit, move, batch)
   }
 
   /**
    * Every sound this component can play, so they are all fetched and decoded before the game starts.
    *
-   * Both what the game declares in {@link sounds} and what {@link getDefaultSound} falls back to: a
+   * Both what the game declares in {@link sounds} and what {@link getDefaultSounds} falls back to: a
    * default that is only discovered when the move happens would be silent the first time it plays,
    * which is the one time anybody notices.
    */
   getSounds(): (string | MaterialSoundConfig)[] {
-    return itemMoveTypes
-      .flatMap(moveType => [this.sounds?.[moveType], this.getDefaultSound(moveType)])
+    return [...Object.values(this.sounds ?? {}), ...getSoundKitSounds(this.soundKit)]
       .map(sound => ensureMaterialSoundConfig(sound))
       .filter((sound): sound is MaterialSoundConfig => sound !== undefined)
   }
@@ -106,8 +110,6 @@ export abstract class ComponentDescription<Id = any> {
     return this.borderRadius
   }
 }
-
-const itemMoveTypes = getEnumValues(ItemMoveType)
 
 /**
  * Size of a component on the game table, in centimeters.

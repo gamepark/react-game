@@ -1,10 +1,14 @@
 import { MaterialItem, Polyomino } from '@gamepark/rules-api'
 import { ItemContext } from '../../../locators'
 import { ComponentDescription } from '../ComponentDescription'
+import { SoundKit } from '../sound'
 import { FlatMaterialDescription } from './FlatMaterial'
 
 export abstract class PolyominoDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, T = any, R extends number = number, V extends number = number>
   extends FlatMaterialDescription<P, M, L, ItemId, R, V> {
+
+  /** Tiles are punched out of cardboard. Override it with the sound the tile should make. */
+  soundKit = SoundKit.Cardboard
 
   /**
    * The shape of the polyomino (use getPolyomino if it varies depending on the item)

@@ -8,7 +8,7 @@ import { FlatMaterialDescription } from './FlatMaterial'
 export abstract class MoneyDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>
   extends FlatMaterialDescription<P, M, L, ItemId, R, V> {
   /** Coins sound like coins even when the game punches them out of cardboard. */
-  soundKit = SoundKit.Metal
+  soundKit = SoundKit.Coin
 
   getTooltip(item: MaterialItem<P, L, ItemId>, t: TFunction, context: ItemContext<P, M, L, R, V>): string | null | undefined {
     const { rules, type } = context
