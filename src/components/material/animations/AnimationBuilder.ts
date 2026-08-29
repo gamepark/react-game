@@ -228,7 +228,12 @@ export class AnimationBuilder<P extends number = number, M extends number = numb
       if (context.step !== AnimationStep.AFTER_MOVE) return 0
       return this._duration ?? 1
     }
-    if (move.kind !== MoveKind.ItemMove) return this._duration ?? 0
+    // A move that is not an item displacement (start rule, custom move, local move…) has no "from" and no
+    // "to": it is a pure pause in the timeline. It must be spent once, on the way in — the reducer asks for a
+    // duration again at AFTER_MOVE and, on an undo, at BEFORE_UNDO / AFTER_UNDO, and answering the same
+    // duration every time would play the pause two to four times over. `postMove()` is how a game asks for
+    // that pause on the way out instead.
+    if (move.kind !== MoveKind.ItemMove) return context.step === AnimationStep.BEFORE_MOVE ? this._duration ?? 0 : 0
     const trajectory = typeof this._trajectory === 'function' ? {} : this._trajectory
     return new MaterialAnimationsWithTrajectory<P, M, L, R, V>(this._duration, trajectory).getDuration(move, context)
   }
