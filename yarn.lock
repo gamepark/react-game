@@ -74,34 +74,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@datadog/browser-core@npm:7.9.0":
-  version: 7.9.0
-  resolution: "@datadog/browser-core@npm:7.9.0"
+"@datadog/browser-core@npm:7.10.0":
+  version: 7.10.0
+  resolution: "@datadog/browser-core@npm:7.10.0"
   dependencies:
-    "@datadog/js-core": "npm:0.0.10"
-  checksum: 10c0/58c4f6f475c60936d0e8faa425cedec148aa97f9bb52dcc2c7151fc301b5dc7b49e4b427fe8d65516bc3ac437ed41f03770018d5b436bf42ec8a6937d02b4834
+    "@datadog/js-core": "npm:0.0.11"
+  checksum: 10c0/9d79f11a95b4e01af29c6f9bdfbf145666f6d117d55089ac60b800f6bc56f2183f8f9a4ec4c5ab7fff9af39c64189a316f858b71827251cc7d4b01b699401cc7
   languageName: node
   linkType: hard
 
-"@datadog/browser-logs@npm:^7.9.0":
-  version: 7.9.0
-  resolution: "@datadog/browser-logs@npm:7.9.0"
+"@datadog/browser-logs@npm:^7.10.0":
+  version: 7.10.0
+  resolution: "@datadog/browser-logs@npm:7.10.0"
   dependencies:
-    "@datadog/browser-core": "npm:7.9.0"
-    "@datadog/js-core": "npm:0.0.10"
+    "@datadog/browser-core": "npm:7.10.0"
+    "@datadog/js-core": "npm:0.0.11"
   peerDependencies:
-    "@datadog/browser-rum": 7.9.0
+    "@datadog/browser-rum": 7.10.0
   peerDependenciesMeta:
     "@datadog/browser-rum":
       optional: true
-  checksum: 10c0/b1a6d516404a4cbfced5b8359495d2b8c9031e931c8c9579ef44cfe9b447c74409f776eeee740b2bf41097cf10803b072066a26348f502abd4d63b56bbb9cc96
+  checksum: 10c0/9eea1383c92f4f22a9cc0bf4d045e3f279bdc007d7181f7e0cc6d9cbc1ff077d34922cb89b71c4f53770d738448eaa08b1450e90e312d1c6ef68eb7e3355e071
   languageName: node
   linkType: hard
 
-"@datadog/js-core@npm:0.0.10":
-  version: 0.0.10
-  resolution: "@datadog/js-core@npm:0.0.10"
-  checksum: 10c0/1b00dd0a829baa93fae0ae59db8283ed848fa96514b565e49126e7ee70584a70e94fbeeec18df86e4b2b3a19328716657904c076d516a94dbaef802fddda4800
+"@datadog/js-core@npm:0.0.11":
+  version: 0.0.11
+  resolution: "@datadog/js-core@npm:0.0.11"
+  checksum: 10c0/406455124847615ee1b9e630a74f07190c96e6a4106a2dca8328667de044f64bf6be4577c127db2dbcba3bfb3ed10f23b69bad0e51229a9d9b6fa6bfb9843b1b
   languageName: node
   linkType: hard
 
@@ -384,17 +384,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gamepark/react-client@npm:^7.7.7":
-  version: 7.7.7
-  resolution: "@gamepark/react-client@npm:7.7.7"
+"@gamepark/react-client@npm:^7.7.8":
+  version: 7.7.8
+  resolution: "@gamepark/react-client@npm:7.7.8"
   dependencies:
     "@reduxjs/toolkit": "npm:^2.12.0"
-    "@tanstack/react-query": "npm:^5.101.4"
+    "@tanstack/react-query": "npm:^5.102.1"
     "@trpc/client": "npm:^11.18.0"
     "@trpc/react-query": "npm:^11.18.0"
     "@trpc/server": "npm:^11.18.0"
     assert: "npm:^2.1.0"
-    immer: "npm:^11.1.15"
+    immer: "npm:^11.1.18"
     pusher-js: "npm:^8.6.0"
     redux: "npm:^5.0.1"
     superjson: "npm:^2.2.6"
@@ -407,7 +407,7 @@ __metadata:
     react-dom: ^19.2.4
     react-redux: ^9.2.0
     rxjs: ^7.8.2
-  checksum: 10c0/0ef3cb7a8a3475e11e9c1131ee38bfc30c8dcde34bbddf0b508c524896efc797204c84969517563fab5fcfb129eec8236a5387987a8cac099dcf7215bc816d94
+  checksum: 10c0/7fc691fb0f7585692a9119023481d9a9b6720452fa5d2d4b4d011b742bf5f3e339b81bb0da0026f15f3d7fda9429d86df5f7f5fb7aea631c47b8d53521bcc038
   languageName: node
   linkType: hard
 
@@ -415,7 +415,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@gamepark/react-game@workspace:."
   dependencies:
-    "@datadog/browser-logs": "npm:^7.9.0"
+    "@datadog/browser-logs": "npm:^7.10.0"
     "@dnd-kit/core": "npm:^6.3.1"
     "@dnd-kit/modifiers": "npm:^9.0.0"
     "@emotion/react": "npm:^11.14.0"
@@ -425,7 +425,7 @@ __metadata:
     "@fortawesome/react-fontawesome": "npm:^3.5.0"
     "@gamepark/api-types": "npm:^1.0.3"
     "@gamepark/avataaars": "npm:^3.0.0"
-    "@gamepark/react-client": "npm:^7.7.7"
+    "@gamepark/react-client": "npm:^7.7.8"
     "@gamepark/rules-api": "npm:^7.7.2"
     "@types/fscreen": "npm:^1.0.4"
     "@types/node": "npm:^26.2.0"
@@ -715,7 +715,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^5.101.4":
+"@tanstack/react-query@npm:^5.102.1":
   version: 5.102.2
   resolution: "@tanstack/react-query@npm:5.102.2"
   dependencies:
@@ -1716,7 +1716,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:^11.1.15, immer@npm:^11.1.18":
+"immer@npm:^11.1.18":
   version: 11.1.18
   resolution: "immer@npm:11.1.18"
   checksum: 10c0/afe02fcd154134eb2b3bea5a06051ef2e220677dbbc9c0b17ea2ce1c22bfc3690ac16f916922c12ad9c074617a02148ac5d94cbf0886d76e7ebac726806679d0

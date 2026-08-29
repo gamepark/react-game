@@ -15,18 +15,19 @@
   },
   "scripts": {
     "build": "tsc",
-    "prepack": "yarn build",
+    "check-sounds": "node scripts/check-sounds.mjs",
+    "prepack": "yarn check-sounds && yarn build",
     "linkgp": "yarn link ../rules-api ../react-client -r && git update-index --skip-worktree package.json yarn.lock",
     "unlinkgp": "git update-index --no-skip-worktree package.json yarn.lock && yarn unlink ../react-client ../rules-api",
     "sync-sounds": "rclone sync sounds sounds:sounds.game-park.com --progress --s3-acl=public-read",
     "publish": "npm version ${0:-patch} && yarn npm publish && yarn sync-sounds && git push && git push --tags"
   },
   "dependencies": {
-    "@datadog/browser-logs": "^7.9.0",
+    "@datadog/browser-logs": "^7.10.0",
     "@dnd-kit/modifiers": "^9.0.0",
     "@gamepark/api-types": "^1.0.3",
     "@gamepark/avataaars": "^3.0.0",
-    "@gamepark/react-client": "^7.7.7",
+    "@gamepark/react-client": "^7.7.8",
     "dayjs": "^1.11.23",
     "fscreen": "^1.2.0",
     "i18next-http-backend": "^4.0.1",
