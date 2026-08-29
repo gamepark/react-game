@@ -13,7 +13,7 @@ import {
 } from '@gamepark/rules-api'
 import { isEqual, sumBy, uniqWith } from 'es-toolkit'
 import { ComponentType } from 'react'
-import { DropAreaDescription, LocationDescription, LocationHelpProps, MaterialDescriptionRecord } from '../components'
+import { DropAreaDescription, LocationDescription, LocationHelpProps, MaterialDescriptionRecord, ParentDropAreaDescription } from '../components'
 import { defaultOrigin, LocationOrigin, OriginType } from './LocationOrigin'
 
 export type SortFunction = ((item: MaterialItem) => number)
@@ -101,7 +101,10 @@ export class Locator<P extends number = number, M extends number = number, L ext
       if (this.parentItemType !== undefined && location.x === undefined && location.y === undefined && location.z === undefined) {
         const material = context.material[this.parentItemType]
         if (material) {
-          this.locationDescription = new DropAreaDescription<P, M, L>(material)
+          // A location that names a parent item and no spot of it is that item, so the area drawn for it is the
+          // size of that item and centred on it. See {@link ParentDropAreaDescription}, and declare a plain
+          // {@link DropAreaDescription} as the locationDescription for an area that stands elsewhere.
+          this.locationDescription = new ParentDropAreaDescription<P, M, L>(material)
         }
       } else if (isItemContext(context)) {
         return this.generateLocationDescriptionFromDraggedItem(location, context)

@@ -8,7 +8,8 @@ import {
   MaterialMove,
   MaterialMoveBuilder,
   MoveItem,
-  MoveItemsAtOnce
+  MoveItemsAtOnce,
+  XYCoordinates
 } from '@gamepark/rules-api'
 import { isEqual } from 'es-toolkit'
 import { ComponentType, ElementType } from 'react'
@@ -22,9 +23,10 @@ import displayLocationHelp = MaterialMoveBuilder.displayLocationHelp
 export class LocationDescription<P extends number = number, M extends number = number, L extends number = number, Id = any, R extends number = number, V extends number = number>
   extends ComponentDescription<Id> {
 
-  constructor(clone?: Partial<Pick<LocationDescription, 'height' | 'width' | 'ratio' | 'borderRadius' | 'extraCss'>>) {
+  constructor(clone?: Partial<Pick<LocationDescription, 'height' | 'width' | 'ratio' | 'borderRadius' | 'extraCss' | 'positionOnParent'>>) {
     super(clone)
     this.extraCss = clone?.extraCss
+    this.positionOnParent = clone?.positionOnParent
   }
 
   Component: ElementType = LocationComponent
@@ -35,6 +37,32 @@ export class LocationDescription<P extends number = number, M extends number = n
 
   getLocationSize(location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): ComponentSize {
     return this.getSize(location.id)
+  }
+
+  /**
+   * Where the area of the location stands on its parent item, in percentage of the parent's size, when that
+   * differs from where the locator puts the items the location holds. Use {@link getPositionOnParent} to
+   * provide a dynamic position.
+   *
+   * {@link Locator.getPositionOnParent} answers a different question: it says where one *item* of the location
+   * stands, which is a point - the centre of a pawn, of a card. An area is a box, and the two coincide only
+   * while the box is the size of what it holds. A drop area drawn the size of the whole parent item is the
+   * plainest counter-example: it covers the parent, so it is centred on it ({x: 50, y: 50}), whatever spot of
+   * that parent the items themselves are placed on.
+   *
+   * Undefined, the default, means the two do coincide and the locator has the answer.
+   */
+  positionOnParent?: XYCoordinates
+
+  /**
+   * See {@link positionOnParent}.
+   *
+   * @param _location The location
+   * @param _context Context of the game
+   * @returns the position of the area on its parent item, or undefined to follow the locator
+   */
+  getPositionOnParent(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): XYCoordinates | undefined {
+    return this.positionOnParent
   }
 
   image?: string

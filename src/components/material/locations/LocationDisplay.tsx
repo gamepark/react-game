@@ -21,7 +21,11 @@ export const LocationDisplay = forwardRef<HTMLDivElement, LocationDisplayProps>(
   const { width, height } = description.getLocationSize(location, context)
   const image = description.getImage(location, context)
   const borderRadius = description.getBorderRadius(location.id)
-  const positionOnParent = useMemo(() => locator?.parentItemType !== undefined ? locator.getPositionOnParent(location, context) : undefined, [location, context, location])
+  // What the description says, then what the locator says: the locator places the items the location holds, and
+  // an area is not always centred on them. See LocationDescription.positionOnParent.
+  const positionOnParent = useMemo(() => locator?.parentItemType !== undefined
+    ? description.getPositionOnParent(location, context) ?? locator.getPositionOnParent(location, context)
+    : undefined, [description, location, context, locator])
 
   return (
     <div ref={ref}

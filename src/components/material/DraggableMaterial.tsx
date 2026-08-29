@@ -1,6 +1,16 @@
 import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
-import { DisplayedItem, GridBoundaries, isMoveItemsAtOnce, isSelectItem, MaterialItem, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
+import {
+  DisplayedItem,
+  GridBoundaries,
+  isMoveItem,
+  isMoveItemsAtOnce,
+  isSelectItem,
+  MaterialItem,
+  MaterialMove,
+  MoveItemsAtOnce,
+  XYCoordinates
+} from '@gamepark/rules-api'
 import { isEqual } from 'es-toolkit'
 import React, { forwardRef, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { grabbingCursor, grabCursor } from '../../css'
@@ -14,6 +24,24 @@ import { ItemMenuWrapper } from './ItemMenuWrapper'
 import { MaterialComponentProps } from './MaterialComponent'
 import { isDroppedItem } from './utils/isDroppedItem'
 import { isPlacedOnItem } from './utils/isPlacedOnItem'
+
+/**
+ * Whether the item being dragged has a move of its own to the very place a "move at once" would take it, in
+ * which case that group move is not the one the drop will play: {@link DropAreaDescription.getBestDropMove}
+ * prefers the single move over the group one, and only falls back to the group when no single move lands on
+ * the drop area.
+ *
+ * Which decides whether the rest of the group follows the drag. A whole team travelling under the pointer and
+ * a single piece landing is the drag saying one thing and the drop doing another, and the drag is the one
+ * that is wrong: it is a preview, and the drop is what actually happens. So the group only follows when it is
+ * really what is about to be played.
+ *
+ * Games where a bunch is dragged as a bunch are unaffected: their rules offer the group move alone, so there
+ * is no single move to shadow it.
+ */
+function hasOwnMoveTo(move: MoveItemsAtOnce, context: ItemContext, legalMoves: MaterialMove[]): boolean {
+  return legalMoves.some(m => isMoveItem(m) && m.itemType === move.itemType && m.itemIndex === context.index && isEqual(m.location, move.location))
+}
 
 export type DraggableMaterialProps<M extends number = number> = {
   index: number
@@ -128,6 +156,7 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
       (isPlacedOnItem(item, draggedItemContext) || legalMoves.some((move) =>
         isMoveItemsAtOnce(move) && move.itemType === type && move.indexes.includes(index) && move.indexes.includes(draggedItemContext.index)
         && description.canDrag(move, draggedItemContext) && description.canDrag(move, itemContext)
+        && !hasOwnMoveTo(move, draggedItemContext, legalMoves)
       ))
     , [item, draggedItemContext, legalMoves])
   const [parentTransform, setParentTransform] = useState<XYCoordinates>()
