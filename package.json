@@ -38,7 +38,7 @@
     "o9n": "^2.1.1",
     "react-infinite-scroll-component": "^7.2.1",
     "react-merge-refs": "^3.0.2",
-    "react-zoom-pan-pinch": "^4.0.4",
+    "react-zoom-pan-pinch": "^4.1.1",
     "rxjs": "^7.8.2",
     "use-long-press": "^3.3.0"
   },

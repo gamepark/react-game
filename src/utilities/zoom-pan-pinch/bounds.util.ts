@@ -1,10 +1,10 @@
 /**
  * Comes from https://github.com/BetterTyped/react-zoom-pan-pinch/blob/master/src/core/bounds/bounds.utils.ts
- * (mirrors v4.0.4 — re-check on every major upgrade, nothing here fails to compile when it diverges)
+ * (mirrors v4.1.1 — re-check on every major upgrade, nothing here fails to compile when it diverges)
  *
- * The library exports no equivalent, and both the multi-element zoom and the window resize handler
- * need to clamp a position they computed themselves, so this stays copied. v4 changed the
- * `centerZoomedOut` factor and added the `disablePadding` / explicit position handling below.
+ * The library exports no equivalent, and the window resize handler of the game table needs to clamp a
+ * position it computed itself, so this stays copied. v4 changed the `centerZoomedOut` factor and added
+ * the `disablePadding` / explicit position handling below.
  */
 import { BoundsType, PositionType, ReactZoomPanPinchContext } from 'react-zoom-pan-pinch'
 import { roundNumber } from './calculation.util'

@@ -447,7 +447,7 @@ __metadata:
     react-infinite-scroll-component: "npm:^7.2.1"
     react-merge-refs: "npm:^3.0.2"
     react-redux: "npm:^9.3.0"
-    react-zoom-pan-pinch: "npm:^4.0.4"
+    react-zoom-pan-pinch: "npm:^4.1.1"
     rxjs: "npm:^7.8.2"
     typescript: "npm:^7.0.2"
     use-long-press: "npm:^3.3.0"
@@ -2411,13 +2411,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-zoom-pan-pinch@npm:^4.0.4":
-  version: 4.0.4
-  resolution: "react-zoom-pan-pinch@npm:4.0.4"
+"react-zoom-pan-pinch@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "react-zoom-pan-pinch@npm:4.1.1"
   peerDependencies:
     react: "*"
     react-dom: "*"
-  checksum: 10c0/32c6d92fede5716f01c3c6c4fb6d0edba6e2ee8bd8fe55e5e9c2ec38553fcea5d09ca45ed838861ec2d750ee3df3482a834151870f9e20b19ddca9455add054f
+  checksum: 10c0/c9e9befbc543e557adfc5a8f831435a27f27e21c700b4b72b66d1c9bbf2624e0f79e4996cecb141960fbe60001b14ead1ee10afba1a41e148fd54f79462a88c8
   languageName: node
   linkType: hard
 

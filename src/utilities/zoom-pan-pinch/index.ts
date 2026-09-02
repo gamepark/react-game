@@ -1,9 +1,7 @@
 /**
- * Lib https://github.com/BetterTyped/react-zoom-pan-pinch does not offer a "zoom to multiple elements"
- * feature that we need, and does not export the bounds utilities required to clamp a position we
- * computed ourselves. Only what has no public equivalent is copied here — the animation runner and the
- * easing functions are reached through the public `setTransform` handler instead.
+ * Lib https://github.com/BetterTyped/react-zoom-pan-pinch does not export the bounds utilities required to
+ * clamp a position we computed ourselves, which the window resize handler of the game table needs. Only that
+ * is copied here: everything else is reached through the public handlers.
  */
-export * from './animations.util'
 export * from './bounds.util'
 export * from './calculation.util'
