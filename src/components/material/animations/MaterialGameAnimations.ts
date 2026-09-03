@@ -8,7 +8,7 @@ import { MaterialSoundConfig } from '../sound'
 import { ensureMaterialSoundConfig } from '../sound/sound.utils'
 import { AnimationBuilder, AnimationPredicate, isMaterial, isMoveType, isRule } from './AnimationBuilder'
 import { ItemAnimations } from './ItemAnimations'
-import { MaterialAnimations } from './MaterialAnimations'
+import { MaterialAnimations, MaterialAnimationsConfig } from './MaterialAnimations'
 
 export type MaterialGameAnimationContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> =
   AnimationContext<MaterialGame<P, M, L, R, V>, MaterialMove<P, M, L, R, V>, P>
@@ -283,12 +283,21 @@ class AnimationConfig<P extends number = number, M extends number = number, L ex
     return this.duration(0)
   }
 
+  /**
+   * The single duration this configuration carries, given to everything it can be given to — the shuffles and
+   * the creations of several items at once included, so that `.duration(n)` means what it says. Undefined, it
+   * leaves every default alone.
+   */
+  private get config(): MaterialAnimationsConfig<P, M, L> {
+    return { duration: this.d, shuffleDuration: this.d, createAtOnceDuration: this.d }
+  }
+
   getDuration(move: MaterialMove<P, M, L, R, V>, context: MaterialGameAnimationContext<P, M, L, R, V>): number {
     if (move.kind !== MoveKind.ItemMove) return context.step === AnimationStep.BEFORE_MOVE ? this.d ?? 0 : 0
-    return new MaterialAnimations<P, M, L, R, V>(this.d, undefined, undefined, this.d).getDuration(move, context)
+    return new MaterialAnimations<P, M, L, R, V>(this.config).getDuration(move, context)
   }
 
   getItemAnimation(context: ItemContext<P, M, L, R, V>, animation: Animation<MaterialMove<P, M, L, R, V>>, boundaries: GridBoundaries): Interpolation<Theme> {
-    return new MaterialAnimations<P, M, L, R, V>(this.d, undefined, undefined, this.d).getItemAnimation(context, animation, boundaries)
+    return new MaterialAnimations<P, M, L, R, V>(this.config).getItemAnimation(context, animation, boundaries)
   }
 }

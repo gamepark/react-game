@@ -4,6 +4,7 @@ import { GridBoundaries, ItemMove, ItemMoveType, MaterialGame, MaterialMove, Mat
 import { ItemContext, Locator } from '../../../locators'
 import { MaterialDescription } from '../MaterialDescription'
 import { CreateItemAnimations } from './CreateItemAnimations'
+import { CreateItemsAtOnceAnimations, defaultCreateAtOnceDuration } from './CreateItemsAtOnceAnimations'
 import { DeleteItemAnimations } from './DeleteItemAnimations'
 import { DeleteItemAtOnceAnimations } from './DeleteItemAtOnceAnimations'
 import { ItemAnimations } from './ItemAnimations'
@@ -19,19 +20,17 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
 
   protected readonly animations: Partial<Record<ItemMoveType, ItemAnimations<P, M, L, R, V>>>
 
-  /**
-   * @param duration Duration of the animations, in seconds
-   * @param droppedItemDuration Duration of the animation of an item that was dropped by the player, in seconds
-   * @param trajectory Trajectory configuration of the moves
-   * @param shuffleDuration Duration of the shuffle animation, in seconds. A shuffle is not a displacement from
-   * A to B: it needs to last long enough for the random movement to read as "the items were mixed up", hence a
-   * default of its own. Pass the raw (possibly undefined) configured duration so that a game which explicitly
-   * sets a duration also controls its shuffles.
-   */
-  constructor(duration = 1, droppedItemDuration = 0.2, trajectory?: Trajectory<P, M, L>, shuffleDuration = defaultShuffleDuration) {
+  constructor({
+                duration = 1,
+                droppedItemDuration = 0.2,
+                trajectory,
+                shuffleDuration = defaultShuffleDuration,
+                createAtOnceDuration = defaultCreateAtOnceDuration
+              }: MaterialAnimationsConfig<P, M, L> = {}) {
     super()
     this.animations = {
       [ItemMoveType.Create]: new CreateItemAnimations(duration, trajectory),
+      [ItemMoveType.CreateAtOnce]: new CreateItemsAtOnceAnimations(createAtOnceDuration, trajectory),
       [ItemMoveType.Move]: new MoveItemAnimations(duration, droppedItemDuration, trajectory),
       [ItemMoveType.MoveAtOnce]: new MoveItemAtOnceAnimations(duration, trajectory),
       [ItemMoveType.Delete]: new DeleteItemAnimations(duration, droppedItemDuration, trajectory),
@@ -49,6 +48,35 @@ export class MaterialAnimations<P extends number = number, M extends number = nu
     if (animation.move.kind !== MoveKind.ItemMove) return
     return this.animations[animation.move.type]?.getItemAnimation(context, animation, boundaries)
   }
+}
+
+/**
+ * What a {@link MaterialAnimations} is made of: four durations, all in seconds, and the trajectory
+ * the items follow. Named rather than passed in a row, because a list of durations is a list in which only
+ * the order tells a shuffle from a drop — and because every new one added would have to be threaded through
+ * the call sites that do not care about it.
+ */
+export type MaterialAnimationsConfig<P extends number = number, M extends number = number, L extends number = number> = {
+  /** How long an item takes to reach the place a move sends it to. Defaults to a second. */
+  duration?: number
+  /**
+   * How long an item the player has dropped themselves takes to settle. Much shorter than the rest: the item
+   * is already where the hand left it, and all that is left to animate is the snap onto its place.
+   */
+  droppedItemDuration?: number
+  /** The path items follow rather than the straight line: its arc, its waypoints, its easing. */
+  trajectory?: Trajectory<P, M, L>
+  /**
+   * How long a shuffle lasts. Not a displacement from A to B: it needs to last long enough for the random
+   * movement to read as "the items were mixed up", hence a default of its own rather than {@link duration}.
+   */
+  shuffleDuration?: number
+  /**
+   * How long items created together fly for. Creating items at once is what a game does to lay out a whole
+   * setup in one small payload, so it animates nothing by default (see {@link defaultCreateAtOnceDuration}):
+   * a game that wants those creations seen asks for it, on the moves it wants it on.
+   */
+  createAtOnceDuration?: number
 }
 
 export type ItemAnimationContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = {

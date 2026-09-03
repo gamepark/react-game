@@ -6,6 +6,8 @@ export default defineConfig({
     include: ['src/**/*.test.ts']
   },
   ssr: {
-    noExternal: ['@gamepark/rules-api', 'es-toolkit']
+    // Inlined rather than left to Node's ESM loader, which refuses the directory imports these packages
+    // ship ("Directory import ... is not supported").
+    noExternal: ['@gamepark/rules-api', '@gamepark/react-client', 'es-toolkit']
   }
 })

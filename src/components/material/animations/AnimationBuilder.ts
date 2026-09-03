@@ -262,10 +262,11 @@ class MaterialAnimationsWithTrajectory<P extends number = number, M extends numb
     duration: number | undefined,
     trajectory: Trajectory<P, M, L>
   ) {
-    // Pass trajectory directly to the parent constructor.
-    // `duration` is forwarded untouched as the shuffle duration too: undefined keeps the shuffle default,
-    // while an explicitly configured duration also applies to the shuffles this builder matches.
-    super(duration, 0.2, trajectory, duration)
+    // `duration` is forwarded untouched as the shuffle duration and as the create-at-once duration too:
+    // undefined keeps each of their defaults, while an explicitly configured duration also applies to the
+    // shuffles and to the bulk creations this builder matches. Configuring a duration on a CreateAtOnce move
+    // is the only way to see it animated at all, since it animates nothing by default.
+    super({ duration, trajectory, shuffleDuration: duration, createAtOnceDuration: duration })
   }
 }
 
