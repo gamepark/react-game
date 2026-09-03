@@ -8,11 +8,18 @@ import { SpeechBubble, SpeechBubbleProps } from './SpeechBubble'
 
 type AvatarProps = {
   playerId: any
+  /**
+   * Whether this avatar displays a speech bubble (the player chat messages, or the content of {@link speechBubbleProps}).
+   * Defaults to true as soon as {@link speechBubbleProps} is provided, so that decorative avatars (dialogs, logs,
+   * headers...) stay silent. Set it explicitly to display the chat bubble without configuring anything else,
+   * or to false to silence an avatar that does receive speech bubble props.
+   */
+  speechBubble?: boolean
   speechBubbleProps?: SpeechBubbleProps
 } & HTMLAttributes<HTMLDivElement>
 
 export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
-  const { playerId, speechBubbleProps, children, ...rest } = props
+  const { playerId, speechBubble, speechBubbleProps, children, ...rest } = props
   const player = usePlayer(playerId)
   const me = useMe()
   const myPlayerId = usePlayerId()
@@ -20,7 +27,7 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
   return (
     <div ref={ref} css={style} {...rest}>
       <Avataaar circle {...avatar} css={[avatarCss, player?.quit && greyscale]}/>
-      { !!speechBubbleProps && <AvatarSpeechBubble playerId={playerId} { ...speechBubbleProps }/> }
+      { (speechBubble ?? !!speechBubbleProps) && <AvatarSpeechBubble playerId={playerId} { ...speechBubbleProps }/> }
       {children}
     </div>
   )

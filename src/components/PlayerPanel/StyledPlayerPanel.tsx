@@ -1,9 +1,9 @@
 import { css, Interpolation, keyframes, Theme, useTheme } from '@emotion/react'
 import { Player } from '@gamepark/react-client'
 import { MaterialRules } from '@gamepark/rules-api'
-import { FC, HTMLAttributes, ReactNode, RefObject, useCallback, useRef } from 'react'
+import { FC, HTMLAttributes, ReactNode, useCallback } from 'react'
 import { usePlayerName, useRules } from '../../hooks'
-import { Avatar, SpeechBubbleDirection } from '../Avatar'
+import { Avatar, SpeechBubbleProps } from '../Avatar'
 import { MaterialFocus, useFocusContext } from '../material'
 import { blinkOnRunningTimeout, PlayerTimer } from '../PlayerTimer'
 import { Counters } from './Counters'
@@ -23,7 +23,12 @@ type StyledPlayerPanelProps = {
   playerFocus?: MaterialFocus
   activeRing?: boolean
   timerOnRight?: boolean
-  speak?: string | ReactNode
+  /** Content of the speech bubble displayed next to the player avatar. Hides the chat bubble while displayed. */
+  speak?: ReactNode
+  /** Set to false to silence the avatar, true to keep the chat bubble even when no speech bubble props are given. */
+  speechBubble?: boolean
+  /** Overrides the speech bubble configuration (direction, css, event handlers...). */
+  speechBubbleProps?: SpeechBubbleProps
 } & HTMLAttributes<HTMLDivElement>
 
 export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
@@ -37,6 +42,8 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
     countersPerLine = 3,
     mainCounter,
     speak,
+    speechBubble,
+    speechBubbleProps,
     ...rest
   } = props
   const theme = useTheme()
@@ -45,7 +52,6 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
   const gameOver = useRules()?.isOver()
   const rules = useRules<MaterialRules>()
   const isTurnToPlay = rules?.isTurnToPlay(player.id) ?? false
-  const panelRef = useRef<HTMLDivElement>(null)
   const focusPlayer = useCallback(() => {
     if (!playerFocus) return
     setFocus(playerFocus)
@@ -55,11 +61,10 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
   const hasCounter = counters.length > 0 || !!mainCounter
 
   return (
-    <div ref={panelRef}
-         css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !hasCounter && noCounterCss, theme.playerPanel?.panel]}
+    <div css={[panelPlayerStyle, panelStyle, backgroundImage && backgroundCss(backgroundImage), playerFocus && pointable, !hasCounter && noCounterCss, theme.playerPanel?.panel]}
          onClick={focusPlayer} {...rest}>
-      <Avatar css={avatarStyle} playerId={player.id}
-              speechBubbleProps={{ direction: getSpeechBubbleDirection(panelRef), children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
+      <Avatar css={avatarStyle} playerId={player.id} speechBubble={speechBubble}
+              speechBubbleProps={{ ...speechBubbleProps, children: speechBubbleProps?.children ?? speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
         <div css={isTurnToPlay && circleCss}/>
       </div>}
@@ -95,23 +100,6 @@ export const StyledPlayerPanel: FC<StyledPlayerPanelProps> = (props) => {
       )}
     </div>
   )
-}
-
-const getSpeechBubbleDirection = (element: RefObject<HTMLDivElement | null>): SpeechBubbleDirection => {
-  if (element.current) {
-    const rect = element.current.getBoundingClientRect()
-    const left = rect.left / (window.visualViewport?.width ?? window.innerWidth)
-    const top = rect.top / (window.visualViewport?.height ?? window.innerHeight)
-    const isLeft = (left > 0.2 && left < 0.5) || left > 0.8
-    const isTop = (top > 0.2 && top < 0.5) || top > 0.8
-    if (isLeft) {
-      return isTop ? SpeechBubbleDirection.TOP_LEFT : SpeechBubbleDirection.BOTTOM_LEFT
-    } else {
-      return isTop ? SpeechBubbleDirection.TOP_RIGHT : SpeechBubbleDirection.BOTTOM_RIGHT
-    }
-  }
-
-  return SpeechBubbleDirection.BOTTOM_RIGHT
 }
 
 const noCounterCss = css`

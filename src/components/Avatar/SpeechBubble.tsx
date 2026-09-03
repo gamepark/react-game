@@ -1,5 +1,5 @@
 import { css, Interpolation, Theme } from '@emotion/react'
-import { FC, HTMLAttributes } from 'react'
+import { FC, HTMLAttributes, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 export enum SpeechBubbleDirection {
@@ -7,13 +7,25 @@ export enum SpeechBubbleDirection {
 }
 
 export type SpeechBubbleProps = {
+  /**
+   * Where the bubble opens relatively to its anchor. Defaults to the direction that keeps the bubble
+   * inside the screen, deduced from the anchor position in the viewport (see {@link getSpeechBubbleDirection}).
+   */
   direction?: SpeechBubbleDirection
   parent?: string
   css?: Interpolation<Theme>
 } & HTMLAttributes<HTMLParagraphElement>
 
-export const SpeechBubble: FC<SpeechBubbleProps> = ({ children, direction = SpeechBubbleDirection.TOP_LEFT, parent, css, ...props }) => {
-  const speechBubble = <p css={[speechBubbleCss, getDirectionStyle(direction), css]} {...props}>{children}</p>
+export const SpeechBubble: FC<SpeechBubbleProps> = ({ children, direction, parent, css, ...props }) => {
+  const ref = useRef<HTMLParagraphElement>(null)
+  const [autoDirection, setAutoDirection] = useState(SpeechBubbleDirection.TOP_LEFT)
+  useLayoutEffect(() => {
+    if (direction !== undefined) return
+    // The anchor is the element the bubble is displayed next to: the avatar, or the portal target.
+    const anchor = ref.current?.parentElement
+    if (anchor) setAutoDirection(getSpeechBubbleDirection(anchor))
+  }, [direction, children])
+  const speechBubble = <p ref={ref} css={[speechBubbleCss, getDirectionStyle(direction ?? autoDirection), css]} {...props}>{children}</p>
   if (parent) {
     const parentElement = document.getElementById(parent)
     if (parentElement) {
@@ -21,6 +33,23 @@ export const SpeechBubble: FC<SpeechBubbleProps> = ({ children, direction = Spee
     }
   }
   return speechBubble
+}
+
+/**
+ * Direction a speech bubble should open to, so that it stays inside the screen, given the position of the
+ * element it is anchored to.
+ */
+export const getSpeechBubbleDirection = (anchor: Element): SpeechBubbleDirection => {
+  const rect = anchor.getBoundingClientRect()
+  const left = rect.left / (window.visualViewport?.width ?? window.innerWidth)
+  const top = rect.top / (window.visualViewport?.height ?? window.innerHeight)
+  const isLeft = (left > 0.2 && left < 0.5) || left > 0.8
+  const isTop = (top > 0.2 && top < 0.5) || top > 0.8
+  if (isLeft) {
+    return isTop ? SpeechBubbleDirection.TOP_LEFT : SpeechBubbleDirection.BOTTOM_LEFT
+  } else {
+    return isTop ? SpeechBubbleDirection.TOP_RIGHT : SpeechBubbleDirection.BOTTOM_RIGHT
+  }
 }
 
 const speechBubbleCss = css`

@@ -2,7 +2,7 @@ import { css, keyframes, useTheme } from '@emotion/react'
 import { MaterialRules } from '@gamepark/rules-api'
 import { FC, HTMLAttributes, ReactNode } from 'react'
 import { usePlayerName, useRules } from '../../hooks'
-import { Avatar, SpeechBubbleDirection } from '../Avatar'
+import { Avatar, SpeechBubbleProps } from '../Avatar'
 import { GamePoints } from '../GamePoints'
 import { PlayerTimer } from '../PlayerTimer'
 
@@ -10,11 +10,16 @@ export type PlayerPanelProps<PlayerId extends number = number> = {
   playerId: PlayerId
   color?: string,
   activeRing?: boolean
-  speak?: string | ReactNode
+  /** Content of the speech bubble displayed next to the player avatar. Hides the chat bubble while displayed. */
+  speak?: ReactNode
+  /** Set to false to silence the avatar, true to keep the chat bubble even when no speech bubble props are given. */
+  speechBubble?: boolean
+  /** Overrides the speech bubble configuration (direction, css, event handlers...). */
+  speechBubbleProps?: SpeechBubbleProps
 } & HTMLAttributes<HTMLDivElement>
 
 export const PlayerPanel: FC<PlayerPanelProps> = (p) => {
-  const { playerId, activeRing, color, children, speak, ...props } = p
+  const { playerId, activeRing, color, children, speak, speechBubble, speechBubbleProps, ...props } = p
   const theme = useTheme()
   const resolvedColor = color ?? 'var(--gp-primary)'
   const playerName = usePlayerName(playerId)
@@ -22,8 +27,8 @@ export const PlayerPanel: FC<PlayerPanelProps> = (p) => {
   const isTurnToPlay = rules?.isTurnToPlay(playerId) ?? false
   return (
     <div css={[panelPlayerStyle(resolvedColor, isTurnToPlay), theme.playerPanel?.panel]} {...props}>
-      <Avatar css={avatarStyle} playerId={playerId}
-              speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT, children: typeof speak === 'string' ? <>{speak}</> : speak }}/>
+      <Avatar css={avatarStyle} playerId={playerId} speechBubble={speechBubble}
+              speechBubbleProps={{ ...speechBubbleProps, children: speechBubbleProps?.children ?? speak }}/>
       {activeRing && isTurnToPlay && <div css={isPlaying}>
         <div css={isTurnToPlay && circleCss}/>
       </div>}
