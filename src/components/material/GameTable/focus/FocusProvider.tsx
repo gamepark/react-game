@@ -4,9 +4,8 @@ import { flatten, sumBy } from 'es-toolkit'
 import { values } from 'es-toolkit/compat'
 import { createContext, ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
-import { useZoomToElements } from '../../../../hooks'
-import { useLocators } from '../../../../hooks/useLocators'
-import { ItemLocatorRecord } from '../../../../locators'
+import { useMaterialContext, useZoomToElements } from '../../../../hooks'
+import { ItemContext, MaterialContext } from '../../../../locators'
 import { MaterialFocus, StaticItem } from './MaterialFocus'
 
 export type FocusContextType<P extends number = number, M extends number = number, L extends number = number> = {
@@ -16,6 +15,9 @@ export type FocusContextType<P extends number = number, M extends number = numbe
 }
 
 export const FocusContext = createContext<FocusContextType | null>(null)
+
+/** How long a focus waits for the refs it is still missing before zooming on the ones it has. */
+const incompleteFocusDelay = 300
 
 export const useFocusContext = <P extends number = number, M extends number = number, L extends number = number>(): FocusContextType<P, M, L> => {
   const focusContext = useContext(FocusContext) as unknown as FocusContextType<P, M, L>
@@ -28,7 +30,9 @@ export const useFocusContext = <P extends number = number, M extends number = nu
 export function FocusProvider({ children }: { children?: ReactNode }) {
   const zoomToElements = useZoomToElements()
   const { resetTransform } = useControls()
-  const locators = useLocators()
+  const context = useMaterialContext()
+  const contextRef = useRef(context)
+  contextRef.current = context
 
   const [focus, doSetFocus] = useState<MaterialFocus>()
   const focusRefs = useRef<Set<HTMLElement>>(new Set())
@@ -59,7 +63,7 @@ export function FocusProvider({ children }: { children?: ReactNode }) {
     if (focusTimeout.current) clearTimeout(focusTimeout.current)
     focusRefs.current = new Set()
     focusAppliedRef.current = false
-    countFocusRef.current = countFocusRefs(focus, locators)
+    countFocusRef.current = countFocusRefs(focus, contextRef.current)
     doSetFocus(focus)
   }, [])
 
@@ -78,9 +82,13 @@ export function FocusProvider({ children }: { children?: ReactNode }) {
     // mount/unmount/remount in dev, or any re-render that replaces a node). Rather than firing the
     // instant the count is reached — which would zoom on an incomplete/early subset — debounce so
     // every ref committed in this render pass (and after a remount) is collected before zooming.
-    if (!focusAppliedRef.current && !draggingRef.current && focusRefs.current.size >= countFocusRef.current) {
+    // The count is only a hint: it can also overestimate, since the display drops nodes for reasons
+    // countFocusRefs cannot all foresee. Missing the count therefore only holds the zoom back for a
+    // while longer, instead of cancelling it: a focus that never quite adds up still happens, on
+    // whatever it did get, rather than silently doing nothing at all.
+    if (!focusAppliedRef.current && !draggingRef.current) {
       if (focusTimeout.current) clearTimeout(focusTimeout.current)
-      focusTimeout.current = setTimeout(doFocus)
+      focusTimeout.current = setTimeout(doFocus, focusRefs.current.size >= countFocusRef.current ? 0 : incompleteFocusDelay)
     }
     // Return a cleanup so an unmounted node is removed from the set instead of lingering as a
     // detached, un-zoomable ghost (React 19 ref cleanup; react-merge-refs v3 forwards it too).
@@ -98,17 +106,35 @@ export function FocusProvider({ children }: { children?: ReactNode }) {
   )
 }
 
-function countFocusRefs(focus?: MaterialFocus, locators?: Partial<ItemLocatorRecord>): number {
+/**
+ * How many refs the display is expected to register for a focus. Static items are always rendered, but a dynamic
+ * item that its locator hides is not in the DOM at all, so it must not be counted (see {@link countItemRefs}).
+ */
+function countFocusRefs(focus: MaterialFocus | undefined, context: MaterialContext): number {
   if (!focus) return 0
   return sumBy(focus.materials, material =>
-      sumBy(material.getItems(), item =>
-        Math.min(item.quantity ?? 1, locators?.[item.location.type]?.limit ?? Infinity)
-      )
+      sumBy(material.entries, ([index, item]) => countItemRefs(item, { ...context, type: material.type, index, displayIndex: 0 }))
     )
-    + sumBy(getStaticItems(focus.staticItems), item =>
-      Math.min(item.quantity ?? 1, locators?.[item.location.type]?.limit ?? Infinity)
-    )
+    + sumBy(getStaticItems(focus.staticItems), item => item.quantity ?? 1)
     + focus.locations.length
+}
+
+/**
+ * The number of nodes {@link DynamicItemsDisplay} mounts for an item: one per unit of its quantity, minus the ones
+ * the locator hides. A card beyond the 20 that a deck displays, or an item on a hidden parent, is removed from the
+ * DOM entirely and will never register a focus ref, so counting it would leave the focus waiting forever.
+ */
+function countItemRefs(item: MaterialItem, itemContext: ItemContext): number {
+  const locator = itemContext.locators[item.location.type]
+  const quantity = item.quantity ?? 1
+  if (!locator) return quantity
+  let count = 0
+  for (let displayIndex = 0; displayIndex < quantity; displayIndex++) {
+    const context = { ...itemContext, displayIndex }
+    // "hide" and "ignore" are aliases a game can override either way round, exactly as the display tests them.
+    if (!locator.hide(item, context) && !locator.ignore(item, context)) count++
+  }
+  return count
 }
 
 function getStaticItems(staticItems: StaticItem[] | Partial<Record<number, MaterialItem[]>>): MaterialItem[] {
