@@ -90,6 +90,10 @@ export interface JournalTheme {
   tab?: Interpolation<GameTheme>
   tabSelected?: Interpolation<GameTheme>
   chatBar?: Interpolation<GameTheme>
+  /**
+   * Style of one history entry. Any "font-size" here is relative to the default entry size:
+   * "1em" keeps the standard size, "1.05em" makes the text 5% bigger.
+   */
   historyEntry?: Interpolation<GameTheme>
 }
 

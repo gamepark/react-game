@@ -98,6 +98,7 @@ export const InternalLiveLogContainer: FC<LiveLogContainerProps> = (props) => {
 
 const scrollContentCss = css`
   position: relative;
+  font-size: 2em;
 
   > &:not(button) {
     pointer-events: none;

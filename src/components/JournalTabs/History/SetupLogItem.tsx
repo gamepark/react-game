@@ -34,7 +34,6 @@ const entryCss = css`
   padding-bottom: 0.5em;
   display: flex;
   align-items: center;
-  font-size: 2em;
   white-space: pre-wrap;
 
   img, picture {

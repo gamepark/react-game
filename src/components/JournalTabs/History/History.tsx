@@ -114,8 +114,7 @@ export const historyButtonCss = [linkButtonCss, css`
 `]
 
 const itemCss = css`
-  margin-left: 0.7em;
-  font-size: 0.5em;
+  margin-left: 0.35em;
   user-select: text;
   white-space: pre-wrap;
 `
