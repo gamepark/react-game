@@ -180,7 +180,9 @@ const stickyHeader = css`
 
 const buttonLine = css`
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-evenly;
+  gap: 1em;
 `
 
 const gridCss = css`
