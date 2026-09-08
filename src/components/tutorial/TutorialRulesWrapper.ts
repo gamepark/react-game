@@ -72,6 +72,13 @@ export function wrapRulesWithTutorial(tutorial: MaterialTutorial, Rules: RulesCr
 
   Rules.prototype.play = function (move: MaterialMove, context?: PlayMoveContext) {
     const game = this.game as MaterialGame
+    // A tutorial only ever moves forward. A step that is not ahead of the current one is a popup button played
+    // twice: the button is still on screen, holding the step it was rendered with, while the game has already
+    // moved on - a double click, or a click on a device slow enough to render the next step after the 300ms the
+    // button guards itself with. Such a move takes the tutorial back to a step it has left behind, and a step
+    // waiting for a move the opponent has already played is a step nobody has anything to play in: the tutorial
+    // would be stuck there for good, whatever the player clicks.
+    if (isSetTutorialStep(move) && game.tutorial && move.step <= game.tutorial.step) return []
     const consequences = play.bind(this)(move, context)
 
     if (isSetTutorialStep(move) && game.tutorial) {
