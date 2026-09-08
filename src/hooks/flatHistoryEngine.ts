@@ -1,5 +1,6 @@
 import { DisplayedAction, PlayedMove } from '@gamepark/react-client'
 import { Rules } from '@gamepark/rules-api'
+import { findLastIndex } from 'es-toolkit/compat'
 import { MovePlayedLogDescription } from '../components'
 import { MoveHistory } from './useFlatHistory'
 
@@ -134,6 +135,78 @@ export const getMoveEntry = (
       }
       return cachedGame
     }
+  }
+}
+
+export type RewindPlan = {
+  /** Index of the first move that no longer matches the ones already processed (the first undone move). */
+  firstIndexChange: number
+  /** Index, in the current history, of the last entry that survives the rewind (-1 when none does). */
+  lastValidHistoryIndex: number
+  /** Index of the first move whose history entry must be rebuilt. Every move before it is replayed on the engine. */
+  newMovesStart: number
+  /** Checkpoints that are still usable, i.e. taken at or before `newMovesStart`. */
+  validCheckpoints: Checkpoint[]
+  /** Game state the engine must restart from, and the move index it corresponds to. */
+  restartState: any
+  restartIndex: number
+}
+
+/**
+ * Computes how far back the engine must be rewound when moves are removed (undo).
+ *
+ * The engine has to be positioned exactly on `newMovesStart`, the first move whose history entry must be
+ * rebuilt: every move before it is replayed once, and `processMovesSync` plays the remaining ones. A move
+ * played twice would run its rule consequences twice (`onRuleEnd`, memory updates, ...) and silently corrupt
+ * both the game state and every log entry computed from it afterwards.
+ */
+export const computeRewindPlan = (
+  processedMoves: PlayedMove[],
+  playedMoves: PlayedMove[],
+  history: MoveHistory[],
+  checkpoints: Checkpoint[],
+  setup: any
+): RewindPlan => {
+  const firstIndexChange = processedMoves.findIndex((processedMove, index) => processedMove.actionId !== playedMoves[index]?.actionId)
+  const invalidatedMoves = processedMoves.slice(firstIndexChange)
+  const lastValidHistoryIndex = findLastIndex(history, (moveHistory) => !invalidatedMoves.some((move) => move.actionId === moveHistory.action.id))
+  const lastValidHistory = lastValidHistoryIndex !== -1 ? history[lastValidHistoryIndex] : undefined
+
+  // Entries after the last valid one must be rebuilt, so we rewind to the move right after it. It always sits
+  // before `firstIndexChange`, since a history entry of an undone move cannot be valid.
+  const lastValidMoveIndex = lastValidHistory
+    ? findLastIndex(playedMoves, (move) =>
+      move.actionId === lastValidHistory.action.id && move.consequenceIndex === lastValidHistory.consequenceIndex
+    )
+    : -1
+  const newMovesStart = lastValidMoveIndex !== -1 ? lastValidMoveIndex + 1 : firstIndexChange
+
+  const validCheckpoints = checkpoints.filter((cp) => cp.moveIndex <= newMovesStart)
+  const nearestCheckpoint = validCheckpoints.length > 0 ? validCheckpoints[validCheckpoints.length - 1] : undefined
+
+  return {
+    firstIndexChange,
+    lastValidHistoryIndex,
+    newMovesStart,
+    validCheckpoints,
+    restartState: nearestCheckpoint ? nearestCheckpoint.gameState : setup,
+    restartIndex: nearestCheckpoint ? nearestCheckpoint.moveIndex : 0
+  }
+}
+
+/**
+ * Rebuilds the engine at `plan.newMovesStart`, from the nearest usable checkpoint (or the setup).
+ */
+export const rewindEngine = (
+  engine: HistoryEngine,
+  plan: RewindPlan,
+  playedMoves: PlayedMove[],
+  ctx: LogContext
+) => {
+  engine.checkpoints = plan.validCheckpoints
+  engine.rules = new ctx.RulesClass(JSON.parse(JSON.stringify(plan.restartState)), ctx.gameOver ? undefined : { player: ctx.player })
+  for (let i = plan.restartIndex; i < plan.newMovesStart; i++) {
+    playMoveOnEngine(engine, playedMoves[i], ctx.getAction)
   }
 }
 

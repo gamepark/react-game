@@ -3,11 +3,13 @@ import {
   buildActionMap,
   Checkpoint,
   CHECKPOINT_INTERVAL,
+  computeRewindPlan,
   HistoryEngine,
   LogContext,
   playMoveOnEngine,
   processMovesSync,
   replayFromCheckpoint,
+  rewindEngine,
   saveCheckpointIfNeeded
 } from './flatHistoryEngine'
 
@@ -404,5 +406,72 @@ describe('processMovesSync', () => {
     expect(entries[0].consequenceIndex).toBeUndefined()
     expect(entries[1].consequenceIndex).toBe(0)
     expect(entries[2].consequenceIndex).toBe(1)
+  })
+})
+
+// ============================================================
+// computeRewindPlan
+// ============================================================
+describe('computeRewindPlan', () => {
+  // 4 actions of 3 moves each; the last one (moves 9, 10 and 11) is undone.
+  const processedMoves = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3]
+    .map((action, i) => makePlayedMove(`a${action}`, 1, i % 3))
+  const playedMoves = processedMoves.slice(0, 9)
+  const makeHistory = (moves: any[]) =>
+    moves.map((move) => ({ action: makeAction(move.actionId), consequenceIndex: move.consequenceIndex })) as any
+
+  it('rewinds to the move following the last valid history entry', () => {
+    // Every move has a log entry: the last valid one is move 8, so only move 9 onwards is gone
+    const plan = computeRewindPlan(processedMoves, playedMoves, makeHistory(processedMoves), [], { value: 0 })
+
+    expect(plan.firstIndexChange).toBe(9)
+    expect(plan.lastValidHistoryIndex).toBe(8)
+    expect(plan.newMovesStart).toBe(9)
+  })
+
+  it('rewinds behind the silenced moves that follow the last valid history entry', () => {
+    // Only the first move of each action produces a log entry: the last valid one is move 6, so the entries
+    // of moves 7 and 8 must be rebuilt as well
+    const history = makeHistory(processedMoves.filter((move) => move.consequenceIndex === 0))
+    const plan = computeRewindPlan(processedMoves, playedMoves, history, [], { value: 0 })
+
+    expect(plan.firstIndexChange).toBe(9)
+    expect(plan.newMovesStart).toBe(7)
+  })
+
+  it('rewinds to the first changed move when no history entry survives', () => {
+    const plan = computeRewindPlan(processedMoves, playedMoves, [], [], { value: 0 })
+
+    expect(plan.lastValidHistoryIndex).toBe(-1)
+    expect(plan.newMovesStart).toBe(9)
+  })
+
+  it('only keeps the checkpoints taken at or before the rewind point', () => {
+    const history = makeHistory(processedMoves.filter((move) => move.consequenceIndex === 0))
+    const checkpoints: Checkpoint[] = [
+      { moveIndex: 3, gameState: { value: 3 } },
+      { moveIndex: 8, gameState: { value: 8 } } // after the rewind point (7): unusable
+    ]
+    const plan = computeRewindPlan(processedMoves, playedMoves, history, checkpoints, { value: 0 })
+
+    expect(plan.validCheckpoints).toHaveLength(1)
+    expect(plan.restartIndex).toBe(3)
+    expect(plan.restartState).toEqual({ value: 3 })
+  })
+
+  it('replays every remaining move exactly once', () => {
+    // Regression test: replaying a move twice runs its consequences twice and corrupts the game state
+    const history = makeHistory(processedMoves.filter((move) => move.consequenceIndex === 0))
+    const actions = new Map(processedMoves.map((move) => [move.actionId, makeAction(move.actionId)]))
+    const getAction = (id: string) => actions.get(id)
+    const ctx = makeLogContext({ getAction })
+
+    const plan = computeRewindPlan(processedMoves, playedMoves, history, [], { value: 0 })
+    const engine = makeEngine(42) // stale state: the rewind must rebuild it from the setup
+    rewindEngine(engine, plan, playedMoves, ctx)
+    processMovesSync(playedMoves.slice(plan.newMovesStart), plan.newMovesStart, engine, playedMoves, ctx)
+
+    // Each of the 9 remaining moves adds 1 to the mock game state
+    expect((engine.rules as any).game.value).toBe(9)
   })
 })

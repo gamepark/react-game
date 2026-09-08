@@ -1,14 +1,15 @@
 import { DisplayedAction, PlayedMove, useGameSelector } from '@gamepark/react-client'
 import { MaterialMove } from '@gamepark/rules-api'
-import { findLastIndex } from 'es-toolkit/compat'
 import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { gameContext, MovePlayedLogDescription } from '../components'
 import {
   buildActionMap,
+  computeRewindPlan,
   getMoveEntry,
   HistoryEngine,
   playMoveOnEngine,
   processMovesSync,
+  rewindEngine,
   saveCheckpointIfNeeded
 } from './flatHistoryEngine'
 import { usePlayerId } from './usePlayerId'
@@ -147,44 +148,13 @@ export const useFlatHistory = () => {
         idleCallbackId.current = null
       }
 
-      const firstIndexChange = moves.current.findIndex((currentMove, index) => currentMove.actionId !== playedMoves[index]?.actionId)
-      const invalidatedMoves = moves.current.slice(firstIndexChange)
-      const lastValidHistoryIndex = findLastIndex(history, (moveHistory) => !invalidatedMoves.some((move) => move.actionId === moveHistory.action.id))
-
-      // Use the nearest checkpoint at or before the invalidation point instead of replaying from a history entry's game state
-      const validCheckpoints = engine.current.checkpoints.filter((cp) => cp.moveIndex <= firstIndexChange)
-      const nearestCheckpoint = validCheckpoints.length > 0 ? validCheckpoints[validCheckpoints.length - 1] : undefined
-      const restartState = nearestCheckpoint ? nearestCheckpoint.gameState : setup
-      const restartIndex = nearestCheckpoint ? nearestCheckpoint.moveIndex : 0
-
-      engine.current.checkpoints = validCheckpoints
-      engine.current.rules = new context.Rules(JSON.parse(JSON.stringify(restartState)), gameOver ? undefined : { player })
-
-      // Replay from checkpoint to the start of remaining moves
-      for (let i = restartIndex; i < firstIndexChange; i++) {
-        playMoveOnEngine(engine.current, playedMoves[i], getAction)
-      }
-
-      // Find the last valid history entry that's still in the new playedMoves
-      const lastValidHistory = lastValidHistoryIndex !== -1 ? history[lastValidHistoryIndex] : undefined
-      const replayStartIndex = lastValidHistory
-        ? findLastIndex(playedMoves, move =>
-          move.actionId === lastValidHistory.action.id && move.consequenceIndex === lastValidHistory.consequenceIndex
-        )
-        : firstIndexChange
-
-      // Replay moves between firstIndexChange and replayStartIndex (these have valid history entries already)
-      for (let i = firstIndexChange; i < replayStartIndex; i++) {
-        playMoveOnEngine(engine.current, playedMoves[i], getAction)
-      }
-
-      // Skip the last valid history move itself
-      if (lastValidHistory && replayStartIndex >= 0) {
-        playMoveOnEngine(engine.current, playedMoves[replayStartIndex], getAction)
-      }
+      // Rewind the engine to the first move whose history entry must be rebuilt, using the nearest usable
+      // checkpoint instead of replaying from a history entry's game state
+      const plan = computeRewindPlan(moves.current, playedMoves, history, engine.current.checkpoints, setup)
+      rewindEngine(engine.current, plan, playedMoves, ctx)
 
       // Process remaining moves for new entries
-      const newMovesStart = lastValidHistory ? replayStartIndex + 1 : firstIndexChange
+      const { lastValidHistoryIndex, newMovesStart } = plan
       const movesToProcess = playedMoves.slice(newMovesStart)
       const entries = processMovesSync(movesToProcess, newMovesStart, engine.current, playedMovesRef.current, ctx)
 
