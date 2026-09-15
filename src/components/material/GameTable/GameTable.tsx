@@ -2,13 +2,14 @@ import { CollisionDetection, DndContext, DragEndEvent, getClientRect, PointerSen
 import { snapCenterToCursor } from '@dnd-kit/modifiers'
 import { css, Global } from '@emotion/react'
 import { isMoveItemsAtOnce, MaterialMoveBuilder } from '@gamepark/rules-api'
-import { FC, HTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, HTMLAttributes, ReactNode, useCallback, useEffect, useMemo, useRef } from 'react'
 import { ReactZoomPanPinchContentRef, TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch'
 import { fontSizeCss, perspectiveCss } from '../../../css'
-import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
+import { useDraggedItem, useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { calculateBounds, getMouseBoundedPosition } from '../../../utilities/zoom-pan-pinch'
 import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { getBestDropMove } from '../utils/getBestDropMove'
+import { DraggedItemProvider } from './DraggedItemProvider'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
 import { GameTableContext } from './GameTableContext'
 import { NoZoomScaleProvider, ZoomScaleProvider } from './ScaleContext'
@@ -35,6 +36,13 @@ const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 const pointerSensorOptions = { activationConstraint: { distance: 2 } }
 const measuring = { draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }
+const enabledPanning = { disabled: false }
+const disabledPanning = { disabled: true }
+
+/**
+ * The GameTable renders the DndContext, so it cannot read the dragged item itself: this reads it from inside.
+ */
+const DraggingState = ({ children }: { children: (dragging: boolean) => ReactNode }) => children(useDraggedItem() !== undefined)
 
 export const GameTable: FC<GameTableProps> = (
   {
@@ -67,16 +75,12 @@ export const GameTable: FC<GameTableProps> = (
   const enableZoom = zoom ?? minScale < 0.9
 
   // Drag & drop
-  const [dragging, setDragging] = useState(false)
   const sensors = useSensors(useSensor(PointerSensor, pointerSensorOptions))
   const context = useMaterialContext()
   const play = usePlay()
   const legalMoves = useLegalMoves()
 
-  const onDragStart = useCallback(() => setDragging(true), [])
-  const onDragCancel = useCallback(() => setDragging(false), [])
   const onDragEnd = useCallback((event: DragEndEvent) => {
-    setDragging(false)
     const move = getBestDropMove(event, context, legalMoves)
     if (move !== undefined) {
       if (isMoveItemsAtOnce(move)) {
@@ -91,22 +95,6 @@ export const GameTable: FC<GameTableProps> = (
       play(move)
     }
   }, [context, play, legalMoves])
-
-  // Safety net for stuck drags.
-  // dnd-kit's PointerSensor only ends a drag on `pointerup`/`pointercancel` received by the document, or on
-  // window `resize`/`visibilitychange`. It does NOT listen for the window losing focus. So if the pointer is
-  // released outside the page or the window loses focus mid-drag without going hidden (frequent on some
-  // Linux / Edge setups), none of those events fire: the drag stays active and every drop area shown while
-  // dragging (e.g. a large "recycle" zone) remains stuck on top of the cards.
-  // On `blur` we force dnd-kit to cancel through its own teardown by dispatching a `pointercancel` on the
-  // document, which resets the dragged item position, the panning lock and the drop areas all at once.
-  // `blur` never fires on a normal drop (that goes through `pointerup`), so this adds no spurious cancels.
-  useEffect(() => {
-    if (!dragging) return
-    const cancelStuckDrag = () => document.dispatchEvent(new PointerEvent('pointercancel'))
-    window.addEventListener('blur', cancelStuckDrag)
-    return () => window.removeEventListener('blur', cancelStuckDrag)
-  }, [dragging])
 
   // Zoom resize handler
   const zoomRef = useRef<ReactZoomPanPinchContentRef>(null)
@@ -142,7 +130,6 @@ export const GameTable: FC<GameTableProps> = (
   }, [enableZoom])
 
   // Memoized values
-  const panning = useMemo(() => ({ disabled: dragging }), [dragging])
   const wrapperStyle = useMemo(() => computedWrapperClass(margin, vm, hm, ratio, verticalCenter), [margin, vm, hm, ratio, verticalCenter])
   const modifiers = useMemo(() => snapToCenter ? [snapCenterToCursor] : undefined, [snapToCenter])
   const boundaries = useMemo(() => ({ xMin, xMax, yMin, yMax }), [xMin, xMax, yMin, yMax])
@@ -167,26 +154,30 @@ export const GameTable: FC<GameTableProps> = (
   return (
     <GameTableContext.Provider value={contextValue}>
       <DndContext collisionDetection={collisionAlgorithm} measuring={measuring}
-                  modifiers={modifiers} sensors={sensors}
-                  onDragStart={onDragStart} onDragEnd={onDragEnd} onDragCancel={onDragCancel}>
-        <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle, !enableZoom && nativeZoomCss]}/>
-        {enableZoom ? (
-          <TransformWrapper ref={zoomRef} minScale={minScale} maxScale={maxScale} initialScale={minScale}
-                            centerOnInit={true} centerZoomedOut={true} wheel={wheel} smooth={false} panning={panning}
-                            disablePadding doubleClick={doubleClick}>
-            <TransformComponent wrapperClass="wrapperClass" contentStyle={{ transformStyle: 'preserve-3d' }}>
-              <ZoomScaleProvider>
+                  modifiers={modifiers} sensors={sensors} onDragEnd={onDragEnd}>
+        <DraggedItemProvider>
+          <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle, !enableZoom && nativeZoomCss]}/>
+          {enableZoom ? (
+            <DraggingState>{dragging =>
+              <TransformWrapper ref={zoomRef} minScale={minScale} maxScale={maxScale} initialScale={minScale}
+                                centerOnInit={true} centerZoomedOut={true} wheel={wheel} smooth={false}
+                                panning={dragging ? disabledPanning : enabledPanning}
+                                disablePadding doubleClick={doubleClick}>
+                <TransformComponent wrapperClass="wrapperClass" contentStyle={{ transformStyle: 'preserve-3d' }}>
+                  <ZoomScaleProvider>
+                    {tableContent}
+                  </ZoomScaleProvider>
+                </TransformComponent>
+              </TransformWrapper>
+            }</DraggingState>
+          ) : (
+            <div className="wrapperClass" css={noZoomContainerCss}>
+              <NoZoomScaleProvider>
                 {tableContent}
-              </ZoomScaleProvider>
-            </TransformComponent>
-          </TransformWrapper>
-        ) : (
-          <div className="wrapperClass" css={noZoomContainerCss}>
-            <NoZoomScaleProvider>
-              {tableContent}
-            </NoZoomScaleProvider>
-          </div>
-        )}
+              </NoZoomScaleProvider>
+            </div>
+          )}
+        </DraggedItemProvider>
       </DndContext>
     </GameTableContext.Provider>
   )

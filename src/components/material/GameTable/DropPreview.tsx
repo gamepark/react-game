@@ -1,8 +1,8 @@
-import { DragMoveEvent, useDndContext, useDndMonitor } from '@dnd-kit/core'
+import { DragMoveEvent, useDndMonitor } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { GridBoundaries, isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import { useCallback, useState } from 'react'
-import { useLegalMoves, useMaterialContext } from '../../../hooks'
+import { useDraggedItem, useLegalMoves, useMaterialContext } from '../../../hooks'
 import { getLocationOriginCss } from '../../../locators'
 import { MaterialComponent } from '../MaterialComponent'
 import { getBestDropMove } from '../utils/getBestDropMove'
@@ -10,7 +10,7 @@ import { getBestDropMove } from '../utils/getBestDropMove'
 export const DropPreview = ({ boundaries }: { boundaries: GridBoundaries }) => {
   const context = useMaterialContext()
   const legalMoves = useLegalMoves()
-  const { active } = useDndContext()
+  const draggedItem = useDraggedItem()
   const [bestMove, setBestMove] = useState<MaterialMove>()
   const [location, setLocation] = useState<Location>()
   const onDragStart = useCallback(() => setBestMove(undefined), [])
@@ -20,15 +20,11 @@ export const DropPreview = ({ boundaries }: { boundaries: GridBoundaries }) => {
     }
     setBestMove(getBestDropMove(event, context, legalMoves))
   }, [context, legalMoves])
-  const onDragEnd = useCallback(() => setBestMove(undefined), [])
-  useDndMonitor({ onDragStart, onDragEnd, onDragMove, onDragCancel: onDragEnd })
+  useDndMonitor({ onDragStart, onDragMove })
 
-  // Only show the preview while a drag is actually active. `active` comes from dnd-kit's reactive context and
-  // resets to null as soon as the drag ends (drop, cancel, or the GameTable stuck-drag safety net), regardless
-  // of whether our onDragEnd/onDragCancel monitor callback was delivered. Relying on the callback alone (like
-  // before) leaves the ghost card stuck on the table whenever that end-of-drag event is missed — the same
-  // class of bug that left drop areas stuck before they were switched to dnd-kit's reactive state.
-  if (active && bestMove && isMoveItem(bestMove) && location && context.locators[location.type]?.showDropPreview(bestMove, context)) {
+  // Only show the preview while a drag is actually active: dnd-kit does not always deliver the end of drag events
+  // (see DraggedItemProvider), so the best move of the last drag move must not be trusted on its own.
+  if (draggedItem && bestMove && isMoveItem(bestMove) && location && context.locators[location.type]?.showDropPreview(bestMove, context)) {
     const type = bestMove.itemType
     const index = bestMove.itemIndex
     const item = context.rules.material(type).getItem(index)

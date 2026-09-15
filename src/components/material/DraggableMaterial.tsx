@@ -1,4 +1,4 @@
-import { DragMoveEvent, DragStartEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
+import { DragMoveEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
 import {
   DisplayedItem,
@@ -14,7 +14,7 @@ import {
 import { isEqual } from 'es-toolkit'
 import React, { forwardRef, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { grabbingCursor, grabCursor } from '../../css'
-import { CanUndo, UndoFunction } from '../../hooks'
+import { CanUndo, UndoFunction, useDraggedItem } from '../../hooks'
 import { useMaterialContextRef, usePlay } from '../../hooks'
 import { getLocationOriginCss, ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
@@ -150,7 +150,7 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
     hadMenu.current = !!menu
   }, [!menu])
 
-  const [draggedItem, setDraggedItem] = useState<DisplayedItem>()
+  const draggedItem = useDraggedItem()
   const draggedItemContext = useMemo<ItemContext | undefined>(() => draggedItem && { ...context, ...draggedItem }, [draggedItem, context])
   const isDraggingParent = useMemo(() => !!item && !!draggedItemContext &&
       (isPlacedOnItem(item, draggedItemContext) || legalMoves.some((move) =>
@@ -160,7 +160,7 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
       ))
     , [item, draggedItemContext, legalMoves])
   const [parentTransform, setParentTransform] = useState<XYCoordinates>()
-  transform = transform ?? parentTransform
+  transform = transform ?? (isDraggingParent ? parentTransform : undefined)
 
   // We need to delay a little the default transition removal when dragging starts, otherwise dnd-kit suffers from transform side effect
   // because we opted out from ignoring transform in the configuration (using: "draggable: { measure: getClientRect }")
@@ -190,13 +190,9 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
   const [animating, setAnimating] = useState(!!animation)
   useEffect(() => setAnimating(!!animation), [!animation])
 
-  const onDragStart = useCallback((event: DragStartEvent) => dataIsDisplayedItem(event.active.data.current) && setDraggedItem(event.active.data.current), [])
+  const onDragStart = useCallback(() => setParentTransform(undefined), [])
   const onDragMove = useCallback((event: DragMoveEvent) => isDraggingParent && setParentTransform(event.delta), [isDraggingParent])
-  const onDragEnd = useCallback(() => {
-    setDraggedItem(undefined)
-    setParentTransform(undefined)
-  }, [])
-  useDndMonitor({ onDragStart, onDragEnd, onDragMove, onDragCancel: onDragEnd })
+  useDndMonitor({ onDragStart, onDragMove })
 
   const locationOriginCss = getLocationOriginCss(boundaries, locator?.getLocationOrigin(item.location, itemContext))
 

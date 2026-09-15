@@ -1,10 +1,9 @@
-import { useDndMonitor } from '@dnd-kit/core'
 import { MaterialItem } from '@gamepark/rules-api'
 import { flatten, sumBy } from 'es-toolkit'
 import { values } from 'es-toolkit/compat'
 import { createContext, ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { useControls } from 'react-zoom-pan-pinch'
-import { useMaterialContext, useZoomToElements } from '../../../../hooks'
+import { useDraggedItem, useMaterialContext, useZoomToElements } from '../../../../hooks'
 import { ItemContext, MaterialContext } from '../../../../locators'
 import { MaterialFocus, StaticItem } from './MaterialFocus'
 
@@ -50,11 +49,7 @@ export function FocusProvider({ children }: { children?: ReactNode }) {
   const focusAppliedRef = useRef(false)
   // While an item is being dragged it churns its ref nonstop; never apply focus mid-drag either.
   const draggingRef = useRef(false)
-  useDndMonitor({
-    onDragStart: () => { draggingRef.current = true },
-    onDragEnd: () => { draggingRef.current = false },
-    onDragCancel: () => { draggingRef.current = false }
-  })
+  draggingRef.current = useDraggedItem() !== undefined
 
   const setFocus = useCallback((focus?: MaterialFocus, reset: boolean = true) => {
     if (!focus && reset) {
