@@ -175,15 +175,19 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
   }, [!transform])
 
   const scale = useScale()
-  const transformRef = useRef<string>('')
+  const dragDeltaRef = useRef<XYCoordinates | undefined>(undefined)
   if (transform && !ignoreTransform) {
-    const { x, y } = transform
-    transformRef.current = `translate3d(${Math.round(x / scale)}px, ${y ? Math.round(y / scale) : 0}px, 20em)`
+    dragDeltaRef.current = { x: Math.round(transform.x / scale), y: transform.y ? Math.round(transform.y / scale) : 0 }
   }
 
   const isDropped = useMemo(() => isDroppedItem(itemContext), [itemContext])
   const applyTransform = isDropped || isDraggingParent || (!disabled && !ignoreTransform)
-  if (!applyTransform) transformRef.current = ''
+  if (!applyTransform) dragDeltaRef.current = undefined
+  // A held item is lifted over everything. Once dropped, it may stay where it was released until a move takes it
+  // away - or for good, when the move played is not moving it - so it goes down to a lift that keeps it over what
+  // it lies on, but under the menus of the items around it (lifted by 15em, see ItemMenuWrapper).
+  const dragTransform = dragDeltaRef.current
+    && `translate3d(${dragDeltaRef.current.x}px, ${dragDeltaRef.current.y}px, ${transform ? draggedItemLift : droppedItemLift}em)`
   const animation = animationProp
 
   // Firefox bugs when the animation is immediately followed by the transition: we need to delay by 1 rerender putting back the transition
@@ -206,7 +210,7 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
                    !disabled && (transform ? grabbingCursor : grabCursor),
                    animationWrapperCss
                  ]}
-                 dragTransform={applyTransform ? transformRef.current : undefined}
+                 dragTransform={applyTransform ? dragTransform : undefined}
                  animation={animation}
                  highlight={highlight ?? (!draggedItem && (!disabled || onShortClickMove !== undefined || onLongClickMove !== undefined))}
                  {...props}
@@ -219,6 +223,9 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
 DraggableMaterialInnerBase.displayName = 'DraggableMaterialInner'
 
 const DraggableMaterialInner = memo(DraggableMaterialInnerBase)
+
+const draggedItemLift = 20
+const droppedItemLift = 5
 
 const animationWrapperCss = css`
   transform-style: preserve-3d;
