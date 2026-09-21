@@ -89,6 +89,8 @@ function initDatadog(service: string) {
     forwardConsoleLogs: getForwardConsoleLogs()
   })
   datadogLogs.logger.setLevel(process.env.LOGGER_LEVEL as StatusType || StatusType.error)
+  // Lets the logs of one game be found from a player's report (the game id is in the platform's game page URL)
+  if (gameId) datadogLogs.setGlobalContextProperty('gameId', gameId)
 }
 
 const globalCss = (theme: Theme) => css`
