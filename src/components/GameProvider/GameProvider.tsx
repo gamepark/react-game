@@ -49,7 +49,7 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
   return (
     <GameErrorBoundary>
       <gameContext.Provider value={props as GameContext}>
-        <ThemeProvider theme={merge(defaultTheme, theme)}>
+        <ThemeProvider theme={merge(defaultTheme, theme) as Theme}>
           <Global styles={[normalize, globalCss]}/>
           <TRPCProvider>
             {gameId ?
