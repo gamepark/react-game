@@ -6,6 +6,7 @@ import { PropsWithChildren, useEffect } from 'react'
 import { BackgroundTheme, defaultTheme } from '../../css'
 import { normalize } from '../../css/normalize'
 import { DeepPartial } from '../../utilities'
+import { redirectToPlatformGamePage } from '../../utilities/platform.util'
 import { setupTranslation } from '../../utilities/translation.util'
 import { DefaultMaterialGameSounds } from '../material'
 import { isMaterialTutorial } from '../tutorial'
@@ -16,6 +17,8 @@ import { GameErrorBoundary } from './GameErrorBoundary'
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
 const locale = query.get('locale') || 'en'
+// Before anything loads: a game opened directly on its subdomain is played in its platform page
+const leavingForPlatform = redirectToPlatformGamePage()
 
 export type GameProviderProps<Game = any, GameView = Game, Move = string, MoveView = Move, PlayerId extends number = number>
   = LocalGameProviderProps<Game, GameView, Move, MoveView, PlayerId> & GameContext<Game, Move, PlayerId> & {
@@ -33,6 +36,8 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
       wrapRulesWithTutorial(props.tutorial, props.Rules)
     }
   }, [props.tutorial, props.Rules])
+
+  if (leavingForPlatform) return null
 
   if (props.material && materialI18n && locale in materialI18n) {
     merge(props.material, materialI18n[locale])

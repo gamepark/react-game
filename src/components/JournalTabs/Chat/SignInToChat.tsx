@@ -2,16 +2,20 @@ import { css } from '@emotion/react'
 import { PLATFORM_URI } from '@gamepark/react-client'
 import { useTranslation } from 'react-i18next'
 import { buttonResetCss } from '../../../css'
+import { goToPlatform, isFramedByPlatform, platformGameUrl } from '../../../utilities/platform.util'
 
 export const SignInToChat = () => {
   const { t } = useTranslation('common')
   const query = new URLSearchParams(window.location.search)
   const locale = query.get('locale') || 'en'
+  const gameId = query.get('game')
+  // Back to the platform page framing the game, not to the bare client on its subdomain
+  const callbackUrl = gameId && isFramedByPlatform() ? platformGameUrl(gameId, locale) : window.location.href
   return (
     <div css={style}>
       <p css={textCss}>{t('sign-in-to-chat')}</p>
       <button css={[buttonResetCss, signInButtonCss, signInPaletteCss]}
-              onClick={() => window.location.href = `${PLATFORM_URI}/${locale}/auth/sign-in?callbackUrl=${encodeURIComponent(window.location.href)}`}>
+              onClick={() => goToPlatform(`${PLATFORM_URI}/${locale}/auth/sign-in?callbackUrl=${encodeURIComponent(callbackUrl)}`)}>
         {t('Sign in')}
       </button>
     </div>
