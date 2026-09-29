@@ -1,5 +1,5 @@
 import { css, Interpolation, Theme } from '@emotion/react'
-import { MaterialItem } from '@gamepark/rules-api'
+import { HiddenMaterialRules, HidingSecretsStrategy, MaterialItem } from '@gamepark/rules-api'
 import { backgroundCss, borderRadiusCss, playDownCss, shadowCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { mirrorTransforms } from '../animations'
@@ -98,8 +98,32 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return this.hasBackFace() && this.getFrontId(item.id as ItemId) === undefined
   }
 
+  /**
+   * On the table, an item also shows its back wherever the rules hide its front ({@link HiddenMaterialRules.hidingStrategies}).
+   * The id alone is not enough: once the game is over, every id is revealed, which would turn over all the cards in the
+   * decks and in the hands of the other players. The help dialog keeps relying on the id ({@link isFlippedInDialog}), so
+   * a revealed item can still be looked at by clicking it.
+   */
   isFlippedOnTable(item: Partial<MaterialItem<P, L, ItemId>>, context: MaterialContext<P, M, L, R, V>): boolean {
-    return this.isFlipped(item, context)
+    return this.isFlipped(item, context) || this.isFrontHiddenByRules(item, context)
+  }
+
+  /**
+   * Whether the {@link HiddenMaterialRules.hidingStrategies} of the game hide the front of the item from the player,
+   * where the item stands: the strategy removes either its "id" or its "id.front".
+   */
+  protected isFrontHiddenByRules(item: Partial<MaterialItem<P, L, ItemId>>, context: MaterialContext<P, M, L, R, V>): boolean {
+    if (!this.hasBackFace() || !item.location) return false
+    const hidingStrategies = (context.rules as Partial<HiddenMaterialRules<P, M, L, R, V>>).hidingStrategies
+    if (!hidingStrategies) return false
+    const type = 'type' in context ? (context as ItemContext<P, M, L, R, V>).type : this.getType(context)
+    const strategy = type !== undefined ? hidingStrategies[type]?.[item.location.type] as HidingSecretsStrategy<P, L> | undefined : undefined
+    return !!strategy?.(item as MaterialItem<P, L>, context.player).some(path => path === 'id' || path === 'id.front')
+  }
+
+  private getType(context: MaterialContext<P, M, L, R, V>): M | undefined {
+    const type = Object.keys(context.material).find(type => context.material[type as unknown as M] === this)
+    return type !== undefined ? Number(type) as M : undefined
   }
 
   isFlippedInDialog(item: Partial<MaterialItem<P, L, ItemId>>, context: MaterialContext<P, M, L, R, V>): boolean {
