@@ -170,6 +170,20 @@ export const checkboxCss = css`
   &:hover { border-color: rgba(40, 184, 206, 0.5); }
 `
 
+export const triStateCss = css`
+  width: 1em; height: 1em; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 0.25em;
+  border: 0.06em solid rgba(40, 184, 206, 0.35);
+  background: rgba(0, 0, 0, 0.3);
+  color: #5a8a98; font-family: inherit; font-size: inherit; font-weight: 700; line-height: 1;
+  cursor: pointer; flex-shrink: 0;
+  transition: all 0.15s;
+  &[data-state="true"] { background: rgba(40, 184, 206, 0.2); border-color: ${GP_PRIMARY}; color: ${GP_PRIMARY}; }
+  &[data-state="false"] { background: rgba(224, 96, 96, 0.15); border-color: #e06060; color: #e06060; }
+  &:hover { border-color: rgba(40, 184, 206, 0.5); }
+`
+
 export const toggleLabelCss = css`
   font-weight: 600; color: #5a8a98;
 `

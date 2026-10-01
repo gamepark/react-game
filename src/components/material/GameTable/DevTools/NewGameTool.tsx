@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { availableValues, legalPlayerCounts, listOptions, optionValueKey, OptionValue } from '@gamepark/rules-api'
-import { FC, useContext, useMemo, useState } from 'react'
+import { FC, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { gameContext } from '../../../GameProvider/GameContext'
 import { GameOption } from './DevToolsHub'
 import {
   checkboxCss, goBtnCss, inlineRowCss, numberInputCss, optionsToggleCss, selectCss,
-  stepBtnCss, toggleLabelCss, toggleRowCss, toolBtnCss, toolDescCss, toolIconCss, toolLabelCss
+  stepBtnCss, toggleLabelCss, toggleRowCss, toolBtnCss, toolDescCss, toolIconCss, toolLabelCss, triStateCss
 } from './devtools.css'
 
 type NewGameToolProps = {
@@ -20,12 +20,49 @@ const concepts = ['identities', 'teams'] as const
 type Concept = typeof concepts[number]
 const conceptField: Record<Concept, 'id' | 'team'> = { identities: 'id', teams: 'team' }
 
+type StoredSetup = { players: number, options: Record<string, any>, seats: Record<string, any>[] }
+
+const storageKey = (game: string) => `devtools.newGame.${game}`
+
+/** Last setup used for this game, so a reload starts the next game the same way. Storage may be unavailable. */
+const loadSetup = (game: string): Partial<StoredSetup> => {
+  try {
+    return JSON.parse(window.localStorage.getItem(storageKey(game)) ?? '{}') ?? {}
+  } catch {
+    return {}
+  }
+}
+
+/**
+ * A boolean has three states here, not two: forced on, forced off, or left to the spec — which draws it.
+ * A plain checkbox cannot say "off" without also meaning "draw it".
+ */
+const TriStateToggle: FC<{ value?: boolean, onChange: (value?: boolean) => void, label: string }> = ({ value, onChange, label }) => (
+  <label css={toggleRowCss} onClick={e => e.stopPropagation()}>
+    <button type="button" css={triStateCss} data-state={value === undefined ? 'random' : String(value)}
+      title={value === undefined ? 'Random' : value ? 'On' : 'Off'}
+      onClick={() => onChange(value === undefined ? true : value ? false : undefined)}>
+      {value === undefined ? '?' : value ? '✓' : '✗'}
+    </button>
+    <span css={toggleLabelCss}>{label}</span>
+  </label>
+)
+
 export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
-  const [players, setPlayers] = useState(2)
-  const [options, setOptions] = useState<Record<string, any>>({})
-  const [seats, setSeats] = useState<Record<string, any>[]>([])
+  const { game, optionsSpec } = useContext(gameContext)
+  const [stored] = useState(() => loadSetup(game))
+  const [players, setPlayers] = useState(stored.players ?? 2)
+  const [options, setOptions] = useState<Record<string, any>>(stored.options ?? {})
+  const [seats, setSeats] = useState<Record<string, any>[]>(stored.seats ?? [])
   const [showOptions, setShowOptions] = useState(false)
-  const optionsSpec = useContext(gameContext).optionsSpec
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey(game), JSON.stringify({ players, options, seats }))
+    } catch {
+      // Private window or blocked storage: the setup is simply not remembered.
+    }
+  }, [game, players, options, seats])
   // A v2 spec carries no text: the labels come from the game's own options document, served beside its
   // translations. Never suspend on it — a devtool must open even when that file is missing.
   const { t } = useTranslation('options', { useSuspense: false })
@@ -82,7 +119,7 @@ export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
    * untouched still starts a real game rather than an empty one.
    */
   const buildOptions = () => {
-    const chosen = Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined && value !== false))
+    const chosen = Object.fromEntries(Object.entries(options).filter(([, value]) => value !== undefined))
     const wishes = seats.some((seat) => Object.values(seat ?? {}).some((value) => value !== undefined))
     if (!Object.keys(chosen).length && !wishes) return players
     return { ...chosen, players: wishes ? Array.from({ length: players }, (_, index) => seats[index] ?? {}) : players }
@@ -116,13 +153,8 @@ export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
         {specOptions.map(({ key, option }) => {
           const name = label(`option.${key}`, key)
           if (option.kind === 'boolean') {
-            return (
-              <label key={key} css={toggleRowCss} onClick={e => e.stopPropagation()}>
-                <input type="checkbox" checked={options[key] ?? false}
-                  onChange={e => setOptions(prev => ({ ...prev, [key]: e.target.checked }))} css={checkboxCss} />
-                <span css={toggleLabelCss}>{name}</span>
-              </label>
-            )
+            return <TriStateToggle key={key} label={name} value={options[key]}
+              onChange={value => setOptions(prev => ({ ...prev, [key]: value }))} />
           }
           const values = availableValues(option, players, {})
           if (option.kind === 'enum-set') {
@@ -177,11 +209,8 @@ export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
           ))
         ))}
         {gameOptions?.map(opt => (
-          <label key={opt.key} css={toggleRowCss} onClick={e => e.stopPropagation()}>
-            <input type="checkbox" checked={options[opt.key] ?? false}
-              onChange={e => setOptions(prev => ({ ...prev, [opt.key]: e.target.checked }))} css={checkboxCss} />
-            <span css={toggleLabelCss}>{opt.label}</span>
-          </label>
+          <TriStateToggle key={opt.key} label={opt.label} value={options[opt.key]}
+            onChange={value => setOptions(prev => ({ ...prev, [opt.key]: value }))} />
         ))}
       </>}
     </div>
