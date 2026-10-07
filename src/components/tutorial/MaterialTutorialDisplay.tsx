@@ -7,7 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { playTutorialMoves, useGameDispatch } from '@gamepark/react-client'
 import { isCloseTutorialPopup, isSetTutorialStep, SetTutorialStep } from '@gamepark/rules-api'
 import { maxBy, minBy } from 'es-toolkit'
-import { useEffect } from 'react'
+import { TFunction } from 'i18next'
+import { Children, isValidElement, ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { transformCss } from '../../css'
 import { useLegalMove, useLegalMoves, useMaterialContext, useUndo } from '../../hooks'
@@ -56,6 +57,14 @@ export const MaterialTutorialDisplay = () => {
 
   const theme = useTheme()
 
+  const textKeys: string[] = []
+  const trackedT = ((key: string | string[], ...args: unknown[]) => {
+    textKeys.push(...[key].flat())
+    return (t as unknown as (...params: unknown[]) => string)(key, ...args)
+  }) as unknown as TFunction
+  const text = popup?.text(trackedT, game!)
+  if (process.env.NODE_ENV !== 'production') collectTransKeys(text, textKeys)
+
   return (
     <Dialog open={popup !== undefined && !game?.tutorial?.popupClosed}
             css={[
@@ -67,8 +76,9 @@ export const MaterialTutorialDisplay = () => {
             backdropCss={backdropCss}>
       {popup &&
         <div css={[rules, theme.tutorial?.content]}>
+          {process.env.NODE_ENV !== 'production' && <span css={debugKeyCss}>{textKeys.length ? textKeys.join(', ') : `#${game!.tutorial!.step}`}</span>}
           {passMove && <PlayMoveButton move={passMove} css={passButton}>{tCommon('Pass')}&nbsp;<FontAwesomeIcon icon={faForwardFast}/></PlayMoveButton>}
-          <p>{popup.text(t, game!)}</p>
+          <p>{text}</p>
           <p css={buttonsLine}>
             <ThemeButton disabled={!canUndoLastMove} onClick={() => undo()}><FontAwesomeIcon icon={faBackward}/>&nbsp;{tCommon('Previous')}</ThemeButton>
             {closeTutorialPopup ?
@@ -108,6 +118,26 @@ const passButton = css`
   font-size: 0.7em;
   top: 1em;
   right: 1.8em;
+`
+
+/** Finds the keys of the <Trans i18nKey> elements returned by the text of the popup */
+const collectTransKeys = (node: ReactNode, keys: string[]) => {
+  Children.forEach(node, child => {
+    if (!isValidElement<{ i18nKey?: string | string[], children?: ReactNode }>(child)) return
+    if (child.props.i18nKey) keys.push(...[child.props.i18nKey].flat())
+    collectTransKeys(child.props.children, keys)
+  })
+}
+
+// Debug help in development: the translation keys of the text (or the index of the step when there are none), absolute so that the text is not shifted
+const debugKeyCss = css`
+  position: absolute;
+  top: 0.6em;
+  left: 0.8em;
+  font-size: 0.5em;
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
 `
 
 const buttonsLine = css`
