@@ -26,7 +26,16 @@ import { UndoButton, UndoPopButton } from '../UndoButton'
 import { LogoIcon } from './LogoIcon'
 import { NavButton } from './NavButton'
 
-export const Menu = () => {
+export type MenuProps = {
+  /**
+   * How long the result dialog waits, in milliseconds, before opening by itself when the game ends under the eyes of
+   * the players. 10 seconds by default, which leaves time to watch the end of a game that is scored; a game won the
+   * moment a condition is met has nothing left to show and can open it sooner.
+   */
+  resultDialogDelay?: number
+}
+
+export const Menu = ({ resultDialogDelay = 10000 }: MenuProps) => {
   const { t } = useTranslation('common')
   const theme = useTheme()
   const [isOpen, setOpen] = useState(false)
@@ -52,10 +61,10 @@ export const Menu = () => {
   }, [gameOver])
   useEffect(() => {
     if (gameOver && resultDialogAutoOpen) {
-      const timeout = setTimeout(() => setResultDialogOpen(true), 10000)
+      const timeout = setTimeout(() => setResultDialogOpen(true), resultDialogDelay)
       return () => clearTimeout(timeout)
     }
-  }, [gameOver, resultDialogAutoOpen])
+  }, [gameOver, resultDialogAutoOpen, resultDialogDelay])
   useEffect(() => {
     if (resultDialogOpen) setResultDialogAutoOpen(false)
   }, [resultDialogOpen])
