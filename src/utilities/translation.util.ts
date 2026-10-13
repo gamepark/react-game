@@ -38,6 +38,22 @@ let translationInitialized = false
 const reportedKeys = new Set<string>()
 
 /**
+ * A browser may break the line after an image whatever follows it, even a word joiner, and leave a full stop alone at
+ * the start of a line; a figure may as well be left at the end of one, away from its icon. Every self-closing tag (the
+ * icons of the texts) is wrapped in `<nobr>` with what is written against it, a non-breaking space included, as it is
+ * translated, so that the texts do not have to: `Trans` renders that tag as it is, like `<br>`.
+ */
+const icon = '<(?!br/)[a-z0-9-]+/>'
+const besideIcon = `(?:[^\\s<>]|\\xa0|${icon})*`
+const iconRun = new RegExp(`${besideIcon}${icon}${besideIcon}`, 'gi')
+const iconsOnly = new RegExp(`^(?:${icon})+$`, 'i')
+const nobrIcons = {
+  type: 'postProcessor' as const,
+  name: 'nobrIcons',
+  process: (value: string) => value.replace(iconRun, (run) => (iconsOnly.test(run) ? run : `<nobr>${run}</nobr>`))
+}
+
+/**
  * Setup i18next global instance.
  * @param gameId The game identifier used as the default namespace
  * @param options i18next options
@@ -49,7 +65,7 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
 
   translationInitialized = true
 
-  i18next.use(initReactI18next).use(ICU).use(HttpBackend)
+  i18next.use(initReactI18next).use(ICU).use(HttpBackend).use(nobrIcons)
 
   const locale = getLocale()
   document.documentElement.lang = locale
@@ -63,8 +79,12 @@ export const setupTranslation = (gameId: string, options?: InitOptions) => {
     // caching and the fallback to English are already solved here, and the text is reachable with `t`.
     ns: [gameId, 'common', 'credits', 'options'],
     defaultNS: gameId,
+    postProcess: [nobrIcons.name],
+    react: {
+      transKeepBasicHtmlNodesFor: ['br', 'strong', 'i', 'p', 'nobr'],
+      ...import.meta.hot && { bindI18nStore: 'added' }
+    },
     ...import.meta.hot && {
-      react: { bindI18nStore: 'added' },
       i18nFormat: { bindI18nStore: 'added' }
     },
     backend: {
