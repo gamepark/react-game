@@ -11,5 +11,9 @@ export interface ScoringDescription<Player extends number = number, GameRule ext
 
   getScoringPlayerData(key: Key, player: Player, rules: GameRule): ScoringValue | null
 
+  /** Replaces the result text, in the header bar and in the result dialog */
   ResultHeader?: ComponentType
+
+  /** Replaces the result text in the result dialog only, where there is room for more than a line (defaults to {@link ResultHeader}) */
+  ResultDialogHeader?: ComponentType
 }

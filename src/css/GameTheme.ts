@@ -48,6 +48,12 @@ export interface DialogTheme {
   backdrop?: Interpolation<GameTheme>
   closeIcon?: Interpolation<GameTheme>
   closeButton?: ComponentType<{ onClick: () => void }>
+  /**
+   * The row that lays out a help dialog: the item (or location) display on one side, the help text ({@link content})
+   * on the other. Lets a game change the default padding and gap, for instance to draw the two parts as the pages of
+   * a book.
+   */
+  helpLayout?: Interpolation<GameTheme>
   content?: Interpolation<GameTheme>
   openAnimation?: Interpolation<GameTheme>
   closeAnimation?: Interpolation<GameTheme>
@@ -102,6 +108,14 @@ export interface ResultTheme {
   icon?: string
   container?: Interpolation<GameTheme>
   closeIcon?: Interpolation<GameTheme>
+  /** The column inside the result dialog that holds the parts below (the dialog's {@link DialogTheme.content} applies too) */
+  content?: Interpolation<GameTheme>
+  /** The title of the result: who wins ({@link ScoringDescription.ResultDialogHeader} or the result text) */
+  header?: Interpolation<GameTheme>
+  /** The line of navigation buttons (back to Game Park, play again, ranking) */
+  buttons?: Interpolation<GameTheme>
+  /** The scoring table: players as columns, scoring keys as rows */
+  table?: Interpolation<GameTheme>
 }
 
 export interface HeaderTheme {

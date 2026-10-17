@@ -21,7 +21,7 @@ export const LocationRulesDialogContent = <P extends number = number, M extends 
   if (!Help) return null
   const image = description?.getHelpImage(location, context)
   const { width, height } = description?.getLocationSize(location, context) ?? { width: 0, height: 0 }
-  return <div css={flex}>
+  return <div css={[flex, theme.dialog.helpLayout]}>
     {!!image &&
       <div css={[noShrink, fontSizeCss(Math.min(75 / height, 75 / width, 10)), backgroundImage(image, height, width)]}/>
     }

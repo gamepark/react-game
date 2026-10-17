@@ -35,8 +35,10 @@ export const MaterialRulesDialog: FC<RulesDialogProps> = (props: RulesDialogProp
   )
 }
 
+// The dialog class and the text tags are wrapped in :where(), so this default has the specificity of a bare img and
+// a game styles its own inline icons with a plain class
 const inlineImg = css`
-  p img, li img, h2 img, h3 img, h4 img {
+  :where(& p, & li, & h2, & h3, & h4) img {
     height: 1em;
     position: relative;
     top: 0.1em;

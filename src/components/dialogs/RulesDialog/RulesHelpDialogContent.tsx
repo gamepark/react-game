@@ -16,7 +16,7 @@ export const RulesHelpDialogContent = (
   const theme = useTheme()
   const context = useContext(gameContext)
   const RulesHelp = context.rulesHelp?.[helpDisplay.ruleId]
-  return <div css={helpDialogCss}>
+  return <div css={[helpDialogCss, theme.dialog.helpLayout]}>
     <div css={[helpDialogContentCss, theme.dialog.content]}>
       {RulesHelp ?
         <RulesHelp close={() => play(displayHelp(undefined), { transient: true })}/>
