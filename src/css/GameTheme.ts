@@ -95,6 +95,7 @@ export interface MenuTheme {
 export interface JournalTheme {
   tab?: Interpolation<GameTheme>
   tabSelected?: Interpolation<GameTheme>
+  /** The bar at the bottom of the chat where a message is typed: the form holding the input and the send button */
   chatBar?: Interpolation<GameTheme>
   /**
    * Style of one history entry. Any "font-size" here is relative to the default entry size:
