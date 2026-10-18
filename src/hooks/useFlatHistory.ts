@@ -7,6 +7,7 @@ import {
   computeRewindPlan,
   getMoveEntry,
   HistoryEngine,
+  interruptBatch,
   playMoveOnEngine,
   processMovesSync,
   rewindEngine,
@@ -120,15 +121,24 @@ export const useFlatHistory = () => {
     if (!playedMoves || !engine.current) return
     playedMovesRef.current = playedMoves
 
+    // A background batch still running: what it already played on the engine is processed, never played again
+    if (idleCallbackId.current !== null) {
+      cancelIdle(idleCallbackId.current)
+      idleCallbackId.current = null
+      if (pendingEntries.current.length > 0) {
+        const entriesToFlush = pendingEntries.current
+        setHistory((h) => h.concat(entriesToFlush))
+      }
+      moves.current = interruptBatch(moves.current, pendingMoves.current, processingIndex.current)
+      pendingMoves.current = []
+      pendingEntries.current = []
+      processingIndex.current = 0
+    }
+
     const actualSize = moves.current.length
     const ctx = makeLogContext()
 
     if (actualSize < playedMoves.length) {
-      if (idleCallbackId.current !== null) {
-        cancelIdle(idleCallbackId.current)
-        idleCallbackId.current = null
-      }
-
       const newMoves = playedMoves.slice(actualSize - playedMoves.length)
 
       if (newMoves.length <= 20) {
@@ -143,11 +153,6 @@ export const useFlatHistory = () => {
         idleCallbackId.current = scheduleIdle(processBatch)
       }
     } else if (actualSize > playedMoves.length) {
-      if (idleCallbackId.current !== null) {
-        cancelIdle(idleCallbackId.current)
-        idleCallbackId.current = null
-      }
-
       // Rewind the engine to the first move whose history entry must be rebuilt, using the nearest usable
       // checkpoint instead of replaying from a history entry's game state
       const plan = computeRewindPlan(moves.current, playedMoves, history, engine.current.checkpoints, setup)
