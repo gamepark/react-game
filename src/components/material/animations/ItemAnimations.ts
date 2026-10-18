@@ -5,7 +5,7 @@ import { isEqual } from 'es-toolkit'
 import { getItemFromContext, ItemContext, MaterialContext } from '../../../locators'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
-import { defaultElevation, ElevationConfig, extractTranslation, getElevationKeyframes, getWaypointElevationKeyframes, interpolateCoordinate, Trajectory, Waypoint } from './Trajectory'
+import { defaultElevation, ElevationConfig, extractTranslation, getElevationKeyframes, getFadeKeyframes, getWaypointElevationKeyframes, interpolateCoordinate, Fade, Trajectory, Waypoint } from './Trajectory'
 import { transformItem } from './transformItem.util'
 
 /**
@@ -206,21 +206,25 @@ export class ItemAnimations<P extends number = number, M extends number = number
    * @param easing CSS easing function
    * @param elevationConfig Elevation configuration for the parent div arc
    * @param waypoints Trajectory waypoints — if any define elevation, waypoint-level elevation replaces the global arc
+   * @param fade Fade of the item at the start and/or the end, run on the child div next to its position
    */
   protected getAnimationCssWithTrajectory(
     animationKeyframes: ReturnType<typeof keyframes>,
     duration: number,
     easing: string = 'ease-in-out',
     elevationConfig?: ElevationConfig | false,
-    waypoints?: Pick<Waypoint, 'at' | 'elevation'>[]
+    waypoints?: Pick<Waypoint, 'at' | 'elevation'>[],
+    fade?: Fade
   ): Interpolation<Theme> {
+    const fadeKeyframes = getFadeKeyframes(fade)
+    const fadeAnimation = fadeKeyframes ? css`, ${fadeKeyframes} ${duration}s linear forwards` : undefined
     // If any waypoint defines elevation, use waypoint-level elevation instead of global config
     const waypointElevation = waypoints ? getWaypointElevationKeyframes(waypoints) : undefined
     if (waypointElevation) {
       return css`
         animation: ${waypointElevation} ${duration}s linear forwards;
         > * {
-          animation: ${animationKeyframes} ${duration}s ${easing} forwards;
+          animation: ${animationKeyframes} ${duration}s ${easing} forwards${fadeAnimation};
         }
       `
     }
@@ -244,13 +248,13 @@ export class ItemAnimations<P extends number = number, M extends number = number
       return css`
         animation: ${elevationArc} ${duration}s linear ${fillMode};
         > * {
-          animation: ${animationKeyframes} ${duration}s ${easing} forwards;
+          animation: ${animationKeyframes} ${duration}s ${easing} forwards${fadeAnimation};
         }
       `
     }
     return css`
       > * {
-        animation: ${animationKeyframes} ${duration}s ${easing} forwards;
+        animation: ${animationKeyframes} ${duration}s ${easing} forwards${fadeAnimation};
       }
     `
   }
