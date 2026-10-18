@@ -117,6 +117,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
                          playDown={playDown ?? (focus?.highlight && !isFocused && !focusedLocations.length)}
                          backChildren={faceContent(ParentFace.Back)}
                          style={{ transform: transformStyle }}
+                         data-rest-transform={dragTransform ? itemTransform.join(' ') : undefined}
                          css={description.getItemExtraCss(item, itemContext)}>
         {faceContent(ParentFace.Front)}
       </MaterialComponent>

@@ -12,6 +12,7 @@ import { getBestDropMove } from '../utils/getBestDropMove'
 import { DraggedItemProvider } from './DraggedItemProvider'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
 import { GameTableContext } from './GameTableContext'
+import { measureAtRest } from './measureAtRest'
 import { NoZoomScaleProvider, ZoomScaleProvider } from './ScaleContext'
 import dropItemMove = MaterialMoveBuilder.dropItemMove
 
@@ -35,7 +36,7 @@ const defaultMargin: Margin = { left: 0, right: 0, top: 7, bottom: 0 }
 const wheel = { step: 0.05 }
 const doubleClick = { disabled: true }
 const pointerSensorOptions = { activationConstraint: { distance: 2 } }
-const measuring = { draggable: { measure: getClientRect }, droppable: { measure: getClientRect } }
+const measuring = { draggable: { measure: measureAtRest }, droppable: { measure: getClientRect } }
 const enabledPanning = { disabled: false }
 const disabledPanning = { disabled: true }
 
