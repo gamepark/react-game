@@ -91,14 +91,14 @@ export const BugReportDialog = ({ open, onClose }: Props) => {
           <h2 css={theme.dialog.title}>{t('bug.dialog.title', 'Report a Bug')}</h2>
           <p css={[hintCss, theme.dialog.text]}>{t('bug.dialog.description.hint', 'What happened? What did you expect? (min. 10 characters)')}</p>
           <textarea
-            css={textareaCss}
+            css={[textareaCss, theme.dialog.fields]}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder={t('bug.dialog.description.label', 'Describe the issue') ?? ''}
             rows={4}
             maxLength={2000}
           />
-          <select css={selectCss} value={category} onChange={(e) => setCategory(e.target.value)}>
+          <select css={[selectCss, theme.dialog.fields]} value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="">{t('bug.dialog.category.label', 'Category (optional)')}</option>
             {categories.map((c) => (
               <option key={c.key} value={c.key}>

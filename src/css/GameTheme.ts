@@ -70,6 +70,8 @@ export interface DialogTheme {
   title?: Interpolation<GameTheme>
   /** The paragraphs of the message dialogs of the framework */
   text?: Interpolation<GameTheme>
+  /** The fields of the message dialogs of the framework (the textarea and select of the bug report) */
+  fields?: Interpolation<GameTheme>
 }
 
 export interface PaletteTheme {
