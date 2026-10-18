@@ -206,7 +206,7 @@ export class ItemAnimations<P extends number = number, M extends number = number
    * @param easing CSS easing function
    * @param elevationConfig Elevation configuration for the parent div arc
    * @param waypoints Trajectory waypoints — if any define elevation, waypoint-level elevation replaces the global arc
-   * @param fade Fade of the item at the start and/or the end, run on the child div next to its position
+   * @param fade Fade of the item at the start and/or the end, run on the faces of the item
    */
   protected getAnimationCssWithTrajectory(
     animationKeyframes: ReturnType<typeof keyframes>,
@@ -216,16 +216,24 @@ export class ItemAnimations<P extends number = number, M extends number = number
     waypoints?: Pick<Waypoint, 'at' | 'elevation'>[],
     fade?: Fade
   ): Interpolation<Theme> {
+    // The fade runs on the faces of the item (the children of its content, inside the child div), not on the child div:
+    // an opacity below 1 flattens the 3D of the element it applies to, and the child div turns the item over (rotateY),
+    // so the face turned away would show mirrored instead of being hidden by its backface-visibility.
     const fadeKeyframes = getFadeKeyframes(fade)
-    const fadeAnimation = fadeKeyframes ? css`, ${fadeKeyframes} ${duration}s linear forwards` : undefined
+    const fadeCss = fadeKeyframes && css`
+      > * > * > * {
+        animation: ${fadeKeyframes} ${duration}s linear forwards;
+      }
+    `
     // If any waypoint defines elevation, use waypoint-level elevation instead of global config
     const waypointElevation = waypoints ? getWaypointElevationKeyframes(waypoints) : undefined
     if (waypointElevation) {
       return css`
         animation: ${waypointElevation} ${duration}s linear forwards;
         > * {
-          animation: ${animationKeyframes} ${duration}s ${easing} forwards${fadeAnimation};
+          animation: ${animationKeyframes} ${duration}s ${easing} forwards;
         }
+        ${fadeCss}
       `
     }
     if (elevationConfig !== false) {
@@ -248,14 +256,16 @@ export class ItemAnimations<P extends number = number, M extends number = number
       return css`
         animation: ${elevationArc} ${duration}s linear ${fillMode};
         > * {
-          animation: ${animationKeyframes} ${duration}s ${easing} forwards${fadeAnimation};
+          animation: ${animationKeyframes} ${duration}s ${easing} forwards;
         }
+        ${fadeCss}
       `
     }
     return css`
       > * {
-        animation: ${animationKeyframes} ${duration}s ${easing} forwards${fadeAnimation};
+        animation: ${animationKeyframes} ${duration}s ${easing} forwards;
       }
+      ${fadeCss}
     `
   }
 
