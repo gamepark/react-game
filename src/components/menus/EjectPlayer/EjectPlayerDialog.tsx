@@ -28,18 +28,18 @@ export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: ()
     }
   }, [opponentWithNegativeTime])
   if (!opponentWithNegativeTime) return null
-  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button]
+  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons]
   return (
     <Dialog onBackdropClick={close} css={menuDialogCss} {...props}>
-      <h2>{t('eject.dialog.p1', { player: opponentName })}</h2>
+      <h2 css={theme.dialog.title}>{t('eject.dialog.p1', { player: opponentName })}</h2>
       {!opponentThatCanBeEjected ?
-        <p>{t('eject.dialog.p2', { duration: dayjs.duration(maxExceedTime).humanize() })}</p> :
-        <p>{t('eject.dialog.p3')}</p>
+        <p css={theme.dialog.text}>{t('eject.dialog.p2', { duration: dayjs.duration(maxExceedTime).humanize() })}</p> :
+        <p css={theme.dialog.text}>{t('eject.dialog.p3')}</p>
       }
       <div css={buttonLineCss}>
         <button css={[...themedButtonCss, inDialogButton]} onClick={close}>{t('Close')}</button>
         {opponentThatCanBeEjected &&
-          <button css={[...themedButtonCss, paletteDangerButtonCss, inDialogButton]} onClick={() => dispatch(ejectPlayer(opponentThatCanBeEjected.id))}>
+          <button css={[...themedButtonCss, paletteDangerButtonCss, theme.dialog.dangerButtons, inDialogButton]} onClick={() => dispatch(ejectPlayer(opponentThatCanBeEjected.id))}>
             <FontAwesomeIcon icon={faUserSlash}/>
             {t('Eject {player}', { player: opponentName })}
           </button>

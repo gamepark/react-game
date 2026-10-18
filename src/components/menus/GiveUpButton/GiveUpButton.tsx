@@ -42,8 +42,8 @@ export const GiveUpButton = () => {
     }
   }, [displayPopup])
 
-  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button]
-  const dangerButtonCss = [menuButtonCss, paletteMenuButtonCss, paletteDangerButtonCss]
+  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons]
+  const dangerButtonCss = [menuButtonCss, paletteMenuButtonCss, paletteDangerButtonCss, theme.dialog.buttons, theme.dialog.dangerButtons]
 
   return (
     <>
@@ -53,16 +53,16 @@ export const GiveUpButton = () => {
       </button>
       <Dialog open={displayPopup} css={[menuDialogCss, css`max-width: 90dvw;`]} onBackdropClick={() => setDisplayPopup(false)}>
         {playerIsLast ? <>
-          <h2>{t('giveup.last')}</h2>
+          <h2 css={theme.dialog.title}>{t('giveup.last')}</h2>
           {gameMode === GameMode.TOURNAMENT ? <>
-            <p>{t('giveup.last.choice.tournament')}</p>
+            <p css={theme.dialog.text}>{t('giveup.last.choice.tournament')}</p>
             <button css={[...themedButtonCss, inDialogButton]} onClick={onClaimVictory} disabled={!displayedLongEnough}>
               {t('giveup.last.claim')}
             </button>
           </> : <>
-            <p>{t('giveup.last.choice')}</p>
+            <p css={theme.dialog.text}>{t('giveup.last.choice')}</p>
             {gameMode === GameMode.COMPETITIVE &&
-              <p>{t('giveup.last.choice.competitive')}</p>
+              <p css={theme.dialog.text}>{t('giveup.last.choice.competitive')}</p>
             }
             <div css={buttonLineCss}>
               <button css={[...dangerButtonCss, inDialogButton]} onClick={onGiveUp} disabled={!displayedLongEnough}>
@@ -78,10 +78,10 @@ export const GiveUpButton = () => {
           </>
           }
         </> : <>
-          <h2>{t('giveup.title')}</h2>
-          <p>{t('giveup.robot')}</p>
-          <p>{gameMode === GameMode.FRIENDLY ? t('giveup.friendly') : t('giveup.competitive')} </p>
-          <p>{gameMode === GameMode.TOURNAMENT && t('giveup.tournament')}</p>
+          <h2 css={theme.dialog.title}>{t('giveup.title')}</h2>
+          <p css={theme.dialog.text}>{t('giveup.robot')}</p>
+          <p css={theme.dialog.text}>{gameMode === GameMode.FRIENDLY ? t('giveup.friendly') : t('giveup.competitive')} </p>
+          <p css={theme.dialog.text}>{gameMode === GameMode.TOURNAMENT && t('giveup.tournament')}</p>
           <div css={buttonLineCss}>
             <button css={[...themedButtonCss, inDialogButton]} onClick={() => setDisplayPopup(false)} disabled={!displayedLongEnough}>{t('Cancel')}</button>
             <button css={[...dangerButtonCss, inDialogButton]} onClick={onGiveUp} disabled={!displayedLongEnough}>

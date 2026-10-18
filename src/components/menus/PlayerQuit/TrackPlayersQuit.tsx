@@ -23,7 +23,7 @@ const TrackPlayerQuit = ({ player }: { player: Player }) => {
   }, [player.quit])
   if (!player.quit) return null
   return <Dialog css={menuDialogCss} open={open}>
-    <p>{player.userId === me?.user.id ? (
+    <p css={theme.dialog.text}>{player.userId === me?.user.id ? (
       player.quitReason === PlayerQuitReason.Ejected ?
         t('quit.you.ejected')
         : t('quit.you')
@@ -33,6 +33,6 @@ const TrackPlayerQuit = ({ player }: { player: Player }) => {
         : t('quit.player', { player: playerName })
     )
     }</p>
-    <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button]} onClick={() => setOpen(false)}>{t('OK')}</button>
+    <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons]} onClick={() => setOpen(false)}>{t('OK')}</button>
   </Dialog>
 }
