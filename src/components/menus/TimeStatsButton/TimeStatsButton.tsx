@@ -33,7 +33,7 @@ export const TimeStatsButton = () => {
         <FontAwesomeIcon icon={faClock}/>
         {t('time.button')}
       </button>
-      <Dialog open={displayPopup} css={[menuDialogCss, theme.timeStats?.container]} onBackdropClick={() => setDisplayPopup(false)}>
+      <Dialog open={displayPopup} css={[menuDialogCss, theme.dialog.message, theme.timeStats?.container]} onBackdropClick={() => setDisplayPopup(false)}>
         {CloseButton ? <CloseButton onClick={() => setDisplayPopup(false)}/> : <FontAwesomeIcon icon={faXmark} css={closeIcon} onClick={() => setDisplayPopup(false)}/>}
         <h2>{t('time.title')}</h2>
         <div css={gridCss(players.length)}>

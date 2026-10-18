@@ -30,7 +30,7 @@ export const EjectPlayerDialog = ({ close, ...props }: DialogProps & { close: ()
   if (!opponentWithNegativeTime) return null
   const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons]
   return (
-    <Dialog onBackdropClick={close} css={menuDialogCss} {...props}>
+    <Dialog onBackdropClick={close} css={[menuDialogCss, theme.dialog.message]} {...props}>
       <h2 css={theme.dialog.title}>{t('eject.dialog.p1', { player: opponentName })}</h2>
       {!opponentThatCanBeEjected ?
         <p css={theme.dialog.text}>{t('eject.dialog.p2', { duration: dayjs.duration(maxExceedTime).humanize() })}</p> :

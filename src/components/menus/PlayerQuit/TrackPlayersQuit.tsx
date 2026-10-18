@@ -22,7 +22,7 @@ const TrackPlayerQuit = ({ player }: { player: Player }) => {
     if (!alreadyQuit && player.quit) setOpen(true)
   }, [player.quit])
   if (!player.quit) return null
-  return <Dialog css={menuDialogCss} open={open}>
+  return <Dialog css={[menuDialogCss, theme.dialog.message]} open={open}>
     <p css={theme.dialog.text}>{player.userId === me?.user.id ? (
       player.quitReason === PlayerQuitReason.Ejected ?
         t('quit.you.ejected')

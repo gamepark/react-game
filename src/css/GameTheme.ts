@@ -72,6 +72,12 @@ export interface DialogTheme {
   text?: Interpolation<GameTheme>
   /** The fields of the message dialogs of the framework (the textarea and select of the bug report) */
   fields?: Interpolation<GameTheme>
+  /**
+   * The container of the message dialogs of the framework (give up, eject, full screen, bug report, player quit,
+   * failures, time stats), applied after {@link container}: they are small and carry their content directly, so a
+   * game can give them their own size and padding.
+   */
+  message?: Interpolation<GameTheme>
 }
 
 export interface PaletteTheme {

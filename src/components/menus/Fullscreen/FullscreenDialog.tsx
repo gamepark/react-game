@@ -15,7 +15,7 @@ export const FullscreenDialog = (props: Omit<DialogProps, 'open'>) => {
   const [open, setOpen] = useState(true)
   const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons]
   return (
-    <Dialog open={open} css={[dialogCss, menuDialogCss]} backdropCss={backdropCss} {...props}>
+    <Dialog open={open} css={[dialogCss, menuDialogCss, theme.dialog.message]} backdropCss={backdropCss} {...props}>
       <h2 css={theme.dialog.title}>{t('Flip your screen')}</h2>
       <p css={theme.dialog.text}>{t('fs.dialog.p1')}</p>
       {fscreen.fullscreenEnabled && !fullscreen && <p css={theme.dialog.text}>{t('fs.dialog.p2')}</p>}

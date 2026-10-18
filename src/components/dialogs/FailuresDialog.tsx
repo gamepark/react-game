@@ -32,7 +32,7 @@ export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
   const terminal = isTerminalFailure(displayedFailure)
   const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons]
   return (
-    <Dialog open={failures.length > 0} css={menuDialogCss}
+    <Dialog open={failures.length > 0} css={[menuDialogCss, theme.dialog.message]}
             backdropCss={terminal && aboveLoadingScreenCss}
             onBackdropClick={terminal ? undefined : () => dispatch(clearFailures())} {...props}>
       <h2 css={[titleCss, theme.dialog.title]}>

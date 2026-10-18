@@ -51,7 +51,7 @@ export const GiveUpButton = () => {
         <FontAwesomeIcon icon={faFlag}/>
         {t('giveup')}
       </button>
-      <Dialog open={displayPopup} css={[menuDialogCss, css`max-width: 90dvw;`]} onBackdropClick={() => setDisplayPopup(false)}>
+      <Dialog open={displayPopup} css={[menuDialogCss, css`max-width: 90dvw;`, theme.dialog.message]} onBackdropClick={() => setDisplayPopup(false)}>
         {playerIsLast ? <>
           <h2 css={theme.dialog.title}>{t('giveup.last')}</h2>
           {gameMode === GameMode.TOURNAMENT ? <>

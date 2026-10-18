@@ -68,7 +68,7 @@ export const BugReportDialog = ({ open, onClose }: Props) => {
   const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons, inDialogButton]
 
   return (
-    <Dialog open={open} css={[menuDialogCss, dialogWidthCss]} onBackdropClick={handleClose}>
+    <Dialog open={open} css={[menuDialogCss, dialogWidthCss, theme.dialog.message]} onBackdropClick={handleClose}>
       {state === 'SUCCESS' ? (
         <>
           <h2 css={theme.dialog.title}>{t('bug.dialog.success.title', 'Thank you!')}</h2>
