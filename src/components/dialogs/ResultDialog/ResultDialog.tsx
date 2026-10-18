@@ -52,19 +52,19 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
         <h2 css={theme.result?.header}>{ResultHeader ? <ResultHeader/> : resultText}</h2>
         <div css={[buttonLine, theme.result?.buttons]}>
           {gameMode === GameMode.TOURNAMENT && tournament ?
-            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
+            <NavButton css={theme.dialog.buttons} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
               {t('result.tournament.link')}
             </NavButton>
             :
-            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}`}>{t('Back to Game Park')}</NavButton>
+            <NavButton css={theme.dialog.buttons} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}`}>{t('Back to Game Park')}</NavButton>
           }
           {gameMode === GameMode.COMPETITIVE &&
-            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play/competitive?auto=true`}>
+            <NavButton css={theme.dialog.buttons} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play/competitive?auto=true`}>
               {t('Play again')}
             </NavButton>
           }
           {gameMode === GameMode.COMPETITIVE &&
-            <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/ranking`}>
+            <NavButton css={theme.dialog.buttons} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/ranking`}>
               {t('See overall ranking')}
             </NavButton>
           }
@@ -92,7 +92,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
             <p css={css`white-space: break-spaces;`}>{t('tuto.over')}</p>
             <p css={buttonsLine}>
               <RestartTutorialButton/>
-              <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`} css={css`margin-left: 1em;`}>
+              <NavButton css={theme.dialog.buttons} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`} css={css`margin-left: 1em;`}>
                 <FontAwesomeIcon icon={faChessPawn}/>{t('Play')}
               </NavButton>
             </p>

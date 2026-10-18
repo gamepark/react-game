@@ -67,6 +67,23 @@ export interface DialogTheme {
    * Falls back to theme.buttons when undefined.
    */
   buttons?: Interpolation<GameTheme>
+  /**
+   * The buttons of the message dialogs that call for care (give up, eject a player). Applied after
+   * {@link buttons}, so a game can keep its button recipe and only change what tells the danger.
+   */
+  dangerButtons?: Interpolation<GameTheme>
+  /** The title (h2) of the message dialogs of the framework: give up, full screen, bug report, failures… */
+  title?: Interpolation<GameTheme>
+  /** The paragraphs of the message dialogs of the framework */
+  text?: Interpolation<GameTheme>
+  /** The fields of the message dialogs of the framework (the textarea and select of the bug report) */
+  fields?: Interpolation<GameTheme>
+  /**
+   * The container of the message dialogs of the framework (give up, eject, full screen, bug report, player quit,
+   * failures, time stats), applied after {@link container}: they are small and carry their content directly, so a
+   * game can give them their own size and padding.
+   */
+  message?: Interpolation<GameTheme>
 }
 
 export interface PaletteTheme {

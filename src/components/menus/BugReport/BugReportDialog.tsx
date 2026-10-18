@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { trpcClient } from '@gamepark/react-client'
 import { TRPCClientError } from '@trpc/client'
 import { useState } from 'react'
@@ -64,20 +64,21 @@ export const BugReportDialog = ({ open, onClose }: Props) => {
     }
   }
 
-  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, inDialogButton]
+  const theme = useTheme()
+  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons, inDialogButton]
 
   return (
-    <Dialog open={open} css={[menuDialogCss, dialogWidthCss]} onBackdropClick={handleClose}>
+    <Dialog open={open} css={[menuDialogCss, dialogWidthCss, theme.dialog.message]} onBackdropClick={handleClose}>
       {state === 'SUCCESS' ? (
         <>
-          <h2>{t('bug.dialog.success.title', 'Thank you!')}</h2>
-          <p>{t('bug.dialog.success.message', "Your report has been submitted. We'll investigate.")}</p>
+          <h2 css={theme.dialog.title}>{t('bug.dialog.success.title', 'Thank you!')}</h2>
+          <p css={theme.dialog.text}>{t('bug.dialog.success.message', "Your report has been submitted. We'll investigate.")}</p>
           <button css={themedButtonCss} onClick={handleClose}>OK</button>
         </>
       ) : state === 'ERROR' ? (
         <>
-          <h2>Error</h2>
-          <p>{errorMessage}</p>
+          <h2 css={theme.dialog.title}>Error</h2>
+          <p css={theme.dialog.text}>{errorMessage}</p>
           <div css={buttonLineCss}>
             <button css={themedButtonCss} onClick={handleClose}>{t('Cancel', 'Cancel')}</button>
             <button css={themedButtonCss} onClick={() => setState('FORM')}>
@@ -87,17 +88,17 @@ export const BugReportDialog = ({ open, onClose }: Props) => {
         </>
       ) : (
         <>
-          <h2>{t('bug.dialog.title', 'Report a Bug')}</h2>
-          <p css={hintCss}>{t('bug.dialog.description.hint', 'What happened? What did you expect? (min. 10 characters)')}</p>
+          <h2 css={theme.dialog.title}>{t('bug.dialog.title', 'Report a Bug')}</h2>
+          <p css={[hintCss, theme.dialog.text]}>{t('bug.dialog.description.hint', 'What happened? What did you expect? (min. 10 characters)')}</p>
           <textarea
-            css={textareaCss}
+            css={[textareaCss, theme.dialog.fields]}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder={t('bug.dialog.description.label', 'Describe the issue') ?? ''}
             rows={4}
             maxLength={2000}
           />
-          <select css={selectCss} value={category} onChange={(e) => setCategory(e.target.value)}>
+          <select css={[selectCss, theme.dialog.fields]} value={category} onChange={(e) => setCategory(e.target.value)}>
             <option value="">{t('bug.dialog.category.label', 'Category (optional)')}</option>
             {categories.map((c) => (
               <option key={c.key} value={c.key}>

@@ -30,22 +30,22 @@ export const FailuresDialog = (props: Omit<DialogProps, 'open'>) => {
   }, [failures])
   const description = failuresDescription[displayedFailure] ?? fallbackDescription(displayedFailure)
   const terminal = isTerminalFailure(displayedFailure)
-  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button]
+  const themedButtonCss = [menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons]
   return (
-    <Dialog open={failures.length > 0} css={menuDialogCss}
+    <Dialog open={failures.length > 0} css={[menuDialogCss, theme.dialog.message]}
             backdropCss={terminal && aboveLoadingScreenCss}
             onBackdropClick={terminal ? undefined : () => dispatch(clearFailures())} {...props}>
-      <h2 css={titleCss}>
+      <h2 css={[titleCss, theme.dialog.title]}>
         <FontAwesomeIcon icon={faTriangleExclamation} css={iconCss}/>
         {description.title(t)}
       </h2>
-      <p>{description.text(t)}</p>
+      <p css={theme.dialog.text}>{description.text(t)}</p>
       {terminal ? (
-        <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${game}`}>{t('Back to Game Park')}</NavButton>
+        <NavButton css={theme.dialog.buttons} url={`${PLATFORM_URI}/${locale}/board-games/${game}`}>{t('Back to Game Park')}</NavButton>
       ) : (
         <>
           <button css={[...themedButtonCss, inDialogButton]} onClick={() => dispatch(clearFailures())}>{t('OK')}</button>
-          {displayedFailure === Failure.MOVE_FORBIDDEN && <p>
+          {displayedFailure === Failure.MOVE_FORBIDDEN && <p css={theme.dialog.text}>
             <Trans ns="common" i18nKey="failure.dialog.play2"
                    components={[<button css={[...themedButtonCss, css`display: inline-block`]} onClick={() => window.location.reload()}/>]}/>
           </p>}
