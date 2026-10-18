@@ -75,7 +75,7 @@ export const Menu = ({ resultDialogDelay = 10000 }: MenuProps) => {
       {couldUndo && <UndoPopButton/>}
       {gameOver && <ResultPopButton onClick={() => setResultDialogOpen(true)}/>}
       {fscreen.fullscreenEnabled && <FullscreenPopButton/>}
-      <div css={[menuFontSize, menuBaseCss, paletteMenuBaseCss, theme.menu?.panel, menuCss, !isOpen && hide]}>
+      <div css={[menuFontSize, menuBaseCss, paletteMenuBaseCss, menuCss, theme.menu?.panel, !isOpen && hide]}>
         <h2 css={titleCss}>{t('Menu')}</h2>
         {fscreen.fullscreenEnabled && <FullscreenButton/>}
         <SoundButton/>

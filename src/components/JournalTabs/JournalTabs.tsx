@@ -49,7 +49,7 @@ export const JournalTabs: FC<JournalTabsProps> = (props) => {
   return (
     <>
       <div css={[backdrop, isOpen && displayBackdrop]} onClick={() => setOpen(false)}/>
-      <div css={[menuFontSize, menuBaseCss, paletteMenuBaseCss, theme.menu?.panel, journalMenu, !isOpen && hide]}>
+      <div css={[menuFontSize, menuBaseCss, paletteMenuBaseCss, journalMenu, theme.menu?.panel, theme.journal?.panel, !isOpen && hide]}>
         <div css={buttonContainer}>
           {chatEnabled && logEnabled && (
             <>
