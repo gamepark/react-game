@@ -1,4 +1,4 @@
-import { css } from '@emotion/react'
+import { css, useTheme } from '@emotion/react'
 import { faPaperPlane } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Message, useSendMessage } from '@gamepark/react-client'
@@ -50,6 +50,7 @@ export const ChatInput: FC<ChatInputProps> = (props) => {
   const [text, setText] = useState('')
   const { t } = useTranslation('common')
   const inputRef = useRef<HTMLInputElement>(null)
+  const theme = useTheme()
 
   useEffect(() => {
     if (open && inputRef.current) {
@@ -63,7 +64,7 @@ export const ChatInput: FC<ChatInputProps> = (props) => {
     setText('')
   }
   return (
-    <form css={[messageBar, messageBarPalette, !open && hidden]} onSubmit={doSubmit}>
+    <form css={[messageBar, messageBarPalette, theme.journal?.chatBar, !open && hidden]} onSubmit={doSubmit}>
       <input ref={inputRef} type="text" placeholder={t('Type a message')!} css={textInputCss} value={text} onChange={event => setText(event.target.value)}/>
       <button disabled={!text} aria-label={t('Send')!} title={t('Send')!} css={[buttonResetCss, sendButtonStyle, !text && disableSubmit]}><FontAwesomeIcon
         css={!text && transparent} icon={faPaperPlane}/></button>

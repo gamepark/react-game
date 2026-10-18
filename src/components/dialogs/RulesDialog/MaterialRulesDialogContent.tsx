@@ -75,7 +75,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const onNext = next ? () => play(next, { transient: true }) : undefined
   if (hasNavigation && Navigation) {
     return <div css={navigationWrapper}>
-      <div css={[flex, navigationContent]}>
+      <div css={[flex, navigationContent, theme.dialog.helpLayout]}>
         <description.helpDisplay item={item} itemType={helpDisplay.itemType} itemIndex={helpDisplay.itemIndex} displayIndex={helpDisplay.displayIndex} closeDialog={closeDialog}/>
         <div css={[helpDialogContentCss, theme.dialog.content]}>
           {description.help && <description.help {...helpDisplay} closeDialog={closeDialog}/>}
@@ -88,7 +88,7 @@ export const MaterialRulesDialogContent = <P extends number = number, M extends 
   const backdrop = useDialogBackdrop()
 
   return <>
-    <div css={[flex, hasNavigation && fullSize]}>
+    <div css={[flex, hasNavigation && fullSize, theme.dialog.helpLayout]}>
       <description.helpDisplay item={item} itemType={helpDisplay.itemType} itemIndex={helpDisplay.itemIndex} displayIndex={helpDisplay.displayIndex} closeDialog={closeDialog}/>
       <div css={[helpDialogContentCss, theme.dialog.content]}>
         {description.help && <description.help {...helpDisplay} closeDialog={closeDialog}/>}

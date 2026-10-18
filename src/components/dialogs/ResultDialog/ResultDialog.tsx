@@ -41,15 +41,16 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
   let row = (gameMode === GameMode.TOURNAMENT ? 3 : gameMode === GameMode.COMPETITIVE ? 2 : 1) + (scoringCells?.length ?? 0)
 
   const resultText = useResultText()
+  const ResultHeader = context.scoring?.ResultDialogHeader ?? context.scoring?.ResultHeader
   return (
     // RulesDialog wraps Dialog with the standard close button slot (theme.dialog.closeButton)
     // so the result popup shares the same chrome — and the same font-size context — as
     // the rules / extension dialogs. No more font-size: calc(3.2em * var(--gp-scale))
     // override here; the inherited theme.dialog.container handles sizing.
     <RulesDialog close={close} css={[style, theme.result?.container]} {...props}>
-      <div css={[helpDialogContentCss, scrollableContent, theme.dialog.content]}>
-        <h2>{context.scoring?.ResultHeader ? <context.scoring.ResultHeader/> : resultText}</h2>
-        <div css={buttonLine}>
+      <div css={[helpDialogContentCss, scrollableContent, theme.dialog.content, theme.result?.content]}>
+        <h2 css={theme.result?.header}>{ResultHeader ? <ResultHeader/> : resultText}</h2>
+        <div css={[buttonLine, theme.result?.buttons]}>
           {gameMode === GameMode.TOURNAMENT && tournament ?
             <NavButton url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/tournaments/${tournament.number}`}>
               {t('result.tournament.link')}
@@ -68,7 +69,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
             </NavButton>
           }
         </div>
-        <div css={[gridCss, row > 1 ? multiRows(rankedPlayers.length, row) : singleRow(rankedPlayers.length)]}>
+        <div css={[gridCss, row > 1 ? multiRows(rankedPlayers.length, row) : singleRow(rankedPlayers.length), theme.result?.table]}>
           {row > 1 && <div css={stickyHeader}/>}
           {gameMode === GameMode.TOURNAMENT && <div css={[borderTopCss, left]}>{t('Tournament')}</div>}
           {(gameMode === GameMode.TOURNAMENT || gameMode === GameMode.COMPETITIVE) && <div css={[borderTopCss, left]}>{t('Ranking')}</div>}
