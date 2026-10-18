@@ -1,6 +1,7 @@
 export * from './animations'
 export * from './locations'
 export * from './ComponentDescription'
+export * from './MobileMaterialDescription'
 export * from './Dices'
 export * from './Wheel'
 export * from './Writing'
