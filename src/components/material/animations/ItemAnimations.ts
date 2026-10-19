@@ -181,6 +181,12 @@ export class ItemAnimations<P extends number = number, M extends number = number
             transforms.push(`rotateY(${rotateY}deg)`)
           }
         }
+        // An item drawn at another size at either end (a locator that scales it) keeps that size along the way
+        const originScale = extractScale(originTransforms)
+        const targetScale = extractScale(targetTransforms)
+        if (originScale !== 1 || targetScale !== 1) {
+          transforms.push(`scale(${interpolateCoordinate(originScale, targetScale, t)})`)
+        }
       }
 
       const percent = Math.round(t * 100)
@@ -341,6 +347,18 @@ function extractRotation(transforms: string[]): number | undefined {
     }
   }
   return undefined
+}
+
+/**
+ * The scale of an item in a list of css transforms: the product of its scale() operations, 1 when there is none.
+ * Used so that intermediate waypoints in a trajectory keep the size of an item that a locator draws scaled.
+ */
+function extractScale(transforms: string[]): number {
+  let scale = 1
+  for (const transform of transforms) {
+    for (const match of transform.matchAll(/scale\(\s*([-\d.]+)\s*\)/g)) scale *= parseFloat(match[1])
+  }
+  return scale
 }
 
 /**

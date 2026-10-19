@@ -92,7 +92,7 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
             <p css={css`white-space: break-spaces;`}>{t('tuto.over')}</p>
             <p css={buttonsLine}>
               <RestartTutorialButton/>
-              <NavButton css={theme.dialog.buttons} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`} css={css`margin-left: 1em;`}>
+              <NavButton css={[theme.dialog.buttons, css`margin-left: 1em;`]} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`}>
                 <FontAwesomeIcon icon={faChessPawn}/>{t('Play')}
               </NavButton>
             </p>
