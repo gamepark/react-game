@@ -32,6 +32,8 @@ export interface ElevationConfig {
    * elevation stays at 0 for the rest of the animation — useful when the
    * card needs to slide flat for its final approach (e.g. landing under a
    * deck stack instead of dropping from above).
+   * From there, the item is also at the depth of its destination: it slides in between the items it lands among,
+   * under the ones above its place and over the ones below (see getLandingElevationKeyframes).
    * @default 1
    */
   landAt?: number
@@ -283,6 +285,77 @@ export function getElevationKeyframes(config: ElevationConfig): ReturnType<typeo
   // avoid the rebound.
   const frames = `from { transform: translateZ(0); } ${peakPercent}% { transform: translateZ(${height}em); } ${landPercent}% { transform: translateZ(0); } to { transform: translateZ(0); }`
   return keyframes`${frames}`
+}
+
+/** The points of the curve a landing arc is drawn with, see {@link getLandingElevationKeyframes} */
+const LANDING_STEPS = 20
+
+/**
+ * The arc of an item that lands at `landAt` (see {@link getElevationKeyframes}), at the depth of its destination from
+ * there.
+ *
+ * The item itself moves from the depth it leaves to the depth it reaches along the easing of its trajectory: after it
+ * has landed, it would still be on its way down or up, and cross on its last stretch the items it lands among (e.g. a
+ * card that slides in between 2 cards of a hand, under the one at its right and over the one at its left). The arc
+ * makes up the difference: smoothly until the landing, exactly from there, so that the item slides in at the depth of
+ * its place.
+ *
+ * @param config Elevation configuration, with a `landAt`
+ * @param easing The easing of the item's own keyframes (a keyword or a cubic-bezier)
+ * @param depth The depth of the destination minus the depth of the origin, in em
+ * @returns The landing arc, or the plain arc when the easing cannot be followed or there is no depth to make up
+ */
+export function getLandingElevationKeyframes(config: ElevationConfig, easing: string, depth: number): ReturnType<typeof keyframes> {
+  const progress = getEasingProgress(easing)
+  const { height = 10, landAt } = config
+  if (!progress || !depth || landAt === undefined) return getElevationKeyframes(config)
+  const peak = config.peak !== undefined && config.peak < landAt ? config.peak : landAt / 2
+  const arc = (t: number) => (t <= peak ? (height * t) / peak : t <= landAt ? (height * (landAt - t)) / (landAt - peak) : 0)
+  const smooth = (u: number) => {
+    const v = Math.min(1, Math.max(0, u))
+    return v * v * (3 - 2 * v)
+  }
+  const frames = new Map<string, string>()
+  for (const t of [peak, landAt, ...Array.from({ length: LANDING_STEPS + 1 }, (_, step) => step / LANDING_STEPS)].sort((a, b) => a - b)) {
+    const percent = String(Math.round(t * 1000) / 10)
+    const elevation = arc(t) + depth * (1 - progress(t)) * smooth(t / landAt)
+    frames.set(percent, `${percent}% { transform: translateZ(${Math.round(elevation * 10000) / 10000}em); }`)
+  }
+  return keyframes`${[...frames.values()].join(' ')}`
+}
+
+const easingKeywords: Record<string, [number, number, number, number]> = {
+  linear: [0, 0, 1, 1],
+  ease: [0.25, 0.1, 0.25, 1],
+  'ease-in': [0.42, 0, 1, 1],
+  'ease-out': [0, 0, 0.58, 1],
+  'ease-in-out': [0.42, 0, 0.58, 1]
+}
+
+/**
+ * How far along its way an item is at a point of its animation, for a CSS easing.
+ * @param easing A keyword (linear, ease, ease-in, ease-out, ease-in-out) or a cubic-bezier()
+ * @returns The progress (0-1) at a time (0-1), or undefined for another easing (steps(), linear() with stops…)
+ */
+export function getEasingProgress(easing: string): ((time: number) => number) | undefined {
+  const bezier = easing.trim().match(/^cubic-bezier\(\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*,\s*([-\d.]+)\s*\)$/)
+  const points = easingKeywords[easing.trim()] ?? (bezier ? (bezier.slice(1).map(Number) as [number, number, number, number]) : undefined)
+  if (!points) return undefined
+  const [x1, y1, x2, y2] = points
+  const curve = (a: number, b: number, s: number) => 3 * a * s * (1 - s) ** 2 + 3 * b * s * s * (1 - s) + s ** 3
+  return (time: number) => {
+    if (time <= 0) return 0
+    if (time >= 1) return 1
+    // The curve parameter where the time is reached: x grows with it on a valid easing
+    let low = 0
+    let high = 1
+    for (let i = 0; i < 40; i++) {
+      const middle = (low + high) / 2
+      if (curve(x1, x2, middle) < time) low = middle
+      else high = middle
+    }
+    return curve(y1, y2, (low + high) / 2)
+  }
 }
 
 /**
