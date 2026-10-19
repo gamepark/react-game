@@ -5,6 +5,7 @@ import {
   CHECKPOINT_INTERVAL,
   computeRewindPlan,
   HistoryEngine,
+  interruptBatch,
   LogContext,
   playMoveOnEngine,
   processMovesSync,
@@ -473,5 +474,34 @@ describe('computeRewindPlan', () => {
 
     // Each of the 9 remaining moves adds 1 to the mock game state
     expect((engine.rules as any).game.value).toBe(9)
+  })
+})
+
+// ============================================================
+// interruptBatch
+// ============================================================
+
+describe('interruptBatch', () => {
+  it('counts the moves an interrupted batch already played, so that none is played twice', () => {
+    // Regression test: a batch of more than 20 moves is played in the background; new moves arriving before its end
+    // used to replay it from the start, playing its first moves twice (an item deleted twice throws)
+    const ctx = makeLogContext()
+    const engine = makeEngine()
+    const batch = Array.from({ length: 30 }, (_, i) => makePlayedMove(`${i}`, 1))
+    processMovesSync(batch.slice(0, 12), 0, engine, batch, ctx) // the background batch stops after 12 moves
+
+    const playedMoves = [...batch, ...Array.from({ length: 5 }, (_, i) => makePlayedMove(`${30 + i}`, 1))]
+    const processed = interruptBatch([], batch, 12)
+    processMovesSync(playedMoves.slice(processed.length), processed.length, engine, playedMoves, ctx)
+
+    // Each of the 35 moves adds 1 to the mock game state, once
+    expect(processed).toHaveLength(12)
+    expect((engine.rules as any).game.value).toBe(35)
+  })
+
+  it('keeps the moves processed before the batch', () => {
+    const before = [makePlayedMove('a', 1), makePlayedMove('b', 1)]
+    const batch = [makePlayedMove('c', 1), makePlayedMove('d', 1), makePlayedMove('e', 1)]
+    expect(interruptBatch(before, batch, 2)).toEqual([...before, batch[0], batch[1]])
   })
 })

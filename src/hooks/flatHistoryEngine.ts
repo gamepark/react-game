@@ -232,3 +232,11 @@ export const processMovesSync = (
   }
   return entries
 }
+
+/**
+ * The moves processed once a background batch is interrupted by new played moves: the ones the batch already played
+ * on the engine are processed, and must not be played again. Without it, the next update would play them a second
+ * time, running their consequences twice (an item deleted twice throws, memory updates corrupt the game state).
+ */
+export const interruptBatch = (processedMoves: PlayedMove[], batch: PlayedMove[], batchProgress: number): PlayedMove[] =>
+  processedMoves.concat(batch.slice(0, batchProgress))
