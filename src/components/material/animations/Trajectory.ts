@@ -129,6 +129,42 @@ export interface Trajectory<P extends number = number, M extends number = number
    * @default 'ease-in-out'
    */
   easing?: string
+
+  /**
+   * Fade the item in at the start of the animation and/or out at its end, e.g. for an item that comes from or goes to
+   * a place where it is not displayed, instead of popping in or out. The fade runs apart from the trajectory: it changes
+   * neither the path of the item nor its easing.
+   */
+  fade?: Fade
+}
+
+/**
+ * Fade of an item during its animation, each part as a fraction of the animation (0-1).
+ */
+export interface Fade {
+  /** Part of the animation during which the item fades in, from transparent */
+  in?: number
+  /** Part of the animation during which the item fades out, to transparent */
+  out?: number
+}
+
+const percent = (part: number) => Math.round(part * 1000) / 10
+
+/**
+ * Generate the opacity keyframes of a fade, or undefined when there is nothing to fade.
+ */
+export function getFadeKeyframes(fade: Fade | undefined): ReturnType<typeof keyframes> | undefined {
+  const fadeIn = Math.min(Math.max(fade?.in ?? 0, 0), 1)
+  const fadeOut = Math.min(Math.max(fade?.out ?? 0, 0), 1 - fadeIn)
+  if (!fadeIn && !fadeOut) return undefined
+  const frames = [
+    `0% { opacity: ${fadeIn ? 0 : 1}; }`,
+    ...(fadeIn ? [`${percent(fadeIn)}% { opacity: 1; }`] : []),
+    // Fully seen in between, unless the fade out starts right where the fade in ends
+    ...(fadeOut && fadeIn + fadeOut < 1 ? [`${percent(1 - fadeOut)}% { opacity: 1; }`] : []),
+    `100% { opacity: ${fadeOut ? 0 : 1}; }`
+  ]
+  return keyframes`${frames.join(' ')}`
 }
 
 /**

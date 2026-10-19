@@ -5,7 +5,7 @@ import { isEqual } from 'es-toolkit'
 import { getItemFromContext, ItemContext, MaterialContext } from '../../../locators'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
-import { defaultElevation, ElevationConfig, extractTranslation, getElevationKeyframes, getWaypointElevationKeyframes, interpolateCoordinate, Trajectory, Waypoint } from './Trajectory'
+import { defaultElevation, ElevationConfig, extractTranslation, getElevationKeyframes, getFadeKeyframes, getWaypointElevationKeyframes, interpolateCoordinate, Fade, Trajectory, Waypoint } from './Trajectory'
 import { transformItem } from './transformItem.util'
 
 /**
@@ -212,14 +212,25 @@ export class ItemAnimations<P extends number = number, M extends number = number
    * @param easing CSS easing function
    * @param elevationConfig Elevation configuration for the parent div arc
    * @param waypoints Trajectory waypoints — if any define elevation, waypoint-level elevation replaces the global arc
+   * @param fade Fade of the item at the start and/or the end, run on the faces of the item
    */
   protected getAnimationCssWithTrajectory(
     animationKeyframes: ReturnType<typeof keyframes>,
     duration: number,
     easing: string = 'ease-in-out',
     elevationConfig?: ElevationConfig | false,
-    waypoints?: Pick<Waypoint, 'at' | 'elevation'>[]
+    waypoints?: Pick<Waypoint, 'at' | 'elevation'>[],
+    fade?: Fade
   ): Interpolation<Theme> {
+    // The fade runs on the faces of the item (the children of its content, inside the child div), not on the child div:
+    // an opacity below 1 flattens the 3D of the element it applies to, and the child div turns the item over (rotateY),
+    // so the face turned away would show mirrored instead of being hidden by its backface-visibility.
+    const fadeKeyframes = getFadeKeyframes(fade)
+    const fadeCss = fadeKeyframes && css`
+      > * > * > * {
+        animation: ${fadeKeyframes} ${duration}s linear forwards;
+      }
+    `
     // If any waypoint defines elevation, use waypoint-level elevation instead of global config
     const waypointElevation = waypoints ? getWaypointElevationKeyframes(waypoints) : undefined
     if (waypointElevation) {
@@ -228,6 +239,7 @@ export class ItemAnimations<P extends number = number, M extends number = number
         > * {
           animation: ${animationKeyframes} ${duration}s ${easing} forwards;
         }
+        ${fadeCss}
       `
     }
     if (elevationConfig !== false) {
@@ -252,12 +264,14 @@ export class ItemAnimations<P extends number = number, M extends number = number
         > * {
           animation: ${animationKeyframes} ${duration}s ${easing} forwards;
         }
+        ${fadeCss}
       `
     }
     return css`
       > * {
         animation: ${animationKeyframes} ${duration}s ${easing} forwards;
       }
+      ${fadeCss}
     `
   }
 
