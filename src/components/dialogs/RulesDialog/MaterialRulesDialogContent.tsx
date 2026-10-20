@@ -2,7 +2,7 @@ import { css, keyframes, useTheme } from '@emotion/react'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons/faChevronLeft'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons/faChevronRight'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { HelpDisplayType, HelpHistory, isSameLocationArea, Material, MaterialHelpDisplay, MaterialMoveBuilder, MaterialRules } from '@gamepark/rules-api'
+import { isSameLocationArea, MaterialHelpDisplay, MaterialMoveBuilder, MaterialRules } from '@gamepark/rules-api'
 import { FC, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { useKeyDown, useMaterialContext, useMaterialDescription, usePlay, useRules } from '../../../hooks'
@@ -11,6 +11,7 @@ import { ItemContext, Locator, SortFunction } from '../../../locators'
 import { useDialogBackdrop } from '../Dialog'
 import { helpDialogContentCss } from './RulesHelpDialogContent'
 import displayHelp = MaterialMoveBuilder.displayHelp
+import displayMaterialHelp = MaterialMoveBuilder.displayMaterialHelp
 
 export type MaterialRulesDialogContentProps<Player extends number = number, MaterialType extends number = number, LocationType extends number = number> = {
   helpDisplay: MaterialHelpDisplay<Player, MaterialType, LocationType>
@@ -43,12 +44,8 @@ const useMaterialNavigation = <P extends number = number, M extends number = num
   const currentIndex = materialIndexes.indexOf(helpDisplay.itemIndex!)
   const previous = material.index(materialIndexes[currentIndex - 1])
   const next = material.index(materialIndexes[currentIndex + 1])
-  // Browsing the items replaces the help displayed, so that going back leads to the help displayed before browsing
-  const browse = (target: Material<P, M, L>) => target.length ? displayHelp<P, M, L>({
-    type: HelpDisplayType.Material, itemType: helpDisplay.itemType, item: target.getItem()!, itemIndex: target.getIndex()
-  }, HelpHistory.Replace) : undefined
-  const previousMove = browse(previous)
-  const nextMove = browse(next)
+  const previousMove = previous.length ? displayMaterialHelp(helpDisplay.itemType, previous.getItem(), previous.getIndex()) : undefined
+  const nextMove = next.length ? displayMaterialHelp(helpDisplay.itemType, next.getItem(), next.getIndex()) : undefined
 
   return {
     previous: previousMove,
