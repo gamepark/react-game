@@ -1,4 +1,4 @@
-import { DragMoveEvent, useDndMonitor, useDraggable } from '@dnd-kit/core'
+import { useDraggable } from '@dnd-kit/core'
 import { css, Interpolation, Theme } from '@emotion/react'
 import {
   DisplayedItem,
@@ -12,13 +12,14 @@ import {
   XYCoordinates
 } from '@gamepark/rules-api'
 import { isEqual } from 'es-toolkit'
-import React, { forwardRef, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { forwardRef, memo, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { grabbingCursor, grabCursor } from '../../css'
 import { CanUndo, UndoFunction, useDraggedItem } from '../../hooks'
 import { useMaterialContextRef, usePlay } from '../../hooks'
 import { getLocationOriginCss, ItemContext } from '../../locators'
 import { combineEventListeners, findIfUnique } from '../../utilities'
 import { useScale } from './GameTable'
+import { dragTransformStore } from './GameTable/dragTransformStore'
 import { ItemDisplay } from './GameTable/ItemDisplay'
 import { ItemMenuWrapper } from './ItemMenuWrapper'
 import { MaterialComponentProps } from './MaterialComponent'
@@ -159,8 +160,16 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
         && !hasOwnMoveTo(move, draggedItemContext, legalMoves)
       ))
     , [item, draggedItemContext, legalMoves])
-  const [parentTransform, setParentTransform] = useState<XYCoordinates>()
-  transform = transform ?? (isDraggingParent ? parentTransform : undefined)
+  // The dragged item publishes its translation for the items that move with it, which read it in the same frame
+  const ownTransform = transform
+  useLayoutEffect(() => {
+    if (ownTransform) dragTransformStore.set(ownTransform)
+  }, [ownTransform?.x, ownTransform?.y])
+  useLayoutEffect(() => {
+    if (ownTransform) return () => dragTransformStore.set(undefined)
+  }, [!ownTransform])
+  const parentTransform = useSyncExternalStore(dragTransformStore.subscribe, () => (isDraggingParent ? dragTransformStore.get() : undefined))
+  transform = transform ?? parentTransform
 
   // We need to delay a little the default transition removal when dragging starts, otherwise dnd-kit suffers from transform side effect
   // because we opted out from ignoring transform in the configuration (using: "draggable: { measure: getClientRect }")
@@ -194,9 +203,6 @@ const DraggableMaterialInnerBase = forwardRef<HTMLDivElement, DraggableMaterialI
   const [animating, setAnimating] = useState(!!animation)
   useEffect(() => setAnimating(!!animation), [!animation])
 
-  const onDragStart = useCallback(() => setParentTransform(undefined), [])
-  const onDragMove = useCallback((event: DragMoveEvent) => isDraggingParent && setParentTransform(event.delta), [isDraggingParent])
-  useDndMonitor({ onDragStart, onDragMove })
 
   const locationOriginCss = getLocationOriginCss(boundaries, locator?.getLocationOrigin(item.location, itemContext))
 
