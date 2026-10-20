@@ -5,7 +5,19 @@ import { isEqual } from 'es-toolkit'
 import { getItemFromContext, ItemContext, MaterialContext } from '../../../locators'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
-import { defaultElevation, ElevationConfig, extractTranslation, getElevationKeyframes, getFadeKeyframes, getWaypointElevationKeyframes, interpolateCoordinate, Fade, Trajectory, Waypoint } from './Trajectory'
+import {
+  defaultElevation,
+  ElevationConfig,
+  extractTranslation,
+  getElevationKeyframes,
+  getFadeKeyframes,
+  getLandingElevationKeyframes,
+  getWaypointElevationKeyframes,
+  interpolateCoordinate,
+  Fade,
+  Trajectory,
+  Waypoint
+} from './Trajectory'
 import { transformItem } from './transformItem.util'
 
 /**
@@ -88,13 +100,7 @@ export class ItemAnimations<P extends number = number, M extends number = number
     // path through getTrajectoryKeyframes' interpolation routine and turns
     // the smooth tween into a multi-step keyframes sequence (visible as a
     // pause/saccade in browsers that snap between transform formats).
-    const waypoints = (context.trajectory?.waypoints ?? []).filter(w =>
-      w.locator !== undefined
-      || w.coordinates !== undefined
-      || w.offset !== undefined
-      || w.rotation !== undefined
-      || w.easing !== undefined
-    )
+    const waypoints = (context.trajectory?.waypoints ?? []).filter(isMotionWaypoint)
 
     // If no waypoints constrain motion, use simple keyframes
     if (waypoints.length === 0) {
@@ -213,14 +219,17 @@ export class ItemAnimations<P extends number = number, M extends number = number
    * @param elevationConfig Elevation configuration for the parent div arc
    * @param waypoints Trajectory waypoints — if any define elevation, waypoint-level elevation replaces the global arc
    * @param fade Fade of the item at the start and/or the end, run on the faces of the item
+   * @param depth The depth of the destination minus the depth of the origin, in em: an arc that lands (landAt) holds
+   * the depth of the destination from there, see getLandingElevationKeyframes
    */
   protected getAnimationCssWithTrajectory(
     animationKeyframes: ReturnType<typeof keyframes>,
     duration: number,
     easing: string = 'ease-in-out',
     elevationConfig?: ElevationConfig | false,
-    waypoints?: Pick<Waypoint, 'at' | 'elevation'>[],
-    fade?: Fade
+    waypoints?: Waypoint<P, M, L>[],
+    fade?: Fade,
+    depth = 0
   ): Interpolation<Theme> {
     // The fade runs on the faces of the item (the children of its content, inside the child div), not on the child div:
     // an opacity below 1 flattens the 3D of the element it applies to, and the child div turns the item over (rotateY),
@@ -244,7 +253,10 @@ export class ItemAnimations<P extends number = number, M extends number = number
     }
     if (elevationConfig !== false) {
       const resolvedElevation = elevationConfig ?? defaultElevation
-      const elevationArc = getElevationKeyframes(resolvedElevation)
+      // The item moves along the easing of the trajectory only when no waypoint shapes its way
+      const elevationArc = waypoints?.some(isMotionWaypoint)
+        ? getElevationKeyframes(resolvedElevation)
+        : getLandingElevationKeyframes(resolvedElevation, easing, depth)
       // `infinite` is the legacy default — keeps two same-duration animations
       // chained back to back from sharing a frozen frame (cf. Romain's
       // 2026-03-16 fix). It's harmless for the classic arc since its 0% and
@@ -397,4 +409,13 @@ function extractRotateY(transforms: string[]): number | undefined {
   return undefined
 }
 
-
+/**
+ * Whether a waypoint shapes the way of the item. Waypoints that only carry an elevation live on the arc of the parent
+ * div: the item keeps its single tween from its origin to its destination.
+ */
+const isMotionWaypoint = <P extends number, M extends number, L extends number>(waypoint: Waypoint<P, M, L>): boolean =>
+  waypoint.locator !== undefined ||
+  waypoint.coordinates !== undefined ||
+  waypoint.offset !== undefined ||
+  waypoint.rotation !== undefined ||
+  waypoint.easing !== undefined
