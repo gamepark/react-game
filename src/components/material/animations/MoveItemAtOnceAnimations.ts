@@ -7,6 +7,7 @@ import { isPlacedOnItem } from '../utils/isPlacedOnItem'
 import { ItemAnimations, ItemContextWithTrajectory } from './ItemAnimations'
 import { MaterialGameAnimationContext } from './MaterialGameAnimations'
 import { toClosestRotations, toSingleRotation } from './rotations.utils'
+import { alignTransforms } from './alignTransforms.util'
 import { extractTranslation, Trajectory } from './Trajectory'
 import { transformItem } from './transformItem.util'
 
@@ -110,7 +111,10 @@ export class MoveItemAtOnceAnimations<P extends number = number, M extends numbe
       return description?.getAnimationCss(animationKeyframes, animation.duration)
     }
 
-    const originTransforms = transformItem(context)
+    // The list of the child holds the place of its parent before its own place on it: aligned function by function, so
+    // that the child goes the way of its parent even when the parent turns over or changes size on its way
+    const [originTransforms, alignedTarget] = alignTransforms(transformItem(context), targetTransforms)
+    targetTransforms.splice(0, targetTransforms.length, ...alignedTarget)
     toClosestRotations(originTransforms, targetTransforms)
 
     const contextWithTrajectory = context as ItemContextWithTrajectory<P, M, L, R, V>
