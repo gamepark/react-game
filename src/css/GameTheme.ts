@@ -48,6 +48,10 @@ export interface DialogTheme {
   backdrop?: Interpolation<GameTheme>
   closeIcon?: Interpolation<GameTheme>
   closeButton?: ComponentType<{ onClick: () => void }>
+  /** Style of the default icon that goes back to the previous help, displayed when a help was opened from another help */
+  backIcon?: Interpolation<GameTheme>
+  /** Replaces the default icon that goes back to the previous help, like {@link closeButton} for the close icon */
+  backButton?: ComponentType<{ onClick: () => void }>
   /**
    * The row that lays out a help dialog: the item (or location) display on one side, the help text ({@link content})
    * on the other. Lets a game change the default padding and gap, for instance to draw the two parts as the pages of
