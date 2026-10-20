@@ -136,6 +136,10 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
     return transform
   }
 
+  getFaceRotation(item: MaterialItem<P, L, ItemId>, context: ItemContext<P, M, L, R, V>): number {
+    return this.isFlippedOnTable(item, context) ? 180 : 0
+  }
+
   content = (props: MaterialContentProps<ItemId, M>) => this.contentWithBackChildren(props)
 
   /**

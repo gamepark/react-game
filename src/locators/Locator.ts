@@ -234,6 +234,13 @@ export class Locator<P extends number = number, M extends number = number, L ext
     const parentContext = { ...context, type: this.parentItemType, displayIndex: 0 }
     const transform = locator?.placeItem(parentItem, parentContext) ?? []
     const parentMaterial = context.material[this.parentItemType]
+    const face = this.getItemParentFace(item, context)
+    if (face !== ParentFace.Up) {
+      // The rotation of the face of the parent, always written (0 when it is up) so that the list of transforms keeps
+      // its shape when the parent turns over, and the item goes round the same axis as the parent
+      const rotation = (parentMaterial?.getFaceRotation(parentItem, parentContext) ?? 0) + (face === ParentFace.Back ? 180 : 0)
+      transform.push(`rotateY(${rotation}deg)`)
+    }
     const { x, y } = this.getPositionOnParent(item.location, context)
     if (parentMaterial && (x !== 0 || y !== 0)) {
       const { width, height } = parentMaterial.getSize(parentItem.id)
@@ -310,6 +317,26 @@ export class Locator<P extends number = number, M extends number = number, L ext
    */
   getParentFace(_location: Location<P, L>, _context: MaterialContext<P, M, L, R, V>): ParentFace {
     return this.parentFace
+  }
+
+  /**
+   * Which face of the parent item the items of this location are laid on. Use {@link getItemParentFace} to decide per item.
+   * By default, {@link ParentFace.Up}: an item is drawn on whichever face of its parent is up, and does not turn with it.
+   */
+  itemParentFace = ParentFace.Up
+
+  /**
+   * Which face of the parent item an item is laid on (see {@link ParentFace}). With {@link ParentFace.Front} or
+   * {@link ParentFace.Back}, the item turns with its parent: it is drawn on that face, hidden while the face is turned away
+   * from the player, and it goes round with the parent when the parent turns over during an animation, instead of
+   * staying up and crossing it.
+   *
+   * @param _item The item laid on a parent item
+   * @param _context Context of the item
+   * @return the face of the parent item the item is laid on
+   */
+  getItemParentFace(_item: MaterialItem<P, L>, _context: ItemContext<P, M, L, R, V>): ParentFace {
+    return this.itemParentFace
   }
 
   /**

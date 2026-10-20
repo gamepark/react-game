@@ -205,6 +205,18 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   /**
+   * The rotation around the vertical axis that shows the face of the item that is up, in degrees: 180 for an item that
+   * shows its back (see {@link FlatMaterialDescription}). The items laid on a face of this item turn with it
+   * (see {@link Locator.getItemParentFace}).
+   * @param _item The item
+   * @param _context Context of the item
+   * @returns {number} The rotation, in degrees
+   */
+  getFaceRotation(_item: MaterialItem<P, L, ItemId>, _context: ItemContext<P, M, L, R, V>): number {
+    return 0
+  }
+
+  /**
    * Any extra css to add on the item
    * @param _item The item
    * @param _context Context of the item
