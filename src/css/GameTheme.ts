@@ -110,6 +110,8 @@ export interface MenuTheme {
 }
 
 export interface JournalTheme {
+  /** The side panel of the journal, applied after {@link MenuTheme.panel} (both panels share it) */
+  panel?: Interpolation<GameTheme>
   tab?: Interpolation<GameTheme>
   tabSelected?: Interpolation<GameTheme>
   /** The bar at the bottom of the chat where a message is typed: the form holding the input and the send button */
