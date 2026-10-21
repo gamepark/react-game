@@ -1,14 +1,16 @@
 import { css } from '@emotion/react'
-import { HelpDisplay, HelpDisplayType, MaterialGame } from '@gamepark/rules-api'
+import { HelpDisplay, HelpDisplayType, MaterialGame, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { FC, useEffect, useState } from 'react'
-import { useGame } from '../../../hooks'
+import { useGame, usePlay } from '../../../hooks'
 import { RulesDialog, RulesDialogProps } from '../index'
 import { LocationRulesDialogContent } from './LocationRulesDialogContent'
 import { MaterialRulesDialogContent } from './MaterialRulesDialogContent'
 import { RulesHelpDialogContent } from './RulesHelpDialogContent'
+import displayPreviousHelp = MaterialMoveBuilder.displayPreviousHelp
 
 export const MaterialRulesDialog: FC<RulesDialogProps> = (props: RulesDialogProps) => {
   const game = useGame<MaterialGame>()
+  const play = usePlay()
   const [lastHelpDisplay, setLastHelpDisplay] = useState<HelpDisplay | undefined>(game?.helpDisplay)
 
   useEffect(() => {
@@ -19,9 +21,10 @@ export const MaterialRulesDialog: FC<RulesDialogProps> = (props: RulesDialogProp
 
   const helpDisplay = game?.helpDisplay ?? lastHelpDisplay
   if (!helpDisplay) return null
+  const back = game?.helpHistory?.length ? () => play(displayPreviousHelp(), { transient: true }) : undefined
 
   return (
-    <RulesDialog {...props} css={inlineImg}>
+    <RulesDialog back={back} {...props} css={inlineImg}>
       {helpDisplay.type === HelpDisplayType.Material &&
         <MaterialRulesDialogContent helpDisplay={helpDisplay}/>
       }
