@@ -91,8 +91,8 @@ export const ResultDialog = ({ openDialog, close, ...props }: Props) => {
           <div>
             <p css={css`white-space: break-spaces;`}>{t('tuto.over')}</p>
             <p css={buttonsLine}>
-              <RestartTutorialButton/>
-              <NavButton css={[theme.dialog.buttons, css`margin-left: 1em;`]} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`}>
+              <RestartTutorialButton css={theme.dialog.buttons}/>
+              <NavButton css={theme.dialog.buttons} url={`${PLATFORM_URI}/${locale}/board-games/${context.game}/play`}>
                 <FontAwesomeIcon icon={faChessPawn}/>{t('Play')}
               </NavButton>
             </p>
@@ -250,6 +250,8 @@ const left = css`
 
 const buttonsLine = css`
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  gap: 1em;
   margin: 0;
 `
