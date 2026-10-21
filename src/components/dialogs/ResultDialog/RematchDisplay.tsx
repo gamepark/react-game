@@ -43,14 +43,14 @@ export const RematchDisplay = ({ rematch }: Props) => {
             t('rematch.offer', { player: rematch.players[0].name })
       }</h3>
       {player && !player.ready && <div css={css`margin-bottom: 0.5em;`}>
-        <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons, rematchButton, declineButton]} onClick={() => refuseRematch(rematch.id)}>
+        <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button, rematchButton, declineButton, theme.dialog.buttons]} onClick={() => refuseRematch(rematch.id)}>
           {t('rematch.decline')}
         </button>
-        <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button, theme.dialog.buttons, rematchButton, acceptButton]} onClick={() => acceptRematch(rematch.id)}>
+        <button css={[menuButtonCss, paletteMenuButtonCss, theme.menu?.button, rematchButton, acceptButton, theme.dialog.buttons]} onClick={() => acceptRematch(rematch.id)}>
           {t('rematch.accept')}
         </button>
       </div>}
-      <NavButton css={rematchButton} url={platformGameUrl(rematch.id, new URLSearchParams(window.location.search).get('locale') || 'en')}>
+      <NavButton css={[rematchButton, theme.dialog.buttons]} url={platformGameUrl(rematch.id, new URLSearchParams(window.location.search).get('locale') || 'en')}>
         {t('rematch.go')}
       </NavButton>
     </>
