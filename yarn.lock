@@ -497,7 +497,7 @@ __metadata:
     "@gamepark/api-types": "npm:^1.0.3"
     "@gamepark/avataaars": "npm:^3.0.0"
     "@gamepark/react-client": "npm:^7.9.0"
-    "@gamepark/rules-api": "npm:^7.9.0"
+    "@gamepark/rules-api": "npm:^7.9.1"
     "@trpc/server": "npm:^11.19.0"
     "@types/fscreen": "npm:^1.0.4"
     "@types/jsdom": "npm:^30.0.0"
@@ -534,7 +534,7 @@ __metadata:
     "@fortawesome/free-regular-svg-icons": 7.x
     "@fortawesome/free-solid-svg-icons": 7.x
     "@fortawesome/react-fontawesome": 3.x
-    "@gamepark/rules-api": 7.x
+    "@gamepark/rules-api": ^7.9.1
     es-toolkit: 1.x
     i18next: 26.x
     react: 19.x
@@ -545,12 +545,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gamepark/rules-api@npm:^7.9.0":
-  version: 7.9.0
-  resolution: "@gamepark/rules-api@npm:7.9.0"
+"@gamepark/rules-api@npm:^7.9.1":
+  version: 7.9.1
+  resolution: "@gamepark/rules-api@npm:7.9.1"
   peerDependencies:
     es-toolkit: ^1.46.0
-  checksum: 10c0/30348fb0426ca5c893994897bc0b7f5d4d18a3061298d319612dc25104c4856a0a4b9387f6b27303906f9e8dca76e1689bb0265200d5c398734f98685fe64f5e
+  checksum: 10c0/d9ef4840a2ea2d44ae1577a9d6b356cfdd164f3f2f3e24e2e8f4aaa72d4713467ab0b763c1bc0e27fa09a82adb2ed49b3ad2ef93d75bfa041058ce8465365996
   languageName: node
   linkType: hard
 
