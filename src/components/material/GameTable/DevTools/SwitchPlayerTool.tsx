@@ -8,14 +8,16 @@ import {
 } from './devtools.css'
 
 type SwitchPlayerToolProps = {
+  exec: (action: () => void, msg: string) => void
   g: any
 }
 
 /**
  * Plain links to the page of each player: a click changes the player of this tab, a middle click opens that player in a
- * new tab. A tutorial is always played as its first player: nothing to switch to.
+ * new tab. The link does the job, exec only tells when the game helper is missing. A tutorial is always played as its first
+ * player: nothing to switch to.
  */
-export const SwitchPlayerTool: FC<SwitchPlayerToolProps> = ({ g }) => {
+export const SwitchPlayerTool: FC<SwitchPlayerToolProps> = ({ exec, g }) => {
   const currentPlayer = usePlayerId()
   const players = usePlayerIds()
   const game = useGame<{ tutorial?: unknown }>()
@@ -28,12 +30,12 @@ export const SwitchPlayerTool: FC<SwitchPlayerToolProps> = ({ g }) => {
       <span css={toolDescCss}>Click: this tab. Middle click: a new tab</span>
       <div css={inlineRowCss} onClick={e => e.stopPropagation()}>
         {players.map(pid => (
-          <a key={String(pid)} href={g.playerUrl(pid)}
+          <a key={String(pid)} href={g?.playerUrl?.(pid)} onClick={() => exec(() => undefined, `Opened P${pid}`)}
             css={[playerBtnCss, pid === currentPlayer && playerBtnActiveCss]}>
             P{String(pid)}
           </a>
         ))}
-        <a href={g.playerUrl()}
+        <a href={g?.playerUrl?.()} onClick={() => exec(() => undefined, 'Opened spectator')}
           css={[playerBtnCss, currentPlayer === undefined && playerBtnActiveCss]}>
           Spect
         </a>
