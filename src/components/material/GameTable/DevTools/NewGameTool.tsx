@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { availableValues, legalPlayerCounts, listOptions, optionValueKey, OptionValue } from '@gamepark/rules-api'
+import { availableValues, legalPlayerCounts, listOptions, optionValueKey, OptionsSpecV2, OptionValue } from '@gamepark/rules-api'
 import { css } from '@emotion/react'
 import { FC, Fragment, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -52,7 +52,9 @@ const TriStateToggle: FC<{ value?: boolean, onChange: (value?: boolean) => void,
 )
 
 export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
-  const { game, optionsSpec } = useContext(gameContext)
+  const { game, optionsSpec: gameSpec } = useContext(gameContext)
+  // A front built against an older rules package still hands over a v1 spec, which reads nothing like a v2 one
+  const optionsSpec = (gameSpec as OptionsSpecV2 | undefined)?.specVersion === 2 ? gameSpec as OptionsSpecV2 : undefined
   const [stored] = useState(() => loadSetup(game))
   const [players, setPlayers] = useState(stored.players ?? 2)
   const [options, setOptions] = useState<Record<string, any>>(stored.options ?? {})

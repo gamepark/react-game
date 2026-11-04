@@ -391,11 +391,11 @@ export const optionsToggleCss = css`
   &:hover { background: var(--dt-hover); }
 `
 
-/** As many in a row as fit, however many players: a table of 15 makes 3 rows of them */
+/** As many names in a row as fit, however many players: a table of 15 makes 4 rows of them */
 export const playerGridCss = css`
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 4px;
   margin-top: 8px;
 `
@@ -403,15 +403,18 @@ export const playerGridCss = css`
 export const playerBtnCss = css`
   ${controlCss};
   height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0 6px;
   border: 1px solid var(--dt-line);
   border-radius: 8px;
   background: transparent;
   color: inherit;
   font-weight: 800;
+  line-height: 30px;
+  text-align: center;
   text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   &:hover { background: var(--dt-hover); }
 `
 

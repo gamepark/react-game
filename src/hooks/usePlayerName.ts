@@ -17,6 +17,15 @@ import { usePlayerId } from './usePlayerId'
  * built against an older rules package still hands over a v1 spec.
  */
 export function usePlayerName<PlayerId = any>(playerId: PlayerId): string {
+  return usePlayerNameOrIdentity(playerId, true)
+}
+
+/** What to call a seat, whoever is looking at it: the tab sitting there reads "White Tiger" too, not its own user. */
+export function usePlayerSeatName<PlayerId = any>(playerId: PlayerId): string {
+  return usePlayerNameOrIdentity(playerId, false)
+}
+
+function usePlayerNameOrIdentity<PlayerId>(playerId: PlayerId, callMeByMyName: boolean): string {
   const name = useGameSelector((state) => state.players.find(player => player.id === (playerId ?? state.playerId))?.name ?? '')
   const optionsSpec = useContext(gameContext).optionsSpec
   const me = useMe()
@@ -29,7 +38,7 @@ export function usePlayerName<PlayerId = any>(playerId: PlayerId): string {
   // player reads "Player 2", then becomes "White Tiger".
   const { t: tOptions } = useTranslation('options', { useSuspense: false })
   if (name) return name
-  if (myId === playerId) return me?.user?.name ?? tCommon('anonymous')
+  if (callMeByMyName && myId === playerId) return me?.user?.name ?? tCommon('anonymous')
   if (playerId !== undefined) {
     if (isWithPlayerIdOptions(optionsSpec)) return optionsSpec.players.id.valueSpec(playerId).label(t)
     // Asked for only when the spec says the identity exists: `saveMissing` is on, so a blind lookup
