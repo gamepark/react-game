@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
+import { faForwardFast } from '@fortawesome/free-solid-svg-icons/faForwardFast'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, useState } from 'react'
 import {
-  inlineRowCss, playerBtnActiveCss, playerBtnCss,
-  toolBtnCss, toolDescCss, toolIconCss, toolLabelCss
+  segmentActiveCss, segmentCss, segmentedCss, toolBtnCss, toolDescCss, toolIconCss, toolLabelCss
 } from './devtools.css'
 
 type AnimationSpeedToolProps = {
@@ -13,7 +13,7 @@ type AnimationSpeedToolProps = {
 
 const SPEEDS = [0.1, 0.25, 0.5, 1, 2, 5, 10]
 
-const formatSpeed = (speed: number) => `\u00D7${speed}`
+const formatSpeed = (speed: number) => `×${speed}`
 
 /* The animations speed is persisted by the GameLocalAPI under the
  * global `animationsSpeed` localStorage key, so we read it back on
@@ -28,13 +28,13 @@ export const AnimationSpeedTool: FC<AnimationSpeedToolProps> = ({ exec, g }) => 
 
   return (
     <div css={toolBtnCss}>
-      <span css={toolIconCss}>{'\u00BB'}</span>
+      <span css={toolIconCss}><FontAwesomeIcon icon={faForwardFast}/></span>
       <span css={toolLabelCss}>Animations Speed</span>
       <span css={toolDescCss}>Play animations faster or slower</span>
-      <div css={[inlineRowCss, wrapCss]} onClick={e => e.stopPropagation()}>
+      <div css={segmentedCss} role="group" aria-label="Animations speed">
         {SPEEDS.map(value => (
-          <button key={value}
-            css={[playerBtnCss, speedBtnCss, value === speed && playerBtnActiveCss]}
+          <button key={value} aria-pressed={value === speed}
+            css={[segmentCss, value === speed && segmentActiveCss]}
             onClick={() => {
               exec(() => g.setAnimationsSpeed(value), `Animations ${formatSpeed(value)}`)
               setSpeed(value)
@@ -46,12 +46,3 @@ export const AnimationSpeedTool: FC<AnimationSpeedToolProps> = ({ exec, g }) => 
     </div>
   )
 }
-
-const wrapCss = css`
-  flex-wrap: wrap;
-`
-
-const speedBtnCss = css`
-  padding: 0 0.4em;
-  font-variant-numeric: tabular-nums;
-`

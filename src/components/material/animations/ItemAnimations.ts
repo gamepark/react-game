@@ -309,7 +309,13 @@ export class ItemAnimations<P extends number = number, M extends number = number
     if (!futureRules) {
       const Rules = context.rules.constructor as MaterialRulesCreator<P, M, L, R, V>
       futureRules = new Rules(JSON.parse(JSON.stringify(context.rules.game)), { player: context.player })
-      futureRules.play(animation.move)
+      try {
+        futureRules.play(animation.move)
+      } catch {
+        // During a burst of undos, the state displayed can be transiently out of step with the animated move.
+        // This item only misses its animation: throwing here would crash the whole table while rendering.
+        return
+      }
       siblingRulesCache.set(animation, futureRules)
     }
     const futureContext: ItemContext<P, M, L, R, V> = { ...context, rules: futureRules }

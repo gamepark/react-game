@@ -1,8 +1,10 @@
 /** @jsxImportSource @emotion/react */
+import { faRobot } from '@fortawesome/free-solid-svg-icons/faRobot'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { FC, useContext, useState } from 'react'
 import { gameContext } from '../../../GameProvider/GameContext'
 import {
-  activeIndicatorCss, toolBtnActiveCss, toolBtnCss, toolDescCss, toolIconCss, toolLabelCss
+  switchCss, switchOnCss, toolBtnCss, toolDescCss, toolEndCss, toolIconCss, toolInlineCss, toolLabelCss
 } from './devtools.css'
 
 type BotToolProps = {
@@ -31,16 +33,16 @@ export const BotTool: FC<BotToolProps> = ({ exec, g }) => {
   })
 
   return (
-    <button css={[toolBtnCss, botActive && toolBtnActiveCss]}
+    <button css={[toolBtnCss, toolInlineCss]} role="switch" aria-checked={botActive}
       onClick={() => {
         const next = !botActive
         exec(() => g.bot(next), next ? 'Bots enabled' : 'Bots disabled')
         setBotActive(next)
       }}>
-      <span css={toolIconCss}>{'\u2699'}</span>
+      <span css={toolIconCss}><FontAwesomeIcon icon={faRobot}/></span>
       <span css={toolLabelCss}>{botActive ? 'Disable Bots' : 'Enable Bots'}</span>
       <span css={toolDescCss}>{botActive ? 'Stop auto-play' : 'Auto-play all moves'}</span>
-      {botActive && <span css={activeIndicatorCss} />}
+      <span css={toolEndCss}><span css={[switchCss, botActive && switchOnCss]}/></span>
     </button>
   )
 }

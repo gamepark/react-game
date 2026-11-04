@@ -1,12 +1,15 @@
 /** @jsxImportSource @emotion/react */
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { availableValues, legalPlayerCounts, listOptions, optionValueKey, OptionValue } from '@gamepark/rules-api'
-import { FC, useContext, useEffect, useMemo, useState } from 'react'
+import { css } from '@emotion/react'
+import { FC, Fragment, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { gameContext } from '../../../GameProvider/GameContext'
 import { GameOption } from './DevToolsHub'
 import {
-  checkboxCss, goBtnCss, inlineRowCss, numberInputCss, optionsToggleCss, selectCss,
-  stepBtnCss, toggleLabelCss, toggleRowCss, toolBtnCss, toolDescCss, toolIconCss, toolLabelCss, triStateCss
+  checkboxCss, checkLabelCss, goBtnCss, inlineRowCss, numberInputCss, optionsBoxCss, optionsToggleCss, seatGridCss, seatLabelCss, seatNameCss,
+  seatsTitleCss, selectCss, stepBtnCss, toggleLabelCss, toggleRowCss, toolBtnCss, toolDescCss, toolIconCss, toolLabelCss, triStateCss
 } from './devtools.css'
 
 type NewGameToolProps = {
@@ -38,14 +41,14 @@ const loadSetup = (game: string): Partial<StoredSetup> => {
  * A plain checkbox cannot say "off" without also meaning "draw it".
  */
 const TriStateToggle: FC<{ value?: boolean, onChange: (value?: boolean) => void, label: string }> = ({ value, onChange, label }) => (
-  <label css={toggleRowCss} onClick={e => e.stopPropagation()}>
+  <div css={toggleRowCss}>
+    <span css={toggleLabelCss}>{label}</span>
     <button type="button" css={triStateCss} data-state={value === undefined ? 'random' : String(value)}
-      title={value === undefined ? 'Random' : value ? 'On' : 'Off'}
+      title={value === undefined ? 'Random' : value ? 'On' : 'Off'} aria-label={`${label}: ${value === undefined ? 'random' : value ? 'on' : 'off'}`}
       onClick={() => onChange(value === undefined ? true : value ? false : undefined)}>
       {value === undefined ? '?' : value ? '✓' : '✗'}
     </button>
-    <span css={toggleLabelCss}>{label}</span>
-  </label>
+  </div>
 )
 
 export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
@@ -129,27 +132,26 @@ export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
 
   return (
     <div css={toolBtnCss}>
-      <span css={toolIconCss}>{'↻'}</span>
+      <span css={toolIconCss}><FontAwesomeIcon icon={faRotateRight}/></span>
       <span css={toolLabelCss}>New Game</span>
       <span css={toolDescCss}>Reset with N players</span>
-      <div css={inlineRowCss} onClick={e => e.stopPropagation()}>
-        <button css={stepBtnCss} onClick={() => step(-1)}>-</button>
-        <input type="number" min={counts[0]} max={counts[counts.length - 1]} value={players}
+      <div css={inlineRowCss}>
+        <button css={stepBtnCss} aria-label="Fewer players" onClick={() => step(-1)}>-</button>
+        <input type="number" min={counts[0]} max={counts[counts.length - 1]} value={players} aria-label="Players"
           onChange={e => setPlayerCount(parseInt(e.target.value) || counts[0])}
           css={numberInputCss} />
-        <button css={stepBtnCss} onClick={() => step(1)}>+</button>
-        <button css={goBtnCss}
+        <button css={stepBtnCss} aria-label="More players" onClick={() => step(1)}>+</button>
+        {hasPanel && (
+          <button css={optionsToggleCss} aria-expanded={showOptions} onClick={() => setShowOptions(o => !o)}>
+            {showOptions ? '▾' : '▸'} Options
+          </button>
+        )}
+        <button css={[goBtnCss, pushRightCss]}
           onClick={() => exec(() => g.new(buildOptions()), `New game ${players}p`)}>
           Go
         </button>
       </div>
-      {hasPanel && (
-        <button css={optionsToggleCss} onClick={e => { e.stopPropagation(); setShowOptions(o => !o) }}>
-          <span>{showOptions ? '▾' : '▸'}</span>
-          <span>Options</span>
-        </button>
-      )}
-      {showOptions && <>
+      {showOptions && <div css={optionsBoxCss}>
         {specOptions.map(({ key, option }) => {
           const name = label(`option.${key}`, key)
           if (option.kind === 'boolean') {
@@ -162,10 +164,10 @@ export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
             // array as "these are in" and draws the rest.
             const picked: OptionValue[] = options[key] ?? []
             return (
-              <div key={key} css={toggleRowCss} onClick={e => e.stopPropagation()}>
+              <div key={key} css={toggleRowCss}>
                 <span css={toggleLabelCss}>{name}</span>
                 {values.map(value => (
-                  <label key={optionValueKey(value)} css={toggleLabelCss}>
+                  <label key={optionValueKey(value)} css={checkLabelCss}>
                     <input type="checkbox" checked={picked.includes(value)} css={checkboxCss}
                       onChange={e => setOptions(prev => ({
                         ...prev,
@@ -178,9 +180,9 @@ export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
             )
           }
           return (
-            <div key={key} css={toggleRowCss} onClick={e => e.stopPropagation()}>
+            <div key={key} css={toggleRowCss}>
               <span css={toggleLabelCss}>{name}</span>
-              <select value={options[key] ?? ''} css={selectCss}
+              <select value={options[key] ?? ''} aria-label={name} css={selectCss}
                 onChange={e => setOptions(prev => ({ ...prev, [key]: parse(e.target.value) }))}>
                 <option value="">—</option>
                 {values.map(value => (
@@ -192,27 +194,36 @@ export const NewGameTool: FC<NewGameToolProps> = ({ exec, g, gameOptions }) => {
             </div>
           )
         })}
-        {seatChoices.length > 0 && Array.from({ length: players }, (_, index) => (
-          seatChoices.map(({ concept, field, values }) => (
-            <div key={`${index}-${field}`} css={toggleRowCss} onClick={e => e.stopPropagation()}>
-              <span css={toggleLabelCss}>P{index + 1} {label(concept, concept)}</span>
-              <select value={seats[index]?.[field] ?? ''} css={selectCss}
-                onChange={e => setSeat(index, field, parse(e.target.value))}>
-                <option value="">—</option>
-                {values.map(value => (
-                  <option key={optionValueKey(value)} value={String(value)}>
-                    {label(`${concept}.${optionValueKey(value)}`, optionValueKey(value))}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))
-        ))}
         {gameOptions?.map(opt => (
           <TriStateToggle key={opt.key} label={opt.label} value={options[opt.key]}
             onChange={value => setOptions(prev => ({ ...prev, [opt.key]: value }))} />
         ))}
-      </>}
+        {seatChoices.map(({ concept, field, values }) => (
+          <Fragment key={field}>
+            <span css={seatsTitleCss}>{label(concept, concept)}</span>
+            <div css={seatGridCss}>
+              {Array.from({ length: players }, (_, index) => (
+                <label key={index} css={seatLabelCss}>
+                  <span css={seatNameCss}>P{index + 1}</span>
+                  <select value={seats[index]?.[field] ?? ''} css={selectCss}
+                    onChange={e => setSeat(index, field, parse(e.target.value))}>
+                    <option value="">—</option>
+                    {values.map(value => (
+                      <option key={optionValueKey(value)} value={String(value)}>
+                        {label(`${concept}.${optionValueKey(value)}`, optionValueKey(value))}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ))}
+            </div>
+          </Fragment>
+        ))}
+      </div>}
     </div>
   )
 }
+
+const pushRightCss = css`
+  margin-left: auto;
+`
