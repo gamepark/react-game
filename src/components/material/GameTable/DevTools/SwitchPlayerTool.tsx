@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { FC } from 'react'
+import { useGame } from '../../../../hooks/useGame'
 import { usePlayerId, usePlayerIds } from '../../../../hooks/usePlayerId'
 import {
   inlineRowCss, playerBtnActiveCss, playerBtnCss,
@@ -7,32 +8,35 @@ import {
 } from './devtools.css'
 
 type SwitchPlayerToolProps = {
-  exec: (action: () => void, msg: string) => void
   g: any
 }
 
-export const SwitchPlayerTool: FC<SwitchPlayerToolProps> = ({ exec, g }) => {
+/**
+ * Plain links to the page of each player: a click changes the player of this tab, a middle click opens that player in a
+ * new tab. A tutorial is always played as its first player: nothing to switch to.
+ */
+export const SwitchPlayerTool: FC<SwitchPlayerToolProps> = ({ g }) => {
   const currentPlayer = usePlayerId()
   const players = usePlayerIds()
+  const game = useGame<{ tutorial?: unknown }>()
+  if (game?.tutorial) return null
 
   return (
     <div css={toolBtnCss}>
-      <span css={toolIconCss}>{'\u2194'}</span>
+      <span css={toolIconCss}>{'↔'}</span>
       <span css={toolLabelCss}>Switch Player</span>
-      <span css={toolDescCss}>Open the tab of another player</span>
+      <span css={toolDescCss}>Click: this tab. Middle click: a new tab</span>
       <div css={inlineRowCss} onClick={e => e.stopPropagation()}>
         {players.map(pid => (
-          <button key={String(pid)}
-            css={[playerBtnCss, pid === currentPlayer && playerBtnActiveCss]}
-            onClick={() => exec(() => g.openPlayer(pid), `Opened P${pid}`)}>
+          <a key={String(pid)} href={g.playerUrl(pid)}
+            css={[playerBtnCss, pid === currentPlayer && playerBtnActiveCss]}>
             P{String(pid)}
-          </button>
+          </a>
         ))}
-        <button
-          css={[playerBtnCss, currentPlayer === undefined && playerBtnActiveCss]}
-          onClick={() => exec(() => g.openPlayer(), 'Opened spectator')}>
+        <a href={g.playerUrl()}
+          css={[playerBtnCss, currentPlayer === undefined && playerBtnActiveCss]}>
           Spect
-        </button>
+        </a>
       </div>
     </div>
   )

@@ -124,7 +124,12 @@ export const goBtnCss = css`
   &:hover { background: rgba(40, 184, 206, 0.25); border-color: rgba(40, 184, 206, 0.5); }
 `
 
+/** A link that looks like the buttons of the tools */
 export const playerBtnCss = css`
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  text-decoration: none;
   height: 1.625em;
   padding: 0 0.625em;
   border-radius: 0.3em;

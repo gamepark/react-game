@@ -18,7 +18,7 @@ export const GamePanel: FC<GamePanelProps> = ({ exec, g, gameOptions }) => (
   <>
     <NewGameTool exec={exec} g={g} gameOptions={gameOptions} />
     <UndoTool exec={exec} g={g} />
-    <SwitchPlayerTool exec={exec} g={g} />
+    <SwitchPlayerTool g={g} />
     <BotTool exec={exec} g={g} />
     <AnimationSpeedTool exec={exec} g={g} />
     <TutorialTool exec={exec} g={g} />
