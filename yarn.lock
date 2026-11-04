@@ -455,10 +455,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gamepark/react-client@npm:^7.9.0":
-  version: 7.9.0
-  resolution: "@gamepark/react-client@npm:7.9.0"
+"@gamepark/react-client@npm:^7.9.1":
+  version: 7.9.1
+  resolution: "@gamepark/react-client@npm:7.9.1"
   dependencies:
+    "@gamepark/api-types": "npm:^1.0.3"
     "@reduxjs/toolkit": "npm:^2.13.0"
     "@tanstack/react-query": "npm:^5.104.3"
     "@trpc/client": "npm:^11.19.0"
@@ -470,7 +471,6 @@ __metadata:
     redux: "npm:^5.0.1"
     superjson: "npm:^2.2.6"
   peerDependencies:
-    "@gamepark/api-types": ^1.0.0
     "@gamepark/rules-api": ^7.6.2
     dayjs: ^1.11.19
     es-toolkit: ^1.44.0
@@ -478,7 +478,8 @@ __metadata:
     react-dom: ^19.2.4
     react-redux: ^9.2.0
     rxjs: ^7.8.2
-  checksum: 10c0/28570510dd494387437379ced1cb70f36639174ce478a540d4a147e4d0ac5a5c7bdbee6ecb0d875a22d211efc825f4b467c54638a93dbc339f91b7835b1cc158
+    typescript: ">=5.7.2"
+  checksum: 10c0/f198efcfee43bcf4a1b9ba259b02c35389b29c9d22eac1c05960d27a2e8da1388849b379b15ddfcb991a5d16dc3b932298bf264cd0b20b7f4fa1f83f5466ac2b
   languageName: node
   linkType: hard
 
@@ -496,7 +497,7 @@ __metadata:
     "@fortawesome/react-fontawesome": "npm:^3.5.0"
     "@gamepark/api-types": "npm:^1.0.3"
     "@gamepark/avataaars": "npm:^3.0.0"
-    "@gamepark/react-client": "npm:^7.9.0"
+    "@gamepark/react-client": "npm:^7.9.1"
     "@gamepark/rules-api": "npm:^7.9.1"
     "@trpc/server": "npm:^11.19.0"
     "@types/fscreen": "npm:^1.0.4"
