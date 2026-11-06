@@ -3,9 +3,8 @@ import { useGameSelector } from '@gamepark/react-client'
 import { Location, MaterialMove } from '@gamepark/rules-api'
 import { forwardRef, HTMLAttributes, useMemo } from 'react'
 import { mergeRefs } from 'react-merge-refs'
-import { useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
+import { useDraggedItem, useLegalMoves, useMaterialContext, usePlay } from '../../../hooks'
 import { findIfUnique } from '../../../utilities'
-import { dataIsDisplayedItem } from '../DraggableMaterial'
 import { DropAreaDescription } from './DropAreaDescription'
 import { LocationComponent } from './LocationComponent'
 
@@ -50,18 +49,23 @@ export const SimpleDropArea = forwardRef<HTMLDivElement, SimpleDropAreaProps>((
     return short === 1 || long === 1
   }, [legalMoves, context])
 
-  const { isOver, active, setNodeRef } = useDroppable({
-    id: JSON.stringify(location),
-    disabled: !dropMoves.length,
-    data: location
-  })
-
-  const draggedItem = dataIsDisplayedItem(active?.data.current) ? active?.data.current : undefined
+  const draggedItem = useDraggedItem()
   const draggedItemContext = useMemo(() => draggedItem ? { ...context, ...draggedItem } : undefined, [draggedItem, context])
   const canDrop = useMemo(() => !!draggedItemContext && !!description && !!material && dropMoves.some(move =>
       material[draggedItemContext.type]?.canDrag(move, draggedItemContext) && description.canDrop(move, location, draggedItemContext)
     )
     , [draggedItemContext, dropMoves])
+
+  /**
+   * dnd-kit gives the item dragged to the area it overlaps the most, in proportion to the size of the area: an area that
+   * cannot take the item would take it away from an area that can, when the item covers it. While an item is dragged,
+   * only the areas that can take it are drop areas.
+   */
+  const { isOver, setNodeRef } = useDroppable({
+    id: JSON.stringify(location),
+    disabled: !dropMoves.length || (!!draggedItem && !canDrop),
+    data: location
+  })
 
   const isAnimatingPlayerAction = useGameSelector((state) =>
     state.actions?.some(action => action.playerId === state.playerId && action.animation !== undefined)
