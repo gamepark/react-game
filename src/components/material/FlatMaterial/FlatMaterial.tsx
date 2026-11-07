@@ -1,6 +1,6 @@
 import { css, Interpolation, Theme } from '@emotion/react'
 import { HiddenMaterialRules, HidingSecretsStrategy, MaterialItem } from '@gamepark/rules-api'
-import { backgroundCss, borderRadiusCss, playDownCss, shadowCss, shineEffect, sizeCss, transformCss } from '../../../css'
+import { backgroundCss, borderRadiusCss, maskedShineEffect, playDownCss, shadowCss, shineEffect, sizeCss, transformCss } from '../../../css'
 import { ItemContext, MaterialContext } from '../../../locators'
 import { mirrorTransforms } from '../animations'
 import { MaterialContentProps } from '../MaterialDescription'
@@ -161,7 +161,7 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         sizeCss(size.width, size.height),
         image && [backgroundCss(image), !transparency && shadowCss],
         borderRadius && borderRadiusCss(borderRadius),
-        highlight ? shineEffect : (playDown && playDownCss(transparency)),
+        highlight ? this.getHighlightCss(itemId, image) : (playDown && playDownCss(transparency)),
         preview && previewCss,
         // We must add a little of translateZ since Safari/Chrome on iOS consider the two faces at the same level, so the backface-visibility is wrongly applied
         transformCss('translateZ(0.001px)')
@@ -175,12 +175,25 @@ export abstract class FlatMaterialDescription<P extends number = number, M exten
         backgroundCss(backImage), !transparency && shadowCss,
         borderRadius && borderRadiusCss(borderRadius),
         transformCss('rotateY(-180deg)'),
-        highlight ? shineEffect : (playDown && playDownCss(transparency)),
+        highlight ? this.getHighlightCss(itemId, backImage) : (playDown && playDownCss(transparency)),
         preview && previewCss
       ]}>
         {backChildren}
       </div>}
     </>
+  }
+
+  /**
+   * Css of a face of a highlighted item, the one that can be moved. By default, a shine sweeps the face: on an image
+   * with {@link transparency}, the image masks the shine so that it follows the outline of the item.
+   * Override it to draw more attention to the item, for instance by adding a motion from the highlight effects
+   * (floatEffect, breatheEffect, glowEffect…) to the shine.
+   *
+   * @param itemId Id of the item
+   * @param image Image of the face: the front image for the front face, the back image for the back face
+   */
+  getHighlightCss(itemId: ItemId, image?: string): Interpolation<Theme> {
+    return image && this.hasTransparency(itemId) ? maskedShineEffect(image) : shineEffect
   }
 
   getFrontExtraCss(_itemId: ItemId): Interpolation<Theme> {
