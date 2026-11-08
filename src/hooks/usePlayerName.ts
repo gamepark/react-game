@@ -1,4 +1,4 @@
-import { useGameSelector, useMe } from '@gamepark/react-client'
+import { useGameSelector, useMe, usePlayerUser } from '@gamepark/react-client'
 import { OptionsSpecV2 } from '@gamepark/rules-api'
 import { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,7 +22,8 @@ export function usePlayerSeatName<PlayerId = any>(playerId: PlayerId): string {
 }
 
 function usePlayerNameOrIdentity<PlayerId>(playerId: PlayerId, callMeByMyName: boolean): string {
-  const name = useGameSelector((state) => state.players.find(player => player.id === (playerId ?? state.playerId))?.name ?? '')
+  const player = useGameSelector((state) => state.players.find(player => player.id === (playerId ?? state.playerId)))
+  const name = usePlayerUser(player).name
   const optionsSpec = useContext(gameContext).optionsSpec
   const me = useMe()
   const myId = usePlayerId()

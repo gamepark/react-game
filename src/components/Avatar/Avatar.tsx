@@ -1,6 +1,6 @@
 import { css } from '@emotion/react'
 import Avataaar from '@gamepark/avataaars'
-import { useMe } from '@gamepark/react-client'
+import { useMe, usePlayerUser } from '@gamepark/react-client'
 import { FC, forwardRef, HTMLAttributes } from 'react'
 import { usePlayer, usePlayerId } from '../../hooks'
 import { ChatSpeechBubble } from './ChatSpeechBubble'
@@ -23,7 +23,8 @@ export const Avatar = forwardRef<HTMLDivElement, AvatarProps>((props, ref) => {
   const player = usePlayer(playerId)
   const me = useMe()
   const myPlayerId = usePlayerId()
-  const avatar = myPlayerId === playerId ? me?.user?.avatar ?? player?.avatar : player?.avatar
+  const user = usePlayerUser(player)
+  const avatar = myPlayerId === playerId ? me?.user?.avatar ?? user.avatar : user.avatar
   return (
     <div ref={ref} css={style} {...rest}>
       <Avataaar circle {...avatar} css={[avatarCss, player?.quit && greyscale]}/>
