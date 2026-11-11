@@ -57,4 +57,11 @@ describe('an item laid on a parent item', () => {
     const transforms = locator.placeItem(token, contextOf(true, locator))
     expect(transforms.findIndex((t) => t.startsWith('rotateY'))).toBeLessThan(transforms.findIndex((t) => t.includes('-2em')))
   })
+
+  it('only keeps its place on the parent when it is rendered inside the face of its parent (help dialog)', () => {
+    const locator = new TokenLocator()
+    locator.itemParentFace = ParentFace.Front
+    const transforms = locator.placeItem(token, { ...contextOf(true, locator), relativeToParent: true })
+    expect(transforms).toEqual(['translate3d(0em, -2em, 0.05em)'])
+  })
 })

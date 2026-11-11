@@ -6,6 +6,9 @@ import { MaterialContentProps, MaterialDescription } from '../MaterialDescriptio
 export abstract class WritingDescription<P extends number = number, M extends number = number, L extends number = number, ItemId = any, R extends number = number, V extends number = number>
   extends MaterialDescription<P, M, L, ItemId, R, V> {
 
+  /** What is written on an item belongs to it: show it in the help of that item too */
+  displayInParentItemHelp = true
+
   getFrontContent(_itemId: ItemId): ReactNode | undefined {
     return
   }

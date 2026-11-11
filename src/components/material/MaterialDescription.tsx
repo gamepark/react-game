@@ -73,6 +73,13 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   helpDisplay: ComponentType<MaterialHelpDisplayProps<P, M, L>> = DefaultHelpDisplay
 
   /**
+   * When true, the items of this type that are placed on a parent item (see {@link Locator.parentItemType}) are also
+   * displayed on it in the help dialog of the parent, the same way {@link LocationDescription.displayInParentItemHelp}
+   * does for locations. Example: what was written on a player sheet, in the help of the sheet.
+   */
+  displayInParentItemHelp = false
+
+  /**
    * The React component to display
    */
   abstract content: (props: MaterialContentProps<ItemId, M>) => ReactNode

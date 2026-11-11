@@ -230,12 +230,16 @@ export class Locator<P extends number = number, M extends number = number, L ext
   protected placeItemOnParent(item: MaterialItem<P, L>, context: ItemContext<P, M, L, R, V>): string[] {
     const parentItem = this.getParentItem(item.location, context)
     if (this.parentItemType === undefined || !parentItem) return []
-    const locator = context.locators[parentItem.location.type]
     const parentContext = { ...context, type: this.parentItemType, displayIndex: 0 }
-    const transform = locator?.placeItem(parentItem, parentContext) ?? []
     const parentMaterial = context.material[this.parentItemType]
+    const transform: string[] = []
+    // Rendered inside the face of its parent (see ItemContext.relativeToParent): the parent is already placed, and the face already turned
+    if (!context.relativeToParent) {
+      const locator = context.locators[parentItem.location.type]
+      transform.push(...locator?.placeItem(parentItem, parentContext) ?? [])
+    }
     const face = this.getItemParentFace(item, context)
-    if (face !== ParentFace.Up) {
+    if (face !== ParentFace.Up && !context.relativeToParent) {
       // The rotation of the face of the parent, always written (0 when it is up) so that the list of transforms keeps
       // its shape when the parent turns over, and the item goes round the same axis as the parent
       const rotation = (parentMaterial?.getFaceRotation(parentItem, parentContext) ?? 0) + (face === ParentFace.Back ? 180 : 0)
@@ -602,9 +606,12 @@ export type MaterialContext<P extends number = number, M extends number = number
 /**
  * Data structure for the context of an item in a game displayed.
  * @property isDragging True when the item is currently being dragged by the user.
+ * @property relativeToParent True when the item is rendered inside the face of its parent item, centred on it, instead of
+ * on the game table (e.g. in the help dialog of the parent): its transform must then leave out the placement of the parent.
  */
 export type ItemContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = MaterialContext<P, M, L, R, V> & DisplayedItem<M> & {
   isDragging?: boolean
+  relativeToParent?: boolean
 }
 
 /**
