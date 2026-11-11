@@ -50,3 +50,13 @@ export function redirectToPlatformGamePage() {
   window.location.replace(locale ? platformGameUrl(gameId, locale) : `${PLATFORM_URI}/?id=${encodeURIComponent(gameId)}`)
   return true
 }
+
+/**
+ * Tells the page hosting the client whether the server can still be reached, so that the platform warns the player in its
+ * notification center. Message: `{ type: 'connection', lost: boolean }`.
+ */
+export function notifyConnectionLost(lost: boolean) {
+  if (isFramedByPlatform()) {
+    window.parent.postMessage({ type: 'connection', lost }, platformOrigin)
+  }
+}

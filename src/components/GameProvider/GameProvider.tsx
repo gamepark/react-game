@@ -11,6 +11,7 @@ import { setupTranslation } from '../../utilities/translation.util'
 import { DefaultMaterialGameSounds } from '../material'
 import { isMaterialTutorial } from '../tutorial'
 import { wrapRulesWithTutorial } from '../tutorial/TutorialRulesWrapper'
+import { ConnectionStatusReporter } from './ConnectionStatusReporter'
 import { GameContext, gameContext } from './GameContext'
 import { GameErrorBoundary } from './GameErrorBoundary'
 
@@ -53,7 +54,7 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
           <Global styles={[normalize, globalCss]}/>
           <TRPCProvider>
             {gameId ?
-              <RemoteGameProvider gameId={gameId} {...props}>{content}</RemoteGameProvider> :
+              <RemoteGameProvider gameId={gameId} {...props}>{content}<ConnectionStatusReporter/></RemoteGameProvider> :
               <LocalGameProvider {...props}>{content}</LocalGameProvider>
             }
           </TRPCProvider>
