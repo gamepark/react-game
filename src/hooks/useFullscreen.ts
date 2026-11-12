@@ -1,7 +1,5 @@
 import fscreen from 'fscreen'
 import NoSleep from 'nosleep.js'
-// @ts-ignore (@type/o9n does not exist yet)
-import {orientation} from 'o9n'
 import {useContext, useEffect, useState} from 'react'
 import {gameContext} from '../components'
 import {isFramedByPlatform, onPlatformFullscreenChange, requestPlatformFullscreen} from '../utilities/platform.util'
@@ -35,7 +33,8 @@ export const useFullscreen = () => {
       setFullscreen(fscreen.fullscreenElement != null)
       if (fscreen.fullscreenElement) {
         if (lockedOrientation) {
-          orientation.lock(lockedOrientation)
+          // Inside a promise so that a missing API (old browsers) rejects like an unsupported lock (iOS, desktop)
+          Promise.resolve().then(() => screen.orientation.lock(lockedOrientation))
             .then(() => noSleep.enable())
             .catch(() => console.info('screen orientation cannot be locked on this device'))
         } else {

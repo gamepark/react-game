@@ -444,7 +444,6 @@ __metadata:
     intl-messageformat: "npm:^12.1.5"
     jsdom: "npm:^31.0.0"
     nosleep.js: "npm:^0.12.0"
-    o9n: "npm:^2.1.1"
     react: "npm:^19.3.1"
     react-dom: "npm:^19.3.1"
     react-i18next: "npm:^18.0.1"
@@ -1992,13 +1991,6 @@ __metadata:
   version: 0.12.0
   resolution: "nosleep.js@npm:0.12.0"
   checksum: 10c0/a9557206344c85078c46c8f2739066335cc06644d3ec6b0798ed3a1e0b89f929f2fe9bf9285df6d6ae1bd96f08940682a8a08c540fd73f4fff318a4144723055
-  languageName: node
-  linkType: hard
-
-"o9n@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "o9n@npm:2.1.1"
-  checksum: 10c0/cfae60dac8bcfa223349ab758c27f764c83c71fa626d1659df4dbfa603d4b4a5580e586fdaa8f6bc82e8660ad4098f029eb61f091cc1c05f2544f9b333bf0253
   languageName: node
   linkType: hard
 
