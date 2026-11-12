@@ -32,13 +32,12 @@ export const useFullscreen = () => {
     const onFullscreenChange = () => {
       setFullscreen(fscreen.fullscreenElement != null)
       if (fscreen.fullscreenElement) {
+        // The screen stays awake whether or not the orientation locks
+        noSleep.enable()
         if (lockedOrientation) {
           // Inside a promise so that a missing API (old browsers) rejects like an unsupported lock (iOS, desktop)
           Promise.resolve().then(() => screen.orientation.lock(lockedOrientation))
-            .then(() => noSleep.enable())
             .catch(() => console.info('screen orientation cannot be locked on this device'))
-        } else {
-          noSleep.enable()
         }
       } else {
         noSleep.disable()
