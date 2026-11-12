@@ -60,3 +60,26 @@ export function notifyConnectionLost(lost: boolean) {
     window.parent.postMessage({ type: 'connection', lost }, platformOrigin)
   }
 }
+
+/**
+ * Asks the page hosting the client to go full screen, or to leave it. The whole page goes full screen, so that what the
+ * platform shows over the game stays visible. Message: `{ type: 'fullscreen', fullscreen?: boolean, orientation?: 'landscape' | 'portrait' }`,
+ * without a value to only ask whether the page is full screen. The page locks the orientation given, none if absent.
+ */
+export function requestPlatformFullscreen(fullscreen?: boolean, orientation?: 'landscape' | 'portrait') {
+  window.parent.postMessage({ type: 'fullscreen', fullscreen, orientation }, platformOrigin)
+}
+
+/**
+ * Follows whether the page hosting the client is full screen: it tells after each change, and when asked. Asks right away,
+ * since the page may already be full screen (a game opened from another one). Returns the unsubscribe function.
+ */
+export function onPlatformFullscreenChange(listener: (fullscreen: boolean) => void) {
+  const onMessage = (event: MessageEvent) => {
+    if (event.origin !== platformOrigin || event.data?.type !== 'fullscreen' || typeof event.data.fullscreen !== 'boolean') return
+    listener(event.data.fullscreen)
+  }
+  window.addEventListener('message', onMessage)
+  requestPlatformFullscreen()
+  return () => window.removeEventListener('message', onMessage)
+}

@@ -19,7 +19,11 @@ export type GameContext<Game = any, Move = any, PlayerId extends number = number
   scoring?: ScoringDescription<PlayerId>
   logs?: LogDescription<Move, PlayerId>,
   hasSounds?: boolean
+  // What the game is laid out for: a phone turns to it in full screen. Landscape when not set; 'any' plays either way
+  orientation?: GameOrientation
 }
+
+export type GameOrientation = 'landscape' | 'portrait' | 'any'
 
 export type MaterialGameContext<Game = any, Move = any, PlayerId extends number = number, MaterialType extends number = number, LocationType extends number = number, RulesId extends number = number, View extends number = number>
   = GameContext<Game, Move, PlayerId, MaterialType, LocationType, RulesId, View> & {
