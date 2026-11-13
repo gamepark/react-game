@@ -26,7 +26,7 @@
     "@datadog/browser-logs": "^7.17.1",
     "@dnd-kit/modifiers": "^9.0.0",
     "@gamepark/avataaars": "^3.0.0",
-    "@gamepark/react-client": "^7.10.1",
+    "@gamepark/react-client": "^7.10.2",
     "@trpc/client": "^11.28.0",
     "@trpc/server": "^11.28.0",
     "dayjs": "^1.11.23",

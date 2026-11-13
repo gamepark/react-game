@@ -389,9 +389,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gamepark/react-client@npm:^7.10.1":
-  version: 7.10.1
-  resolution: "@gamepark/react-client@npm:7.10.1"
+"@gamepark/react-client@npm:^7.10.2":
+  version: 7.10.2
+  resolution: "@gamepark/react-client@npm:7.10.2"
   dependencies:
     "@gamepark/api-types": "npm:^1.0.3"
     "@reduxjs/toolkit": "npm:^2.14.0"
@@ -409,7 +409,7 @@ __metadata:
     es-toolkit: ^1.44.0
     react: ^19.2.4
     react-redux: ^9.2.0
-  checksum: 10c0/c45fc0ee528c2976c7072d4984c34fea0108de939bbc88ce655ed989ca98ffae323d80229cc57e840dfa732bd8b17388d25010fa8178465be396c696e4e4e3c8
+  checksum: 10c0/28244a611ecc8f777009adaa0e6c54832ff07c3a8042646329c0544a2a6cd442835e9db445ef6f4c71d1f52fd7c218ebce093a22cdf7596b147c8d9b2f98e0d9
   languageName: node
   linkType: hard
 
@@ -426,7 +426,7 @@ __metadata:
     "@fortawesome/free-solid-svg-icons": "npm:^7.3.1"
     "@fortawesome/react-fontawesome": "npm:^3.5.0"
     "@gamepark/avataaars": "npm:^3.0.0"
-    "@gamepark/react-client": "npm:^7.10.1"
+    "@gamepark/react-client": "npm:^7.10.2"
     "@gamepark/rules-api": "npm:^7.10.0"
     "@trpc/client": "npm:^11.28.0"
     "@trpc/server": "npm:^11.28.0"

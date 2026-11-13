@@ -1,5 +1,5 @@
 import { css, useTheme } from '@emotion/react'
-import { pusherClient, trpc, useMe } from '@gamepark/react-client'
+import { subscribeToChannel, trpc, unsubscribeFromChannel, useMe } from '@gamepark/react-client'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { notifyGameChanged, platformGameUrl } from '../../../utilities/platform.util'
@@ -24,14 +24,19 @@ export const RematchDisplay = ({ rematch }: Props) => {
   const { mutate: refuseRematch } = trpc.rematch.refuseRematch.useMutation()
   const player = me?.user && rematch.players.find(p => p.userId === me.user.id)
   useEffect(() => {
-    const channel = pusherClient.subscribe('game-state=' + rematch.id)
-    channel.bind('game-started', () => {
+    const channelName = 'game-state=' + rematch.id
+    const channel = subscribeToChannel(channelName)
+    const onGameStarted = () => {
       if (player) {
         notifyGameChanged(rematch.id)
         window.location.href = getGameLocation(rematch)
       }
-    })
-    return () => pusherClient.unsubscribe('game-state=' + rematch.id)
+    }
+    channel.bind('game-started', onGameStarted)
+    return () => {
+      channel.unbind('game-started', onGameStarted)
+      unsubscribeFromChannel(channelName)
+    }
   }, [])
   return (
     <>
