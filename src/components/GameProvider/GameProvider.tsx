@@ -14,6 +14,7 @@ import { wrapRulesWithTutorial } from '../tutorial/TutorialRulesWrapper'
 import { ConnectionStatusReporter } from './ConnectionStatusReporter'
 import { GameContext, gameContext } from './GameContext'
 import { GameErrorBoundary } from './GameErrorBoundary'
+import { TutorialProgressReporter } from './TutorialProgressReporter'
 
 const query = new URLSearchParams(window.location.search)
 const gameId = query.get('game')
@@ -55,7 +56,7 @@ export const GameProvider = <Game, GameView = Game, Move = string, MoveView = Mo
           <TRPCProvider>
             {gameId ?
               <RemoteGameProvider gameId={gameId} {...props}>{content}<ConnectionStatusReporter/></RemoteGameProvider> :
-              <LocalGameProvider {...props}>{content}</LocalGameProvider>
+              <LocalGameProvider {...props}>{content}<TutorialProgressReporter/></LocalGameProvider>
             }
           </TRPCProvider>
         </ThemeProvider>

@@ -62,6 +62,19 @@ export function notifyConnectionLost(lost: boolean) {
 }
 
 /**
+ * Tells the page hosting a tutorial that it is finished (its explanations are over), or its game, so that the platform records
+ * the player's progress. Message: `{ type: 'tutorial', stage: 'finished' | 'game-finished', live: boolean, gameOver: boolean }`:
+ * `live` when the stage was just reached, not already behind when the tutorial was opened (the platform then congratulates the
+ * player, even on a tutorial played before); `gameOver` when the game is over too (the client's result popup says it all). The
+ * preview of the tutorial on the board game page frames the client too: that page does not listen, so a preview never counts.
+ */
+export function notifyTutorialStage(stage: 'finished' | 'game-finished', live: boolean, gameOver: boolean) {
+  if (isFramedByPlatform()) {
+    window.parent.postMessage({ type: 'tutorial', stage, live, gameOver }, platformOrigin)
+  }
+}
+
+/**
  * Asks the page hosting the client to go full screen, or to leave it. The whole page goes full screen, so that what the
  * platform shows over the game stays visible. Message: `{ type: 'fullscreen', fullscreen?: boolean, orientation?: 'landscape' | 'portrait' }`,
  * without a value to only ask whether the page is full screen. The page locks the orientation given, none if absent.
