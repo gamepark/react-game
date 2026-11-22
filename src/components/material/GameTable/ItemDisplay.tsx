@@ -35,7 +35,8 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const context = useMaterialContextRef()
   const { focus, focusRef } = useFocusContext()
   const isDragging = !!dragTransform
-  const { hovered, listeners: hoverListeners } = useHoveredItems(type, index, item)
+  const elementRef = useRef<HTMLDivElement>(null)
+  const { hovered, listeners: hoverListeners } = useHoveredItems(type, index, item, elementRef)
   const itemContext = useMemo(() => ({ ...context, type, index, displayIndex, isDragging, hovered }), [context, type, index, displayIndex, isDragging, hovered])
   const locations = useItemLocations(item, itemContext)
   const [focusedLocations, otherLocations] = useMemo(() => partition(locations, l => l.focusRef), [locations])
@@ -77,6 +78,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
   const pointerListeners = { ...hoverListeners, ...combineEventListeners(listeners, hoverListeners) }
+  const materialRef = useMemo(() => mergeRefs(isFocused ? [ref, focusRef, elementRef] : [ref, elementRef]), [ref, focusRef, isFocused])
 
   const canHaveChildren = useMemo(() => Object.values(context.locators).some(locator => locator?.parentItemType === type), [context, type])
   /**
@@ -121,7 +123,7 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
         : hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, !!animation || isDragging)),
       (onShortClick || onLongClick) && pointerCursorCss
     ]} {...props} {...combineEventListeners(pointerListeners, props)}>
-      <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
+      <MaterialComponent ref={materialRef}
                          itemIndex={index}
                          displayIndex={displayIndex}
                          type={type} itemId={item.id}
