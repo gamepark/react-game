@@ -16,6 +16,7 @@ import { LocationsMask } from '../locations'
 import { MaterialComponent, MaterialComponentProps } from '../MaterialComponent'
 import { isLocationSubset } from '../utils'
 import { useFocusContext } from './focus'
+import { useHoveredItems } from './HoveredItem'
 
 type ItemDisplayProps = MaterialComponentProps & {
   index: number
@@ -34,7 +35,8 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   const context = useMaterialContextRef()
   const { focus, focusRef } = useFocusContext()
   const isDragging = !!dragTransform
-  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex, isDragging }), [context, type, index, displayIndex, isDragging])
+  const { hovered, listeners: hoverListeners } = useHoveredItems(type, index, item)
+  const itemContext = useMemo(() => ({ ...context, type, index, displayIndex, isDragging, hovered }), [context, type, index, displayIndex, isDragging, hovered])
   const locations = useItemLocations(item, itemContext)
   const [focusedLocations, otherLocations] = useMemo(() => partition(locations, l => l.focusRef), [locations])
   const description = context.material[type]!
@@ -74,8 +76,16 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
     },
     filterEvents: event => !(event as MouseEvent).button // Ignore clicks on mouse buttons > 0
   })()
+  const pointerListeners = { ...hoverListeners, ...combineEventListeners(listeners, hoverListeners) }
 
   const canHaveChildren = useMemo(() => Object.values(context.locators).some(locator => locator?.parentItemType === type), [context, type])
+  /**
+   * An item that carries its hover to the items placed on it (see MaterialDescription.hoverCarriesChildren and
+   * ItemContext.hovered): its hover is kept in JavaScript rather than in CSS, so that it stays while the pointer is on
+   * one of those items, which are not inside its element.
+   */
+  const carriesHover = description.hoverCarriesChildren && canHaveChildren && !!hoverTransform
+  const isHovered = carriesHover && !!hovered?.some(h => h.type === type && h.index === index && isEqual(h.item, item))
 
   /**
    * Each face of the item carries the locations that belong to it: what a location is printed on is the locator's
@@ -106,9 +116,11 @@ export const ItemDisplay = forwardRef<HTMLDivElement, ItemDisplayProps>((
   return <>
     <div css={[
       itemCss, animation,
-      hoverTransform && hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, !!animation || isDragging),
+      hoverTransform && (carriesHover
+        ? carriedHoverCss(itemTransform.join(' '), description.getSize(item.id), isHovered && !animation && !isDragging ? hoverTransform : undefined)
+        : hoverCss(itemTransform.join(' '), description.getSize(item.id), hoverTransform, !!animation || isDragging)),
       (onShortClick || onLongClick) && pointerCursorCss
-    ]} {...props} {...combineEventListeners(listeners, props)}>
+    ]} {...props} {...combineEventListeners(pointerListeners, props)}>
       <MaterialComponent ref={isFocused ? mergeRefs([ref, focusRef]) : ref}
                          itemIndex={index}
                          displayIndex={displayIndex}
@@ -150,6 +162,32 @@ const hoverCss = (itemTransform: string, itemSize: ComponentSize, hoverTransform
 
   > * {
     pointer-events: ${disable ? 'auto' : 'none'};
+  }
+
+  &:before {
+    content: " ";
+    position: absolute;
+    width: ${itemSize.width}em;
+    height: ${itemSize.height}em;
+    transform: ${itemTransform};
+  }
+`
+
+/**
+ * The hover of an item that carries it to the items placed on it: the transform is applied while the item, or an item
+ * placed on it, is hovered (see {@link useHoveredItems}). The items placed on it get the same transform in their own,
+ * and their transform eases in 0.2s (transformTransition of DraggableMaterial): the item eases at the same pace, so that
+ * they move together.
+ */
+const carriedHoverCss = (itemTransform: string, itemSize: ComponentSize, hoverTransform?: string) => css`
+  > * > * {
+    transition: transform 0.2s ease-in-out;
+    ${hoverTransform ? `transform: ${hoverTransform};` : ''}
+  }
+
+  /* At rest, only its place is hovered; hovered, the whole item as it is shown, so that it does not shrink under the pointer */
+  > * {
+    pointer-events: ${hoverTransform ? 'auto' : 'none'};
   }
 
   &:before {

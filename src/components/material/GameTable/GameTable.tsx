@@ -12,6 +12,7 @@ import { getBestDropMove } from '../utils/getBestDropMove'
 import { DraggedItemProvider } from './DraggedItemProvider'
 import { GameMaterialDisplay } from './GameMaterialDisplay'
 import { GameTableContext } from './GameTableContext'
+import { HoveredItemProvider } from './HoveredItem'
 import { measureAtRest } from './measureAtRest'
 import { NoZoomScaleProvider, ZoomScaleProvider } from './ScaleContext'
 import dropItemMove = MaterialMoveBuilder.dropItemMove
@@ -157,27 +158,29 @@ export const GameTable: FC<GameTableProps> = (
       <DndContext collisionDetection={collisionAlgorithm} measuring={measuring}
                   modifiers={modifiers} sensors={sensors} onDragEnd={onDragEnd}>
         <DraggedItemProvider>
-          <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle, !enableZoom && nativeZoomCss]}/>
-          {enableZoom ? (
-            <DraggingState>{dragging =>
-              <TransformWrapper ref={zoomRef} minScale={minScale} maxScale={maxScale} initialScale={minScale}
-                                centerOnInit={true} centerZoomedOut={true} wheel={wheel} smooth={false}
-                                panning={dragging ? disabledPanning : enabledPanning}
-                                disablePadding doubleClick={doubleClick}>
-                <TransformComponent wrapperClass="wrapperClass" contentStyle={{ transformStyle: 'preserve-3d' }}>
-                  <ZoomScaleProvider>
-                    {tableContent}
-                  </ZoomScaleProvider>
-                </TransformComponent>
-              </TransformWrapper>
-            }</DraggingState>
-          ) : (
-            <div className="wrapperClass" css={noZoomContainerCss}>
-              <NoZoomScaleProvider>
-                {tableContent}
-              </NoZoomScaleProvider>
-            </div>
-          )}
+          <HoveredItemProvider>
+            <Global styles={[ratioFontSize(ratioWithMargins), wrapperStyle, !enableZoom && nativeZoomCss]}/>
+            {enableZoom ? (
+              <DraggingState>{dragging =>
+                <TransformWrapper ref={zoomRef} minScale={minScale} maxScale={maxScale} initialScale={minScale}
+                                  centerOnInit={true} centerZoomedOut={true} wheel={wheel} smooth={false}
+                                  panning={dragging ? disabledPanning : enabledPanning}
+                                  disablePadding doubleClick={doubleClick}>
+                  <TransformComponent wrapperClass="wrapperClass" contentStyle={{ transformStyle: 'preserve-3d' }}>
+                    <ZoomScaleProvider>
+                      {tableContent}
+                    </ZoomScaleProvider>
+                  </TransformComponent>
+                </TransformWrapper>
+              }</DraggingState>
+            ) : (
+              <div className="wrapperClass" css={noZoomContainerCss}>
+                <NoZoomScaleProvider>
+                  {tableContent}
+                </NoZoomScaleProvider>
+              </div>
+            )}
+          </HoveredItemProvider>
         </DraggedItemProvider>
       </DndContext>
     </GameTableContext.Provider>
