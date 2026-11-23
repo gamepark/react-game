@@ -237,6 +237,11 @@ export class Locator<P extends number = number, M extends number = number, L ext
     if (!context.relativeToParent) {
       const locator = context.locators[parentItem.location.type]
       transform.push(...locator?.placeItem(parentItem, parentContext) ?? [])
+      // The parent is hovered and carries its hover to the items placed on it: they are enlarged with it (see ItemContext.hovered)
+      const hoveredParent = context.hovered?.find(hovered => hovered.type === this.parentItemType && isEqual(hovered.item, parentItem))
+      if (parentMaterial && hoveredParent) {
+        transform.push(...parentMaterial.getHoverTransform(parentItem, { ...parentContext, index: hoveredParent.index }))
+      }
     }
     const face = this.getItemParentFace(item, context)
     if (face !== ParentFace.Up && !context.relativeToParent) {
@@ -608,10 +613,15 @@ export type MaterialContext<P extends number = number, M extends number = number
  * @property isDragging True when the item is currently being dragged by the user.
  * @property relativeToParent True when the item is rendered inside the face of its parent item, centred on it, instead of
  * on the game table (e.g. in the help dialog of the parent): its transform must then leave out the placement of the parent.
+ * @property hovered The items, among this item and the items it is placed on, that are under the mouse pointer and carry
+ * their hover to the items placed on them (an item with a hover transform, on which other items can be placed). The
+ * pointer may be on the item itself, or on an item placed on it. An item placed on a hovered item gets its hover
+ * transform too, right after the placement of that item, so that it is enlarged with it.
  */
 export type ItemContext<P extends number = number, M extends number = number, L extends number = number, R extends number = number, V extends number = number> = MaterialContext<P, M, L, R, V> & DisplayedItem<M> & {
   isDragging?: boolean
   relativeToParent?: boolean
+  hovered?: { type: M, index: number, item: MaterialItem }[]
 }
 
 /**

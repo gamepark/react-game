@@ -302,6 +302,13 @@ export abstract class MaterialDescription<P extends number = number, M extends n
   }
 
   /**
+   * When true, the items placed on this item follow its hover transform (a player board enlarged with everything on it),
+   * and the item stays hovered while the pointer is on one of them, or anywhere on the item as it is shown hovered.
+   * When false (by default), only the item is transformed, and only its place at rest is hovered (see ItemContext.hovered).
+   */
+  hoverCarriesChildren = false
+
+  /**
    * Provide the locations that are required to drop an item given the legal moves that currently allow to drag the item.
    * @param context Context of the item. Use {@link getItemFromContext} to get the item from it.
    * @param dragMoves Legal moves filtered to only keep those that allows the item to be dragged
